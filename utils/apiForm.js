@@ -3,8 +3,8 @@ const fetch = require('node-fetch');
 let authToken = null;
 let tokenExpirationTime = null;
 // Tokens necessários para autenticação
-const ApplicationToken = '35f65072-81d0-4b7e-bf2c-39158de0e885';
-const CompanyToken = '67426fed-77a7-48ef-b96d-9f96e5b37e10';
+const ApplicationToken = '62ca18a8-aa3b-41b7-a54e-f669a437d326';
+const CompanyToken = 'b5b984c5-cbfa-490b-8513-448fc67a39b6';
 
 
 // Função para autenticar e obter o token
@@ -189,7 +189,7 @@ async function fetchAllClientapiAntiga(cnpj) {
 
     const cnpjID = clientRepresentativeWithTransport.documento.numeroTexto;
 
-    const cnpjEndpoint = `http://homolog-kidszone-api-integracao.dbcorp.com.br/v1/Cliente/BuscarPorCnpjCpf/${cnpjID}`;
+    const cnpjEndpoint = `http://kidszone-api-integracao.dbcorp.com.br/v1/Cliente/BuscarPorCnpjCpf/${cnpjID}`;
 
     let cnpjData = [];
 
@@ -279,7 +279,7 @@ async function fetchPaymentCondition(cnpj) {
 
     const paytId = clientWithPriceList.condicaoPagamentoId
 
-    const payEndpoint = `http://homolog-kidszone-api-integracao.dbcorp.com.br/v1/CondicaoPagamento/BuscarPorId/${paytId}`;
+    const payEndpoint = `http://kidszone-api-integracao.dbcorp.com.br/v1/CondicaoPagamento/BuscarPorId/${paytId}`;
 
     let payData = [];
 
@@ -416,7 +416,7 @@ async function fetchcontat(cnpj) {
   }
 }
 
-async function fetchItems() {
+async function fetchItems(lista_id) {
   await checkToken();
 
   if (!authToken) {
@@ -425,9 +425,10 @@ async function fetchItems() {
   }
 
   try {
-    const endpoint = `https://gateway-ng.dbcorp.com.br:55500/produto-service/item`
+    const endpoint_lista = `https://gateway-ng.dbcorp.com.br:55500/produto-service/v1.1/item/lista-preco/${lista_id}`
+    const endpoint_produto = `https://gateway-ng.dbcorp.com.br:55500/produto-service/item/`
 
-    const response = await fetch(endpoint, {
+    const response = await fetch(endpoint_lista, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -441,14 +442,38 @@ async function fetchItems() {
       throw new Error(response.statusText)
     }
 
-    return await response.json()
+    const lista_response = await response.json()
 
+    const itemsDetails = [];
+
+    for (const item of lista_response.dados) {
+      try {
+        const prodResponse = await fetch(`${endpoint_produto}${item.codigo}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+            'Origin': 'https://kidszone-ng.dbcorp.com.br'
+          }
+        });
+
+        if (!prodResponse.ok) {
+          console.warn(`Erro ao buscar detalhe do item ${item.codigo}: ${prodResponse.statusText}`);
+          continue;
+        }
+
+        const prodData = await prodResponse.json();
+        itemsDetails.push(prodData);
+      } catch (err) {
+        console.warn('Erro ao buscar detalhe do item:', err);
+      }
+    }
+    return itemsDetails;
   } catch (error) {
     console.error('Erro ao buscar contato:', error);
     return [];
   }
 }
-
 
 setInterval(checkToken, 60 * 60 * 1000);  // Verifica o token a cada 1 hora
 
@@ -466,5 +491,4 @@ module.exports = {
   fetchPaymentMethod,
   fetchcontat,
   fetchItems
-
 };

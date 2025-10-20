@@ -6,10 +6,9 @@ let listaPrecosData;
 let icmsSTData;
 //// Variáveis globais 
 
-// Função para atualizar os caches no navegador
+//Função para atualizar os caches no navegador
 const timestamp = new Date().getTime();
 
-// Função para carregar os JSONs 
 fetch(`/data/Promocao.json?cacheBust=${timestamp}`)
     .then(response => response.json())
     .then(data => {
@@ -28,24 +27,38 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
         icmsSTData = data;
     });
 
-(async () => {
-    showFeedback("Carregando produtos, aguarde...");
-    try {
-        // Faz a requisição à API
-        const res = await fetch(`/api/produtos`);
-        if (!res.ok) {
-            throw new Error('Produtos não encontrados.');
-        }
+// (async () => {
+//     showFeedback("Carregando produtos, aguarde...");
+//     try {
+//         // Faz a requisição à API
+//         const res = await fetch(`/api/produtos`);
+//         if (!res.ok) {
+//             throw new Error('Produtos não encontrados.');
+//         }
 
-        const json = await res.json();
-        listaPrecosData = json.data;
-    } catch (error) {
-        console.error('Erro ao buscar produtos na API:', error);
-        alert("Produtos não encontrados por favor, recarregue a página, se o erro persistir, comunique a equipe de desenvolvimento.");
-    } finally {
-        hideFeedback();
-    }
-})();
+//         const json = await res.json();
+//         listaPrecosData = json.data;
+//     } catch (error) {
+//         console.error('Erro ao buscar produtos na API:', error);
+//         alert("Produtos não encontrados por favor, recarregue a página, se o erro persistir, comunique a equipe de desenvolvimento.");
+//     } finally {
+//         hideFeedback();
+//     }
+// })();
+
+// Mostrar Feedback
+function showFeedback(message) {
+    const feedback1 = document.getElementById('feedback1');
+    feedback1.style.display = 'block';
+    feedback1.textContent = message;
+}
+
+// Ocultar Feedback
+function hideFeedback() {
+    const feedback1 = document.getElementById('feedback1');
+    feedback1.style.display = 'none';
+    feedback1.textContent = '';
+}
 
 // Função para formatar o CNPJ com máscara
 function formatarCNPJ(cnpj) {
@@ -95,7 +108,7 @@ function buscarListaPrecos(cod) {
     return null;
 }
 
-// Função para buscar os dados do cliente pelo CNPJ (mantida como estava)
+// Função para buscar os dados do cliente pelo CNPJ
 function buscarCliente(cnpj) {
     // Ajusta o CNPJ com zeros à esquerda
     cnpj = ajustarCNPJ(cnpj);
@@ -109,10 +122,13 @@ function buscarCliente(cnpj) {
     return null;
 }
 
+
+
 // Função para verificar se o CNPJ é composto apenas de zeros
 function cnpjInvalido(cnpj) {
     return /^0+$/.test(cnpj);
 }
+
 
 // Função para limpar todos os campos relacionados ao cliente
 function limparCamposCliente() {
@@ -166,22 +182,24 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// Mostrar Feedback
-function showFeedback(message) {
-    const feedback1 = document.getElementById('feedback1'); // Alterado para feedback1 conforme o HTML
-    feedback1.style.display = 'block';
-    feedback1.textContent = message;
+// Função para buscar os dados do cliente pelo CNPJ
+function buscarCliente(cnpj) {
+    // Ajusta o CNPJ com zeros à esquerda
+    cnpj = ajustarCNPJ(cnpj);
+
+    for (let i = 1; i < clientesData.length; i++) {
+        let cnpjCliente = ajustarCNPJ(clientesData[i][1].toString());
+        if (cnpjCliente === cnpj) {
+            return clientesData[i];
+        }
+    }
+    return null;
 }
 
-// Ocultar Feedback
-function hideFeedback() {
-    const feedback1 = document.getElementById('feedback1'); // Alterado para feedback1 conforme o HTML
-    feedback1.style.display = 'none';
-    feedback1.textContent = '';
-}
 
-// Evento para buscar cliente na API quando o usuário sair do campo CNPJ (Enter ou Tab)
-document.getElementById('cnpj').addEventListener('blur', async function (event) {
+// Função para preencher os campos ao digitar o CNPJ
+document.getElementById('cnpj').addEventListener('blur', async function () {
+
     let cnpj = this.value.replace(/\D/g, ''); // Remove caracteres não numéricos
 
     // Verifica se o campo está vazio
@@ -195,6 +213,7 @@ document.getElementById('cnpj').addEventListener('blur', async function (event) 
         this.value = ''; // Limpa o campo CNPJ
         return; // Sai da função sem buscar dados
     }
+
 
     cnpj = ajustarCNPJ(cnpj);
 
@@ -212,7 +231,8 @@ document.getElementById('cnpj').addEventListener('blur', async function (event) 
         }
 
         const clienteApi = await response.json();
-
+        listaPrecosData = clienteApi.produtos
+        console.log(listaPrecosData)
         // Verifica os campos ATIVO e SUSPENSO antes de prosseguir
         const ativo = clienteApi["ATIVO"];
         const suspenso = clienteApi["SUSPENSO"];
@@ -327,6 +347,7 @@ function zerarCamposPedido() {
 }
 
 // Adiciona o evento para zerar os campos quando o tipo de pedido for alterado
+
 document.getElementById('tipo_pedido').addEventListener('change', function () {
     zerarCamposPedido();
     let tipoPedido1 = this.value;
@@ -498,6 +519,7 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     let cells = tr.getElementsByTagName('td');
     let codProduto = cells[0].querySelector('input').value;
 
+
     if (verificarCodigoDuplicado(codProduto)) {
         alert(`O código "${codProduto}" já existe na lista. Por favor, digite outro código.`);
         cells[0].querySelector('input').value = '';
@@ -564,7 +586,7 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     }
 
     if (cells[6].querySelector('input').value == 0 || cells[6].querySelector('input').value == '') {
-        alert("Item não disponível para este cliente no momento, por favor verificar com Edmundo");
+        alert("Item não disponivel para este cliente no momento , por favor verificar com Edmundo")
         cells[0].querySelector('input').value = '';
         cells[1].querySelector('input').value = '';
         cells[2].querySelector('input').value = '';
@@ -573,7 +595,11 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
         cells[5].querySelector('input').value = '';
         cells[7].querySelector('input').value = '';
         cells[8].querySelector('input').value = '';
+
     }
+
+
+
 
     function atualizarValorTotal() {
         if (codProduto) {
@@ -611,6 +637,7 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     cells[8].querySelector('input').addEventListener('input', atualizarTotalComImposto);
 }
 
+
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
 
 const btSistema = document.getElementById('button_sistema');
@@ -646,6 +673,7 @@ confirmButton.addEventListener("click", async () => {
     cnpjInput.readOnly = false; // Habilita o campo CNPJ
 
     try {
+
         // Captura as linhas da tabela
         const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
 
@@ -726,7 +754,7 @@ confirmButton.addEventListener("click", async () => {
         console.error("Erro de conexão:", error);
         alert("Erro ao conectar com o servidor.");
     } finally {
-        limparCamposCliente();
+        limparCamposCliente()
         // Oculta a mensagem de feedback
         feedbackDiv.style.display = "none";
     }
