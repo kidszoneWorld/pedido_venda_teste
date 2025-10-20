@@ -11,7 +11,7 @@ const CompanyToken = 'b5b984c5-cbfa-490b-8513-448fc67a39b6';
  */
 async function OrdersInput(data) {
   
-    const apiUrl = 'http://homolog-kidszone-api-integracao.dbcorp.com.br/v1/PedidoVenda/Incluir'; 
+    const apiUrl = 'http://kidszone-api-integracao.dbcorp.com.br/v1/PedidoVenda/Incluir'; 
 
     try {
         // Realiza a requisição POST para a API

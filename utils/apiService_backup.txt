@@ -6,7 +6,7 @@ let tokenExpirationTime = null;
 // Função para autenticar e obter o token
 async function authenticate() {
   try {
-    const response = await fetch('https://homolog-gateway-ng.dbcorp.com.br:44400/identidade-service/autenticar', {
+    const response = await fetch('https://homolog-gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ async function fetchOrderDetails(status = 6, maxRecords = 80) {
       console.log(`Buscando página ${pageNumber} com tamanho ${pageSize}`);
 
       const response = await fetch(
-        `https://homolog-gateway-ng.dbcorp.com.br:44400/vendas-service/pedido?PageNumber=${pageNumber}&PageSize=${pageSize}&status=${status}`,
+        `https://homolog-gateway-ng.dbcorp.com.br:55500/vendas-service/pedido?PageNumber=${pageNumber}&PageSize=${pageSize}&status=${status}`,
         {
           method: 'GET',
           headers: {
@@ -112,7 +112,7 @@ async function fetchOrdersWithRepresentatives(status = 6) {
 
   const orders = await fetchOrderDetails(status);
 
-  const representativeEndpoint = 'https://homolog-gateway-ng.dbcorp.com.br:44400/pessoa-service/representante/cliente/';
+  const representativeEndpoint = 'https://homolog-gateway-ng.dbcorp.com.br:55500/pessoa-service/representante/cliente/';
 
   const ordersWithRepresentatives = await Promise.all(
     orders.map(async (order) => {
@@ -149,7 +149,7 @@ async function fetchOrdersWithdetailsAndRepresentatives (status = 6) {
 
    const orders2 = await fetchOrdersWithRepresentatives(status) ;
 
-   const IdOrdersDetailsEndpoint = 'https://homolog-gateway-ng.dbcorp.com.br:44400/vendas-service/pedido/';
+   const IdOrdersDetailsEndpoint = 'https://homolog-gateway-ng.dbcorp.com.br:55500/vendas-service/pedido/';
 
    const ordersWithDetails = await Promise.all(
 
@@ -191,7 +191,7 @@ async function  fetchOrdersWithdetailsAndRepresentativesWithTransport(status = 6
 
     const orders3 = await fetchOrdersWithdetailsAndRepresentatives(status) ;   
 
-    const transportEndpoint = 'https://homolog-gateway-ng.dbcorp.com.br:44400/pessoa-service/transportadora/codigo/'
+    const transportEndpoint = 'https://homolog-gateway-ng.dbcorp.com.br:55500/pessoa-service/transportadora/codigo/'
 
     const transportWithDetails = await Promise.all(
       

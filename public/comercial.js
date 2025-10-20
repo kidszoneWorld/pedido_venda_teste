@@ -115,8 +115,8 @@ async function loadOrderDetails(status = currentFilters.status) {
         }
 
         if (!response.ok) throw new Error(`Erro ao obter pedidos: ${response.statusText}`);
-        
-        ordersData = await response.json(); 
+
+        ordersData = await response.json();
         renderTable(ordersData);
         hideFeedback();
     } catch (error) {
@@ -140,7 +140,7 @@ function renderTable(data) {
             <td class="codCliente">${order.cliente.codigo}</td>
             <td class="cliente">${order.cliente.nomeAbreviado}</td>
             <td class="clienteCNPJ">${order.cliente.documento.numeroTexto}</td>
-            <td class="codRep">${order.representante?.id || 'Não informado'}</td>
+            <td class="codRep">${order.representante?.codigo || 'Não informado'}</td>
             <td class="representante">${order.representante?.nomeAbreviado || 'Não informado'}</td>
             <td class="valorTotal">${order.detalhes?.valor?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A'}</td>
             <td class="transportadora">${order.detalhes_transporte?.nomeAbreviado || 'Não informado'}</td>
@@ -270,7 +270,7 @@ async function areFiltersApplied() {
 
     return (
         currentFilters.representante !== '' ||
-        currentFilters.clienteCNPJ  !== '' ||
+        currentFilters.clienteCNPJ !== '' ||
         currentFilters.ClienteCodigo !== '' ||
         currentFilters.status !== '' ||
         currentFilters.dataInicio !== '' ||
@@ -360,31 +360,31 @@ document.getElementById('menuToggle').addEventListener('click', () => {
 
 async function showOrderDetails(codPedido) {
     try {
-      const response = await fetch(`/api/pedidos1/${codPedido}`);
-      
-      if (!response.ok) {
-        throw new Error('Erro ao buscar detalhes do pedido');
-      }
-      
-      const detalhes = await response.json();
-      console.log('Detalhes do pedido:', detalhes);
-      
-      // Aqui você pode exibir os detalhes em um modal ou em uma div na página
-      displayOrderDetails(detalhes);
-      
+        const response = await fetch(`/api/pedidos1/${codPedido}`);
+
+        if (!response.ok) {
+            throw new Error('Erro ao buscar detalhes do pedido');
+        }
+
+        const detalhes = await response.json();
+        console.log('Detalhes do pedido:', detalhes);
+
+        // Aqui você pode exibir os detalhes em um modal ou em uma div na página
+        displayOrderDetails(detalhes);
+
     } catch (error) {
-      console.error('Erro:', error);
-      alert('Não foi possível carregar os detalhes do pedido.');
+        console.error('Erro:', error);
+        alert('Não foi possível carregar os detalhes do pedido.');
     }
-  }
-  
-  // Função para exibir os detalhes (exemplo)
-  function displayOrderDetails(detalhes) {
+}
+
+// Função para exibir os detalhes (exemplo)
+function displayOrderDetails(detalhes) {
     // Implemente como deseja exibir os detalhes
     // Por exemplo, em um modal:
     const modal = document.getElementById('detailsModal');
     const modalContent = document.getElementById('modalContent');
-    
+
     // Preencha o conteúdo do modal com os detalhes
     modalContent.innerHTML = `
       <h3>Detalhes do Pedido: ${detalhes.dados[0].codigo}</h3>
@@ -392,8 +392,8 @@ async function showOrderDetails(codPedido) {
       <p>Status: ${detalhes.dados[0].status}</p>
       <!-- Adicione mais detalhes conforme necessário -->
     `;
-    
+
     // Exiba o modal
     modal.style.display = 'block';
-  }
+}
 

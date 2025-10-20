@@ -12,8 +12,12 @@ async function getClientDetails(req, res) {
 
         // Tratar os dados do clientCnpj para o formato desejado
         const treatedClient = treatClientData(clientCnpj);
+        const produtos = await apiForm.fetchItems(treatedClient["LISTA"]);
 
-        return res.status(200).json(treatedClient);
+        return res.status(200).json({
+            ...treatedClient,
+            produtos: formatProducts(produtos, treatedClient["LISTA"])
+        });
     } catch (error) {
         console.error('Erro ao obter detalhes dos clientes:', error);
         res.status(500).send('Erro ao obter detalhes dos clientes');
@@ -61,8 +65,8 @@ function treatClientData(clientData) {
     debugger;
     // Mapeamento dos campos
     const treatedData = {
-        "COD CLIENTE": clientData.codigo || 0 ,
-        "CNPJ": clientData.documento?.numero || 0 ,
+        "COD CLIENTE": clientData.codigo || 0,
+        "CNPJ": clientData.documento?.numero || 0,
         "INSC. ESTADUAL": clientData.documentoEstadual?.numero || "",
         "RAZÃO SOCIAL": clientData.razaoSocial || "",
         "TELEFONE": `${clientData.clienteDataOld?.Result?.TelefoneDDD || ""}${clientData.clienteDataOld?.Result?.TelefoneNumero || ""}`,
@@ -76,23 +80,23 @@ function treatClientData(clientData) {
         "CEP": clientData.enderecos?.[0]?.cep || "",
         "NOME CONTATO": clientData.contatoCliente?.dados?.[0]?.nomeAbreviado || "",
         "COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Descricao || "",
-        "REPRESENTANTE": clientData.representantes?.[0]?.id || 0,
-        "REPRESENTANTE NOME": clientData.representantes?.[0]?.nomeAbreviado || "",
-        "COD CLIENTE 2": clientData.representantes?.[0]?.clienteId || "",
-        "LISTA": clientData.listaPreco?.[0]?.id || 0 ,
+        "REPRESENTANTE": clientData.representantes?.dados[0]?.codigo || 0,
+        "REPRESENTANTE NOME": clientData.representantes?.dados[0]?.nomeAbreviado || "",
+        "COD CLIENTE 2": clientData.representantes?.dados[0]?.clienteId || "",
+        "LISTA": clientData.listaPreco?.[0]?.id || 0,
         "LISTA NOME1": clientData.listaPreco?.[0]?.descricao || "",
         "TRANSPORTADORA": clientData.transportadora?.nomeAbreviado || "",
         "CliDataHoraIncl": clientData.dataCriacao || "",
-        "REPRESENTANTE E-MAIL": getRepresentativeEmail(clientData.representantes?.[0]?.id) || "",
-        "REP COMISSAO ITEM": clientData.representantes?.[0]?.comissaoItem || 0 ,
-        "REP COMISSAO SERVICO": clientData.representantes?.[0]?.comissaoServico || 0 ,
-        "FORMA DE PAGAMENTO ID": clientData.formaPagamento?.dados?.[0]?.codigo || 0 ,
+        "REPRESENTANTE E-MAIL": getRepresentativeEmail(clientData.representantes?.dados[0]?.codigo) || "",
+        "REP COMISSAO ITEM": clientData.representantes?.dados[0]?.comissaoItem || 0,
+        "REP COMISSAO SERVICO": clientData.representantes?.dados[0]?.comissaoServico || 0,
+        "FORMA DE PAGAMENTO ID": clientData.formaPagamento?.dados?.[0]?.codigo || 0,
         "FORMA DE PAGAMENTO DESCRICAO": clientData.formaPagamento?.dados?.[0]?.descricao || "",
-        "ID COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Id || 0 ,
-        "ID NOME CONTATO": clientData.contatoCliente?.dados?.[0]?.codigo || 0 ,
+        "ID COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Id || 0,
+        "ID NOME CONTATO": clientData.contatoCliente?.dados?.[0]?.codigo || 0,
         "NOME GRUPO CLIENTE": clientData.nomeAbreviado || "",
-        "GRUPO CLIENTE": (clientData.clienteDataOld?.Result?.GrupoEconomicoId === 0 || !clientData.clienteDataOld?.Result?.GrupoEconomicoId) 
-            ? clientData.codigo 
+        "GRUPO CLIENTE": (clientData.clienteDataOld?.Result?.GrupoEconomicoId === 0 || !clientData.clienteDataOld?.Result?.GrupoEconomicoId)
+            ? clientData.codigo
             : clientData.clienteDataOld?.Result?.GrupoEconomicoId || "",
         "ATIVO": clientData.ativo || false,
         "SUSPENSO": clientData.suspenso || false
@@ -101,6 +105,44 @@ function treatClientData(clientData) {
     return treatedData;
 }
 
+function formatProducts(products, lista_id) {
+    let formated = [[
+        "LISTA ID - ITEM ID",
+        "LISTA NOME",
+        "ITEM COD",
+        "DV",
+        "ITEM DESCRIÇÃO",
+        "PREVISÃO DE CHEGADA",
+        "EAN",
+        "CLASSIFIC. FISCAL",
+        "MASTER",
+        "UV",
+        "EMB",
+        "PRECO",
+        "IPI",
+        "ItemId"
+    ]]
+    products.forEach(product => {
+        let item = []
+        item.push(`${lista_id}-${product.itemEmpresaId}`)
+        item.push('')
+        item.push(Number(product.itemEmpresaId))
+        item.push('S')
+        item.push(product.descricao)
+        item.push(null)
+        item.push(product.barrasTributavelId)
+        item.push(product.classificacaoFiscal)
+        item.push(product.embalagemMaster.regiaoDocumentolarguraImpressao)
+        item.push(product.unidadeMedidaAbreviado)
+        item.push(product.embalagemMaster.quantidadeCaixas)
+        item.push(product.precoReferencia)
+        item.push(0.0325)
+        item.push(product.codigo)
+        formated.push(item)
+    });
+
+    return formated
+}
 // Função para pegar o e-mail do representante com base no ID
 function getRepresentativeEmail(repId) {
     const representativesEmails = {
@@ -164,7 +206,7 @@ async function getClientDetailsTest(req, res) {
     }
 
 }
-module.exports = { 
+module.exports = {
     getClientDetails,
     getClientDetailsTest
 };
