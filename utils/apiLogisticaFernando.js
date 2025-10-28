@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { response } = require('express');
 const qs = require('qs');
 
 // Configurações do Azure
@@ -42,16 +43,17 @@ async function getAccessToken() {
 
 // Função para buscar dados da planilha com filtro de últimos 4 meses
 async function getSpreadsheetData(driveId, itemId, sheetName) {
-    const token = await getAccessToken();
-    const url = `${graphBaseUrl}/drives/${driveId}/items/${itemId}/workbook/worksheets('${sheetName}')/range(address='A1:R5000')`;
-
+    const token = await getAccessToken()
+        const url = `${graphBaseUrl}/drives/${driveId}/items/${itemId}/workbook/worksheets('${sheetName}')/range(address='A1:Q5000')`;
+    
     try {
         const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
+           
         });
-
+         
         // Filtrar os últimos 4 meses
         const now = new Date();
         const fourMonthsAgo = new Date();
@@ -66,6 +68,8 @@ async function getSpreadsheetData(driveId, itemId, sheetName) {
         return filteredData;
     } catch (error) {
         console.error("Erro ao buscar dados da planilha:", error.response?.data || error.message);
+
+          console.log(error.response?.data)
         throw new Error("Falha ao buscar dados da planilha");
     }
 }
