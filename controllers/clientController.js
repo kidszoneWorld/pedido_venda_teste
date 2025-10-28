@@ -13,7 +13,6 @@ async function getClientDetails(req, res) {
         // Tratar os dados do clientCnpj para o formato desejado
         const treatedClient = treatClientData(clientCnpj);
         const produtos = await apiForm.fetchItems(treatedClient["LISTA"]);
-
         return res.status(200).json({
             ...treatedClient,
             produtos: formatProducts(produtos, treatedClient["LISTA"])
@@ -135,7 +134,7 @@ function formatProducts(products, lista_id) {
         item.push(product.embalagemMaster.regiaoDocumentolarguraImpressao)
         item.push(product.unidadeMedidaAbreviado)
         item.push(product.embalagemMaster.quantidadeCaixas)
-        item.push(product.precoReferencia)
+        item.push(product.precoData.valorUnitario)
         item.push(0.0325)
         item.push(product.codigo)
         formated.push(item)

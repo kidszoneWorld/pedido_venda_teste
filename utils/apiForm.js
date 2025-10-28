@@ -427,6 +427,7 @@ async function fetchItems(lista_id) {
   try {
     const endpoint_lista = `https://gateway-ng.dbcorp.com.br:55500/produto-service/v1.1/item/lista-preco/${lista_id}`
     const endpoint_produto = `https://gateway-ng.dbcorp.com.br:55500/produto-service/item/`
+    const endpoint_preco = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/lista-preco/preco-unitario`
 
     const response = await fetch(endpoint_lista, {
       method: 'GET',
@@ -443,7 +444,7 @@ async function fetchItems(lista_id) {
     }
 
     const lista_response = await response.json()
-
+    console.log("ITEM: ", lista_response.dados[0])
     const itemsDetails = [];
 
     for (const item of lista_response.dados) {
@@ -463,9 +464,28 @@ async function fetchItems(lista_id) {
         }
 
         const prodData = await prodResponse.json();
-        itemsDetails.push(prodData);
+        try {
+          const precoResponse = await fetch(`${endpoint_preco}?ListaPrecoCodigo=${lista_id}&ItemCodigo=${item.codigo}&EmpresaCodigo=${2}&MoedaCodigo=${3}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json',
+              'Origin': 'https://kidszone-ng.dbcorp.com.br'
+            }
+          });
+
+          if (!precoResponse.ok) {
+            console.warn(`Erro ao buscar preço do item ${item.codigo}: ${precoResponse.statusText}`);
+            continue;
+          }
+
+          const precoData = await precoResponse.json();
+          itemsDetails.push({ ...prodData, precoData });
+        } catch (err) {
+          console.warn(`Erro ao buscar preço do item ${item.codigo}:`, err);
+        }
       } catch (err) {
-        console.warn('Erro ao buscar detalhe do item:', err);
+        console.warn(`Erro ao buscar detalhe do item ${item.codigo}:`, err);
       }
     }
     return itemsDetails;
