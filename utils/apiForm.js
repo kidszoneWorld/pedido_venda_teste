@@ -1,16 +1,75 @@
 const fetch = require('node-fetch');
 
+// Verificar se AbortController está disponível nativamente (Node.js 15+)
+let AbortController;
+try {
+  AbortController = globalThis.AbortController;
+} catch (error) {
+  // Fallback para versões mais antigas do Node.js
+  AbortController = require('node-abort-controller').AbortController;
+}
+
 let authToken = null;
 let tokenExpirationTime = null;
 // Tokens necessários para autenticação
 const ApplicationToken = '62ca18a8-aa3b-41b7-a54e-f669a437d326';
 const CompanyToken = 'b5b984c5-cbfa-490b-8513-448fc67a39b6';
 
+// Configurações de timeout
+const API_TIMEOUT = 240000; // 4 minutos
+const EXTENDED_TIMEOUT = 300000; // 5 minutos para operações mais longas
+
+// Função utilitária para fazer fetch com timeout
+async function fetchWithTimeout(url, options = {}, timeout = API_TIMEOUT) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      timeout: timeout
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error(`Request timeout after ${timeout}ms`);
+    }
+    throw error;
+  }
+}
+
+// Função utilitária para retry com backoff exponencial
+async function fetchWithRetry(url, options = {}, maxRetries = 3, timeout = API_TIMEOUT) {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Tentativa ${attempt}/${maxRetries} para ${url}`);
+      return await fetchWithTimeout(url, options, timeout);
+    } catch (error) {
+      lastError = error;
+      console.warn(`Tentativa ${attempt}/${maxRetries} falhou:`, error.message);
+      
+      if (attempt < maxRetries) {
+        // Backoff exponencial: 1s, 2s, 4s
+        const delay = Math.pow(2, attempt - 1) * 1000;
+        console.log(`Aguardando ${delay}ms antes da próxima tentativa...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  throw new Error(`Falha após ${maxRetries} tentativas. Último erro: ${lastError.message}`);
+}
+
 
 // Função para autenticar e obter o token
 async function authenticate() {
   try {
-    const response = await fetch('https://gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
+    const response = await fetchWithRetry('https://gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,7 +80,7 @@ async function authenticate() {
         senha: "@Al@2313",
         origin: "kidszone-ng"
       })
-    });
+    }, 2, 60000); // 2 tentativas, 1 minuto de timeout cada
 
     if (!response.ok) {
       throw new Error(`Erro na autenticação: ${response.statusText}`);
@@ -33,6 +92,7 @@ async function authenticate() {
     console.log('Autenticado com sucesso, token obtido.');
   } catch (error) {
     console.error('Erro ao autenticar:', error);
+    throw error; // Re-throw para permitir tratamento upstream
   }
 }
 
@@ -54,7 +114,7 @@ async function fetchClientDetails(cnpj) {
   }
 
   try {
-    const response = await fetch(`https://gateway-ng.dbcorp.com.br:55500/pessoa-service/cliente/documento/${cnpj}`, {
+    const response = await fetchWithTimeout(`https://gateway-ng.dbcorp.com.br:55500/pessoa-service/cliente/documento/${cnpj}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -73,6 +133,7 @@ async function fetchClientDetails(cnpj) {
     return clientData || []; // Retorna o array de pedidos
   } catch (error) {
     console.error('Erro ao buscar detalhes do cliente:', error);
+    throw error; // Re-throw para permitir tratamento upstream
   }
 
 }
@@ -101,7 +162,7 @@ async function fetchClientsWithRepresentatives(cnpj) {
     // 2. Buscar os representantes desse cliente
     const representativeEndpoint = `https://gateway-ng.dbcorp.com.br:55500/pessoa-service/representante?ClienteCodigo=${clienteId}`;
 
-    const repResponse = await fetch(representativeEndpoint, {
+    const repResponse = await fetchWithTimeout(representativeEndpoint, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -147,7 +208,7 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
     let transData = [];
 
     try {
-      const transResponse = await fetch(transportEndpoint, {
+      const transResponse = await fetchWithTimeout(transportEndpoint, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -194,7 +255,7 @@ async function fetchAllClientapiAntiga(cnpj) {
     let cnpjData = [];
 
     try {
-      const cnpjResponse = await fetch(cnpjEndpoint, {
+      const cnpjResponse = await fetchWithTimeout(cnpjEndpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -240,14 +301,14 @@ async function fetchAllClientsWithPriceList(cnpj) {
     let priceListData = [];
 
     try {
-      const priceListResponse = await fetch(priceListtEndpoint, {
+      const priceListResponse = await fetchWithTimeout(priceListtEndpoint, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
           'Origin': 'https://kidszone-ng.dbcorp.com.br'
         }
-      });
+      }, EXTENDED_TIMEOUT);
 
       if (!priceListResponse.ok) {
         console.warn(`Lista de preço não encontrada ou erro de resposta: ${priceListResponse.statusText}`);
@@ -284,7 +345,7 @@ async function fetchPaymentCondition(cnpj) {
     let payData = [];
 
     try {
-      const payResponse = await fetch(payEndpoint, {
+      const payResponse = await fetchWithTimeout(payEndpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -334,7 +395,7 @@ async function fetchPaymentMethod(cnpj) {
     let payMethodData = [];
 
     try {
-      const payMethodResponse = await fetch(payMethodEndpoint, {
+      const payMethodResponse = await fetchWithTimeout(payMethodEndpoint, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -384,7 +445,7 @@ async function fetchcontat(cnpj) {
     let contatData = [];
 
     try {
-      const contatResponse = await fetch(contatEndpoint, {
+      const contatResponse = await fetchWithTimeout(contatEndpoint, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -429,7 +490,7 @@ async function fetchItems(lista_id) {
     const endpoint_produto = `https://gateway-ng.dbcorp.com.br:55500/produto-service/item/`
     const endpoint_preco = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/lista-preco/preco-unitario`
 
-    const response = await fetch(endpoint_lista, {
+    const response = await fetchWithTimeout(endpoint_lista, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -449,7 +510,7 @@ async function fetchItems(lista_id) {
 
     for (const item of lista_response.dados) {
       try {
-        const prodResponse = await fetch(`${endpoint_produto}${item.codigo}`, {
+        const prodResponse = await fetchWithTimeout(`${endpoint_produto}${item.codigo}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`,
@@ -465,7 +526,7 @@ async function fetchItems(lista_id) {
 
         const prodData = await prodResponse.json();
         try {
-          const precoResponse = await fetch(`${endpoint_preco}?ListaPrecoCodigo=${lista_id}&ItemCodigo=${item.codigo}&EmpresaCodigo=${2}&MoedaCodigo=${3}`, {
+          const precoResponse = await fetchWithTimeout(`${endpoint_preco}?ListaPrecoCodigo=${lista_id}&ItemCodigo=${item.codigo}&EmpresaCodigo=${2}&MoedaCodigo=${3}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${authToken}`,

@@ -44,15 +44,15 @@ async function checkToken() {
 function getLast30Days(userDataInicio = null, userDataFim = null) {
   const hoje = new Date();
   const dataFim = userDataFim ? new Date(userDataFim).toISOString().split('T')[0] : hoje.toISOString().split('T')[0]; // Usa data fornecida ou hoje
-  const dataInicio = userDataInicio
-    ? new Date(userDataInicio).toISOString().split('T')[0]
+  const dataInicio = userDataInicio 
+    ? new Date(userDataInicio).toISOString().split('T')[0] 
     : new Date(hoje.setDate(hoje.getDate() - 60)).toISOString().split('T')[0]; // Usa data fornecida ou 60 dias atrás
   return { dataInicio, dataFim };
 }
 
 
 // Função para buscar os pedidos de venda com paginação e todos os detalhes relacionados
-async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim = null, userStatusSeparacao = null, usercodCliente = null) {
+async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim = null, userStatusSeparacao = null , usercodCliente = null) {
   await checkToken();
 
   if (!authToken) {
@@ -62,7 +62,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
 
   // Calcula as datas dinamicamente com base nos parâmetros fornecidos ou padrão
   const { dataInicio, dataFim } = getLast30Days(userDataInicio, userDataFim);
-
+  
   console.log(`Buscando pedidos com status: ${status}, DataPedidoInicio: ${dataInicio}, DataPedidoFim: ${dataFim}, StatusSeparacao: ${userStatusSeparacao !== null ? userStatusSeparacao : 'todos'}`);
 
   const pageSize = 15; // Tamanho de cada página (lote)
@@ -80,7 +80,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
   while (hasMoreData && allOrders.length < maxRecords) {
     try {
       console.log(`Buscando página ${currentPage} com ${pageSize} registros por página...`);
-
+      
       // 1. Buscar pedidos da página atual
       // Constrói a URL dinamicamente, incluindo StatusSeparacao apenas se fornecido
       let url = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/pedido?DataPedidoInicio=${dataInicio}&DataPedidoFim=${dataFim}&status=${status}&EmpresaCodigo=2&PageNumber=${currentPage}&PageSize=${pageSize}`;
@@ -105,9 +105,9 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
 
       const ordersData = await response.json();
       const pageData = ordersData.dados || [];
-
+      
       console.log(`Recebidos ${pageData.length} pedidos da página ${currentPage}`);
-
+      
       // 2. Para cada pedido na página, buscar todos os detalhes relacionados
       const enrichedOrders = await Promise.all(pageData.map(async (order) => {
         try {
@@ -128,7 +128,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           } catch (error) {
             console.error(`Erro ao buscar representante para cliente ${order.cliente.codigo}:`, error);
           }
-
+          
           // 2.2 Buscar detalhes do pedido
           let detalhes = null;
           try {
@@ -145,7 +145,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           } catch (error) {
             console.error(`Erro ao buscar detalhes para o pedido com ID ${order.id}:`, error);
           }
-
+          
           // 2.3 Buscar detalhes da transportadora
           let detalhes_transporte = null;
           try {
@@ -162,7 +162,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           } catch (error) {
             console.error(`Erro ao buscar detalhes da transportadora ${order.transportadoraCodigo}:`, error);
           }
-
+          
           // 2.4 Buscar notas fiscais
           let notas_fiscais = null;
           try {
@@ -179,7 +179,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           } catch (error) {
             console.error(`Erro ao buscar detalhes da NF ${order.codigo}:`, error);
           }
-
+          
           // Retornar o pedido com todos os detalhes
           return {
             ...order,
@@ -193,10 +193,10 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           return order; // Retorna o pedido original em caso de erro
         }
       }));
-
+      
       // Adiciona os pedidos enriquecidos desta página ao array acumulado
       allOrders = [...allOrders, ...enrichedOrders];
-
+      
       // Verifica se há mais páginas para buscar
       if (pageData.length < pageSize) {
         // Se recebemos menos registros que o tamanho da página, não há mais dados
@@ -206,7 +206,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
         // Avança para a próxima página
         currentPage++;
       }
-
+      
       // Verifica se atingimos o limite máximo de registros
       if (allOrders.length >= maxRecords) {
         console.log(`Limite máximo de ${maxRecords} registros atingido.`);
@@ -214,7 +214,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
         allOrders = allOrders.slice(0, maxRecords);
         break;
       }
-
+      
     } catch (error) {
       console.error(`Erro ao buscar página ${currentPage}:`, error);
       hasMoreData = false; // Para o loop em caso de erro
@@ -257,7 +257,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     }
 
     const detailsOrderData = await detailsOrderResponse.json();
-
+    
     if (!detailsOrderData || detailsOrderData.length === 0) {
       console.warn('Nenhum dado de pedido encontrado');
       return null;
@@ -276,9 +276,9 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
         }
       });
       if (repResponse.ok) {
-        console.log(`esta é teste repre ${repResponse}`)
+       console.log(`esta é teste repre ${repResponse}`)
         representante = await repResponse.json();
-        representante = representante.dados
+        
       }
     } catch (error) {
       console.error(`Erro ao buscar representante para cliente ${order.codigo}:`, error);
@@ -296,6 +296,9 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
       });
       if (detailsResponse.ok) {
         detalhes = await detailsResponse.json();
+        console.log(detalhes.representante[0]?.nomeAbreviado)
+        console.log(detalhes.representante[0]?.id)
+        
       }
     } catch (error) {
       console.error(`Erro ao buscar detalhes para o pedido com ID ${order.dados[0].id}:`, error);

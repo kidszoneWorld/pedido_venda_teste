@@ -58,7 +58,7 @@ async function loadPedidoDetails() {
         // Preencher campos com os dados do pedido
         document.getElementById('cnpj').value = pedido.dados[0].cliente?.documento?.numeroTexto || '';
         document.getElementById('representante').value = 
-            `${pedido.representante[0]?.id || ''} - ${pedido.representante[0]?.nomeAbreviado || ''}`;
+            `${pedido.detalhes.representante[0]?.id || ''} - ${pedido.detalhes.representante[0]?.nomeAbreviado || ''}`;
         document.getElementById('razao_social').value = pedido.dados[0].cliente?.razaoSocial || '';
         document.getElementById('cod_cliente').value = pedido.dados[0].cliente?.codigo || '';
         document.getElementById('endereco').value = pedido.dados[0].cliente?.endereco.logradouro || '';

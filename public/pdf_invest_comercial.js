@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Validação básica
         if (!clienteInput.value || !cnpjInput.value || !responsavelInput.value || !valor.value) {
             alert('Por favor, preencha os campos Cliente, CNPJ,Responsável e Valor .');
-            return;
+          return;
         }
 
         // Ocultar elementos que não devem aparecer no PDF

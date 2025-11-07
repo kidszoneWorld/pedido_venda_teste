@@ -128,7 +128,7 @@
                     <td>${order.cliente.codigo}</td>
                     <td>${order.cliente.nomeAbreviado}</td>
                     <td>${order.cliente.documento.numeroTexto}</td>
-                    <td>${order.representante?.id || 'Não informado'}</td>
+                    <td>${order.representante?.codigo || 'Não informado'}</td>
                     <td>${order.representante?.nomeAbreviado || 'Não informado'}</td>
                     <td>${order.detalhes?.valor?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A'}</td>
                     <td>${order.detalhes_transporte?.nomeAbreviado || 'Não informado'}</td>
