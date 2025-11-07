@@ -13,7 +13,7 @@
       { "src": "/(.*)", "dest": "/app.js" }
   ],
   "functions": {
-    "app.js": {
+    "src/app.js": {
       "maxDuration": 300
     }
   }
