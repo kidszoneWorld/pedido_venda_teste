@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
       { 
-        "src": "app.js", 
+        "src": "/app.js", 
         "use": "@vercel/node",
         "config": {
           "maxDuration": 300
@@ -10,7 +10,7 @@
       }
   ],
   "routes": [
-      { "src": "/(.*)", "dest": "app.js" }
+      { "src": "/(.*)", "dest": "/app.js" }
   ],
   "functions": {
     "app.js": {
