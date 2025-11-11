@@ -14,20 +14,6 @@ const viewsRouter = require('./router/viewsRouter');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configurações de timeout
-app.use((req, res, next) => {
-  // Definir timeout de 5 minutos para todas as requisições
-  req.setTimeout(300000); // 5 minutos em ms
-  res.setTimeout(300000); // 5 minutos em ms
-  
-  // Para rotas de API específicas, aumentar ainda mais o timeout
-  if (req.path.startsWith('/api/')) {
-    req.setTimeout(600000); // 10 minutos para rotas de API
-    res.setTimeout(600000); // 10 minutos para rotas de API
-  }
-  
-  next();
-});
 
 // Configurar o tamanho máximo do corpo da requisição
 app.use(express.json({ limit: '500mb' }));
@@ -89,7 +75,10 @@ app.get('/teste', (req, res) => {
 /////banco de dados mogondb atlas
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
     .then(() => console.log("MongoDB Conectado"))
     .catch(err => console.error("Erro ao conectar MongoDB", err));
 

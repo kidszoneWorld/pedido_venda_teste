@@ -261,11 +261,11 @@ document.getElementById('applyFilters1').addEventListener('click', applyFilters1
 document.getElementById('clearFilters1').addEventListener('click', clearFilters1);
 
 
- document.getElementById('statusFilter1').addEventListener('change', function () {
-    const selectedStatus1 = this.value || 1; // Padrão para "Pendente"
-    console.log(`Filtro de status alterado para: ${selectedStatus1}`);
-    loadOrderDetailsFromSharePoint(selectedStatus1);
- });
+// document.getElementById('statusFilter1').addEventListener('change', function () {
+   // const selectedStatus1 = this.value || 1; // Padrão para "Pendente"
+   // console.log(`Filtro de status alterado para: ${selectedStatus1}`);
+   // loadOrderDetailsFromSharePoint(selectedStatus1);
+// });
 
 
  // Função para limpar dados do usuário e redirecionar para a página de login

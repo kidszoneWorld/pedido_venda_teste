@@ -12,11 +12,8 @@ async function getClientDetails(req, res) {
 
         // Tratar os dados do clientCnpj para o formato desejado
         const treatedClient = treatClientData(clientCnpj);
-        const produtos = await apiForm.fetchItems(treatedClient["LISTA"]);
-        return res.status(200).json({
-            ...treatedClient,
-            produtos: formatProducts(produtos, treatedClient["LISTA"])
-        });
+
+        return res.status(200).json(treatedClient);
     } catch (error) {
         console.error('Erro ao obter detalhes dos clientes:', error);
         res.status(500).send('Erro ao obter detalhes dos clientes');
@@ -104,44 +101,6 @@ function treatClientData(clientData) {
     return treatedData;
 }
 
-function formatProducts(products, lista_id) {
-    let formated = [[
-        "LISTA ID - ITEM ID",
-        "LISTA NOME",
-        "ITEM COD",
-        "DV",
-        "ITEM DESCRIÇÃO",
-        "PREVISÃO DE CHEGADA",
-        "EAN",
-        "CLASSIFIC. FISCAL",
-        "MASTER",
-        "UV",
-        "EMB",
-        "PRECO",
-        "IPI",
-        "ItemId"
-    ]]
-    products.forEach(product => {
-        let item = []
-        item.push(`${lista_id}-${product.itemEmpresaId}`)
-        item.push('')
-        item.push(Number(product.itemEmpresaId))
-        item.push('S')
-        item.push(product.descricao)
-        item.push(null)
-        item.push(product.barrasTributavelId)
-        item.push(product.classificacaoFiscal)
-        item.push(product.embalagemMaster.regiaoDocumentolarguraImpressao)
-        item.push(product.unidadeMedidaAbreviado)
-        item.push(product.embalagemMaster.quantidadeCaixas)
-        item.push(product.precoData.valorUnitario)
-        item.push(0.0325)
-        item.push(product.codigo)
-        formated.push(item)
-    });
-
-    return formated
-}
 // Função para pegar o e-mail do representante com base no ID
 function getRepresentativeEmail(repId) {
     const representativesEmails = {

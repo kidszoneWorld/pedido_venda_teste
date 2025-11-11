@@ -27,24 +27,24 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
         icmsSTData = data;
     });
 
-// (async () => {
-//     showFeedback("Carregando produtos, aguarde...");
-//     try {
-//         // Faz a requisição à API
-//         const res = await fetch(`/api/produtos`);
-//         if (!res.ok) {
-//             throw new Error('Produtos não encontrados.');
-//         }
+(async () => {
+    showFeedback("Carregando produtos, aguarde...");
+    try {
+        // Faz a requisição à API
+        const res = await fetch(`/api/produtos`);
+        if (!res.ok) {
+            throw new Error('Produtos não encontrados.');
+        }
 
-//         const json = await res.json();
-//         listaPrecosData = json.data;
-//     } catch (error) {
-//         console.error('Erro ao buscar produtos na API:', error);
-//         alert("Produtos não encontrados por favor, recarregue a página, se o erro persistir, comunique a equipe de desenvolvimento.");
-//     } finally {
-//         hideFeedback();
-//     }
-// })();
+        const json = await res.json();
+        listaPrecosData = json.data;
+    } catch (error) {
+        console.error('Erro ao buscar produtos na API:', error);
+        alert("Produtos não encontrados por favor, recarregue a página, se o erro persistir, comunique a equipe de desenvolvimento.");
+    } finally {
+        hideFeedback();
+    }
+})();
 
 // Mostrar Feedback
 function showFeedback(message) {
@@ -231,8 +231,7 @@ document.getElementById('cnpj').addEventListener('blur', async function () {
         }
 
         const clienteApi = await response.json();
-        listaPrecosData = clienteApi.produtos
-        console.log(listaPrecosData)
+
         // Verifica os campos ATIVO e SUSPENSO antes de prosseguir
         const ativo = clienteApi["ATIVO"];
         const suspenso = clienteApi["SUSPENSO"];
@@ -785,3 +784,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fechar modal ao clicar no overlay
     overlay.addEventListener('click', closeHelpModal);
 });
+
+
+
+
+
+
+
+
+
