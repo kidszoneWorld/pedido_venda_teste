@@ -237,15 +237,6 @@ async function fetchAllClientsWithPriceList(cnpj) {
 
     const priceListtEndpoint = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/lista-preco?ClienteCodigo=${codClientId}`;
     console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
-    console.log(`Codigo do Cliente: ${codClientId}`);
     
     let priceListData = [];
 
@@ -259,16 +250,11 @@ async function fetchAllClientsWithPriceList(cnpj) {
         }
       });
 console.log(priceListResponse);
-console.log(priceListResponse);
-console.log(priceListResponse);
-console.log(priceListResponse);
       if (!priceListResponse.ok) {
         console.warn(`Lista de preço não encontrada ou erro de resposta: ${priceListResponse.statusText}`);
       } else {
         priceListData = await priceListResponse.json();
         console.log('dados lista preco atinga recebidos:', priceListData);
-        console.log(JSON.stringify(priceListData, null, 2));
-        console.log(JSON.stringify(priceListData, null, 2));
         console.log(JSON.stringify(priceListData, null, 2));
       }
     } catch (priceListError) {

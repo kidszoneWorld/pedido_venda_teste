@@ -444,6 +444,56 @@ document.getElementById('adicionarLinha').addEventListener('click', function () 
             input.addEventListener('blur', function () {
                 let tipoPedido = document.getElementById('tipo_pedido').value;
                 let cod = this.value; // O valor já estará em maiúsculas devido ao evento 'input'
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                console.log(cod)
+                
                 let ufCliente = document.getElementById('uf').value;
 
                 if (verificarForaDeLinha(cod)) {
@@ -583,7 +633,7 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
         cells[4].querySelector('input').value = listaPrecos[4];
         cells[9].querySelector('input').value = listaPrecos[13];
     }
-
+/*
     if (cells[6].querySelector('input').value == 0 || cells[6].querySelector('input').value == '') {
         alert("Item não disponivel para este cliente no momento , por favor verificar com Edmundo")
         cells[0].querySelector('input').value = '';
@@ -596,7 +646,7 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
         cells[8].querySelector('input').value = '';
 
     }
-
+*/
 
 
 
