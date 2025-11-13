@@ -361,7 +361,6 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
 function atualizarTotalComImposto() {
     let total = 0;
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
-
     linhas.forEach(tr => {
         const cell = tr.cells[8]?.querySelector('input');
         if (cell && cell.value) {
@@ -554,12 +553,8 @@ function preencherLinha(tr, listaPrecos, promocao = null, ufCliente) {
     if (produtoPromocao) {
         cells[6].querySelector('input').value = Number(produtoPromocao[5]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     } else {
-        let precoEncontrado = listaPrecosData.find(item => item[0] === codigoConcatenado);
-        if (precoEncontrado) {
-            cells[6].querySelector('input').value = Number(precoEncontrado[11]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        } else {
-            cells[6].querySelector('input').value = '';
-        }
+        // Usa o listaPrecos que já veio pronto (com preço correto)
+cells[6].querySelector('input').value = Number(listaPrecos[11]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
     if (codProduto) {
