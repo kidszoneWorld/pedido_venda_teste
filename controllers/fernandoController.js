@@ -14,11 +14,10 @@ function excelDateToJSDate(serial) {
 
 async function fetchLogisticsData(req, res) {
     try {
-        // IDs do OneDrive para a planilha específica
-        const driveId = 'b!XH-eb-xz-E6X2UiiEteqUdmnlFRU0p5LmLmtxXKjZ0IQdp2f5MVEQqMjT7VUFk1Z'; // Substitua pelo ID correto do drive
-        const itemId = '01DKYK72AHRQPTUYSMCRGJB4PLCCLSM7YO';   // Substitua pelo ID correto do arquivo
+        // IDs do OneDrive para a planilha específica  FERNANDO (Norte/Centro-oeste/nordeste)
+        const driveId = 'b!dwY9yoPrK0q5rOycDxiIpaWpYZ1JYExJsguLLB4VFn2iegaRWh9dQraE6GZTi0X_'; // Substitua pelo ID correto do drive
+        const itemId = '01QO3C6JTL3ZLBEMFZWVFJDPJO4VU5YVZY';   // Substitua pelo ID correto do arquivo
         const sheetName = 'ENTREGAS'; // Nome da aba na planilha
-
 
         const data = await getSpreadsheetData(driveId, itemId, sheetName);
 
@@ -28,6 +27,7 @@ async function fetchLogisticsData(req, res) {
 
         // Processar os dados para o formato necessário
         let formattedData = data.slice(0).map(row => ({
+
             NF: row[0],
             EMISSÃO: row[1] ? (excelDateToJSDate(row[1]) ? excelDateToJSDate(row[1]).toISOString(): null) : null,
             codCliente: row[2],
@@ -63,8 +63,8 @@ async function fetchLogisticsData(req, res) {
 async function fetchLogisticsData1(req, res) {
     try {
         // IDs do OneDrive para a planilha específica
-        const driveId = 'b!XH-eb-xz-E6X2UiiEteqUdmnlFRU0p5LmLmtxXKjZ0IQdp2f5MVEQqMjT7VUFk1Z'; // Substitua pelo ID correto do drive
-        const itemId = '01DKYK72ENRPET44VS6NC2NCRAFFSQL2WJ';   // Substitua pelo ID correto do arquivo
+        const driveId = 'b!Y5Ep-kFY002-nOto_fx7GBg73LQGJRFNppGhFo_N7e-tNF90It3yQIgnRIz79kJ_'; // Substitua pelo ID correto do drive
+        const itemId = '01VD4WSBPLJ4CAPQJJ5NEJXTEPYL22Y22D';   // Substitua pelo ID correto do arquivo
         const sheetName = 'ENTREGAS'; // Nome da aba na planilha
 
 
@@ -81,8 +81,8 @@ async function fetchLogisticsData1(req, res) {
             codCliente: row[2],
             Rep: row[4],
             NOME: row[5],
-            UF: row[7],
-            REGIÃO: row[8],
+            UF: row[8],
+            REGIÃO: row[7],
             VOL: row[9],
             CodTransporte: row[10],
             TRANSPORTES: row[11],
