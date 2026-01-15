@@ -21,9 +21,9 @@ exports.sendPdf = async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.GMAIL_USER1,
-                pass: process.env.GMAIL_APP_PASSWORD1
-            },
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASSWORD
+            },//att
             tls: { rejectUnauthorized: false }
         });
 
@@ -31,8 +31,8 @@ exports.sendPdf = async (req, res) => {
         const fileName = `Solicitacao_Investimento_comercial_${razaoSocial}_${codCliente}.pdf`;
 
         await transporter.sendMail({
-            from: 'KidsZone Investimento Comercial <investimentokidszoneworld@gmail.com>',
-            to: ['ti.kz@kidszoneworld.com.br' , 'pedro.sabino@kidszoneworld.com.br'],
+            from: 'KidsZone Investimento Comercial <kidzonekidszonemail@gmail.com>',
+            to: ['ti.kz@kidszoneworld.com.br' , 'marcos@kidszoneworld.com.br'],
             subject,
             text: `Segue em anexo o PDF da solicitação de investimento comercial para o cliente ${razaoSocial} - ${codCliente}.`,
             attachments: [{

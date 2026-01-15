@@ -22,7 +22,7 @@ exports.sendPdf = async (req, res) => {
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER1,
-                pass: process.env.GMAIL_APP_PASSWORD1
+                pass: process.env.GMAIL_APP_PASSWORD
             },
             tls: { rejectUnauthorized: false }
         });
@@ -32,7 +32,7 @@ exports.sendPdf = async (req, res) => {
 
         await transporter.sendMail({
             from: 'KidsZone Investimento Promotor <kidszoneworldinvestimento@gmail.com>',
-            to: ['pedro.sabino@kidszoneworld.com.br', 'ti.kz@kidszoneworld.com.br'],
+            to: ['marcos@kidszoneworld.com.br', 'ti.kz@kidszoneworld.com.br'],
             subject,
             text: `Segue em anexo o PDF da solicitação de investimento comercial para o cliente ${razaoSocial} - ${codCliente}.`,
             attachments: [{

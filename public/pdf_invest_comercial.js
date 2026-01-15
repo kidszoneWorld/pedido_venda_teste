@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
     async function gerarEEnviarPDF() {
         console.log('Botão de PDF clicado');
 
-        // Validação básica
-        if (!clienteInput.value || !cnpjInput.value || !responsavelInput.value || !valor.value) {
+       // Validação básica
+        if (!clienteInput.value || !cnpjInput.value || !responsavelInput.value) {
             alert('Por favor, preencha os campos Cliente, CNPJ,Responsável e Valor .');
           return;
         }
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cnpj = cnpjInput.value;
         const responsavel = responsavelInput.value;
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `Solicitacao_Investimento_comercial_${cliente}_${cnpj}_${timestamp}.pdf`;
+        const filename = `Solicitacao_Investimento_comercial_${cliente}_${cnpj}_${responsavel}_${timestamp}.pdf`;
 
         const options = {
             margin: [10, 10, 10, 10],
