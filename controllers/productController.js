@@ -42,8 +42,9 @@ console.log('TAMANHO:', data.Result.length);
             console.log('EXEMPLO API:', data.Result[0].ItemCodigo);
 
             itens = itens.filter(
-                i => String(i.ItemCodigo).trim() === cod
+                i => String(i.ItemCodigo).trim().toUpperCase() === cod
             );
+
 
             if (!itens.length) {
                 return res.status(404).json({ message: 'Item não encontrado' });

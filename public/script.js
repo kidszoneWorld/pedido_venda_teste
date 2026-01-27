@@ -588,7 +588,7 @@ function adicionarNovaLinha() {
         // =========================
        if (i === 0) {
     input.addEventListener('blur', async function () {
-        const cod = this.value.replace(/\D/g, '').trim();
+        const cod = this.value.trim().toUpperCase();
         if (!cod) return;
 
         const listaId = document.getElementById('codgroup').value;
@@ -749,7 +749,7 @@ confirmButton.addEventListener("click", async () => {
                 const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
 
                 // Verifica se a linha tem dados válidos antes de adicioná-la
-                const itemId = Number(row.dataset.itemId || 0);
+                const itemId = row.dataset.itemId || 0;
                 const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
 
                 // Só adiciona a linha se tiver um ItemId e Quantidade válidos
