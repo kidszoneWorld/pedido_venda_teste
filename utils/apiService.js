@@ -128,7 +128,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           } catch (error) {
             console.error(`Erro ao buscar representante para cliente ${order.cliente.codigo}:`, error);
           }
-          
+          console.log(representante , 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
           // 2.2 Buscar detalhes do pedido
           let detalhes = null;
           try {

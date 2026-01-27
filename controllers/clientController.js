@@ -61,8 +61,8 @@ function treatClientData(clientData) {
     debugger;
     // Mapeamento dos campos
     const treatedData = {
-        "COD CLIENTE": clientData.codigo || 0,
-        "CNPJ": clientData.documento?.numero || 0,
+        "COD CLIENTE": clientData.codigo || 0 ,
+        "CNPJ": clientData.documento?.numero || 0 ,
         "INSC. ESTADUAL": clientData.documentoEstadual?.numero || "",
         "RAZÃO SOCIAL": clientData.razaoSocial || "",
         "TELEFONE": `${clientData.clienteDataOld?.Result?.TelefoneDDD || ""}${clientData.clienteDataOld?.Result?.TelefoneNumero || ""}`,
@@ -78,21 +78,21 @@ function treatClientData(clientData) {
         "COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Descricao || "",
         "REPRESENTANTE": clientData.representantes?.dados[0]?.codigo || 0,
         "REPRESENTANTE NOME": clientData.representantes?.dados[0]?.nomeAbreviado || "",
-        "COD CLIENTE 2": clientData.representantes?.dados[0]?.clienteId || "",
-        "LISTA": clientData.listaPreco?.[0]?.id || 0,
+        "COD CLIENTE 2": clientData.codigo || "",
+        "LISTA": clientData.listaPreco?.[0]?.codigo || 0 ,
         "LISTA NOME1": clientData.listaPreco?.[0]?.descricao || "",
         "TRANSPORTADORA": clientData.transportadora?.nomeAbreviado || "",
         "CliDataHoraIncl": clientData.dataCriacao || "",
-        "REPRESENTANTE E-MAIL": getRepresentativeEmail(clientData.representantes?.dados[0]?.codigo) || "",
-        "REP COMISSAO ITEM": clientData.representantes?.dados[0]?.comissaoItem || 0,
-        "REP COMISSAO SERVICO": clientData.representantes?.dados[0]?.comissaoServico || 0,
-        "FORMA DE PAGAMENTO ID": clientData.formaPagamento?.dados?.[0]?.codigo || 0,
+        "REPRESENTANTE E-MAIL": getRepresentativeEmail(clientData.representantes?.[0]?.id) || "",
+        "REP COMISSAO ITEM": clientData.representantes?.[0]?.comissaoItem || 0 ,
+        "REP COMISSAO SERVICO": clientData.representantes?.[0]?.comissaoServico || 0 ,
+        "FORMA DE PAGAMENTO ID": clientData.formaPagamento?.dados?.[0]?.codigo || 0 ,
         "FORMA DE PAGAMENTO DESCRICAO": clientData.formaPagamento?.dados?.[0]?.descricao || "",
-        "ID COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Id || 0,
-        "ID NOME CONTATO": clientData.contatoCliente?.dados?.[0]?.codigo || 0,
+        "ID COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Id || 0 ,
+        "ID NOME CONTATO": clientData.contatoCliente?.dados?.[0]?.codigo || 0 ,
         "NOME GRUPO CLIENTE": clientData.nomeAbreviado || "",
-        "GRUPO CLIENTE": (clientData.clienteDataOld?.Result?.GrupoEconomicoId === 0 || !clientData.clienteDataOld?.Result?.GrupoEconomicoId)
-            ? clientData.codigo
+        "GRUPO CLIENTE": (clientData.clienteDataOld?.Result?.GrupoEconomicoId === 0 || !clientData.clienteDataOld?.Result?.GrupoEconomicoId) 
+            ? clientData.codigo 
             : clientData.clienteDataOld?.Result?.GrupoEconomicoId || "",
         "ATIVO": clientData.ativo || false,
         "SUSPENSO": clientData.suspenso || false
@@ -164,7 +164,7 @@ async function getClientDetailsTest(req, res) {
     }
 
 }
-module.exports = {
+module.exports = { 
     getClientDetails,
     getClientDetailsTest
 };

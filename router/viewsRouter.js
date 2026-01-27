@@ -6,8 +6,8 @@ const invoicesController = require('../controllers/invoicesControllers');
 const { authMiddleware, authenticateUser } = require('../middleware/authMiddleware');
 const inputOrdersController = require('../controllers/inputOrdersControllers');
 const eficienciaController = require('../controllers/eficienciaController');
-const displayController = require('../controllers/displayController');
-const redesController = require('../controllers/redesController');
+const displayController = require('../controllers/displayController');  
+const redesController = require('../controllers/redesController');  
 const sellOutController = require('../controllers/sellOutController');
 const fernandoController = require('../controllers/fernandoController');
 const clientController = require('../controllers/clientController');
@@ -15,6 +15,7 @@ const clientePdfController = require('../controllers/clientePdfController');
 const pdfInvestComercialController = require('../controllers/pdf_invest_comercialController');
 const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorController');
 const productController = require('../controllers/productController');
+
 
 const router = express.Router();
 
@@ -40,42 +41,42 @@ router.get('/admin', (req, res) => {
 });
 
 // Rota para a página de pedidos comerciais (comercial.html)
-router.get('/comercial', authMiddleware, (req, res) => {
+router.get('/comercial', authMiddleware,(req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'views', 'comercial.html'));
 });
 
 // Rota para a página de detalhes do pedido (detalhes.html)
-router.get('/detalhes', authMiddleware, (req, res) => {
+router.get('/detalhes',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'detalhes.html'));
 });
 
 // Rota para a página de detalhes do produto (Detalhes_Produtos.html)
-router.get('/detalhesProdutos', authMiddleware, (req, res) => {
+router.get('/detalhesProdutos',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.html'));
 });
 
 // Rota para a página de eficiencia cliente (eficiencia.html)
-router.get('/eficiencia', authMiddleware, (req, res) => {
+router.get('/eficiencia',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'eficiencia.html'));
 });
 
 // Rota para a página de eficiencia cliente (sellOut.html)
-router.get('/sellOut', authMiddleware, (req, res) => {
+router.get('/sellOut',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'sellOut.html'));
 });
 
 // Rota para a página de eficiencia cliente (display.html)
-router.get('/display', authMiddleware, (req, res) => {
+router.get('/display',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'display.html'));
 });
 
 // Rota para a página de eficiencia cliente (redes.html)
-router.get('/redes', authMiddleware, (req, res) => {
+router.get('/redes',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'redes.html'));
 });
 
 // Rota para a página de detalhes do pedido (detalhes.html)
-router.get('/logistica', authMiddleware, (req, res) => {
+router.get('/logistica',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'logistica.html'));
 });
 
@@ -90,22 +91,22 @@ router.get('/logistica02', authMiddleware, (req, res) => {
 
 
 // Rota para a página (video.html)
-router.get('/video', authMiddleware, (req, res) => {
+router.get('/video',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'video.html'));
 });
 
 // Rota para a página (cadastroCliente.html)
-router.get('/cadastroCliente', authMiddleware, (req, res) => {
+router.get('/cadastroCliente',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'cadastroCliente.html'));
 });
 
 
 // Rota para a página (invest.html)
-router.get('/investComercial', authMiddleware, (req, res) => {
+router.get('/investComercial',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'invest_comercial.html'));
 });
 
-router.get('/investPromotor', authMiddleware, (req, res) => {
+router.get('/investPromotor',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'invest_promotor.html'));
 });
 
@@ -116,8 +117,6 @@ router.get('/api/pedidos1/:codPedido', orderController.getClientDetailsEndpoint)
 router.get('/api/cliente/:cnpj', clientController.getClientDetails); // Detalhes do cliente por cnpj
 router.get('/api/cliente1/:cnpj', clientController.getClientDetailsTest); // Detalhes do cliente por cnpj full
 
-// Rotas de API de produto
-router.get('/api/produtos/', productController.getProductsDetails)
 
 // Rotas da API de Logistica
 router.get('/api/logistica/onedrive', invoicesController.fetchLogisticsData);
@@ -179,6 +178,7 @@ router.post('/logout', (req, res) => {
 //Rota post para pedidos
 
 router.post('/api/pedidos/input', inputOrdersController.fetchImputOrders)
+router.get('/api/lista-preco/:listaId', productController.getListaPreco);
 
 
 /////banco de dados mogondb atlas
@@ -196,7 +196,7 @@ router.delete('/api/redes/remover', redesController.removerLinhaRedes);
 
 
 router.get('/api/sellOut/:codgroup', sellOutController.getSellOutBycodgroup);
-router.post('/api/sellOut/salvar', sellOutController.salvarSellOut);
+router.post('/api/sellOut/salvar', sellOutController.salvarSellOut);        
 router.delete('/api/sellOut/remover', sellOutController.removerLinhaSellOut);
 
 

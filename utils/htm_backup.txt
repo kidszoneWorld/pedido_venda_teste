@@ -104,6 +104,8 @@
 
         <div class="section">
             <div class="section-title">DADOS PEDIDO</div>
+            <button type="button" id="adicionarLinha">Adicionar Linha</button>
+            <button type="button" id="excluirLinha">Remover Linha</button>
             <div class="table-container">
                 <table id="dadosPedido" border="1" class="table">
                     <thead>
@@ -126,8 +128,7 @@
                     </tbody>
                 </table>
             </div>
-            <button type="button" id="adicionarLinha">Adicionar Linha</button>
-            <button type="button" id="excluirLinha">Remover Linha</button>
+            
         </div>
 
         <!-- Seção de Condição de Pagamento -->

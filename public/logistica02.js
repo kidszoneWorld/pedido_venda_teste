@@ -90,15 +90,15 @@ async function loadOrderDetailsFromSharePoint() {
 
     try {
         const response = await fetch('/api/logistica/logistica02');
-        if (!response.ok) throw new Error("Erro ao buscar dados do SharePoint");
+       // if (!response.ok) throw new Error("Erro ao buscar dados do SharePoint");
         ordersData1 = await response.json();
         filteredData1 = [...ordersData1]; // Inicialmente, os dados filtrados são os mesmos que os originais
 
         renderTable(ordersData1);
         hideFeedback();
     } catch (error) {
-        console.error("Erro ao carregar dados do SharePoint:", error);
-        showFeedback("Erro ao carregar dados do SharePoint. Recarregue a página.");
+        //console.error("Erro ao carregar dados do SharePoint:", error);
+        //showFeedback("Erro ao carregar dados do SharePoint. Recarregue a página.");
     }
 }
 

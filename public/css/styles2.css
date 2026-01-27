@@ -1186,3 +1186,36 @@ label[for="referencia"]::after {
 }
 
 }
+
+/* Botão remover linha (tabela) */
+.btn-remover-linha {
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #3d3c3c;
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hover – igual aos outros botões */
+.btn-remover-linha:hover {
+    background: var(--button-hover-bg-light);
+    color: var(--button-hover-text-light);
+    border: none;
+}
+
+/* Tema escuro */
+body.dark-theme .btn-remover-linha {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+    border: 1px solid #555;
+}
+
+body.dark-theme .btn-remover-linha:hover {
+    background: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-dark);
+}

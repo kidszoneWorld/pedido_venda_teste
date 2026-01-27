@@ -136,7 +136,7 @@ function renderTable(data) {
             <td class="ocorrencia">${order.OCORRÊNCIA || ''}</td>
         `;
         orderTableBody1.appendChild(row);
-    });
+    });
 }
 
 // Configurar eventos do modal
