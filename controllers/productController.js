@@ -3,6 +3,76 @@ console.log('fetch existe?', typeof fetch);
 const ApplicationToken = '62ca18a8-aa3b-41b7-a54e-f669a437d326';
 const CompanyToken = 'b5b984c5-cbfa-490b-8513-448fc67a39b6';
 
+
+let authToken = null;
+let tokenExpirationTime = null;
+
+async function authenticate() {
+  try {
+    const response = await fetch('https://gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': 'https://kidszone-ng.dbcorp.com.br'
+      },
+      body: JSON.stringify({
+        usuario: "alex.l",
+        senha: "@Al@2313",
+        origin: "kidszone-ng"
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro na autenticação: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    authToken = data.tokenAcesso; // Atualizado para tokenAcesso
+    tokenExpirationTime = Date.now() + 2 * 60 * 60 * 1000;
+    console.log('Autenticado com sucesso, token obtido.');
+  } catch (error) {
+    console.error('Erro ao autenticar:', error);
+  }
+}
+
+async function checkToken() {
+  if (!authToken || Date.now() > tokenExpirationTime) {
+    console.log('Token expirado ou inexistente. Autenticando...');
+    await authenticate();
+  }
+}    
+
+async function verificarStatusItem(itemEmpresaId) {
+    await checkToken();
+
+    const url = `https://gateway-ng.dbcorp.com.br:55500/produto-service/item/${itemEmpresaId}/empresa/2`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+            'Origin': 'https://kidszone-ng.dbcorp.com.br'
+        }
+    });
+
+
+    const text = await response.text();
+
+    if (!response.ok) {
+        throw new Error(`Erro ao consultar status do item - HTTP ${response.status}`);
+    }
+
+    const data = JSON.parse(text);
+
+    return {
+        ativo: data.ativo,
+        suspenso: data.suspenso,
+        foraLinha: data.foraLinha
+    };
+}
+
+
 async function getListaPreco(req, res) {
     try {
         const { listaId } = req.params;
@@ -25,8 +95,6 @@ async function getListaPreco(req, res) {
         }
 
         const data = await response.json();
-console.log('DADOS RECEBIDOS DA API:', data.Result);
-console.log('TAMANHO:', data.Result.length);
 
 
         if (!data.Result?.length) {
@@ -36,20 +104,34 @@ console.log('TAMANHO:', data.Result.length);
         let itens = data.Result;
 
         if (codigo) {
-            const cod = String(codigo).trim();
-            console.log('CODIGO RECEBIDO:', codigo);
-            console.log('TIPO:', typeof codigo);
-            console.log('EXEMPLO API:', data.Result[0].ItemCodigo);
+    const cod = String(codigo).trim();
 
-            itens = itens.filter(
-                i => String(i.ItemCodigo).trim().toUpperCase() === cod
-            );
+    itens = itens.filter(
+        i => String(i.ItemCodigo).trim() === cod
+    );
 
+    if (!itens.length) {
+        return res.status(404).json({ message: 'Item não encontrado' });
+    }
 
-            if (!itens.length) {
-                return res.status(404).json({ message: 'Item não encontrado' });
-            }
-        }
+    // 🔍 VERIFICA STATUS DO ITEM
+    const item = itens[0];
+
+    const status = await verificarStatusItem(item.ItemCodigo);
+
+    if (status.suspenso == true) {
+        return res.status(400).json({ message: 'Item suspenso' });
+    }
+
+    else if (status.ativo == false) {
+        return res.status(400).json({ message: 'Item inativo' });
+    }
+
+    else if (status.foraLinha == true) {
+        return res.status(400).json({ message: 'Item fora de linha' });
+    }
+}
+
 
         res.json(itens);
 

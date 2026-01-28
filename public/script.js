@@ -629,7 +629,8 @@ function adicionarNovaLinha() {
             );
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar item');
+                const erro = await response.json();
+                throw new Error(erro.message || 'Item não disponível');
             }
 
             const data = await response.json();
