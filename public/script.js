@@ -609,23 +609,33 @@ function adicionarNovaLinha() {
         // =========================
         // CÓDIGO DO ITEM
         // =========================
-       if (i === 0) {
+       // =========================
+// CÓDIGO DO ITEM
+// =========================
+if (i === 0) {
     input.addEventListener('blur', async function () {
         const cod = this.value.trim().toUpperCase();
         if (!cod) return;
 
+        // 🚫 VERIFICA DUPLICIDADE
+        if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
+            alert('Este item já foi adicionado ao pedido.');
+            this.value = '';
+            this.focus();
+            return;
+        }
+
         const listaId = document.getElementById('codgroup').value;
         const cells = tr.querySelectorAll('td input');
 
-        // 🔄 FEEDBACK VISUAL — INÍCIO
+        // 🔄 FEEDBACK VISUAL
         cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
         cells[1].readOnly = true;
-        
+
         try {
             const response = await fetch(
                 `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
-                
             );
 
             if (!response.ok) {
@@ -641,7 +651,8 @@ function adicionarNovaLinha() {
             const item = data[0];
             const preco = Number(item.PrecoVenda);
             const ipi = 0.0325;
-                      cells[2].value = 'CX';
+
+            cells[2].value = 'CX';
             cells[3].value = item.ItemDescricao;
             cells[5].value = preco.toLocaleString('pt-BR', {
                 style: 'currency',
@@ -651,6 +662,7 @@ function adicionarNovaLinha() {
 
             cells[1].readOnly = false;
             cells[1].focus();
+
             cells[1].addEventListener('input', () => {
                 const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
                 const precoIpi = preco * (1 + ipi);
@@ -665,13 +677,9 @@ function adicionarNovaLinha() {
                     style: 'currency',
                     currency: 'BRL'
                 });
-                cells[2].readOnly = true;
-                cells[3].readOnly = true;
-                cells[4].readOnly = true;   
-                cells[5].readOnly = true;
-                cells[6].readOnly = true;
-                cells[7].readOnly = true;
+
                 tr.dataset.itemId = item.ItemId;
+
                 atualizarTotalProdutos();
                 atualizarTotalComImposto();
                 atualizarTotalVolumes();
@@ -682,12 +690,11 @@ function adicionarNovaLinha() {
             this.value = '';
             this.focus();
         } finally {
-            // 🔄 FEEDBACK VISUAL — FIM
-            hideFeedback();
             this.readOnly = false;
         }
     });
 }
+
 
     }
 
@@ -723,6 +730,19 @@ function verificarCodigoDuplicado(codigo) {
     return contador > 1;
 }
 
+function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    for (const tr of linhas) {
+        if (tr === linhaAtual) continue; // ignora a própria linha
+
+        const inputCodigo = tr.cells[0]?.querySelector('input');
+        if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
+            return true;
+        }
+    }
+    return false;
+}
 
 
 
