@@ -222,6 +222,7 @@ Manutenção e Boas práticas (Padrões)
 
 Problemas Conhecidos e planos para o futuro
 - adicionar campo de estoque no pedido de item 
+- adicionar funcionalidade para observar a nota na Área Comercial semelhante aos detalhes
 
 Histórico de Versões
 

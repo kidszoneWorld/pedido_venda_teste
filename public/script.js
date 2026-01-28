@@ -538,7 +538,7 @@ function adicionarNovaLinha() {
         // ✏️ INPUT NORMAL
         const input = document.createElement('input');
         input.type = 'text';
-
+        
         // TAB só código e quantidade
         input.tabIndex = (i === 0 || i === 1) ? 0 : -1;
 
@@ -581,6 +581,31 @@ function adicionarNovaLinha() {
                     tbody.lastChild.cells[0].querySelector('input').focus();
                 }, 0);
             }
+            //enter = tab
+            if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
+    e.preventDefault();
+
+    // se estiver na QUANTIDADE (coluna 1)
+    if (i === 1) {
+        if (linhaAtual === linhas.length - 1) {
+            // última linha → cria nova
+            adicionarNovaLinha();
+            setTimeout(() => {
+                tbody.lastChild.cells[0].querySelector('input')?.focus();
+            }, 0);
+        } else {
+            // próxima linha
+            linhas[linhaAtual + 1]?.cells[0]?.querySelector('input')?.focus();
+        }
+    }
+
+    // se estiver no CÓDIGO (coluna 0)
+    if (i === 0) {
+        tr.cells[1]?.querySelector('input')?.focus();
+    }
+}
+
+
         });
 
         // =========================
@@ -598,7 +623,7 @@ function adicionarNovaLinha() {
         cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
         cells[1].readOnly = true;
-
+        
         try {
             const response = await fetch(
                 `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
@@ -627,7 +652,6 @@ function adicionarNovaLinha() {
 
             cells[1].readOnly = false;
             cells[1].focus();
-
             cells[1].addEventListener('input', () => {
                 const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
                 const precoIpi = preco * (1 + ipi);
