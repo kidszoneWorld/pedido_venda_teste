@@ -522,7 +522,6 @@ function adicionarNovaLinha() {
             
 
             btn.addEventListener('click', () => {
-                if (!confirm('Remover esta linha?')) return;
                 tr.remove();
                 atualizarTotalProdutos();
                 atualizarTotalComImposto();
@@ -576,7 +575,6 @@ function adicionarNovaLinha() {
 
             if (e.key === 'Tab' && !e.shiftKey && i === 1 && linhaAtual === linhas.length - 1) {
                 e.preventDefault();
-                adicionarNovaLinha();
                 setTimeout(() => {
                     tbody.lastChild.cells[0].querySelector('input').focus();
                 }, 0);
