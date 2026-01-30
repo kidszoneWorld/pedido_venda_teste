@@ -1,4 +1,4 @@
-//const html2pdf = require('html2pdf.js');
+const html2pdf = require('html2pdf.js');
 
 document.addEventListener("DOMContentLoaded", () => {
     const btPdfGeneration = document.getElementById('button_pdf');
