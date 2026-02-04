@@ -178,10 +178,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Limpa a tabela "DADOS PEDIDO"
         document.querySelector('#dadosPedido tbody').innerHTML = '<tr class="tr_td"></tr>';
 
-        // Limpa os campos de totais ("VOLUMES", "TOTAL PRODUTOS", "TOTAL C/IMP")
+        // Limpa os campos de totais ("VOLUMES", "TOTAL PRODUTOS")
         document.getElementById('volume').value = '';
         document.getElementById('total').value = '';
-        document.getElementById('total_imp').value = '';
 
         // Limpa o campo de observações
         document.getElementById('observation').value = '';
