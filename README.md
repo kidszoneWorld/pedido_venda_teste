@@ -221,7 +221,7 @@ Manutenção e Boas práticas (Padrões)
 (versionamento)
 
 Problemas Conhecidos e planos para o futuro
-- Puxar Cliente pelo ID também
+- oferecer opção de Puxar Cliente pelo ID 
 - adicionar funcionalidade para observar a nota na Área Comercial semelhante aos detalhes
 
 Histórico de Versões
