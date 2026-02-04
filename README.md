@@ -221,7 +221,7 @@ Manutenção e Boas práticas (Padrões)
 (versionamento)
 
 Problemas Conhecidos e planos para o futuro
-- adicionar campo de estoque no pedido de item 
+- Puxar Cliente pelo ID também
 - adicionar funcionalidade para observar a nota na Área Comercial semelhante aos detalhes
 
 Histórico de Versões
