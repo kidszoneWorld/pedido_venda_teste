@@ -9,8 +9,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="manifest" href="/images/site.webmanifest">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="/css/invest_comercial.css?v=1770212918001">
-    <link rel="stylesheet" href="/css/theme-toggle.css?v=1770212918001">
+    <link rel="stylesheet" href="/css/invest_comercial.css?v=1770145425885">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1770145425885">
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -128,39 +128,51 @@
                         <tr>
                             <th>TIPO</th>
                             <th>SELECIONAR</th>
-                            <th>VALOR</th>
+                            <th>DESCRIÇÃO</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
+                            <td>Ambientação</td>
+                            <td><input type="checkbox" id="ambientacao"></td>
+                            <td><input type="text" id="Descrição_ambientacao" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Aniversário da loja</td>
+                            <td><input type="checkbox" id="aniversario_loja"></td>
+                            <td><input type="text" id="Descrição_Aniversário da loja" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Campanha de Incentivo</td>
+                            <td><input type="checkbox" id="campanha_incentivo"></td>
+                            <td><input type="text" id="Descrição_campanha_incentivo" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Encartes</td>
+                            <td><input type="checkbox" id="encartes"></td>
+                            <td><input type="text" id="Descrição_encartes" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Inauguração</td>
+                            <td><input type="checkbox" id="inauguracao"></td>
+                            <td><input type="text" id="Descrição_inauguracao" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Introdução</td>
+                            <td><input type="checkbox" id="introducao"></td>
+                            <td><input type="text" id="Descrição_introducao" placeholder="Descrição"></td>
+                         <tr>
+                            <td>Outros</td>
+                            <td><input type="checkbox" id="outros"></td>
+                            <td><input type="text" id="descricao_outros" placeholder="Descrição"></td>
+                        <tr>
                             <td>Bonificação</td>
-                            <td><input type="checkbox" id="bonificacao"></td>
-                            <td><input type="text" id="percentual_bonificacao" placeholder="%"></td>
-                        </tr>
+                            <td><input type="checkbox" id="Bonificação"></td>
+                            
                         <tr>
-                            <td>Desconto em Duplicata</td>
-                            <td><input type="checkbox" id="desconto_duplicata"></td>
-                            <td><input type="text" id="percentual_desconto" placeholder="%"></td>
-                        </tr>
-                        <tr>
-                            <td>Rebaixa de Preço</td>
-                            <td><input type="checkbox" id="rebaixa_preco"></td>
-                            <td><input type="text" id="percentual_rebaixa" placeholder="%"></td>
-                        </tr>
-                        <tr>
-                            <td>Devolução</td>
-                            <td><input type="checkbox" id="devolucao"></td>
-                            <td><input type="text" id="percentual_devolucao" placeholder="%"></td>
-                        </tr>
-                        <tr>
-                            <td>Acordo Comercial</td>
-                            <td><input type="checkbox" id="acordo_comercial"></td>
-                            <td><input type="text" id="percentual_acordo" placeholder="%"></td>
-                        </tr>
-                        <tr>
-                            <td>Prazo de Pagamento</td>
-                            <td><input type="checkbox" id="prazo_pagamento"></td>
-                            <td><input type="text" id="dias_pagamento" value="60"></td>
+                            <td>Abatimento</td>
+                            <td><input type="checkbox" id="abatimento"></td>
+                            
                         </tr>
                     </tbody>
                 </table>
@@ -191,7 +203,13 @@
                 <button type="button" id="excluirLinhaInvestimento">Remover Linha</button>
             </div>
             <div class="payment-conditions">
-                <label for="valor_total">VALOR TOTAL DO INVESTIMENTO:</label>
+                <label for="valor_total">VALOR DO INVESTIMENTO:</label>
+                <input type="text" id="valor_total" >
+                      
+                <label for="valor_total">Valor de compra:</label>
+                <input type="text" id="valor_total" >
+                       
+                <label for="valor_total">% de Investimento / Compra:</label>
                 <input type="text" id="valor_total" >
             </div>
         </div>
@@ -232,8 +250,8 @@
         </div>
     </footer>
 
-    <script src="/invest_comercial.js?v=1770212918001"></script>
-    <script src="/pdf_invest_comercial.js?v=1770212918001"></script>
-    <script src="/theme-toggle.js?v=1770212918001"></script>
+    <script src="/invest_comercial.js?v=1770145425885"></script>
+    <script src="/pdf_invest_comercial.js?v=1770145425885"></script>
+    <script src="/theme-toggle.js?v=1770145425885"></script>
   </body> 
 </html>

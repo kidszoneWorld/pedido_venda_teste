@@ -76,13 +76,13 @@ body {
 }
 
 .section {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .section-title {
     background-color: #333;
     color: #ffffff;
-    padding: 5px;
+    padding: 3px;
     font-weight: bold;
     text-align: center;
 }
@@ -180,7 +180,7 @@ div.acao-solicitada-container {
 .action-table th,
 .action-table td {
     border: 1px solid #3f3d3d;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     vertical-align: middle; /* Centraliza verticalmente */
 }
@@ -209,7 +209,7 @@ div.acao-solicitada-container {
 }
 
 .action-table td input[type="checkbox"]:checked{
-    accent-color: green;
+    accent-color: rgb(235, 5, 235);
 
 }
 
@@ -263,7 +263,7 @@ div.acao-solicitada-container {
     margin-top: 20px;
     border: 1px solid #1b1a1a;
     padding: 15px;
-    padding-left: 35px;
+    padding-left: 10px;
     align-items: center;
 }
 
@@ -271,15 +271,15 @@ div.acao-solicitada-container {
     width: 100%;
     background-color: #333;
     color: #ffffff;
-    padding: 5px;
+    padding: 1px;
 }
 
 .payment-conditions input {
-    padding: 5px;
+    padding: 1px;
 }
 
 .observations {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .observations .obs-title {
