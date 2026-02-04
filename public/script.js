@@ -189,7 +189,6 @@ cnpjInput1.addEventListener('blur', async function () {
 // ======================================================================
 function atualizarTotais() {
     atualizarTotalProdutos();
-    atualizarTotalComImposto();
     atualizarTotalVolumes();
 }
 
@@ -227,9 +226,7 @@ function zerarCamposPedido() {
         primeiraLinha?.cells[0]?.querySelector('input')?.focus();
     }, 0);
 
-    atualizarTotalComImposto();
-    atualizarTotalVolumes();
-    atualizarTotalProdutos();
+    atualizarTotais();
 }
 
 
@@ -340,9 +337,7 @@ function adicionarNovaLinha() {
 
             btn.addEventListener('click', () => {
                 tr.remove();
-                atualizarTotalProdutos();
-                atualizarTotalComImposto();
-                atualizarTotalVolumes();
+                atualizarTotais();
                 garantirLinhaInicial();
             });
 
@@ -520,9 +515,7 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
     let tbody = document.querySelector('#dadosPedido tbody');
     if (tbody.rows.length > 0) {
         tbody.deleteRow(tbody.rows.length - 1);
-        atualizarTotalComImposto();
-        atualizarTotalVolumes();
-        atualizarTotalProdutos();
+            atualizarTotais();
     } else {
         alert("Nenhuma linha para remover");
     }

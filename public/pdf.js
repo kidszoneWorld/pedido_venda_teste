@@ -23,12 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (row.cells.length >= 9) {
                 const cell0 = row.cells[0];
                 const cell1 = row.cells[1];
-                const cell8 = row.cells[8];
+                const cell7 = row.cells[7];
 
                 // Verifica se os inputs existem antes de acessá-los
                 const input0 = cell0.querySelector('input');
                 const input1 = cell1.querySelector('input');
-                const input8 = cell8.querySelector('input');
+                const input8 = cell7.querySelector('input');
 
                 if (input0 && input1 && input8) {
                     const code = parseInt(input0.value);
