@@ -73,6 +73,31 @@ async function verificarStatusItem(itemEmpresaId) {
 }
 
 
+async function puxaEstoque(req, res) {
+    await checkToken();
+  const { itemEmpresaId } = req.params;
+    const url = `https://gateway-ng.dbcorp.com.br:55500/estoque-service/deposito/saldo-item?ItemEmpresaId=${itemEmpresaId}&ItemEmpresaAuxiliarId=2&EmpresaId=2&Depositos=3`;
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+            'Origin': 'https://kidszone-ng.dbcorp.com.br'
+        }
+    });
+    if (!response.ok) {
+        throw new Error(`Erro ao consultar estoque Item- HTTP ${response.status}`);
+    }
+    
+       
+    const data = await response.json();
+
+    const saldo = data.saldo;
+    console.log('Saldo disponível:', saldo);
+    return res.status(200).json(saldo);
+  }
+
+
 async function getListaPreco(req, res) {
     try {
         const { listaId } = req.params;
@@ -151,7 +176,6 @@ async function getProductsDetails(req, res) {
       return res.status(404).json({ message: 'Itens não encontrados' });
     }
 
-    const formatedProducts = formatProductsFromPriceList(itensLista);
 
     return res.status(200).json({ data: formatedProducts });
   } catch (error) {
@@ -161,49 +185,50 @@ async function getProductsDetails(req, res) {
 }
 
 
-function formatProductsFromPriceList(products) {
-  let formated = [[
-    "LISTA ID - ITEM ID",
-    "LISTA NOME",
-    "ITEM COD",
-    "DV",
-    "ITEM DESCRIÇÃO",
-    "PREVISÃO DE CHEGADA",
-    "EAN",
-    "CLASSIFIC. FISCAL",
-    "MASTER",
-    "UV",
-    "EMB",
-    "PRECO",
-    "IPI",
-    "ItemId"
-  ]];
+// function formatProductsFromPriceList(products) {
+//   let formated = [[
+//     "LISTA ID - ITEM ID",
+//     "LISTA NOME",
+//     "ITEM COD",
+//     "DV",
+//     "ITEM DESCRIÇÃO",
+//     "PREVISÃO DE CHEGADA",
+//     "EAN",
+//     "CLASSIFIC. FISCAL",
+//     "MASTER",
+//     "UV",
+//     "EMB",
+//     "PRECO",
+//     "IPI",
+//     "ItemId"
+//   ]];
 
-  products.forEach(product => {
-    let item = [];
+//   products.forEach(product => {
+//     let item = [];
 
-    item.push(`${product.ListaPrecoId}-${product.ItemId}`);
-    item.push('');
-    item.push(product.ItemCodigo);
-    item.push('S');
-    item.push(product.ItemDescricao);
-    item.push('null');
-    item.push('null');
-    item.push('null');
-    item.push('null');
-    item.push('CX');
-    item.push('null');
-    item.push(product.PrecoVenda);
-    item.push(0.0325);
-    item.push(product.ItemId);
+//     item.push(`${product.ListaPrecoId}-${product.ItemId}`);
+//     item.push('');
+//     item.push(product.ItemCodigo);
+//     item.push('S');
+//     item.push(product.ItemDescricao);
+//     item.push('null');
+//     item.push('null');
+//     item.push('null');
+//     item.push('null');
+//     item.push('CX');
+//     item.push('null');
+//     item.push(product.PrecoVenda);
+//     item.push(0.0325);
+//     item.push(product.ItemId);
 
-    formated.push(item);
-  });
+//     formated.push(item);
+//   });
 
-  return formated;
-}
+//   return formated;
+// }
 
 module.exports = {
     getProductsDetails,
-    getListaPreco
+    getListaPreco,
+    puxaEstoque
 };

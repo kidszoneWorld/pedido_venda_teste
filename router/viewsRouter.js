@@ -178,7 +178,8 @@ router.post('/logout', (req, res) => {
 //Rota post para pedidos
 
 router.post('/api/pedidos/input', inputOrdersController.fetchImputOrders)
-router.get('/api/lista-preco/:listaId', productController.getListaPreco);
+router.get('/api/lista-preco/:listaId', productController.getListaPreco)
+router.get('/api/estoque/:itemEmpresaId', productController.puxaEstoque);
 
 
 /////banco de dados mogondb atlas
