@@ -1,4 +1,3 @@
-// app.js
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -10,42 +9,29 @@ const viewsRouter = require('./router/viewsRouter');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
 const bodyParser = require('body-parser');
-const app2 = express();
-
-/* Middlewares */
-app2.use(bodyParser.json());
-app2.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
-app2.listen(3000, () => {
-  console.log("API documentation: http://localhost:3000/docs");
-});
-console.log(require('./router/viewsRouter'));
-
-/* Endpoints */
-const mod = require('./router/viewsRouter');
-
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+/* ================= MIDDLEWARES ================= */
 
-// Configurar o tamanho máximo do corpo da requisição
+app.use(bodyParser.json());
+
+// JSON + FORM
 app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
-// Middleware para parsing de JSON
-app.use(express.json());
-
-// Configurar a pasta 'public' para arquivos estáticos (CSS, JS, etc.)
+// Arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Cookies
+app.use(cookieParser());
 
+// Proxy (Vercel)
+app.set('trust proxy', 1);
 
-
-// Adicionar esta linha para configurar o proxy
-app.set('trust proxy', 1); // Necessário para cookies seguros em proxies (como Vercel)
-
-// Configuração do Redis
+/* ================= REDIS / SESSION ================= */
 const redisClient = new Redis({
     host: 'decent-bulldog-44204.upstash.io', // Substitua pelo host fornecido pelo Upstash
     port: 6379, // Porta padrão do Redis
@@ -53,55 +39,51 @@ const redisClient = new Redis({
     tls: {} // Necessário para conexões seguras
 });
 
-app.use(cookieParser());
-
-// Configuração da sessão
 app.use(session({
-    store: new RedisStore({ client: redisClient }),
-    secret: 'minha-chave-secreta', // Altere para uma chave forte
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Garante HTTPS
-        httpOnly: true,
-        sameSite: 'strict', // None para cross-origin em produção
-        maxAge: 1000 * 60 * 60 // 1 hora
-    }
+  store: new RedisStore({ client: redisClient }),
+  secret: 'minha-chave-secreta',
+  resave: true,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: 1000 * 60 * 60
+  }
 }));
 
-// Usar o router para as views
+/* ================= ROTAS DO SITE ================= */
+
 app.use('/', viewsRouter);
 
 app.get('/teste', (req, res) => {
-    res.send('Rota de teste funcionando!');
+  res.send('Rota de teste funcionando!');
 });
 
+/* ================= SWAGGER (DEPOIS DAS ROTAS) ================= */
 
-//app.use((req, res, next) => {
-// res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-// res.setHeader('Pragma', 'no-cache');
-// res.setHeader('Expires', '0');
-// res.setHeader('Surrogate-Control', 'no-store');
-// next();
-//});
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+/* ================= MONGODB ================= */
 
-/////banco de dados mogondb atlas
-const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Conectado'))
+  .catch(err => console.error('Erro ao conectar MongoDB', err));
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log("MongoDB Conectado"))
-    .catch(err => console.error("Erro ao conectar MongoDB", err));
-
+/* ================= CORS ================= */
 
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://pedido-de-venda-producao.vercel.app'); // Substitua pela URL do seu site
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    next();
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    'https://pedido-de-venda-producao.vercel.app'
+  );
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
 });
 
+/* ================= START SERVER ================= */
 
-
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Swagger em http://localhost:${PORT}/docs`);
+});
