@@ -7,8 +7,22 @@ const Redis = require('ioredis');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const viewsRouter = require('./router/viewsRouter');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger-output.json');
+const bodyParser = require('body-parser');
+const app2 = express();
 
+/* Middlewares */
+app2.use(bodyParser.json());
+app2.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+app2.listen(3000, () => {
+  console.log("API documentation: http://localhost:3000/docs");
+});
+console.log(require('./router/viewsRouter'));
+
+/* Endpoints */
+const mod = require('./router/viewsRouter');
 
 
 const app = express();
@@ -91,7 +105,3 @@ app.use((req, res, next) => {
 
 
 
-// Iniciar o servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
