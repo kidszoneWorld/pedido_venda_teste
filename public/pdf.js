@@ -20,20 +20,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // Verifica cada linha da tabela
         for (const row of tableRows) {
             // Garante que a linha tenha células e pelo menos 9 colunas (índices 0 a 8)
-            if (row.cells.length >= 8) {
+            if (row.cells.length >= 9) {
                 const cell0 = row.cells[0];
                 const cell1 = row.cells[1];
-                const cell7 = row.cells[7];
+                const cell8 = row.cells[8];
 
                 // Verifica se os inputs existem antes de acessá-los
                 const input0 = cell0.querySelector('input');
                 const input1 = cell1.querySelector('input');
-                const input7 = cell7.querySelector('input');
+                const input8 = cell8.querySelector('input');
 
-                if (input0 && input1 && input7) {
+                if (input0 && input1 && input8) {
                     const code = parseInt(input0.value);
                     const quantity = input1.value;
-                    const total = input7.value;
+                    const total = input8.value;
 
                     // Verifica se o código é maior que 0 e se a quantidade é 0 ou o total está vazio
                     if (!isNaN(code) && code > 0 && (quantity === '0' || total === '')) {
@@ -178,9 +178,10 @@ document.addEventListener("DOMContentLoaded", () => {
         // Limpa a tabela "DADOS PEDIDO"
         document.querySelector('#dadosPedido tbody').innerHTML = '<tr class="tr_td"></tr>';
 
-        // Limpa os campos de totais ("VOLUMES", "TOTAL PRODUTOS")
+        // Limpa os campos de totais ("VOLUMES", "TOTAL PRODUTOS", "TOTAL C/IMP")
         document.getElementById('volume').value = '';
         document.getElementById('total').value = '';
+        document.getElementById('total_imp').value = '';
 
         // Limpa o campo de observações
         document.getElementById('observation').value = '';

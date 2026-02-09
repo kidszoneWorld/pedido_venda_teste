@@ -7,7 +7,6 @@ let foraDeLinhaData;
 let listaPrecosData;
 let icmsSTData;
 
-
 // Helper DOM
 const el = id => document.getElementById(id);
 
@@ -226,7 +225,8 @@ function zerarCamposPedido() {
         primeiraLinha?.cells[0]?.querySelector('input')?.focus();
     }, 0);
 
-    atualizarTotais();
+    atualizarTotalVolumes();
+    atualizarTotalProdutos();
 }
 
 
@@ -244,24 +244,6 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
 
 
 
-// Função para atualizar o total com imposto de todas as linhas
-function atualizarTotalComImposto() {
-    let total = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
-    
-    linhas.forEach(tr => {
-        const cell = tr.cells[8]?.querySelector('input');
-        if (cell && cell.value) {
-            const cellValue = cell.value.replace("R$", "").replace(/\./g, "").replace(",", ".");
-            const valor = parseFloat(cellValue);
-            if (!isNaN(valor)) {
-                total += valor;
-            }
-        }
-    });
-    
-    document.getElementById('total_imp').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
 
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
 function atualizarTotalVolumes() {
@@ -274,6 +256,8 @@ function atualizarTotalVolumes() {
             const quantidade = parseFloat(cell.value.replace(",", "."));
             if (!isNaN(quantidade)) {
                 totalVolumes += quantidade;
+                console.log('Quantidade adicionada:', quantidade);
+                console.log('Total de volumes até agora:', totalVolumes);
             }
         }
     });
@@ -288,7 +272,7 @@ function atualizarTotalProdutos() {
 
     linhas.forEach(tr => {
         const quantidadeCell = tr.cells[1]?.querySelector('input');
-        const valorUnitarioCell = tr.cells[6]?.querySelector('input');
+        const valorUnitarioCell = tr.cells[5]?.querySelector('input');
         if (quantidadeCell && valorUnitarioCell && quantidadeCell.value && valorUnitarioCell.value) {
             const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
             const valorUnitario = parseFloat(valorUnitarioCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
@@ -301,23 +285,16 @@ function atualizarTotalProdutos() {
     document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-async function puxaEstoque(itemEmpresaId) {
-const response = await fetch(`/api/estoque/${itemEmpresaId}`);
-    console.log('estoque carregado:', response);
-    return await response.json();
-}
-
-
 // Função para adicionar uma nova linha à tabela
 function adicionarNovaLinha() {
     const tbody = document.querySelector('#dadosPedido tbody');
     const tr = document.createElement('tr');
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 8; i++) {
         const td = document.createElement('td');
 
         // 🔴 coluna oculta (ItemId)
-        if (i === 8) {
+        if (i === 7) {
             td.style.display = 'none';
         }
 
@@ -337,7 +314,8 @@ function adicionarNovaLinha() {
 
             btn.addEventListener('click', () => {
                 tr.remove();
-                atualizarTotais();
+                atualizarTotalProdutos();
+                atualizarTotalVolumes();
                 garantirLinhaInicial();
             });
 
@@ -436,11 +414,9 @@ if (i === 0) {
             return;
         }
 
-
-
         const listaId = document.getElementById('codgroup').value;
         const cells = tr.querySelectorAll('td input');
-        const estoque = await puxaEstoque(cod);
+
         // 🔄 FEEDBACK VISUAL
         cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
@@ -461,36 +437,38 @@ if (i === 0) {
                 throw new Error('Item não encontrado');
             }
 
-            //puxa estoque
-            const estoque = await puxaEstoque(cod);
-console.log('estoque do item:', estoque);   
             const item = data[0];
             const preco = Number(item.PrecoVenda);
 
             cells[2].value = 'CX';
             cells[3].value = item.ItemDescricao;
-            cells[4].value = estoque; // Atualiza o estoque
-            cells[5].value = preco.toLocaleString('pt-BR', {
+            cells[4].value = preco.toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL'
             });
-            
+            //cells[4].value = '3,25%';
 
             cells[1].readOnly = false;
             cells[1].focus();
 
             cells[1].addEventListener('input', () => {
                 const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
-               
                 const totalLinha = qtd * preco;
-                cells[6].value = totalLinha.toLocaleString('pt-BR', {
+
+                cells[4].value = preco.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+
+                cells[5].value = totalLinha.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL'
                 });
 
                 tr.dataset.itemId = item.ItemId;
 
-                atualizarTotais();
+                atualizarTotalProdutos();
+                atualizarTotalVolumes();
             });
 
         } catch (error) {
@@ -515,7 +493,8 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
     let tbody = document.querySelector('#dadosPedido tbody');
     if (tbody.rows.length > 0) {
         tbody.deleteRow(tbody.rows.length - 1);
-            atualizarTotais();
+        atualizarTotalVolumes();
+        atualizarTotalProdutos();
     } else {
         alert("Nenhuma linha para remover");
     }
@@ -731,4 +710,3 @@ document.addEventListener("DOMContentLoaded", () => {
         el('helpModal').style.display = 'none';
     }
 });
-

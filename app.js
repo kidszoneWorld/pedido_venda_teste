@@ -1,3 +1,4 @@
+// app.js
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -6,32 +7,31 @@ const Redis = require('ioredis');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const viewsRouter = require('./router/viewsRouter');
-const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger-output.json');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-/* ================= MIDDLEWARES ================= */
 
-app.use(bodyParser.json());
-
-// JSON + FORM
+// Configurar o tamanho máximo do corpo da requisição
 app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
-// Arquivos estáticos
+// Middleware para parsing de JSON
+app.use(express.json());
+
+// Configurar a pasta 'public' para arquivos estáticos (CSS, JS, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Cookies
-app.use(cookieParser());
 
-// Proxy (Vercel)
-app.set('trust proxy', 1);
 
-/* ================= REDIS / SESSION ================= */
+
+// Adicionar esta linha para configurar o proxy
+app.set('trust proxy', 1); // Necessário para cookies seguros em proxies (como Vercel)
+
+// Configuração do Redis
 const redisClient = new Redis({
     host: 'decent-bulldog-44204.upstash.io', // Substitua pelo host fornecido pelo Upstash
     port: 6379, // Porta padrão do Redis
@@ -39,51 +39,59 @@ const redisClient = new Redis({
     tls: {} // Necessário para conexões seguras
 });
 
+app.use(cookieParser());
+
+// Configuração da sessão
 app.use(session({
-  store: new RedisStore({ client: redisClient }),
-  secret: 'minha-chave-secreta',
-  resave: true,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: 'strict',
-    maxAge: 1000 * 60 * 60
-  }
+    store: new RedisStore({ client: redisClient }),
+    secret: 'minha-chave-secreta', // Altere para uma chave forte
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Garante HTTPS
+        httpOnly: true,
+        sameSite: 'strict', // None para cross-origin em produção
+        maxAge: 1000 * 60 * 60 // 1 hora
+    }
 }));
 
-/* ================= ROTAS DO SITE ================= */
-
+// Usar o router para as views
 app.use('/', viewsRouter);
 
 app.get('/teste', (req, res) => {
-  res.send('Rota de teste funcionando!');
+    res.send('Rota de teste funcionando!');
 });
 
-/* ================= SWAGGER (DEPOIS DAS ROTAS) ================= */
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+//app.use((req, res, next) => {
+// res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+// res.setHeader('Pragma', 'no-cache');
+// res.setHeader('Expires', '0');
+// res.setHeader('Surrogate-Control', 'no-store');
+// next();
+//});
 
-/* ================= MONGODB ================= */
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Conectado'))
-  .catch(err => console.error('Erro ao conectar MongoDB', err));
+/////banco de dados mogondb atlas
+const mongoose = require('mongoose');
 
-/* ================= CORS ================= */
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => console.log("MongoDB Conectado"))
+    .catch(err => console.error("Erro ao conectar MongoDB", err));
+
 
 app.use((req, res, next) => {
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    'https://pedido-de-venda-producao.vercel.app'
-  );
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
+    res.setHeader('Access-Control-Allow-Origin', 'https://pedido-de-venda-producao.vercel.app'); // Substitua pela URL do seu site
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    next();
 });
 
-/* ================= START SERVER ================= */
 
+
+// Iniciar o servidor
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Swagger em http://localhost:${PORT}/docs`);
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

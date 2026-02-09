@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let additionalFiles = [];
 
     // Limite seguro em MB (18 MB para garantir que após codificação base64 não exceda 25 MB)
-    const SAFE_SIZE_LIMIT_MB = 20;
+    const SAFE_SIZE_LIMIT_MB = 25;
 
     // Expressão regular para validar e-mails
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
