@@ -161,7 +161,7 @@ async function getProductsDetails(req, res) {
 }
 
 
-/*function formatProductsFromPriceList(products) {
+function formatProductsFromPriceList(products) {
   let formated = [[
     "LISTA ID - ITEM ID",
     "LISTA NOME",
@@ -201,7 +201,7 @@ async function getProductsDetails(req, res) {
   });
 
   return formated;
-}*/
+}
 
 module.exports = {
     getProductsDetails,

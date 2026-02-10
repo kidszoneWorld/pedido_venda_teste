@@ -1,3 +1,4 @@
+const timestamp = Date.now();
 // ======================================================================
 // 🌍 VARIÁVEIS GLOBAIS
 // ======================================================================
@@ -6,6 +7,9 @@ let promocaoData;
 let foraDeLinhaData;
 let listaPrecosData;
 let icmsSTData;
+let listaPrecosIpiData;
+
+
 
 // Helper DOM
 const el = id => document.getElementById(id);
@@ -13,12 +17,28 @@ const el = id => document.getElementById(id);
 // ======================================================================
 // 📦 CACHE / FETCH DE DADOS INICIAIS
 // ======================================================================
-const timestamp = Date.now();
 
-fetch(`/data/cliente.json?cacheBust=${timestamp}`).then(r => r.json()).then(d => clientesData = d);
-fetch(`/data/Promocao.json?cacheBust=${timestamp}`).then(r => r.json()).then(d => promocaoData = d);
-fetch(`/data/Fora de linha.json?cacheBust=${timestamp}`).then(r => r.json()).then(d => foraDeLinhaData = d);
-fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`).then(r => r.json()).then(d => icmsSTData = d);
+fetch(`/data/Lista-precos.json?cacheBust=${timestamp}`)
+  .then(r => r.json())
+  .then(d => listaPrecosIpiData = d);
+
+fetch(`/data/cliente.json?cacheBust=${timestamp}`)
+  .then(r => r.json())
+  .then(d => clientesData = d);
+
+fetch(`/data/Promocao.json?cacheBust=${timestamp}`)
+  .then(r => r.json())
+  .then(d => promocaoData = d);
+
+fetch(`/data/Fora de linha.json?cacheBust=${timestamp}`)
+  .then(r => r.json())
+  .then(d => foraDeLinhaData = d);
+
+fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
+  .then(r => r.json())
+  .then(d => icmsSTData = d);
+
+
 
 async function carregarListaPrecos(listaId) {
     const response = await fetch(`/api/lista-preco/${listaId}`);
@@ -48,6 +68,8 @@ const cnpjInvalido = cnpj => /^0+$/.test(cnpj);
 // 🔍 BUSCAS EM CACHE
 // ======================================================================
 function buscarCliente(cnpj) {
+    if (!Array.isArray(clientesData)) return null;
+
     cnpj = ajustarCNPJ(cnpj);
     for (let i = 1; i < clientesData.length; i++) {
         if (ajustarCNPJ(clientesData[i][1].toString()) === cnpj) {
@@ -56,6 +78,7 @@ function buscarCliente(cnpj) {
     }
     return null;
 }
+
 
 function buscarPromocao(cod) {
     for (let i = 1; i < promocaoData.length; i++) {
@@ -186,9 +209,13 @@ cnpjInput1.addEventListener('blur', async function () {
 // ======================================================================
 // 📦 PEDIDO / TABELA
 // ======================================================================
+
+
+
 function atualizarTotais() {
     atualizarTotalProdutos();
     atualizarTotalVolumes();
+    atualizarTotalComImposto();
 }
 
 function garantirLinhaInicial() {
@@ -225,8 +252,7 @@ function zerarCamposPedido() {
         primeiraLinha?.cells[0]?.querySelector('input')?.focus();
     }, 0);
 
-    atualizarTotalVolumes();
-    atualizarTotalProdutos();
+    atualizarTotais();
 }
 
 
@@ -265,6 +291,9 @@ function atualizarTotalVolumes() {
     document.getElementById('volume').value = totalVolumes;
 }
 
+
+
+
 // Função para atualizar o total de produtos (quantidade * valor unitário)
 function atualizarTotalProdutos() {
     let totalProdutos = 0;
@@ -285,16 +314,67 @@ function atualizarTotalProdutos() {
     document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// Função para atualizar o total com imposto de todas as linhas
+function atualizarTotalComImposto() {
+    let total = 0;
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    
+    linhas.forEach(tr => {
+        const cell = tr.cells[8]?.querySelector('input');
+        if (cell && cell.value) {
+            const cellValue = cell.value.replace("R$", "").replace(/\./g, "").replace(",", ".");
+            const valor = parseFloat(cellValue);
+            if (!isNaN(valor)) {
+                total += valor;
+            }
+        }
+    });
+}
+////////////////////////////////////////////////////////////////////////////// garantido até aqui
+
+//Buscar IPI pelo código do item
+function buscarIpiDoItem(codigoItem) {
+    if (!Array.isArray(listaPrecosIpiData) || listaPrecosIpiData.length < 2) {
+        return 0;
+    }
+
+    const header = listaPrecosIpiData[0];
+    const idxCodigo = header.indexOf("ITEM COD");
+    const idxIpi = header.indexOf("IPI");
+
+    if (idxCodigo === -1 || idxIpi === -1) {
+        console.warn('Coluna ITEM COD ou IPI não encontrada');
+        return 0;
+    }
+
+    const linha = listaPrecosIpiData.find(
+        (row, index) =>
+            index > 0 &&
+            String(row[idxCodigo]).trim().toUpperCase() ===
+            String(codigoItem).trim().toUpperCase()
+    );
+
+    if (!linha) return 0;
+
+    const ipi = Number(linha[idxIpi]);
+    return isNaN(ipi) ? 0 : ipi;
+}
+
+
+
+
+
+
 // Função para adicionar uma nova linha à tabela
 function adicionarNovaLinha() {
     const tbody = document.querySelector('#dadosPedido tbody');
     const tr = document.createElement('tr');
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 10; i++) {
         const td = document.createElement('td');
 
         // 🔴 coluna oculta (ItemId)
-        if (i === 7) {
+        if (i === 9) {
             td.style.display = 'none';
         }
 
@@ -314,8 +394,7 @@ function adicionarNovaLinha() {
 
             btn.addEventListener('click', () => {
                 tr.remove();
-                atualizarTotalProdutos();
-                atualizarTotalVolumes();
+                atualizarTotais();
                 garantirLinhaInicial();
             });
 
@@ -440,13 +519,25 @@ if (i === 0) {
             const item = data[0];
             const preco = Number(item.PrecoVenda);
 
+            // ✅ IPI DINÂMICO
+            const ipi = buscarIpiDoItem(cod);
+            const ipiMult = 1 + ipi;
+
             cells[2].value = 'CX';
             cells[3].value = item.ItemDescricao;
-            cells[4].value = preco.toLocaleString('pt-BR', {
+            cells[4].value = (ipi * 100).toFixed(2) + '%';
+
+            const precoComIpi = preco * ipiMult;
+
+            cells[5].value = preco.toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL'
             });
-            //cells[4].value = '3,25%';
+
+            cells[6].value = precoComIpi.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
 
             cells[1].readOnly = false;
             cells[1].focus();
@@ -454,21 +545,15 @@ if (i === 0) {
             cells[1].addEventListener('input', () => {
                 const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
                 const totalLinha = qtd * preco;
+                const totalComIpi = totalLinha * ipiMult;
 
-                cells[4].value = preco.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                });
-
-                cells[5].value = totalLinha.toLocaleString('pt-BR', {
+                cells[7].value = totalComIpi.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL'
                 });
 
                 tr.dataset.itemId = item.ItemId;
-
-                atualizarTotalProdutos();
-                atualizarTotalVolumes();
+                atualizarTotais();
             });
 
         } catch (error) {
@@ -482,6 +567,7 @@ if (i === 0) {
 }
 
 
+
     }
 
     tbody.appendChild(tr);
@@ -493,8 +579,7 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
     let tbody = document.querySelector('#dadosPedido tbody');
     if (tbody.rows.length > 0) {
         tbody.deleteRow(tbody.rows.length - 1);
-        atualizarTotalVolumes();
-        atualizarTotalProdutos();
+        atualizarTotais();
     } else {
         alert("Nenhuma linha para remover");
     }
