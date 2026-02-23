@@ -264,7 +264,10 @@ div.acao-solicitada-container {
     border: 1px solid #1b1a1a;
     padding: 15px;
     padding-left: 10px;
+    display: flex;
+    gap: 15px;
     align-items: center;
+    flex-wrap: nowrap;
 }
 
 .payment-conditions label {
