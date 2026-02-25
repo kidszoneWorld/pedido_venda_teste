@@ -331,8 +331,6 @@ function atualizarListaAnexos() {
         let emailCc = document.getElementById('emailCc').value;
         const emailSubject = emailSubjectInput.value;
         const emailBody = emailBodyInput.value;
-        const emailAttachment = emailAttachmentInput.files;
-
         // Verifica se os campos obrigatórios estão preenchidos
         if (!emailTo || !emailSubject || !emailBody) {
             alert('Por favor, preencha os campos obrigatórios (Para, Assunto e Mensagem).');
@@ -361,55 +359,51 @@ function atualizarListaAnexos() {
             return;
         }
 
-        try {
-            // Fecha o modal imediatamente
-            emailModal.style.display = 'none';
+       try {
+    emailModal.style.display = 'none';
+    showFeedback('Estamos enviando o e-mail, aguarde...');
 
-            // Mostra o feedback
-            showFeedback('Estamos enviando o e-mail, aguarde...');
+    if (!generatedPdfFile) {
+        alert("PDF não gerado.");
+        return;
+    }
 
-            // Converte o PDF gerado para base64
-            const pdfBase64 = await fileToBase64(generatedPdfFile);
+    const pdfBase64 = await fileToBase64(generatedPdfFile);
+    const additionalAttachments = await Promise.all(
+    additionalFiles.map(async file => ({
+        filename: file.name,
+        base64: await fileToBase64(file)
+    }))
+);
+    const response = await fetch('/send-client-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            pdfBase64,
+            additionalAttachments,
+            razaoSocial: document.getElementById('razao_social').value || "Cliente",
+            emailTo,
+            emailCc,
+            subject: emailSubject,
+            message: emailBody
+        })
+    });
 
-            // Converte todos os anexos adicionais para base64
-            const additionalAttachments = await Promise.all(
-                additionalFiles.map(async file => ({
-                    filename: file.name,
-                    base64: await fileToBase64(file)
-                }))
-            );
+    const result = await response.text();
 
-            // Faz a requisição para o servidor
-            const response = await fetch('/send-client-pdf', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    pdfBase64,
-                    razaoSocial: document.getElementById('razao_social').value || "Cliente",
-                    emailTo,
-                    emailCc,
-                    subject: emailSubject,
-                    message: emailBody,
-                    additionalAttachments
-                })
-            });
+    if (response.ok) {
+        alert('E-mail enviado com sucesso!\n\nO cliente receberá um link para download automático do PDF.');
+        document.getElementById('emailForm').reset();
+        generatedPdfFile = null;
+    } else {
+        throw new Error(result);
+    }
 
-            const result = await response.text();
-            if (response.ok) {
-                alert('E-mail enviado com sucesso!\nPara: ' + emailTo + '\nCc: ' + (emailCc || 'Nenhum') + '\nAssunto: ' + emailSubject);
-                document.getElementById('emailForm').reset();
-                generatedPdfFile = null;
-                additionalFiles = [];
-                atualizarListaAnexos();
-            } else {
-                throw new Error(result);
-            }
-        } catch (error) {
-            console.error('Erro ao enviar o e-mail:', error);
-            alert('Erro ao enviar o e-mail: ' + error.message);
-        } finally {
-            // Oculta o feedback após o término (sucesso ou erro)
-            hideFeedback();
-        }
+} catch (error) {
+    console.error('Erro ao enviar o e-mail:', error);
+    alert('Erro ao enviar o e-mail: ' + error.message);
+} finally {
+    hideFeedback();
+}
     });
 });
