@@ -46,11 +46,11 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 fileName: file.name,
-                contentType: file.type
+                fileType: file.type
             })
         });
 
-        const { uploadUrl, fileKey } = await response.json();
+        const { uploadUrl, key } = await response.json();
 
         await fetch(uploadUrl, {
             method: 'PUT',
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return {
             name: file.name,
-            key: fileKey
+            key: key
         };
     }
     // Função para formatar a data no padrão brasileiro (DD-MM-YYYY-hora-HH-MM)

@@ -47,11 +47,15 @@ exports.generateUploadUrl = async (req, res) => {
 exports.sendClientPdf = async (req, res) => {
   try {
     const { files, razaoSocial, emailTo, emailCc, subject, message } = req.body;
-console.log("sendClientPdf FOI CHAMADO");
-console.log("BODY RECEBIDO:", req.body);
+
+    console.log("sendClientPdf FOI CHAMADO");
+    console.log("BODY RECEBIDO:", req.body);
+
     if (!files || !files.length || !emailTo || !subject || !message) {
       return res.status(400).send("Dados incompletos.");
     }
+
+    console.log("📎 Arquivos recebidos:", files);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -65,8 +69,10 @@ console.log("BODY RECEBIDO:", req.body);
       return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/download/${file.key}\n`;
     }).join("\n");
 
-    await transporter.sendMail({
-      from: 'Cadastro clientes KidsZone <kidszoneworldinvestimento@gmail.com>',
+    console.log("📧 Tentando enviar e-mail...");
+
+    const info = await transporter.sendMail({
+      from: "Cadastro de Clientes <kidzonekidszonemail@gmail.com>",
       to: emailTo.split(";").map(email => email.trim()),
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
@@ -81,15 +87,15 @@ ${downloadLinks}
       `
     });
 
-    res.status(200).send("E-mail enviado com sucesso!");
+    console.log("✅ E-mail enviado:", info.response);
+    return res.status(200).send("E-mail enviado com sucesso!");
 
   } catch (error) {
-    console.error("ERRO REAL:", error);
-    res.status(500).send(error.message);
+    console.error("❌ ERRO REAL:", error);
+    return res.status(500).send(error.message);
+  }
+  finally {
+    setTimeout(() => emailsRecentes.delete(emailKey), 10000);
   }
 };
  
- 
- //finally {
-//     setTimeout(() => emailsRecentes.delete(emailKey), 10000);
-//   }

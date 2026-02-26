@@ -7,6 +7,7 @@ const Redis = require('ioredis');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const viewsRouter = require('./router/viewsRouter');
+const clientePdfController = require('./controllers/clientePdfController');
 
 
 
@@ -89,6 +90,8 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
 });
+app.post('/generate-upload-url', clientePdfController.generateUploadUrl);
+app.post('/send-client-pdf', clientePdfController.sendClientPdf);
 
 
 
