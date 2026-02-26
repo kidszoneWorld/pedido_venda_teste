@@ -17,6 +17,7 @@ const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorC
 const productController = require('../controllers/productController');
 
 
+
 const router = express.Router();
 
 // Rota para a página inicial
@@ -155,9 +156,10 @@ router.get('/session-test', (req, res) => {
 
 // Rota para envio de PDF
 router.post('/send-pdf', pdfController.sendPdf);
-router.post('/send-client-pdf', clientePdfController.sendClientPdf);
 router.post('/send-pdf-investComercial', pdfInvestComercialController.sendPdf);
 router.post('/send-pdf-investPromotor', pdfInvestPromotorController.sendPdf);
+router.post('/generate-upload-url', clientePdfController.generateUploadUrl);
+router.post('/send-client-pdf', clientePdfController.sendClientPdf);
 
 
 // Rota para autenticação

@@ -24,8 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let generatedPdfFile = null;
     let additionalFiles = [];
 
-    // Limite seguro em MB (18 MB para garantir que após codificação base64 não exceda 25 MB)
-    const SAFE_SIZE_LIMIT_MB = 25;
+
 
     // Expressão regular para validar e-mails
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -41,7 +40,31 @@ document.addEventListener("DOMContentLoaded", () => {
         const emails = emailString.split(';').map(email => email.trim()).filter(email => email);
         return emails.every(email => isValidEmail(email));
     }
+    async function uploadFileToR2(file) {
+        const response = await fetch('/generate-upload-url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fileName: file.name,
+                contentType: file.type
+            })
+        });
 
+        const { uploadUrl, fileKey } = await response.json();
+
+        await fetch(uploadUrl, {
+            method: 'PUT',
+            body: file,
+            headers: {
+                'Content-Type': file.type
+            }
+        });
+
+        return {
+            name: file.name,
+            key: fileKey
+        };
+    }
     // Função para formatar a data no padrão brasileiro (DD-MM-YYYY-hora-HH-MM)
     function formatarDataBrasileira() {
         const agora = new Date();
@@ -135,16 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
             buttonPdf.style.display = 'block';
             selector.style.display = 'inline-block';
         }
-    }
-
-    // Função para converter um arquivo em base64
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
     }
 
     // Função para atualizar a lista de arquivos no tooltip
@@ -349,16 +362,6 @@ function atualizarListaAnexos() {
             return;
         }
 
-        // Calcula o tamanho total dos anexos
-        const totalSizeMB = parseFloat(calcularTamanhoTotal());
-
-        // Verifica se o tamanho total excede o limite seguro
-        if (totalSizeMB > SAFE_SIZE_LIMIT_MB) {
-            sizeLimitMessage.textContent = `Os arquivos passam de ${totalSizeMB} MB. O limite do Gmail é de ${SAFE_SIZE_LIMIT_MB} MB. Por favor, envie uma quantidade menor neste e-mail e envie outro e-mail com os outros arquivos na sequência.`;
-            sizeLimitModal.style.display = 'block';
-            return;
-        }
-
        try {
     emailModal.style.display = 'none';
     showFeedback('Estamos enviando o e-mail, aguarde...');
@@ -367,26 +370,25 @@ function atualizarListaAnexos() {
         alert("PDF não gerado.");
         return;
     }
+    const uploadedPdf = await uploadFileToR2(generatedPdfFile);
 
-    const pdfBase64 = await fileToBase64(generatedPdfFile);
-    const additionalAttachments = await Promise.all(
-    additionalFiles.map(async file => ({
-        filename: file.name,
-        base64: await fileToBase64(file)
-    }))
+// Upload anexos adicionais
+const uploadedAttachments = await Promise.all(
+    additionalFiles.map(file => uploadFileToR2(file))
 );
-    const response = await fetch('/send-client-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            pdfBase64,
-            additionalAttachments,
-            razaoSocial: document.getElementById('razao_social').value || "Cliente",
-            emailTo,
-            emailCc,
-            subject: emailSubject,
-            message: emailBody
-        })
+    const allFiles = [uploadedPdf, ...uploadedAttachments];
+
+const response = await fetch('/send-client-pdf', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        files: allFiles,
+        razaoSocial: document.getElementById('razao_social').value || "Cliente",
+        emailTo,
+        emailCc,
+        subject: emailSubject,
+        message: emailBody
+    })
     });
 
     const result = await response.text();

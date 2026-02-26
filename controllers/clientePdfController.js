@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client} = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const crypto = require("crypto");
 
 let emailsRecentes = new Map();
@@ -13,117 +14,82 @@ const s3 = new S3Client({
     secretAccessKey: process.env.R2_SECRET_KEY,
   },
 });
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
-exports.sendClientPdf = async (req, res) => {
-console.log("Tamanho do body:", JSON.stringify(req.body).length);
-
-    const { pdfBase64, additionalAttachments, razaoSocial, emailTo, emailCc, subject, message } = req.body;
-
-  if (!pdfBase64 || !razaoSocial || !emailTo || !subject || !message) {
-    return res.status(400).send('Dados incompletos.');
-  }
-
-  const emailKey = `${razaoSocial}-${emailTo}-${subject}-${Date.now()}`;
-
-  if (emailsRecentes.has(emailKey)) {
-    return res.status(429).send('E-mail já enviado recentemente.');
-  }
-
+exports.generateUploadUrl = async (req, res) => {
   try {
-    emailsRecentes.set(emailKey, Date.now());
+    const { fileName, fileType } = req.body;
 
-    // 🔥 1️⃣ Gerar ID único
-    const fileId = crypto.randomUUID() + ".pdf";
+    if (!fileName || !fileType) {
+      return res.status(400).json({ error: "Dados incompletos" });
+    }
 
-    // 🔥 2️⃣ Converter base64 para buffer
-    const pdfBuffer = Buffer.from(pdfBase64.split(",")[1], "base64");
+    const key = `clientes/${Date.now()}-${fileName}`;
 
-    // 🔥 Upload anexos adicionais
-let uploadedFiles = [];
-
-if (additionalAttachments && additionalAttachments.length > 0) {
-  for (const file of additionalAttachments) {
-
-    const fileId = crypto.randomUUID() + "-" + file.filename;
-    const buffer = Buffer.from(file.base64.split(",")[1], "base64");
-
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: "cadastro-clientes",
-        Key: fileId,
-        Body: buffer,
-        ContentType: "application/octet-stream"
-      })
-    );
-
-    const fileLink = `${process.env.DOWNLOAD_BASE_URL}/download/${fileId}`;
-uploadedFiles.push({
-  name: file.filename,
-  link: fileLink
-});
-  }
-}
-
-    // 🔥 3️⃣ Upload para R2
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: "cadastro-clientes",
-        Key: fileId,
-        Body: pdfBuffer,
-        ContentType: "application/pdf"
-      })
-    );
-
-    // 🔥 4️⃣ Gerar link de download (Worker)
-    const downloadLink = `${process.env.DOWNLOAD_BASE_URL}/download/${fileId}`;
-
-
-    let attachmentsText = `PDF Pedido:\n${downloadLink}\n\n`;
-
-if (uploadedFiles.length > 0) {
-  attachmentsText += `Anexos adicionais:\n`;
-
-  uploadedFiles.forEach(file => {
-    attachmentsText += `- ${file.name}\n${file.link}\n\n`;
-  });
-}
-
-    // 🔥 5️⃣ Configurar transporte Gmail
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD
-      }
+    // ✅ AQUI estava faltando isso
+    const putCommand = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      ContentType: fileType,
     });
 
-    const ccEmails = emailCc
-      ? emailCc.split(';').map(email => email.trim())
-      : [];
-    console.log(ccEmails)
-    // 🔥 6️⃣ Enviar email apenas com link
-    console.log("Antes do sendMail");
+    const uploadUrl = await getSignedUrl(s3, putCommand, {
+      expiresIn: 300,
+    });
+
+    res.json({ uploadUrl, key });
+
+  } catch (error) {
+    console.error("Erro ao gerar URL:", error);
+    res.status(500).json({ error: "Erro ao gerar URL" });
+  }
+};
+exports.sendClientPdf = async (req, res) => {
+  try {
+    const { files, razaoSocial, emailTo, emailCc, subject, message } = req.body;
+console.log("sendClientPdf FOI CHAMADO");
+console.log("BODY RECEBIDO:", req.body);
+    if (!files || !files.length || !emailTo || !subject || !message) {
+      return res.status(400).send("Dados incompletos.");
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
+
+    const downloadLinks = files.map(file => {
+      return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/download/${file.key}\n`;
+    }).join("\n");
+
     await transporter.sendMail({
       from: 'Cadastro clientes KidsZone <kidszoneworldinvestimento@gmail.com>',
-      to: emailTo.split(';').map(email => email.trim()),
-      cc: 'ti.kz@kidszoneworld.com.br',
-      subject: subject,
+      to: emailTo.split(";").map(email => email.trim()),
+      cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
+      subject,
       text: `
 ${message}
 
-Baixe os arquivos clicando nos links abaixo:
+Baixe os arquivos abaixo:
 
-${attachmentsText}
+${downloadLinks}
 
 (O download será iniciado automaticamente.)
-`
+      `
     });
-console.log("Depois do sendMail");
-    res.status(200).send('E-mail enviado com sucesso!');
+
+    res.status(200).send("E-mail enviado com sucesso!");
+
   } catch (error) {
-  console.error("ERRO REAL:", error);
-  res.status(500).send(error.message);
- }//finally {
+    console.error("ERRO REAL:", error);
+    res.status(500).send(error.message);
+  }
+};
+ 
+ 
+ //finally {
 //     setTimeout(() => emailsRecentes.delete(emailKey), 10000);
 //   }
-};
