@@ -78,7 +78,7 @@ exports.sendClientPdf = async (req, res) => {
     });
 
     const downloadLinks = files.map(file => {
-      return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/download/${file.key}\n`;
+      return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/baixar/${file.key}\n`;
     }).join("\n");
 
     console.log("📧 Tentando enviar e-mail...");
