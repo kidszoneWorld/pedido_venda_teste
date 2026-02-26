@@ -20,11 +20,23 @@ exports.generateUploadUrl = async (req, res) => {
   try {
     const { fileName, fileType } = req.body;
 
+  //  substitui espaços por "-"
+
+    const normalizeFileName = (name) => {
+  return name
+    .normalize("NFD") // separa acentos
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/\s+/g, "-") // espaço vira "-"
+    .replace(/[^a-zA-Z0-9.-]/g, "") // remove caracteres especiais
+    .toLowerCase();
+};
+  const safeFileName = normalizeFileName(fileName);
+
     if (!fileName || !fileType) {
       return res.status(400).json({ error: "Dados incompletos" });
     }
 
-    const key = `clientes/${Date.now()}-${fileName}`;
+    const key = `clientes/${Date.now()}-${safeFileName}`;
 
     // ✅ AQUI estava faltando isso
     const putCommand = new PutObjectCommand({
