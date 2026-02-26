@@ -394,7 +394,7 @@ const response = await fetch('/send-client-pdf', {
     const result = await response.text();
 
     if (response.ok) {
-        alert('E-mail enviado com sucesso!\n\nO cliente receberá um link para download automático do PDF.');
+        alert('E-mail enviado com sucesso!');
         document.getElementById('emailForm').reset();
         generatedPdfFile = null;
     } else {
