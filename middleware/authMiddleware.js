@@ -1,5 +1,4 @@
 const { writeAuditLog } = require('../utils/auditLogger');
-
 const REPRESENTANTES = require('../public/data/representantes.json');
 
 const ADMIN_EMAILS = [
@@ -29,7 +28,7 @@ function authMiddleware(req, res, next) {
         return next();
     }
 
-    res.redirect('/login2');
+    return res.redirect('/login2');
 }
 
 function adminMiddleware(req, res, next) {
@@ -47,54 +46,66 @@ function adminMiddleware(req, res, next) {
 function authenticateUser(req, res) {
     const { email, senha } = req.body;
 
-    if (REPRESENTANTES[email]) {
-        const user = REPRESENTANTES[email];
-        const passwordField = getPasswordField(email);
-
-        if (passwordField && senha === user[passwordField]) {
-            req.session.isAuthenticated = true;
-            req.session.user = user;
-            req.session.userEmail = email;
-            req.session.isAdmin = ADMIN_EMAILS.includes(email);
-
-            if (email.startsWith("rep")) {
-                req.session.userNumero = user.numero;
-            }
-
-            writeAuditLog({
-    usuario: email,
-    acao: 'LOGIN',
-    detalhes: 'Login realizado com sucesso',
-    ip: req.ip,
-    sucesso: true
-});
-
-console.log(`Usuário autenticado: ${email}`);
-return res.redirect("/");
-        } else {
-            writeAuditLog({
-    usuario: email,
-    acao: 'LOGIN',
-    detalhes: 'Tentativa com senha incorreta',
-    ip: req.ip,
-    sucesso: false
-});
-
-console.warn('Senha incorreta');
-return res.redirect('/error-401');
-        }
-    } else {
+    if (!REPRESENTANTES[email]) {
         writeAuditLog({
-    usuario: email,
-    acao: 'LOGIN',
-    detalhes: 'Usuário não encontrado',
-    ip: req.ip,
-    sucesso: false
-});
+            usuario: email,
+            acao: 'LOGIN',
+            detalhes: 'Usuário não encontrado',
+            ip: req.ip,
+            sucesso: false
+        });
 
-console.warn('Usuário não encontrado');
-return res.redirect('/error-404');
+        console.warn('Usuário não encontrado');
+        return res.redirect('/error-404');
     }
+
+    const user = REPRESENTANTES[email];
+    const passwordField = getPasswordField(email);
+
+    if (!passwordField || senha !== user[passwordField]) {
+        writeAuditLog({
+            usuario: email,
+            acao: 'LOGIN',
+            detalhes: 'Tentativa com senha incorreta',
+            ip: req.ip,
+            sucesso: false
+        });
+
+        console.warn('Senha incorreta');
+        return res.redirect('/error-401');
+    }
+
+    req.session.isAuthenticated = true;
+    req.session.user = user;
+    req.session.userEmail = email;
+    req.session.isAdmin = ADMIN_EMAILS.includes(email);
+
+    if (email.startsWith("rep")) {
+        req.session.userNumero = user.numero;
+    }
+
+    writeAuditLog({
+        usuario: email,
+        acao: 'LOGIN',
+        detalhes: 'Login realizado com sucesso',
+        ip: req.ip,
+        sucesso: true
+    });
+
+    return req.session.save((err) => {
+        if (err) {
+            console.error('Erro ao salvar sessão:', err);
+            return res.status(500).send('Erro ao salvar sessão.');
+        }
+
+        console.log(`Usuário autenticado: ${email}`);
+        return res.redirect('/');
+    });
 }
 
-module.exports = { authMiddleware, adminMiddleware, authenticateUser, getPasswordField };
+module.exports = {
+    authMiddleware,
+    adminMiddleware,
+    authenticateUser,
+    getPasswordField
+};

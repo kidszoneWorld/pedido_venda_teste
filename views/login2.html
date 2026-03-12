@@ -8,8 +8,8 @@
     <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
     <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
     <link rel="manifest" href="/images/site.webmanifest">
-    <link rel="stylesheet" href="/css/login2.css?v=1773333110273">
-    <link rel="stylesheet" href="/css/login2.css?v=1773333110273">
+    <link rel="stylesheet" href="/css/login2.css?v=1773334081433">
+    <link rel="stylesheet" href="/css/login2.css?v=1773334081433">
 
 </head>
 <body>  
@@ -41,15 +41,13 @@
                     body: JSON.stringify({ email, senha })
                 });
     
-                if (response.redirected) {
-                    window.location.href = response.url; // Segue o redirecionamento do servidor
-                } else if (response.ok) {
-                    window.location.href = '/'; // Redireciona após login bem-sucedido
-                }
-            } catch (error) {
-                console.error('Erro ao tentar autenticar:', error);
-                alert('Erro ao tentar autenticar. Tente novamente mais tarde.');
-            }
+               if (response.redirected) {
+    window.location.assign(response.url);
+} else if (response.ok) {
+    window.location.assign('/');
+} else {
+    alert('Falha no login.');
+}
         });
     </script>
 </body>

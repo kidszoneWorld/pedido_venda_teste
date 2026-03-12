@@ -1,4 +1,4 @@
-const { getAuditLogs } = require('../utils/auditLogger');
+const { getAuditLogs, writeAuditLog } = require('../utils/auditLogger');
 
 const express = require('express');
 const path = require('path');
