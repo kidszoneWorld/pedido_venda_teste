@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
-    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="manifest" href="/images/site.webmanifest">
-    <link rel="stylesheet" href="/css/login2.css?v=1773334081433">
-    <link rel="stylesheet" href="/css/login2.css?v=1773334081433">
-
+    <link rel="stylesheet" href="/css/login2.css?v=1773334397842">
 </head>
-<body>  
+<body>
     <form id="loginForm">
         <img class="imagem" src="/images/logo.png" alt="Imagem KidsZone">
+
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
-        
+
         <label for="senha">Senha:</label>
         <input type="password" id="senha" name="senha" required>
 
@@ -26,28 +25,36 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevenir submissão padrão do formulário
-    
+            event.preventDefault();
+
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-    
+
             try {
                 const response = await fetch('/auth', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    credentials: 'include', // Garantir envio e recepção de cookies
+                    credentials: 'include',
                     body: JSON.stringify({ email, senha })
                 });
-    
-               if (response.redirected) {
-    window.location.assign(response.url);
-} else if (response.ok) {
-    window.location.assign('/');
-} else {
-    alert('Falha no login.');
-}
+
+                if (response.redirected) {
+                    window.location.assign(response.url);
+                    return;
+                }
+
+                if (response.ok) {
+                    window.location.assign('/');
+                    return;
+                }
+
+                alert('Falha no login.');
+            } catch (error) {
+                console.error('Erro ao fazer login:', error);
+                alert('Erro ao tentar fazer login. Tente novamente.');
+            }
         });
     </script>
 </body>
