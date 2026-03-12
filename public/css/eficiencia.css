@@ -1,0 +1,457 @@
+
+/* Animação de inversão de lado */
+@keyframes inverterLado {
+    0%, 100% {
+        transform: rotateY(0deg); /* Lado frontal */
+    }
+    50% {
+        transform: rotateY(180deg); /* Lado de trás */
+    }
+}
+
+@keyframes go-back {
+    0% {
+        transform: rotateZ(2deg);
+    }
+    100% {
+        
+        transform: rotateZ(-2deg);
+        
+    }
+  }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    /*background-color: #f4f4f4;*/
+    background-color: #caccc6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.header-logo {
+    flex: 0 0 auto;
+    margin-right: 20px;
+}
+
+.header-logo img {
+    width: 70px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.header h3 {
+    margin: 0;
+    text-align: center;
+    flex: 1;
+}
+
+.codigo-item {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.codigo-item label {
+    margin-right: 10px;
+}
+
+.codigo-item input {
+    width: 300px;
+    font-size: 1em;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #242323;
+    border-radius: 4px;
+}
+
+.descricao, .positivacao, .sellIn, .invest, .mercado, .sellOut{
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #242323;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.descricao h3, .positivacao h3, .sellIn h3, .invest h3, .mercado h3, .sellOut h3 {
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+    margin: 0 0 10px 0;
+    border-radius: 4px;
+}
+
+.descricao-container {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 20px; /* Espaço entre as divisões */
+}
+
+.descricao {
+    flex: 1;
+    width: 50%; /* Cada divisão ocupa 50% */
+    min-width: 0; /* Garante que não ocorra estouro de largura */
+    
+}
+
+input, textarea {
+    width: 100%;
+    font-size: 125%;
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+textarea {
+    resize: none;
+    font-size: 135%;
+    color:rgba(225,0,152);
+    font-weight: bold;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    border: 1px solid #979595;
+    padding: 10px;
+    text-align: left;
+}
+
+table th {
+    background-color: #333;
+    color: #ffffff;
+}
+
+img {
+    display: block;
+   /* max-width: 100%;*/
+    width: 120%;
+    height: 50px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    
+}
+
+.imagem-produto {
+    flex: 1;
+    width: 50%; /* Cada divisão ocupa 50% */
+    text-align: center;
+    min-width: 0; /* Garante que não ocorra estouro de largura */
+    color:rgba(225,0,152);
+    font-weight: bold;
+}
+
+.imagem-produto img {
+    max-width: 100%; /* A imagem se ajusta ao contêiner */
+    width: 80%;
+    height: 350px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    animation: go-back 2s infinite alternate;
+    /*animation: inverterLado 30s linear infinite; /* Duração de 3 segundos, linear e looping infinito */
+   /* transform-style: preserve-3d; /* Mantém o efeito 3D */
+    /*backface-visibility: hidden; /* Evita mostrar o verso ao girar */
+    display: block;
+    margin: 0 auto;
+    transform-origin: center; /* Define o ponto central para a rotação */
+   
+}
+
+    .imagem-produto a {
+        display: inline-block;
+        text-decoration: none; /* Remove sublinhado */
+    }
+
+    .imagem-produto a:hover img {
+        transform: scale(1.1); /* Aumenta a imagem em 10% */
+        transition: transform 0.3s ease; /* Suaviza a transição */
+        border: 2px solid rgba(225, 0, 152); /* Adiciona uma borda */
+    }
+
+    .imagem-produto a:hover {
+        cursor: pointer; /* Muda o cursor para "mãozinha" */
+    }
+
+/* Container do link */
+.tooltip-container {
+    position: relative; /* Necessário para posicionar a tooltip */
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* Tooltip personalizada */
+.tooltip {
+    visibility: hidden; /* Esconde por padrão */
+    position: absolute;
+    bottom: 120%; /* Posiciona acima do elemento */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(225, 0, 152, 0.9); /* Fundo da tooltip */
+    color: white; /* Cor do texto */
+    padding: 8px 12px; /* Espaçamento interno */
+    border-radius: 5px; /* Borda arredondada */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: bold; /* Texto em negrito */
+    white-space: nowrap; /* Evita quebra de linha */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Sombra */
+    z-index: 1000; /* Garante que esteja acima de outros elementos */
+    opacity: 0; /* Esconde visualmente */
+    transition: opacity 0.3s ease-in-out; /* Animação suave */
+}
+
+/* Mostra a tooltip ao passar o mouse */
+.tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
+.img_link {
+    width: 70px;
+}
+
+#resultados-busca {
+    display: none; 
+    border: 1px solid rgba(225, 0, 152); 
+    border-radius: 5px; padding: 10px; 
+    background-color: #fff; 
+    max-height: 150px; overflow-y: auto;
+
+}
+
+#resultados-busca {
+    position: absolute;
+    z-index: 1000;
+    width: 36%;
+    background-color: #fff;
+    border: 2px solid rgba(225, 0, 152, 0.6); /* Borda com a cor desejada */
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+#lista-resultados li {
+    color: rgba(225, 0, 152); /* Cor do texto */
+    padding: 8px; /* Espaçamento interno */
+    font-family: Arial, sans-serif; /* Fonte padrão */
+    font-size: 14px; /* Tamanho da fonte */
+    border-bottom: 1px solid #ddd; /* Linha separadora */
+    cursor: pointer; /* Muda o cursor ao passar por cima */
+    transition: background-color 0.2s ease-in-out; /* Suaviza a mudança de cor */
+}
+
+#lista-resultados li:last-child {
+    border-bottom: none; /* Remove a linha no último item */
+}
+
+#lista-resultados li:hover {
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247); /* Mantém a cor do texto */
+}
+
+#codigo{
+    color:rgba(225,0,152);
+    font-weight: bold;
+}
+
+
+footer {
+
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #333;
+    width: 100%;
+ 
+    margin: 0 auto;
+   
+
+}
+
+.link_sites {
+    display: flex;
+    justify-content:center;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 30px;
+   /* padding: 15px;*/
+ 
+ 
+}
+
+
+.link_sites a{
+    display: flex;
+    justify-content:center;
+    color:#ffffff ;
+    text-align: center;
+    padding-left: 20px;
+    text-decoration: none;
+
+}
+
+
+.link_sites a:hover {
+    color:rgba(225,0,152);
+    font-size: 140%;
+    animation: animationButtonSend 1s;
+
+}
+#logoutButton2:hover{
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247);
+    font-size: 140%;
+    animation: animationButtonSend 1s;
+    border:none;
+     
+}
+
+/* Linha de total em destaque */
+tr.total-row td {
+    background-color: #f8c2d6; /* cor de fundo */
+    color: #4a0e24;            /* cor da fonte */
+    font-weight: bold;         /* texto em negrito */
+  }
+
+  /* Sobrescreve a cor de fundo dos inputs na linha de total */
+tr.total-row td input {
+    background-color: #f8c2d6 !important; /* !important para garantir prioridade */
+    color: #4a0e24;
+    font-weight: bold;
+  }
+
+
+  /* Remove bordas, fundo e setinhas do input[type=number] */
+table td input[type="number"],
+table td input[type="text"] {
+  border: none;              /* remove a borda */
+  background-color: transparent;  /* remove fundo */
+  width: 100%;               /* ocupa toda a célula */
+  font-size: 1em;            /* tamanho de fonte igual ao resto */
+  color: #000;               /* cor do texto (ajuste se quiser) */
+  text-align: right;         /* alinha valores à direita (opcional) */
+  outline: none;             /* remove contorno ao focar */
+  padding: 6px 0;          /* 6px em cima e embaixo */
+  margin: 0;                 /* remove margin */
+  /* cursor: text;          // se quiser garantir cursor de texto */
+}
+
+/* Quando o input estiver em foco (digitando) */
+table td input[type="number"]:focus,
+table td input[type="text"]:focus {
+  background-color: #f3e8ff; /* cor levemente destacada, opcional */
+}
+
+/* Remove as setinhas de up/down em inputs numéricos no Chrome/Safari/Edge */
+table td input[type="number"]::-webkit-outer-spin-button,
+table td input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Remove setinhas em Firefox */
+table td input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Se quiser diferenciar o readOnly */
+table td input[readonly] {
+  color: #555; /* cor mais clara para “desabilitado” */
+  background-color: #f9f9f9;
+  cursor: default; /* cursor normal (não indica edição) */
+}
+
+.ano {
+    background-color: #b4b1b1;
+}
+
+.btn-salvar-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0;
+}
+
+#btnSalvarDados {
+    background-color: #e10098;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#btnSalvarDados:hover {
+    background-color: #9f056f;
+    transform: scale(1.15);
+}
+
+.representante{
+    display: none;
+}
+
+
+
+@media (max-width: 768px) {
+    .descricao-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .imagem-produto {
+        text-align: center;
+    }
+
+    .descricao, .imagem-produto {
+        width: 95%; /* Cada divisão ocupa 100% da largura */
+    }
+    #resultados-busca {
+        width: 81%;
+    }
+}

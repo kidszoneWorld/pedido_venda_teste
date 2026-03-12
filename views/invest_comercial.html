@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE - Solicitação de Investimento Comercial</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/invest_comercial.css?v=1773344427987">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427987">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+</head>
+<body id="corpo">
+    <div class="container">
+        <div class="header">
+            <a href="https://kidszoneworld.com.br/portal-do-representante/"><img src="/images/logo.png" alt="Imagem KidsZone"></a>
+            <div class="date"></div>
+            <script>
+                function atualizarDataHora() {
+                    const elementoData = document.querySelector('.date');
+                    const agora = new Date();
+                    const dataFormatada = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    elementoData.textContent = `${dataFormatada} ${horaFormatada}`;
+                    elementoData.style.fontSize = "105%";
+                }
+                atualizarDataHora();
+                setInterval(atualizarDataHora, 1000);
+            </script>
+        </div>
+
+        <div class="button-group">
+            <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">SOLICITAÇÃO DE INVESTIMENTO COMERCIAL - KZ</div>
+            <div class="form-grid">
+                <div>
+                    <label for="cliente">CLIENTE:</label>
+                    <input type="text" id="cliente" >
+                </div>
+                <div>
+                    <label for="cnpj">CNPJ:</label>
+                    <input type="text" id="cnpj" >
+                </div>
+                <div>
+                    <label for="endereco">ENDEREÇO:</label>
+                    <input type="text" id="endereco" >
+                </div>
+                <div>
+                    <label for="telefone">TELEFONE:</label>
+                    <input type="text" id="telefone" >
+                </div>
+                <div>
+                    <label for="responsavel">RESPONSÁVEL:</label>
+                    <input type="text" id="responsavel" >
+                </div>
+                <div>
+                    <label for="cargo">CARGO:</label>
+                    <input type="text" id="cargo" >
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label for="empresa">EMPRESA:</label>
+                    <input type="text" id="empresa" value="KIDS ZONE IMPORTAÇÃO E COM. DE BRINQ. LTDA" readonly>
+                </div>
+                <div>
+                    <label for="empresa_cnpj">CNPJ:</label>
+                    <input type="text" id="empresa_cnpj" value="33.551.721/0002-20" readonly>
+                </div>
+                <div>
+                    <label for="empresa_endereco">ENDEREÇO:</label>
+                    <input type="text" id="empresa_endereco" value="R. Jose Lana - Nº 850 - Brilhante I" readonly>
+                </div>
+                <div>
+                    <label for="empresa_telefone">TELEFONE:</label>
+                    <input type="text" id="empresa_telefone" value="(11) 3065-4372" readonly>
+                </div>
+                <div>
+                    <label for="empresa_responsavel">RESPONSÁVEL:</label>
+                    <input type="text" id="empresa_responsavel" value=" Edmundo Mangueira" readonly>
+                </div>
+                <div>
+                    <label for="empresa_cargo">SETOR:</label>
+                    <input type="text" id="empresa_cargo" value="Comercial" readonly>
+                </div>
+            </div>
+
+            <p class="textwarning">
+                O presente instrumento tem como objetivo firmar acordo entre a KIDS ZONE e seu parceiro, nos termos descritos abaixo:
+            </p>
+        </div>
+
+        <div class="acao-solicitada-container">
+            <label class="acao_solicita" for="acaoSolicita">RESUMO DA AÇÃO SOLICITADA:</label>
+            <input type="text" id="acaoSolicita">
+        </div>
+
+        <div class="section">
+            <div class="section-title investimento">INVESTIMENTOS</div>
+            
+            <div class="form-grid">
+                <div>
+                    <label for="vigencia_inicial">VIGÊNCIA INICIAL:</label>
+                    <input type="text" id="vigencia_inicial" placeholder="Agosto">
+                </div>
+                <div>
+                    <label for="vigencia_final">VIGÊNCIA FINAL:</label>
+                    <input type="text" id="vigencia_final" placeholder="Agosto">
+                </div>
+                <div></div> <!-- Div vazia para ocupar a terceira coluna -->
+            </div>
+
+            <div class="action-table-container">
+                <table class="action-table" border="1">
+                    <thead>
+                        <tr>
+                            <th>TIPO</th>
+                            <th>SELECIONAR</th>
+                            <th>DESCRIÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ambientação</td>
+                            <td><input type="checkbox" id="ambientacao"></td>
+                            <td><input type="text" id="Descrição_ambientacao" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Aniversário da loja</td>
+                            <td><input type="checkbox" id="aniversario_loja"></td>
+                            <td><input type="text" id="Descrição_Aniversário da loja" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Campanha de Incentivo</td>
+                            <td><input type="checkbox" id="campanha_incentivo"></td>
+                            <td><input type="text" id="Descrição_campanha_incentivo" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Encartes</td>
+                            <td><input type="checkbox" id="encartes"></td>
+                            <td><input type="text" id="Descrição_encartes" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Inauguração</td>
+                            <td><input type="checkbox" id="inauguracao"></td>
+                            <td><input type="text" id="Descrição_inauguracao" placeholder="Descrição"></td>
+                        </tr>
+                        <tr>
+                            <td>Introdução</td>
+                            <td><input type="checkbox" id="introducao"></td>
+                            <td><input type="text" id="Descrição_introducao" placeholder="Descrição"></td>
+                         <tr>
+                            <td>Outros</td>
+                            <td><input type="checkbox" id="outros"></td>
+                            <td><input type="text" id="descricao_outros" placeholder="Descrição"></td>
+                        <tr>
+                            <td>Bonificação</td>
+                            <td><input type="checkbox" id="Bonificação"></td>
+                            
+                        <tr>
+                            <td>Abatimento</td>
+                            <td><input type="checkbox" id="abatimento"></td>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="investment-table-container">
+                <table class="investment-table" border="1">
+                    <thead>
+                        <tr>
+                            <th class="parcela">Parcela</th>
+                            <th class="valor">Valor</th>
+                            <th class="valor-pago">Pagamento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="investment-table-body">
+                        <tr>
+                            <td class="parcela"><input type="text" placeholder="Parcela"></td>
+                            <td class="valor" id="valor"><input type="text" placeholder="Valor"></td>
+                            <td class="valor-pago"><input type="text" placeholder="Valor Pago"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="no-print">
+                <button type="button" id="adicionarLinhaInvestimento">Adicionar Linha</button>
+                <button type="button" id="excluirLinhaInvestimento">Remover Linha</button>
+            </div>
+            <div class="payment-conditions">
+                <label for="valor_investimento">Valor do Investimento:</label>
+                <input type="text" id="valor_investimento" >
+                      
+                <label for="valor_total">Valor de compra:</label>
+                <input type="text" id="valor_total" >
+                       
+                <label for="percentual_investimento">% de Investimento/Compra:</label>
+                <input type="text" id="percentual_investimento" >
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="form-grid">
+                <div class="checkbox-group">
+                    <label for="avaliacao">Avaliação Gerentes de Vendas Edmundo / Marcos Sancovsky</label>
+                </div>
+                <div class="checkbox-group">
+                    <label for="aprovado">Aprovado</label>
+                    <input type="checkbox" id="aprovado">
+                </div>
+                <div class="checkbox-group">
+                    <label for="reprovado">Reprovado</label>
+                    <input type="checkbox" id="reprovado">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label for="responsavel_aprovacao">Responsável:</label>
+                    <input type="text" id="responsavel_aprovacao" value="Marcos Sancovsky/Edmundo Mangueira" readonly>
+                    <label for="assinatura">Assinatura</label>
+                    <input type="text" id="assinatura">
+                </div>
+            </div>
+        </div>
+        <div class="observations">
+            <div class="obs-title">OBSERVAÇÕES:</div>
+            <textarea id="observacoes" placeholder="Escreva suas observações aqui..." style="height: 170px;"></textarea>
+        </div>
+    </div>
+
+    <footer>
+        <div class="link_sites">
+            <button id="logoutButton2">Sair</button>
+            <a target="_blank" href="/investPromotor">Ir Para Investimento Promotor</a>
+        </div>
+    </footer>
+
+    <script src="/invest_comercial.js?v=1773344427987"></script>
+    <script src="/pdf_invest_comercial.js?v=1773344427987"></script>
+    <script src="/theme-toggle.js?v=1773344427987"></script>
+  </body> 
+</html>

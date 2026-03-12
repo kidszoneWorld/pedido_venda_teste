@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE-PEDIDOS</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="/css/styles2.css?v=1773344427977">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427977">
+
+    <link rel="stylesheet" href="/css/styles2.css?v=1773344427977">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427977">
+
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+
+</head>
+
+<body id="corpo">
+    <div class="container">
+
+        <div id="customModal" class="modal">
+            <div class="modal-content">
+              <span class="close-button">&times;</span>
+              <h2>Aviso!</h2>
+              <p>Você deseja realmente enviar para o sistema?</p>
+              <button id="confirmButton">Sim</button>
+              <button id="cancelButton">Não</button>
+            </div>
+          </div>
+
+          <div id="customModal1" class="modal1">
+            <div class="modal-content1">
+              <span class="close-button1">&times;</span>
+              <h2>Aviso!</h2>
+              <p>Você deseja realmente enviar o e-mail?</p>
+              <button id="confirmButton1">Sim</button>
+              <button id="cancelButton1">Não</button>
+            </div>
+          </div>
+
+          <div id="blockModal" class="modal">
+            <div class="modal-content">
+              <span class="close-button">&times;</span>
+              <h2>Aviso!</h2>
+              <p>Por favor enviar o pedido para o sistema para liberar um novo cadastro.</p>
+              <p id="timestamp"></p>
+              <button id="okButton">OK</button>
+            </div>
+          </div>
+
+        <div class="header">
+           <a href="https://kidszoneworld.com.br/portal-do-representante/"><img src="/images/logo.png" alt="Imagem KidsZone"></a> 
+            <div class="date"></div> <!-- A data e hora serão inseridas aqui -->
+
+                <script>
+                    // Função para formatar a data e hora
+                    function atualizarDataHora() {
+                        const elementoData = document.querySelector('.date');
+                        const agora = new Date();
+                        const dataFormatada = agora.toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
+                        const horaFormatada = agora.toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        elementoData.textContent = `${dataFormatada} ${horaFormatada}`;
+                        elementoData.style.fontSize="105%";
+
+                    }
+            
+                    // Chama a função inicialmente e depois a cada segundo para manter a hora atualizada
+                    atualizarDataHora();
+                    setInterval(atualizarDataHora, 1000);
+                </script>
+
+            <!-- Mensagem de feedback -->
+            <div id="feedback1" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;">
+                Estamos enviando o pedido, aguarde...
+            </div>
+
+        </div>
+        <div class="button-group">
+            <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL </button>
+            <button id="button_sistema">ENVIAR PARA O SISTEMA</button>
+        </div>
+   
+        <div class="section">
+            <div class="section-title">DADOS DO CLIENTE</div>
+            <form class="form-group">
+
+                <label for="cnpj" class="label-obrigatorio">CNPJ:
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label> 
+                <input type="text" id="cnpj" placeholder="Digite o CNPJ" maxlength="14">
+
+                <label for="representante" class="label-espaco-esquerda">CÓDIGO REP:</label> 
+                <input type="text" id="representante" placeholder="Representante" readonly>
+
+
+
+                  <!-- input escondidos  -->
+                <label for="representanteId" class="esconder">Rep ID:</label> 
+                <input type="text" class="esconder" id="representanteId" placeholder="Rep ID" readonly>
+
+                <label for="formPagId" class="esconder">Forma de pagamento ID:</label> 
+                <input type="text" class="esconder" id="formPagId" placeholder="formPag ID" readonly>
+
+                <label for="condPagId" class="esconder">Condição de pagamento ID:</label> 
+                <input type="text" class="esconder" id="condPagId" placeholder="condPag ID" readonly>
+
+                <label for="PercentualComissaoItem" class="esconder"> % comissao item:</label> 
+                <input type="text" class="esconder" id="PercentualComissaoItem" placeholder="% comissao item" readonly>
+
+                <label for="PercentualComissaoServico" class="esconder"> % comissao servico:</label> 
+                <input type="text" class="esconder" id="PercentualComissaoServico" placeholder="% comissao servico" readonly>
+
+                <label for="ContatoClienteId" class="esconder"> contato id:</label> 
+                <input type="text" class="esconder" id="ContatoClienteId" placeholder="contato id" readonly>
+
+                <label class="esconder" for="email_rep">Email_Rep</label> 
+                <input type="text" class="esconder" id="email_rep" placeholder="Descrição Grupo" readonly>
+
+                  <!-- input escondidos  -->
+
+
+
+                <label class="IE" for="ie">INSCRIÇÃO ESTADO:</label> 
+                <input type="text" id="ie" placeholder="Inscrição Estadual" readonly>
+
+                <label class="label-espaco-esquerda label-obrigatorio" for="tipo_pedido">TIPO PEDIDO:
+                     <span class="tooltip2">Campo Obrigatório</span>
+                </label>
+                <select id="tipo_pedido">
+                    <option value="Venda">Venda</option>
+                  <!--  <option value="Promoção">Promoção</option> -->
+                    <option value="Bonificação">Bonificação</option>
+                </select>
+
+                <label for="razao_social" >RAZÃO SOCIAL:</label> 
+                <input type="text" id="razao_social" placeholder="Razão Social" readonly>
+
+                <label for="cod_cliente" class="label-espaco-esquerda">CÓD CLIENTE:</label> 
+                <input type="text" id="cod_cliente" placeholder="Código Cliente" readonly>
+
+                <label for="endereco">ENDEREÇO:</label> 
+                <input type="text" id="endereco" placeholder="Endereço"readonly>
+
+                <label for="bairro" class="label-espaco-esquerda">BAIRRO:</label> 
+                <input type="text" id="bairro" placeholder="Bairro" readonly>
+
+                <label for="cidade">CIDADE:</label> 
+                <input type="text" id="cidade" placeholder="Cidade"readonly>
+
+                <label for="uf" class="label-espaco-esquerda">UF:</label> 
+                <input type="text" id="uf" placeholder="UF" maxlength="2" readonly>
+
+                <label for="cep">CEP:</label> 
+                <input type="text" id="cep" placeholder="CEP" readonly>
+
+                <label for="telefone" class="label-espaco-esquerda">TELEFONE:</label> 
+                <input type="text" id="telefone" placeholder="Telefone"readonly>
+
+                <label for="email">E-MAIL:</label> 
+                <input type="text" id="email" placeholder="E-mail" readonly>
+
+                <label for="email_fiscal" class="label-espaco-esquerda">E-MAIL FISCAL:</label> 
+                <input type="text" id="email_fiscal" placeholder="E-mail Fiscal" readonly>
+
+                <label for="pay">CONDIÇÃO PGTO:</label> 
+                <input type="text" id="pay" placeholder=" Condição de pagamento" readonly>
+
+                <label for="transp" class="label-espaco-esquerda" >TRANSPORTE:</label> 
+                <input type="text" id="transp" placeholder="Transportadora" readonly>
+
+                <label class="spaceInputCod" class="label-espaco-esquerda" for="codgroup">CÓDIGO TABELA:</label> 
+                <input type="text" id="codgroup" placeholder="Código Tabela" readonly>
+
+                <label class="label-espaco-esquerda" for="group">TABELA:</label> 
+                <input type="text" id="group" placeholder="Descrição Grupo" readonly>
+
+                <label  for="formPagDescricao">FORMA PAGAMENTO:</label> 
+                <input type="text" id="formPagDescricao" placeholder="Forma de Pagamento" readonly>
+
+                <label class="label-espaco-esquerda label-referencia" for="referencia">ORDEM DE COMPRA:
+                    <span class="tooltip1">Digite a ordem de compra do cliente</span>
+                </label> 
+                <input type="text" id="referencia" placeholder="Digite o numero do pedido do cliente (opcional) ">
+
+            </form>
+        </div>
+
+        <div class="section">
+            <div class="section-title">DADOS PEDIDO</div>
+            <div class="no-print">
+             <button type="button" id="adicionarLinha" hidden>Adicionar Linha</button>  
+                <button type="button"   id="excluirLinha" hidden>Remover Linha</button>
+            </div>
+            <div class="table-container">
+                <table id="dadosPedido" border="1" class="table">
+                    <thead>
+                        <tr>
+                            <th class="cod">CÓD</th>
+                            <th class="qtd">QTD</th>
+                            <th class="uv" >UV</th>
+                            <th class="pack">Excluir</th>
+                            <th class="descricao">DESCRIÇÃO</th>
+                            <th class="ipi">IPI</th>
+                            <th class="unit">R$ UNIT.</th>
+                            <th class="vipi">R$ C/ IPI</th>
+                            <th class="total" >TOTAL R$</th>
+                            <th class="itemId" id="esconder">Item ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+        <!-- Seção de Condição de Pagamento -->
+        <div class="payment-conditions">
+            <center>
+                <label for="volume">VOLUMES:</label> 
+                <input type="text" id="volume" readonly>
+                
+                <label for="total">TOTAL PRODUTOS:</label> 
+                <input type="text" id="total" readonly>
+
+                <label for="totalComIpi">TOTAL C/IPI:</label> 
+                <input type="text" id="totalComIpi" readonly>
+            </center>
+
+        </div>
+
+        <!-- Seção de Observações -->
+        <div class="observations">
+            <div class="obs-title">OBSERVAÇÕES</div>
+            <textarea id="observation" placeholder="Escreva alguma observação"></textarea>
+        </div>
+
+        <div id="helpContainer">
+            <div id="helpIcon" class="help-icon">
+                <img src="/images/whatsapp.png" alt="WhatsApp">
+                <span>Precisa de ajuda?</span>
+            </div>
+            <div id="overlay" class="overlay"></div> <!-- Overlay para desfoque -->
+            <div id="helpModal" class="help-modal">
+                <div class="help-modal-content">
+                    <h2>Precisa de Ajuda?</h2>
+                    <p id="tutorialLink">Ir para o <a href="/video" target="_blank">Tutorial do site</a></p>
+                    <ul id="whatsappList">
+                        <li>
+                            <a href="https://wa.me/5511933379433?text=Olá%20estou%20usando%20o%20site%20de%20pedidos%20de%20venda%20e%20estou%20com%20uma%20dúvida,%20poderia%20me%20ajudar?" 
+                                target="_blank">
+                                Falar com o T.I.
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://wa.me/5511932974527?text=Olá%20estou%20usando%20o%20site%20de%20pedidos%20de%20venda%20e%20estou%20com%20uma%20dúvida,%20poderia%20me%20ajudar?" 
+                                target="_blank">
+                                Falar com o Comercial.
+                            </a>
+                        </li> 
+                    </ul>
+                    <button id="closeModal" class="close-modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+
+    <footer>
+        <div class="link_sites">
+
+            <!-- Toggle switch -->
+            <label class="theme-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+
+           <button id="logoutButton2">Sair</button>
+           <a target="_blank" href="/admin">Área T.I.</a>
+           <a target="_blank" href="/comercial">Área Comercial</a>
+           <a target="_blank" href="/logistica03">Área logística</a>
+           <a target="_blank" href="/detalhesProdutos">Detalhes do Produto</a>
+           <a target="_blank" href="/cadastroCliente">Cadastrar Cliente</a>
+           <a target="_blank" href="/investComercial">Investimento</a>
+        </div>
+        
+    </footer>
+    
+
+    <script src="/script.js?v=1773344427977"></script>
+    <script  src="/pdf.js?v=1742259354185"></script>
+    <script src="/theme-toggle.js?v=1773344427977"></script>
+
+    <script src="/script.js?v=1773344427977"></script>
+    <script  src="/pdf.js?v=1742259354185"></script>
+    <script src="/theme-toggle.js?v=1773344427977"></script>
+
+
+    <script>
+         // Função para limpar dados do usuário e redirecionar para a página de login
+        document.getElementById('logoutButton2').addEventListener('click', async () => {
+            // Limpa os dados locais
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Faz a requisição ao servidor para destruir a sessão
+            await fetch('/logout', { method: 'POST' });
+
+            // Limpa cookies manualmente (como precaução)
+            document.cookie.split(";").forEach(cookie => {
+                document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+            });
+
+            // Redireciona para a página de login
+            window.location.href = '/login2';
+        });
+    </script>
+
+</body>
+</html>

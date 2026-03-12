@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eficiência dos Clientes</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+  <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+  <link rel="manifest" href="/images/site.webmanifest">
+  <link rel="stylesheet" href="/css/eficiencia.css?v=1773344427953">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-logo">
+        <a href="https://kidszoneworld.com.br/portal-do-representante/">
+          <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+        </a>
+      </div>
+      <h3>EFICIENCIA KZ - ANALISE POR CLIENTE</h3>
+    </div>
+    <div class="codigo-item">
+      <label for="cnpj">Digite o CNPJ:</label>
+      <input type="text" id="cnpj" placeholder="Digite o CNPJ">
+      <div class="btn-salvar-container">
+        <button id="btnSalvarDados">Salvar Dados</button>
+      </div>
+    </div>
+  
+
+    <div class="descricao-container">
+        <div class="descricao">
+          <label for="codgroup">CÓDIGO CLIENTE:</label>
+          <input type="text" id="codgroup" placeholder="Código do Cliente" readonly>
+        </div>
+        <div class="descricao">
+          <label for="cliente">CLIENTE:</label>
+          <input type="text" id="cliente" placeholder="Nome do Cliente" readonly>
+        </div>
+
+        <div class="representante">
+          <label for="rep">REPRESENTANTE:</label>
+          <input type="text" id="rep" placeholder="rep" readonly>
+        </div>
+
+        <div class="descricao">
+          <label for="nomeRep">REPRESENTANTE:</label>
+          <input type="text" id="nomeRep" placeholder="Nome do Representante" readonly>
+        </div>
+        
+    </div>
+
+    
+    <!-- Seção Positivação -->
+    <div class="positivacao">
+      <h3>Positivação :</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>Meta</th>
+            <th>Realizado</th>
+            <th>% Atingido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ano" id="positivacao_ano_jan">Jan/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_jan"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_jan"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_jan" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_fev">Fev/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_fev"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_fev"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_fev" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_mar">Mar/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_mar"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_mar"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_mar" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_abr">Abr/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_abr"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_abr"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_abr" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_mai">Mai/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_mai"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_mai"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_mai" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_jun">Jun/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_jun"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_jun"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_jun" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_jul">Jul/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_jul"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_jul"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_jul" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_ago">Ago/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_ago"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_ago"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_ago" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_set">Set/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_set"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_set"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_set" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_out">Out/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_out"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_out"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_out" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_nov">Nov/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_nov"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_nov"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_nov" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="positivacao_ano_dev">Dev/25</td>
+            <td><input type="number" class="meta" id="positivacao_Meta_dev"/></td>
+            <td><input type="number" class="realizado" id="positivacao_Realizado_dev"/></td>
+            <td><input type="text" class="atingido" id="positivacao_Atingido_dev" readonly /></td>
+          </tr>
+          <tr class="total-row">
+            <td class="total-linha">TOTAL:</td>
+            <td><input type="text" class="meta-total" id="positivacao_Meta-total_total" readonly /></td>
+            <td><input type="text" class="realizado-total" id="positivacao_Realizado-total_total" readonly /></td>
+            <td><input type="text" class="atingido-total" id="positivacao_Atingido-total_total" readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Seção Sell in -->
+    <div class="sellIn">
+      <h3>Sell in:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>Meta</th>
+            <th>Realizado</th>
+            <th>% Atingido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ano" id="sellIn_ano_jan">Jan/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_jan"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_jan"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_jan" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_fev">Fev/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_fev"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_fev"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_fev" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_mar">Mar/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_mar"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_mar"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_mar" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_abr">Abr/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_abr"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_abr"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_abr" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_mai">Mai/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_mai"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_mai"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_mai" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_jun">Jun/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_jun"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_jun"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_jun" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_jul">Jul/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_jul"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_jul"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_jul" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_ago">Ago/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_ago"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_ago"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_ago" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_set">Set/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_set"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_set"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_set" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_out">Out/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_out"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_out"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_out" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_nov">Nov/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_nov"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_nov"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_nov" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellIn_ano_dev">Dev/25</td>
+            <td><input type="number" class="meta" id="sellIn_Meta_dev"/></td>
+            <td><input type="number" class="realizado" id="sellIn_Realizado_dev"/></td>
+            <td><input type="text" class="atingido" id="sellIn_Atingido_dev" readonly /></td>
+          </tr>
+          <tr class="total-row">
+            <td class="total-linha">TOTAL:</td>
+            <td><input type="text" class="meta-total" id="sellIn_Meta-total_total" readonly /></td>
+            <td><input type="text" class="realizado-total" id="sellIn_Realizado-total_total" readonly /></td>
+            <td><input type="text" class="atingido-total" id="sellIn_Atingido-total_total" readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Seção Investimentos -->
+    <div class="invest">
+      <h3>Investimentos (bonf. + desconto) :</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>Realizado</th>
+            <th>% Base fat</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ano" id="invest_ano_jan">Jan/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_jan"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_jan" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_fev">Fev/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_fev"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_fev" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_mar">Mar/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_mar"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_mar" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_abr">Abr/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_abr"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_abr" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_mai">Mai/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_mai"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_mai" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_jun">Jun/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_jun"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_jun" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_jul">Jul/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_jul"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_jul" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_ago">Ago/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_ago"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_ago" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_set">Set/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_set"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_set" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_out">Out/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_out"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_out" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_nov">Nov/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_nov"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_nov" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="invest_ano_dev">Dev/25</td>
+            <td><input type="number" class="realizado" id="invest_Realizado_dev"/></td>
+            <td><input type="text" class="atingido" id="invest_Atingido_dev" readonly /></td>
+          </tr>
+          <tr class="total-row">
+            <td class="total-linha">TOTAL:</td>
+            <td><input type="text" class="realizado-total" id="invest_Realizado-total_total" readonly /></td>
+            <td><input type="text" class="atingido-total" id="invest_Atingido-total_total" readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Seção Fatia no Mercado -->
+    <div class="mercado">
+      <h3>Fatia no mercado :</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>KZ</th>
+            <th>Demais</th>
+            <th>% Fatia KZ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ano" id="mercado_ano_jan">Jan/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_jan"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_jan"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_jan" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_fev">Fev/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_fev"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_fev"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_fev" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_mar">Mar/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_mar"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_mar"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_mar" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_abr">Abr/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_abr"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_abr"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_abr" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_mai">Mai/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_mai"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_mai"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_mai" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_jun">Jun/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_jun"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_jun"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_jun" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_jul">Jul/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_jul"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_jul"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_jul" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_ago">Ago/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_ago"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_ago"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_ago" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_set">Set/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_set"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_set"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_set" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_out">Out/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_out"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_out"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_out" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_nov">Nov/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_nov"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_nov"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_nov" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="mercado_ano_dev">Dev/25</td>
+            <td><input type="text" class="meta" id="mercado_Meta_dev"/></td>
+            <td><input type="text" class="realizado" id="mercado_Realizado_dev"/></td>
+            <td><input type="text" class="atingido" id="mercado_Atingido_dev" readonly /></td>
+          </tr>
+          <tr class="total-row">
+            <td class="total-linha">TOTAL:</td>
+            <td><input type="text" class="meta-total" id="mercado_Meta-total_total" readonly /></td>
+            <td><input type="text" class="realizado-total" id="mercado_Realizado-total_total" readonly /></td>
+            <td><input type="text" class="atingido-total" id="mercado_Atingido-total_total" readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Seção Sell out -->
+    <div class="sellOut">
+      <h3>Sell out:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>Meta</th>
+            <th>Realizado</th>
+            <th>% Atingido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ano" id="sellOut_ano_jan">Jan/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_jan"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_jan"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_jan" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_fev">Fev/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_fev"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_fev"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_fev" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_mar">Mar/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_mar"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_mar"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_mar" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_abr">Abr/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_abr"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_abr"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_abr" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_mai">Mai/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_mai"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_mai"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_mai" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_jun">Jun/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_jun"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_jun"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_jun" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_jul">Jul/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_jul"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_jul"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_jul" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_ago">Ago/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_ago"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_ago"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_ago" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_set">Set/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_set"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_set"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_set" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_out">Out/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_out"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_out"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_out" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_nov">Nov/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_nov"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_nov"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_nov" readonly /></td>
+          </tr>
+          <tr>
+            <td class="ano" id="sellOut_ano_dev">Dev/25</td>
+            <td><input type="number" class="meta" id="sellOut_Meta_dev"/></td>
+            <td><input type="number" class="realizado" id="sellOut_Realizado_dev"/></td>
+            <td><input type="text" class="atingido" id="sellOut_Atingido_dev" readonly /></td>
+          </tr>
+          <tr class="total-row">
+            <td class="total-linha">TOTAL:</td>
+            <td><input type="text" class="meta-total" id="sellOut_Meta-total_total" readonly /></td>
+            <td><input type="text" class="realizado-total" id="sellOut_Realizado-total_total" readonly /></td>
+            <td><input type="text" class="atingido-total" id="sellOut_Atingido-total_total" readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <div class="link_sites">
+      <button id="logoutButton2">Sair</button>
+      <a target="_blank" href="/sellOut">Sell Out</a>
+      <a target="_blank" href="/display">Display</a>
+      <a target="_blank" href="/redes">Redes</a>
+    </div>
+  </footer>
+
+  <script src="/eficiencia.js?v=1773344427953"></script>
+  <!--<script src="/eficiencia3.js?v=1773344427953"></script> -->
+ 
+</body>
+</html>

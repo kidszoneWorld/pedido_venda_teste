@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - Como Utilizar o Site</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link rel="stylesheet" href="/css/video.css?v=1773344428090">
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img src="/images/logo.png" alt="Imagem KidsZone">
+        </div>
+         
+        <h1>Tutorial de como utilizar o site</h1>
+
+        <div class="pdf-container">
+            <iframe class ="frame" src="/video/manual_site2.pdf" ></iframe>
+        </div>
+
+        
+        <div class="video-container1">
+            <video id="tutorial-video" src="/video/pedido-venda2.mp4" controls></video>
+            <!-- Controles personalizados -->
+            <div class="controls">
+                <button onclick="playVideo()">▶️ Reproduzir</button>
+                <button onclick="pauseVideo()">⏸️ Pausar</button>
+                <button onclick="rewindVideo()">⏪ Retroceder 10s</button>
+                <button onclick="forwardVideo()">⏩ Avançar 10s</button>
+            </div>
+        </div>
+
+        <div class="video-container">
+            <div id="youtube-player2"></div>
+            <div class="controls">
+                <button onclick="playVideo()">▶ Reproduzir</button>
+                <button onclick="pauseVideo()">⏸ Pausar</button>
+                <button onclick="rewindVideo()">⏪ Retroceder 10s</button>
+                <button onclick="forwardVideo()">⏩ Avançar 10s</button>
+            </div>
+        </div>
+        
+    
+
+    </div>
+
+    <div id="helpContainer">
+        <div id="helpIcon" class="help-icon">
+            <img src="/images/whatsapp.png" alt="WhatsApp">
+            <span>Precisa de ajuda?</span>
+        </div>
+        <div id="overlay" class="overlay"></div> <!-- Overlay para desfoque -->
+        <div id="helpModal" class="help-modal">
+            <div class="help-modal-content">
+                <h2>Precisa de Ajuda?</h2>
+                <p id="tutorialLink">Ir para o <a href="/video" target="_blank">Tutorial do site</a></p>
+                <ul id="whatsappList">
+                    <li>
+                        <a href="https://wa.me/5511933379433?text=Olá%20estou%20usando%20o%20site%20de%20pedidos%20de%20venda%20e%20estou%20com%20uma%20dúvida,%20poderia%20me%20ajudar?" 
+                            target="_blank">
+                            Falar com o T.I.
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://wa.me/5511932974527?text=Olá%20estou%20usando%20o%20site%20de%20pedidos%20de%20venda%20e%20estou%20com%20uma%20dúvida,%20poderia%20me%20ajudar?" 
+                            target="_blank">
+                            Falar com o Comercial.
+                        </a>
+                    </li> 
+                </ul>
+                <button id="closeModal" class="close-modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="link_sites">
+           
+        </div>
+        
+    </footer>
+    
+
+    <script>
+
+            const video = document.getElementById('tutorial-video');
+
+            function playVideo() {
+                video.play();
+            }
+
+            function pauseVideo() {
+                video.pause();
+            }
+
+            function rewindVideo() {
+                video.currentTime -= 10; // Retrocede 10 segundos
+            }
+
+            function forwardVideo() {
+                video.currentTime += 10; // Avança 10 segundos
+            }
+    </script>
+       <script>
+        // Variável global para o player do YouTube
+        let player2;
+    
+        // Função chamada pela API do YouTube quando ela estiver pronta
+     async  function onYouTubeIframeAPIReady() {
+           player2 = await new YT.Player('youtube-player2', {
+                height: '100%', // Ajuste conforme necessário
+                width: '100%',
+                videoId: 'MsdpC5P_zG0', // Substitua pelo ID do vídeo do YouTube (ex.: 'dQw4w9WgXcQ')
+                
+                playerVars: {
+                    'playsinline': 1, // Para reproduzir inline em dispositivos móveis
+                    'controls': 1, // Mostra os controles padrão do YouTube (você pode desativar se preferir)
+                    'rel': 0, // Não mostrar vídeos relacionados ao final
+                    'modestbranding': 1 // Minimiza a marca do YouTube
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+    
+        // Função chamada quando o player estiver pronto
+        async  function onPlayerReady(event) {
+            // O player está pronto, você pode adicionar lógica adicional aqui se necessário
+        }
+    
+        // Funções dos botões
+        function playVideo() {
+            player2.playVideo();
+        }
+    
+        function pauseVideo() {
+            player2.pauseVideo();
+        }
+    
+        function rewindVideo() {
+            const currentTime = player.getCurrentTime();
+            player2.seekTo(currentTime - 10, true); // Retrocede 10 segundos
+        }
+    
+        function forwardVideo() {
+            const currentTime = player.getCurrentTime();
+            player2.seekTo(currentTime + 10, true); // Avança 10 segundos
+        }
+    </script>
+
+<script src="/video.js?v=1773344428090"></script>
+
+</body>
+</html>

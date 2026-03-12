@@ -1,0 +1,379 @@
+[
+    {
+      "dataCriacao": "2015-02-18T17:29:08",
+      "dataAlteracao": "0001-01-01T00:00:00",
+      "formaDePagamento": [
+        {
+          "id": 1,
+          "descricao": "BOLETO BRADESCO"
+        },
+        {
+          "id": 4,
+          "descricao": "Boleto Bradesco Matr"
+        }
+      ],
+      "enderecos": [],
+      "tipoCadastro": 1,
+      "documentoEstadual": {
+        "numero": "",
+        "tipo": 1
+      },
+      "telefone": {
+        "ddi": 55,
+        "ddd": 0,
+        "numero": 0
+      },
+      "email": [],
+      "emailFiscal": [],
+      "status": 0,
+      "contribuinteIcms": false,
+      "tipoPessoa": "Fisica",
+      "tipoFrete": 9,
+      "tipoEstabelecimento": "Nenhum",
+      "enquadramentoFiscal": 0,
+      "desoneracaoIcmsSuframa": false,
+      "desconsideraPercentualComissaoPromocao": false,
+      "localIcms": false,
+      "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+      "frete": 9,
+      "descontoPercentualComissaoPromocao": false,
+      "ativo": true,
+      "suspenso": false,
+      "classificacaoFinanceira": 0,
+      "ehAreaLivreComercioSuframa": false,
+      "possuiAbatimentoContribuicoesSociais": false,
+      "ehEstrangeiro": false,
+      "id": "fde4faa6-38f2-44e3-b674-99359e561648",
+      "razaoSocial": "CONSUMIDOR",
+      "nomeAbreviado": "CONSUMIDOR",
+      "documento": {
+        "numero": 0,
+        "numeroTexto": "0",
+        "tipo": 0
+      }
+    },
+    {
+      "dataCriacao": "2019-07-05T16:51:35",
+      "dataAlteracao": "0001-01-01T00:00:00",
+      "condicaoPagamentoId": 1,
+      "formaDePagamento": [
+        {
+          "id": 4,
+          "descricao": "Boleto Bradesco Matr"
+        },
+        {
+          "id": 1,
+          "descricao": "BOLETO BRADESCO"
+        }
+      ],
+      "enderecos": [
+        {
+          "codigo": 53640,
+          "clienteId": 2,
+          "tipos": [
+            {
+              "padrao": true,
+              "ativo": true,
+              "tipoEnderecoId": 922,
+              "descricao": "Cobrança"
+            },
+            {
+              "padrao": true,
+              "ativo": true,
+              "tipoEnderecoId": 923,
+              "descricao": "Entrega"
+            },
+            {
+              "padrao": false,
+              "ativo": true,
+              "tipoEnderecoId": 924,
+              "descricao": "Faturamento"
+            }
+          ],
+          "logradouroAbreviado": "R",
+          "observacao": "73",
+          "documentoEntrega": {
+            "numero": 0,
+            "tipo": 0
+          },
+          "documentoEstadualEntrega": {
+            "tipo": 0
+          },
+          "unidade": "0",
+          "latitude": 0.0000000000000000,
+          "longitude": 0.0000000000000000,
+          "logradouro": "R ITA",
+          "numero": "73",
+          "cep": "25940000",
+          "bairro": "CENTRO",
+          "cidade": {
+            "nome": "GUAPIMIRIM",
+            "codigoIbge": 1850,
+            "uf": 33,
+            "pais": 1058
+          },
+          "complemento": "NULL"
+        }
+      ],
+      "tipoCadastro": 0,
+      "documentoEstadual": {
+        "numero": "",
+        "tipo": 1
+      },
+      "telefone": {
+        "ddi": 55,
+        "ddd": 0,
+        "numero": 0
+      },
+      "email": [],
+      "emailFiscal": [],
+      "status": 0,
+      "contribuinteIcms": false,
+      "tipoPessoa": "Fisica",
+      "tipoFrete": 0,
+      "tipoEstabelecimento": "Nenhum",
+      "enquadramentoFiscal": 0,
+      "desoneracaoIcmsSuframa": false,
+      "desconsideraPercentualComissaoPromocao": false,
+      "localIcms": false,
+      "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+      "frete": 0,
+      "descontoPercentualComissaoPromocao": false,
+      "ativo": true,
+      "suspenso": false,
+      "classificacaoFinanceira": 0,
+      "ehAreaLivreComercioSuframa": false,
+      "possuiAbatimentoContribuicoesSociais": false,
+      "ehEstrangeiro": false,
+      "id": "4082187e-f1d0-4b05-b94f-b004651e432c",
+      "codigo": 2,
+      "razaoSocial": "ADILSON DE JESUS",
+      "nomeAbreviado": "ADILSON DE JESUS",
+      "documento": {
+        "numero": 3633586768,
+        "numeroTexto": "03633586768",
+        "tipo": 2
+      }
+    },
+    {
+      "dataCriacao": "2019-07-05T16:51:35",
+      "dataAlteracao": "2020-07-23T10:11:55",
+      "condicaoPagamentoId": 31,
+      "formaDePagamento": [
+        {
+          "id": 1,
+          "descricao": "BOLETO BRADESCO"
+        },
+        {
+          "id": 4,
+          "descricao": "Boleto Bradesco Matr"
+        }
+      ],
+      "enderecos": [
+        {
+          "codigo": 53656,
+          "clienteId": 3,
+          "tipos": [
+            {
+              "padrao": true,
+              "ativo": true,
+              "tipoEnderecoId": 925,
+              "descricao": "Cobrança"
+            },
+            {
+              "padrao": true,
+              "ativo": true,
+              "tipoEnderecoId": 926,
+              "descricao": "Entrega"
+            },
+            {
+              "padrao": false,
+              "ativo": true,
+              "tipoEnderecoId": 927,
+              "descricao": "Faturamento"
+            }
+          ],
+          "logradouroAbreviado": "AV",
+          "observacao": "500",
+          "documentoEntrega": {
+            "numero": 0,
+            "tipo": 0
+          },
+          "documentoEstadualEntrega": {
+            "tipo": 0
+          },
+          "unidade": "0",
+          "latitude": 0.0000000000000000,
+          "longitude": 0.0000000000000000,
+          "logradouro": "AV GUILHERME CAMPOS",
+          "numero": "500",
+          "cep": "13087901",
+          "bairro": "JARDIM SANTA GENEBRA",
+          "cidade": {
+            "nome": "CAMPINAS",
+            "codigoIbge": 9502,
+            "uf": 35,
+            "pais": 1058
+          },
+          "complemento": "SUC 75"
+        }
+      ],
+      "tipoCadastro": 0,
+      "documentoEstadual": {
+        "numero": "244354867117",
+        "tipo": 4
+      },
+      "telefone": {
+        "ddi": 55,
+        "ddd": 0,
+        "numero": 0
+      },
+      "email": [
+        {
+          "nome": "carloscerca",
+          "dominio": "bol.com.br",
+          "emailCompleto": "carloscerca@bol.com.br",
+          "valido": true
+        }
+      ],
+      "emailFiscal": [
+        {
+          "nome": "carloscerca",
+          "dominio": "bol.com.br",
+          "emailCompleto": "carloscerca@bol.com.br",
+          "valido": true
+        }
+      ],
+      "status": 0,
+      "contribuinteIcms": false,
+      "tipoPessoa": "Juridica",
+      "tipoFrete": 0,
+      "tipoEstabelecimento": "Nenhum",
+      "enquadramentoFiscal": 2,
+      "desoneracaoIcmsSuframa": false,
+      "desconsideraPercentualComissaoPromocao": false,
+      "localIcms": false,
+      "transportadoraId": 7,
+      "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+      "frete": 0,
+      "descontoPercentualComissaoPromocao": false,
+      "ativo": true,
+      "suspenso": false,
+      "classificacaoFinanceira": 0,
+      "ehAreaLivreComercioSuframa": false,
+      "possuiAbatimentoContribuicoesSociais": false,
+      "ehEstrangeiro": false,
+      "id": "f835310a-3c5d-4654-8447-5d122fd3511f",
+      "codigo": 3,
+      "razaoSocial": "K&C COMERCIO DE PRESENTES LTDA - ME",
+      "nomeAbreviado": "K&C",
+      "documento": {
+        "numero": 60964293000159,
+        "numeroTexto": "60964293000159",
+        "tipo": 3
+      }
+    },
+    {
+      "dataCriacao": "2019-07-05T16:51:35",
+      "dataAlteracao": "0001-01-01T00:00:00",
+      "condicaoPagamentoId": 1,
+      "formaDePagamento": [
+        {
+          "id": 4,
+          "descricao": "Boleto Bradesco Matr"
+        },
+        {
+          "id": 1,
+          "descricao": "BOLETO BRADESCO"
+        }
+      ],
+      "enderecos": [
+        {
+          "codigo": 53667,
+          "clienteId": 4,
+          "tipos": [
+            {
+              "padrao": true,
+              "ativo": true,
+              "tipoEnderecoId": 928,
+              "descricao": "Cobrança"
+            },
+            {
+              "padrao": true,
+              "ativo": true,
+              "tipoEnderecoId": 929,
+              "descricao": "Entrega"
+            },
+            {
+              "padrao": false,
+              "ativo": true,
+              "tipoEnderecoId": 930,
+              "descricao": "Faturamento"
+            }
+          ],
+          "logradouroAbreviado": "R",
+          "observacao": "70",
+          "documentoEntrega": {
+            "numero": 0,
+            "tipo": 0
+          },
+          "documentoEstadualEntrega": {
+            "tipo": 0
+          },
+          "unidade": "0",
+          "latitude": 0.0000000000000000,
+          "longitude": 0.0000000000000000,
+          "logradouro": "R BRASILIDIO JOSE DE LIMA",
+          "numero": "70",
+          "cep": "13890000",
+          "bairro": "JD. DO LAGO",
+          "cidade": {
+            "nome": "ÁGUAS DA PRATA",
+            "codigoIbge": 402,
+            "uf": 35,
+            "pais": 1058
+          },
+          "complemento": "NULL"
+        }
+      ],
+      "tipoCadastro": 0,
+      "documentoEstadual": {
+        "numero": "",
+        "tipo": 1
+      },
+      "telefone": {
+        "ddi": 55,
+        "ddd": 0,
+        "numero": 0
+      },
+      "email": [],
+      "emailFiscal": [],
+      "status": 0,
+      "contribuinteIcms": false,
+      "tipoPessoa": "Fisica",
+      "tipoFrete": 0,
+      "tipoEstabelecimento": "Nenhum",
+      "enquadramentoFiscal": 0,
+      "desoneracaoIcmsSuframa": false,
+      "desconsideraPercentualComissaoPromocao": false,
+      "localIcms": false,
+      "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+      "frete": 0,
+      "descontoPercentualComissaoPromocao": false,
+      "ativo": true,
+      "suspenso": false,
+      "classificacaoFinanceira": 0,
+      "ehAreaLivreComercioSuframa": false,
+      "possuiAbatimentoContribuicoesSociais": false,
+      "ehEstrangeiro": false,
+      "id": "d2d0fae4-5c22-42d8-b252-e7b8d945e49b",
+      "codigo": 4,
+      "razaoSocial": "CELSO EDUARDO RUFFO",
+      "nomeAbreviado": "CELSO EDUARDO RUFFO",
+      "documento": {
+        "numero": 94826609868,
+        "numeroTexto": "94826609868",
+        "tipo": 2
+      }
+    }
+]

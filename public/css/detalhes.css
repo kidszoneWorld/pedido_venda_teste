@@ -1,0 +1,29 @@
+/* Baseado no styles2.css */
+@import url('/css/styles2.css');
+
+body.dark-theme td{
+    background-color:var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.light-theme  #observacoes , #observacoes1{
+    background-color:var(--button-text-dark);
+    color: var(--text-color-light);
+}
+
+body.dark-theme  #observacoes1{
+    background-color:var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+
+body.dark-theme input{
+    background-color: var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+
+/* Customizações específicas para a página de detalhes */
+.observations {
+    margin-top: 20px;
+}

@@ -1,0 +1,4 @@
+video/pedido-venda.mp4 filter=lfs diff=lfs merge=lfs -text
+video/manual_site.pdf filter=lfs diff=lfs merge=lfs -text
+public/video/pedido-venda.mp4 filter=lfs diff=lfs merge=lfs -text
+public/video/manual_site.pdf filter=lfs diff=lfs merge=lfs -text

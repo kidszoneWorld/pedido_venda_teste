@@ -1,0 +1,691 @@
+/* Definindo variáveis de cor para os temas claro e escuro */
+:root {
+    --background-color-light: #caccc6;
+    --container-bg-light: #e7c8df;
+    --header-bg-light: #333;
+    --text-color-light: #ffffff;
+    --table-bg-light: #f9f9f9;
+    --table-header-bg-light: #333;
+    --table-text-color-light: #f9f9f9;
+    --button-bg-light: #333;
+    --button-text-light: #ffffff;
+    --button-hover-bg-light: rgba(225, 0, 152);
+    --button-hover-text-light: rgb(250, 242, 247);
+
+    --background-color-dark: #333333;
+    --container-bg-dark: #2a2a2a;
+    --header-bg-dark: #4e4c4c;
+    --text-color-dark: #e0e0e0;
+    --table-bg-dark: #b4afaf;
+    --table-header-bg-dark: #1e1e1e;
+    --table-text-color-dark: #e0e0e0;
+    --button-bg-dark: #444;
+    --button-text-dark: #e0e0e0;
+    --button-hover-bg-dark: rgba(225, 0, 152);
+    --button-hover-text-dark: rgb(250, 242, 247);
+    --imput-bg-dark: #333333;
+    --imput-text-dark: #e0e0e0;
+    --imput-bg-light: #ffffff;
+    --imput-text-light: #000000;
+}
+
+/* Tema claro (padrão) */
+body.light-theme {
+    background-color: var(--background-color-light);
+}
+
+body.light-theme .container {
+    background-color: var(--container-bg-light);
+}
+
+body.light-theme .header-container {
+    background-color: var(--header-bg-light);
+    color: var(--text-color-light);
+}
+
+body.light-theme .header-title,
+body.light-theme .header-right h4,
+body.light-theme .link-label {
+    color: var(--text-color-light);
+}
+
+body.light-theme table thead th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme table th,
+body.light-theme table td {
+    background-color: var(--table-bg-light);
+}
+
+body.light-theme table th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme button {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+}
+
+body.light-theme button:hover {
+    background-color: var(--button-hover-bg-light);
+    color: var(--button-hover-text-light);
+}
+
+body.light-theme input , select option {
+    background-color: var(--imput-bg-light);
+    color: var(--imput-text-light);
+}
+
+/* Tema escuro */
+body.dark-theme {
+    background-color: var(--background-color-dark);
+}
+
+body.dark-theme .container {
+    background-color: #705b6c;
+}
+
+body.dark-theme .header-container {
+    background-color: var(--header-bg-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-theme .header-title,
+body.dark-theme .header-right h4,
+body.dark-theme .link-label {
+    color: var(--text-color-dark);
+}
+
+body.dark-theme table thead th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme table th,
+body.dark-theme table td {
+    background-color: var(--table-bg-dark);
+}
+
+body.dark-theme table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme button {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+}
+
+body.dark-theme button:hover {
+    background-color: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-dark);
+    }
+
+body.dark-theme input , select {
+    background-color: var(--imput-bg-dark);
+    color: var(--imput-text-dark);
+}       
+
+@keyframes modalAnimation {
+    from{
+        opacity: 0;
+        transform: translate3d(0,-20px,-5px);
+    }
+    to{
+        opacity: 1;
+        transform: translate3d(0,0,0);
+    }
+    
+}
+
+/* Define a animação de saída */
+@keyframes modalAnimationOut {
+    from {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate3d(0, -20px, -5px);
+    }
+}
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    background-color: #caccc6;
+    min-height: 100vh; /* Garante que o body ocupe toda a altura da tela */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: flex-start; /* Alinha o conteúdo ao topo */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Alinha os filhos ao topo */
+    align-items: center; /* Centraliza os filhos horizontalmente dentro do container */
+    margin-bottom: 10px;
+    gap: 15px;
+    width: 100%;
+    max-width: 1700px; /* Mantém a largura máxima */
+    background-color: #e7c8df;
+    border-radius: 8px;
+}
+
+
+.header {
+    width: 100%;
+    max-width: 1600px; /* Mantém a largura máxima */
+    margin: 0 auto; /* Centraliza o header dentro do .container */
+    box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: #ffffff; /* Define a cor padrão para o texto dentro do header */
+    padding: 15px;
+    border-radius: 5px;
+    justify-content: space-between; /* Alinha .header-left à esquerda e .header-right à direita */
+    width: 100%;
+    flex-wrap: wrap; /* Permite que os elementos quebrem para a próxima linha em telas menores */
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center; /* Alinha o logo e o título verticalmente */
+    gap: 15px; /* Espaçamento entre o logo e o título */
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column; /* Empilha os elementos verticalmente */
+    align-items: flex-end; /* Alinha os elementos à direita */
+    gap: 15px; /* Aumenta o espaçamento vertical entre o h4 e o link-wrapper */
+}
+
+.img_link_excel {
+    width: 40px;
+    cursor: pointer;
+}
+
+.img_link_excel:hover {
+    width: 50px;
+}
+
+
+.sairExcel {
+    display: flex;
+    gap: 20px;
+}
+
+
+.link-wrapper {
+    display: flex;
+    flex-direction: column; /* Empilha o "Ir para:" e o link verticalmente */
+    align-items: flex-end; /* Alinha à direita */
+    gap: 5px; /* Pequeno espaçamento entre o "Ir para:" e o link */
+}
+
+.link-label {
+    color: #ffffff; /* Define a cor como branca */
+    font-size: 16px; /* Mesmo tamanho do h4 para consistência */
+    font-weight: normal; /* Remove o negrito para diferenciar do link */
+}
+
+.header-logo {
+    flex: 0 0 auto;
+}
+
+.header-logo img {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+
+
+
+
+.header-container .header-title {
+    color: #ffffff !important; /* Força a cor branca com !important para evitar conflitos */
+    margin: 0; /* Remove margens padrão do h3 */
+    font-size: 24px; /* Mantém o tamanho do texto */
+    display: inline-block; /* Garante que o elemento seja exibido */
+    visibility: visible; /* Garante que o elemento seja visível */
+}
+
+.header-right h4 {
+    color: #ffffff;
+    margin: 0; /* Remove margens padrão */
+    font-size: 16px; /* Tamanho do texto */
+}
+
+.header-right h4 strong {
+    color: #eeea0e; /* Garante que o texto dentro do <strong> também seja branco */
+}
+
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #333; /* Fundo escuro para contraste */
+    color: #f9f9f9; /* Texto branco */
+    z-index: 1; /* Para garantir que o cabeçalho fique acima do conteúdo */
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    background-color: #f9f9f9;
+    white-space: nowrap; /* Evita que o texto quebre para a próxima linha */
+    overflow: hidden; /* Esconde o conteúdo que ultrapassa */
+    text-overflow: ellipsis; /* Adiciona "..." para texto cortado */
+}
+
+table th {
+    background-color: #333;
+    color:#f9f9f9;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+#filters {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start; /* Alinha os subcontêineres ao topo */
+    justify-content: space-between; /* Alinha os subcontêineres (inputs e botões) */
+    flex-wrap: nowrap; /* Garante que os subcontêineres fiquem em uma única linha */
+    width: 100%;
+    max-width: 1600px; /* Limita a largura máxima */
+}
+
+.filter-inputs  {
+    display: flex;
+    flex-direction: column; /* Organiza os subcontêineres em coluna (linhas) */
+    gap: 15px; /* Aumenta o espaçamento vertical entre as linhas */
+}
+
+.filter-row {
+    display: flex;
+    gap: 20px; /* Aumenta o espaçamento horizontal entre os itens dentro da linha */
+    align-items: center;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-direction: row; /* Alinha os botões horizontalmente em telas grandes */
+    gap: 10px;
+    align-items: center;
+}
+
+#filters label {
+    font-weight: bold;
+}
+
+#filters input,
+#filters button {
+    padding: 5px;
+}
+
+#representanteFilter , #representanteFilter1{
+    width:50px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+#statusFilter , #statusFilter1 ,#statusSeparacaoFilter{
+    padding: 7px;
+    width: 120px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+button:hover{
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247); /* Mantém a cor do texto */
+    border:none;
+}
+
+#applyFilters , #clearFilters ,#logoutButton , #logoutButton1{
+    padding: 6px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+#logoutButton {
+    width: 50px;
+}
+
+
+#clienteCNPJFilter1 , 
+#clienteCNPJFilter , 
+#dataPedidoInicioFilter1 , 
+#dataPedidoInicioFilter ,
+#dataPedidoFimFilter1 ,
+#dataPedidoFimFilter {
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+
+}
+
+#applyFilters1 , #clearFilters1 {
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+    
+}
+
+.buttons_filters{
+    display: flex;
+    justify-content:flex-end;
+    gap: 10px;
+}
+
+/* Contêiner para a tabela */
+.table-container {
+    width: 100%;
+    max-width: 1600px; /* Limita a largura máxima */
+    max-height: 55vh; /* Limita a altura máxima (ajuste conforme necessário) */
+    overflow-x: auto; /* Adiciona rolagem horizontal */
+    overflow-y: auto; /* Adiciona rolagem vertical */
+    margin-top: 10px;
+}
+
+#order-table1 {
+    width: 100%;
+    background-color: #f9f9f9; /* Cor de fundo mais adequada */
+    border-collapse: collapse;
+}
+
+/* Ajuste das larguras das colunas */
+.dataPedido{
+    min-width: 140px;
+    max-width: 140px;
+}
+
+.codPedido {
+    min-width: 80px;
+    max-width: 100px;
+
+}
+
+.statusPedido{
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.statusSeparacao{
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.codCliente{
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.cliente{
+    width: auto; /* Permite que a largura se ajuste ao conteúdo */
+    min-width: 150px; /* Largura mínima para evitar que a coluna fique muito estreita */
+    max-width: 500px;
+}
+
+.clienteCNPJ{
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.codRep{
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.representante{
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.valorTotal{
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.transportadora{
+    width: auto; /* Permite que a largura se ajuste ao conteúdo */
+    min-width: 150px; /* Largura mínima para evitar que a coluna fique muito estreita */
+    max-width: 500px;
+}
+
+
+
+/* Estilo para o botão de menu */
+.menu-toggle {
+    display: none; /* Escondido por padrão em telas maiores */
+    width: 20%;
+    max-width: 300px;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.menu-button:hover {
+    background-color: rgba(225, 0, 152);
+    color: rgb(250, 242, 247);
+}
+
+.menu-icon {
+    font-size: 20px;
+}
+
+/* Contêiner dos filtros */
+.filter-container {
+    display: flex; /* Para alinhar inputs e botões lado a lado em telas grandes */
+    align-items: flex-start; /* Alinha ao topo */
+    gap: 20px; /* Espaço entre inputs e botões */
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Quando o filterContainer estiver ativo (aberto) */
+.filter-container.active {
+    display: flex; /* Mostra o elemento */
+    animation: modalAnimation 0.70s forwards; /* Aplica a animação de entrada */
+}
+
+/* Estilo para animação de saída (quando a classe 'active' é removida) */
+.filter-container.closing {
+    animation: modalAnimationOut 0.70s forwards; /* Aplica a animação de saída */
+}
+
+#codClientFilter{
+    width:70px;
+}
+
+#clienteCNPJFilter{
+    width:140px;
+}
+
+@media (min-width: 769px) and (max-width: 987px) {
+   
+    .filter-buttons{
+        display: flex;
+        flex-direction: column; /* Alinha os botões horizontalmente em telas grandes */
+        gap: 10px;
+        align-items: center;
+    }
+
+}
+
+
+/* Media query para telas menores (celular) */
+@media (max-width: 928px) {
+    .header-container {
+        flex-direction: column; /* Empilha os elementos em coluna */
+        align-items: center; /* Centraliza os elementos */
+        gap: 10px; /* Espaçamento entre os elementos empilhados */
+        padding: 10px; /* Reduz o padding em telas menores */
+    }
+
+    .header-left {
+        width: 100%; /* Ocupa a largura total */
+        justify-content: center; /* Centraliza o logo e o título */
+    }
+
+    .header-right {
+        width: 100%; /* Ocupa a largura total */
+        flex-direction: column; /* Mantém os elementos empilhados */
+        align-items: center; /* Centraliza o texto e o link */
+        text-align: center; /* Centraliza o texto */
+        gap: 10px; /* Reduz o espaçamento entre o h4 e o link-wrapper */
+    }
+
+    .link-wrapper {
+        align-items: center; /* Centraliza o "Ir para:" e o link */
+    }
+
+    .header-right h4 {
+        font-size: 14px; /* Reduz o tamanho da fonte para evitar overflow */
+    }
+
+    .link-label {
+        font-size: 14px; /* Reduz o tamanho do "Ir para:" para consistência */
+    }
+
+    .link_logistica {
+        font-size: 16px; /* Reduz o tamanho da fonte para evitar overflow */
+    }
+
+    .menu-toggle {
+        display: block; /* Mostra o botão de menu em telas menores */
+       
+    }
+
+    .filter-container {
+        display: none; /* Esconde os filtros por padrão em telas menores */
+        flex-direction: column; /* Empilha os elementos em coluna */
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .filter-container.active {
+        display: flex; /* Mostra os filtros quando a classe 'active' é adicionada */
+    }
+
+    #filters {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+    }
+
+    .filter-inputs {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .filter-row {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .filter-item {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .filter-item label {
+        width: 100%;
+        text-align: center;
+    }
+
+    .filter-item input,
+    .filter-item select {
+        width: 100%;
+        max-width: 200px;
+        background-color: #ffffff; /* Cor de fundo clara para os inputs */
+        color: #000000; /* Cor do texto escuro para contraste */
+    }
+
+    #representanteFilter1 {
+        max-width: 50px;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: row; /* Mantém os botões em linha em telas menores */
+        justify-content: center;
+        margin-top: 15px;
+    }
+}
+
+
+
+
+
+
+

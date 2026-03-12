@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="/acess.js?v=1773344428018"></script>
+    <script>
+        function checkCredentials() {
+            const login = prompt("Digite seu login:");
+            const password = prompt("Digite sua senha:");
+
+            // Calcula o hash da senha digitada
+            const passwordHash = CryptoJS.SHA256(password).toString();
+
+            // Verifica o login e o hash da senha
+            if (login === credentials.login && passwordHash === credentials.passwordHash) {
+                sessionStorage.setItem("authenticated", "true");
+                window.location.href = "/admin"; // Redireciona ao admin.html após autenticação
+            } else {
+                alert("Acesso negado. Credenciais incorretas.");
+                location.reload(); // Recarrega a página para tentar novamente
+            }
+        }
+
+        // Verifique se o usuário está autenticado ao carregar a página
+        document.addEventListener("DOMContentLoaded", () => {
+            if (sessionStorage.getItem("authenticated") !== "true") {
+                checkCredentials();
+            } else {
+                window.location.href = "/admin"; // Redireciona ao admin.html se já autenticado
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Autenticação Necessária</h1>
+    <p>Por favor, insira suas credenciais para acessar a página administrativa.</p>
+</body>
+</html>

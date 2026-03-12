@@ -1,0 +1,56 @@
+{
+    "codigo": 32,
+    "razaoSocial": "ARLETE TRANSPORTES & LOGISTICA LTDA",
+    "nomeAbreviado": "ARLETE TRANSPORTES",
+    "documento": {
+        "numero": 72090442000934,
+        "numeroTexto": "72090442000934",
+        "tipo": 3
+    },
+    "documentoEstadual": {
+        "numero": "261201760",
+        "tipo": 4
+    },
+    "ehContribuinteIcms": true,
+    "ativo": true,
+    "regiao": "TESTE ESTADO DE SÃO PAULO",
+    "tipoPessoa": "Juridica",
+    "pessoaInformacao": [
+        {
+            "pessoaInformacaoId": "00000000-0000-0000-0000-000000000000",
+            "pessoaId": "00000000-0000-0000-0000-000000000000",
+            "tipoInformacaoId": "00000000-0000-0000-0000-000000000000",
+            "valor": "4733180980",
+            "tipo": "Telefone",
+            "dataAlteracao": "0001-01-01T00:00:00",
+            "dataCriacao": "0001-01-01T00:00:00",
+            "ativo": true
+        },
+        {
+            "pessoaInformacaoId": "00000000-0000-0000-0000-000000000000",
+            "pessoaId": "00000000-0000-0000-0000-000000000000",
+            "tipoInformacaoId": "00000000-0000-0000-0000-000000000000",
+            "valor": "coleta.blu@arletetransportes.com.br",
+            "tipo": "Email",
+            "dataAlteracao": "0001-01-01T00:00:00",
+            "dataCriacao": "0001-01-01T00:00:00",
+            "ativo": true
+        }
+    ],
+    "enderecos": [
+        {
+            "pessoaId": "00000000-0000-0000-0000-000000000000",
+            "enderecoId": "00000000-0000-0000-0000-000000000000",
+            "logradouro": "R RUA LEOPOLDO ALBERTO SCHRAMM",
+            "numero": "316",
+            "cep": "89112039",
+            "bairro": "GASPARINHO",
+            "cidade": {
+                "nome": "GASPAR",
+                "codigoIbge": 5902,
+                "uf": 42,
+                "pais": 1058
+            }
+        }
+    ]
+}

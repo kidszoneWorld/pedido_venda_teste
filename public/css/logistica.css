@@ -1,0 +1,749 @@
+/* Definindo variáveis de cor para os temas claro e escuro */
+:root {
+    --background-color-light: #caccc6;
+    --container-bg-light: #e7c8df;
+    --header-bg-light: #333;
+    --text-color-light: #ffffff;
+    --table-bg-light: #f9f9f9;
+    --table-header-bg-light: #333;
+    --table-text-color-light: #f9f9f9;
+    --button-bg-light: #333;
+    --button-text-light: #ffffff;
+    --button-hover-bg-light: rgba(225, 0, 152);
+    --button-hover-text-light: rgb(250, 242, 247);
+ 
+     --background-color-dark: #333333;
+    --container-bg-dark: #2a2a2a;
+    --header-bg-dark: #4e4c4c;
+    --text-color-dark: #e0e0e0;
+    --table-bg-dark: #b4afaf;
+    --table-header-bg-dark: #1e1e1e;
+    --table-text-color-dark: #e0e0e0;
+    --button-bg-dark: #444;
+    --button-text-dark: #e0e0e0;
+    --button-hover-bg-dark: rgba(225, 0, 152);
+    --button-hover-text-dark: rgb(250, 242, 247);
+    --imput-bg-dark: #333333;
+    --imput-text-dark: #e0e0e0;
+    --imput-bg-light: #ffffff;
+    --imput-text-light: #000000;
+}
+
+/* Tema claro (padrão) */
+body.light-theme {
+    background-color: var(--background-color-light);
+}
+
+body.light-theme .container {
+    background-color: var(--container-bg-light);
+}
+
+body.light-theme .header-container {
+    background-color: var(--header-bg-light);
+    color: var(--text-color-light);
+}
+
+body.light-theme .header-title,
+body.light-theme .header-right h4,
+body.light-theme .link-label {
+    color: var(--text-color-light);
+}
+
+body.light-theme table thead th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme table th,
+body.light-theme table td {
+    background-color: var(--table-bg-light);
+}
+
+body.light-theme table th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme button {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+}
+
+body.light-theme button:hover {
+    background-color: var(--button-hover-bg-light);
+    color: var(--button-hover-text-light);
+}
+
+
+/* Tema escuro */
+body.dark-theme {
+    background-color: var(--background-color-dark);
+}
+
+body.dark-theme .container {
+    background-color: #705b6c;
+}
+
+body.dark-theme .header-container {
+    background-color: var(--header-bg-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-theme .header-title,
+body.dark-theme .header-right h4,
+body.dark-theme .link-label {
+    color: var(--text-color-dark);
+}
+
+body.dark-theme table thead th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme table th,
+body.dark-theme table td {
+    background-color: var(--table-bg-dark);
+}
+
+body.dark-theme table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme button {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+}
+
+body.dark-theme button:hover {
+    background-color: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-dark);
+    }
+
+body.dark-theme input , select {
+    background-color: var(--imput-bg-dark);
+    color: var(--imput-text-dark);
+}       
+
+@keyframes modalAnimation {
+    from{
+        opacity: 0;
+        transform: translate3d(0,-20px,-5px);
+    }
+    to{
+        opacity: 1;
+        transform: translate3d(0,0,0);
+    }
+    
+}
+
+
+
+@keyframes modalAnimation {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -20px, -5px);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Define a animação de saída */
+@keyframes modalAnimationOut {
+    from {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate3d(0, -20px, -5px);
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    background-color: #caccc6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 15px;
+    width: 100%;
+    max-width: 1700px;
+    background-color: #e7c8df;
+    border-radius: 8px;
+}
+
+.header {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    margin-top: 10px;
+    position: relative;
+    z-index: 5; /* Ajustado para ser menor que o modal */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.link-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.link-label {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.header-logo {
+    flex: 0 0 auto;
+}
+
+.header-logo img {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.img_link_excel {
+    width: 40px;
+    cursor: pointer;
+}
+
+.img_link_excel:hover {
+    width: 50px;
+}
+
+.sairExcel {
+    display: flex;
+    gap: 20px;
+}
+
+.header-container .header-title {
+    color: #ffffff !important;
+    margin: 0;
+    font-size: 24px;
+    display: inline-block;
+    visibility: visible;
+}
+
+.header-right h4 {
+    color: #ffffff;
+    margin: 0;
+    font-size: 16px;
+}
+
+.header-right h4 strong {
+    color: #eeea0e;
+}
+
+.link_logistica {
+    text-decoration: none;
+    color: rgb(224, 146, 199);
+    font-size: 20px;
+    flex-shrink: 1;
+}
+
+.link_logistica:hover {
+    background-color: rgba(225, 0, 152);
+    color: rgb(250, 242, 247);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #333;
+    color: #f9f9f9;
+    z-index: 10; /* Ajustado para ser menor que o modal */
+}
+
+table th,
+table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    background-color: #f9f9f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table th {
+    background-color: #333;
+    color: #f9f9f9;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+#filters {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.filter-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+#filters label {
+    font-weight: bold;
+}
+
+#filters input,
+#filters button {
+    padding: 5px;
+}
+
+#representanteFilter,
+#representanteFilter1 {
+    width: 50px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+#statusFilter,
+#statusFilter1,
+#statusSeparacaoFilter {
+    padding: 7px;
+    width: 120px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+button:hover {
+    background-color: rgba(225, 0, 152);
+    color: rgb(250, 242, 247);
+    border: none;
+}
+
+#applyFilters,
+#clearFilters,
+#logoutButton,
+#logoutButton1 {
+    padding: 6px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+#logoutButton1 {
+    width: 50px;
+}
+
+#clienteCNPJFilter1,
+#clienteCNPJFilter,
+#dataPedidoInicioFilter1,
+#dataPedidoInicioFilter,
+#dataPedidoFimFilter1,
+#dataPedidoFimFilter {
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+#applyFilters1,
+#clearFilters1 {
+    border-radius: 5px;
+    border: 1px solid #0f0f0f;
+}
+
+.buttons_filters {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.table-container {
+    width: 100%;
+    max-width: 1600px;
+    max-height: 55vh;
+    overflow-x: auto;
+    overflow-y: auto;
+    margin-top: 10px;
+    position: relative;
+    z-index: 5; /* Ajustado para ser menor que o modal */
+}
+
+#order-table1 {
+    width: 100%;
+    background-color: #f9f9f9;
+    border-collapse: collapse;
+}
+
+.dataEmissao {
+    min-width: 140px;
+    max-width: 140px;
+}
+
+.numNotas {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.codCliente {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.cliente {
+    width: auto;
+    min-width: 150px;
+    max-width: 500px;
+}
+
+.clienteCNPJ {
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.uf {
+    min-width: 50px;
+    max-width: 60px;
+}
+
+.codRep {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.codTrans {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.transportadora {
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.saida {
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.previsaoEntrega {
+    min-width: 170px;
+    max-width: 170px;
+}
+
+.dataEntrega {
+    min-width: 150px;
+    max-width: 150px;
+}
+
+.statusEntrega {
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.agenda,
+.ocorrencia {
+    width: auto;
+    min-width: 150px;
+    max-width: 500px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.agenda:hover,
+.ocorrencia:hover {
+    overflow: visible;
+    white-space: normal;
+    max-width: none;
+    background-color: #f1f1f1;
+    z-index: 1;
+}
+
+.menu-toggle {
+    display: none;
+    width: 20%;
+    max-width: 300px;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.menu-button:hover {
+    background-color: rgba(225, 0, 152);
+    color: rgb(250, 242, 247);
+}
+
+.menu-icon {
+    font-size: 20px;
+}
+
+.filter-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.filter-container.active {
+    display: flex;
+    animation: modalAnimation 0.70s forwards;
+}
+
+.filter-container.closing {
+    animation: modalAnimationOut 0.70s forwards;
+}
+
+/* Estilo para o modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999; /* Aumentado para garantir que o modal fique acima de tudo */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    text-align: center;
+    border-radius: 5px;
+    position: relative;
+    z-index: 10000; /* Aumentado para garantir que o conteúdo do modal fique acima */
+}
+
+.modal-button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-button:hover {
+    background-color: #0056b3;
+}
+
+.close-button {
+    background-color: #dc3545;
+}
+
+.close-button:hover {
+    background-color: #c82333;
+}
+
+/* Media query para telas menores (celular) */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .header-left {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .link-wrapper {
+        align-items: center;
+    }
+
+    .header-right h4 {
+        font-size: 14px;
+    }
+
+    .link-label {
+        font-size: 14px;
+    }
+
+    .link_logistica {
+        font-size: 16px;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .filter-container {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .filter-container.active {
+        display: flex;
+    }
+
+    #filters {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+    }
+
+    .filter-inputs {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .filter-row {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .filter-item {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .filter-item label {
+        width: 100%;
+        text-align: center;
+    }
+
+    .filter-item input,
+    .filter-item select {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    #representanteFilter1 {
+        max-width: 50px;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 15px;
+    }
+}

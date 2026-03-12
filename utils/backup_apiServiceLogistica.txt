@@ -1,0 +1,51 @@
+
+async function getSpreadsheetData(driveId, itemId, sheetName,startRow) {
+
+    const token = await getAccessToken();
+    const baseUrl = `${graphBaseUrl}/drives/${driveId}/items/${itemId}/workbook/worksheets('${sheetName}')`;
+
+    try {
+        // Obter o intervalo usado (usedRange)
+        const usedRangeResponse = await axios.get(`${baseUrl}/usedRange`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const usedRange = usedRangeResponse.data.address; // Exemplo: 'A1:Q4178'
+
+        // Determinar a última linha preenchida
+        const lastRowMatch = usedRange.match(/(\d+)$/);
+        const lastRow = lastRowMatch ? parseInt(lastRowMatch[1], 10) : null;
+
+        if (!lastRow) throw new Error("Não foi possível determinar a última linha preenchida.");
+
+        // Construir o range dinâmico
+        const range = `A${startRow}:Q${lastRow}`;
+        const url = `${baseUrl}/range(address='${range}')`;
+
+        // Buscar dados do range dinâmico
+        const response = await axios.get(url, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = response.data.values || [];
+
+        console.log("Dados retornados:", data); // Log para verificar os dados recebidos
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados da planilha:", error.response?.data || error.message);
+        throw new Error("Falha ao buscar dados da planilha.");
+    }
+}
+
+
+
+invoceicontroller 
+
+ // IDs do OneDrive para a planilha específica
+        const driveId = 'b!XH-eb-xz-E6X2UiiEteqUdmnlFRU0p5LmLmtxXKjZ0IQdp2f5MVEQqMjT7VUFk1Z'; // Substitua pelo ID correto do drive
+        const itemId = '01DKYK72E4OA25KFVSX5DIYRQ4A2BE57MQ';   // Substitua pelo ID correto do arquivo
+        const sheetName = 'MASTER'; // Nome da aba na planilha
+
+
+        const startRow = 4800; // Define o início fixo
+
+        const data = await getSpreadsheetData(driveId, itemId, sheetName, startRow);

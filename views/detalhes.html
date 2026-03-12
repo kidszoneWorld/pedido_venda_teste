@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Pedido2</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+    <link rel="stylesheet" href="/css/detalhes.css?v=1773344427930">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427930">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/images/logo.png" alt="Imagem KidsZone">
+            <div class="date">
+                <!-- Toggle switch -->
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+             <!-- Feedback -->
+         <div id="feedback" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;"></div>
+        </div>
+
+        <div class="section">
+
+            <div class="section-title">DADOS DO CLIENTE</div>
+
+            <form class="form-group">
+                <label for="cnpj">CNPJ:</label> 
+                <input type="text" id="cnpj" placeholder="Digite o CNPJ" maxlength="14" readonly>
+
+                <label for="representante" class="label-espaco-esquerda">CÓDIGO REP:</label> 
+                <input type="text" id="representante" placeholder="Representante" readonly>
+
+
+                <label for="razao_social" >RAZÃO SOCIAL:</label> 
+                <input type="text" id="razao_social" placeholder="Razão Social" readonly>
+
+                <label for="cod_cliente" class="label-espaco-esquerda">CÓD CLIENTE:</label> 
+                <input type="text" id="cod_cliente" placeholder="Código Cliente" readonly>
+
+                <label for="endereco">ENDEREÇO:</label> 
+                <input type="text" id="endereco" placeholder="Endereço"readonly>
+
+
+
+                <label for="cidade" class="label-espaco-esquerda" >CIDADE:</label> 
+                <input type="text" id="cidade" placeholder="Cidade"readonly>
+
+               
+                <label for="pay">CONDIÇÃO PGTO:</label> 
+                <input type="text" id="pay" placeholder=" Condição de pagamento" readonly>
+
+                <label for="transp" class="label-espaco-esquerda" >TRANSPORTE:</label> 
+                <input type="text" id="transp" placeholder="Transportadora" readonly>
+
+                <label class="spaceInputCod" class="label-espaco-esquerda" for="codgroup">CÓDIGO TABELA:</label> 
+                <input type="text" id="codgroup" placeholder="Código Tabela" readonly>
+
+                <label class="label-espaco-esquerda" for="group">TABELA:</label> 
+                <input type="text" id="group" placeholder="Descrição Grupo" readonly>
+
+                <label for="pedido">PEDIDO:</label> 
+                <input type="text" id="pedido" placeholder=" Condição de pagamento" readonly>
+
+                <label for="ref" class="label-espaco-esquerda" >REFERÊNCIA:</label> 
+                <input type="text" id="ref" placeholder="Código Referência" readonly>
+
+            </form>
+        </div>
+
+        <div class="section">
+            <div class="section-title">DADOS DO PEDIDO</div>
+            <div class="table-container">
+                <table id="dadosPedido" class="table">
+                    <thead>
+                        <tr>
+                            <th>CÓD</th>
+                            <th>QTD</th>
+                            <th>UV</th>
+                            <th>DESCRIÇÃO</th>
+                            <th>IPI</th>
+                            <th>R$ UNIT.</th>
+                            <th>R$ C/ IPI</th>
+                            <th>TOTAL R$</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Linhas serão adicionadas dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="payment-conditions">
+            <label for="volume">VOLUMES:</label>
+            <input type="text" id="volume" readonly>
+
+            <label for="total">TOTAL PRODUTOS:</label>
+            <input type="text" id="total" readonly>
+
+            <label for="total_imp">TOTAL C/IMP:</label>
+            <input type="text" id="total_imp" readonly>
+        </div>
+
+        <div class="observations">
+            <div class="obs-title">OBSERVAÇÕES DO REPRESENTANTE</div>
+            <textarea id="observacoes" readonly></textarea>
+        </div>
+
+        <div class="observations"id="sistema">
+            <div class="obs-title">OBSERVAÇÕES DO SISTEMA</div>
+            <textarea id="observacoes1" readonly></textarea>
+        </div>
+
+    </div>
+
+    <script src="/detalhes.js?v=1773344427930"></script>
+    <script src="/theme-toggle.js?v=1773344427930"></script>
+</body>
+</html>

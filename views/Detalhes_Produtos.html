@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <link rel="stylesheet" href="/css/detalhesProdutos.css?v=1773344427937">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427937">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-logo">
+                <a href="https://kidszoneworld.com.br/portal-do-representante/">
+                    <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+                </a>
+            </div>
+            <h3>KIDS ZONE - CADASTRO DE PRODUTOS / INFORMAÇÕES FISCAIS</h3>
+            <button id="button_pdf1">SALVAR PDF</button>
+        </div>
+        <div class="codigo-item">
+            <label for="codigo">CÓDIGO ITEM:</label>
+            <input type="text" id="codigo" placeholder="Digite o código">
+
+            <a target="_blank" class="catalogo" href="https://kidszoneworld.com.br/wp-content/uploads/2025/04/Catalogo-Kids-Zone-2025.pdf" >Vizualizar Catálogo</a>
+            <div class="tooltip-container excel-tooltip">
+                <a id="exportExcel1">
+                    <img class="img_link_excel" src="/images/excel.png" alt="exportar para excel">
+                </a>
+                <span class="tooltip">Baixar planilha com todos itens ativos</span>
+            </div>
+
+        </div>
+
+        <!-- Toggle switch -->
+        <label class="theme-switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+        </label>
+
+        
+           <!-- Mensagem de feedback -->
+           <div id="feedback1" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;">
+                 Salvando o pdf , aguarde...
+           </div>
+
+        <div class="descricao-container">
+            <div class="descricao">
+                <h3>DESCRIÇÃO DO ITEM</h3>
+                <textarea id="descricao" rows="2" placeholder="Descrição do produto" ></textarea>
+                <div id="resultados-busca" >
+                    <ul id="lista-resultados" style="list-style: none; padding: 0; margin: 0;"></ul>
+                </div>
+                <label for="classificacao">CLASSIFICAÇÃO FISCAL:</label>
+                <input type="text" id="classificacao" placeholder="Classificação Fiscal"readonly>
+                <label for="ipi">IPI:</label>
+                <input type="text" id="ipi" placeholder="IPI"readonly>
+                <label for="preco-ref">PREÇO REFERENCIA:</label>
+                <input type="text" id="preco-ref" placeholder="Preço de Referência"readonly>
+                <label for="preco-ipi">PREÇO COM IPI:</label>
+                <input type="text" id="preco-ipi" placeholder="Preço com IPI"readonly>
+            </div>
+            <div class="imagem-produto">
+                <h3>IMAGEM DO PRODUTO</h3>
+                <img id="imagem" src="placeholder.jpg" alt="Imagem do Produto">
+            </div>
+        </div>
+        <div class="info-caixa-master">
+            <h3>INFORMAÇÕES DA CAIXA MASTER</h3>
+            <label for="codigo-master">CÓDIGO DE BARRAS:</label>
+            <input type="text" id="codigo-master" placeholder="Código de Barras"readonly>
+            <label for="qtd-caixa">QUANTIDADE NA CAIXA MASTER:</label>
+            <input type="number" id="qtd-caixa" placeholder="Quantidade"readonly>
+            <label for="peso-caixa">PESO CAIXA MASTER:</label>
+            <input type="text" id="peso-caixa" placeholder="Peso"readonly>
+            <label for="comprimento-caixa">COMPRIMENTO CAIXA MASTER(CM):</label>
+            <input type="text" id="comprimento-caixa" placeholder="Comprimento"readonly>
+            <label for="largura-caixa">LARGURA CAIXA MASTER(CM):</label>
+            <input type="text" id="largura-caixa" placeholder="Largura"readonly>
+            <label for="altura-caixa">ALTURA CAIXA MASTER(CM):</label>
+            <input type="text" id="altura-caixa" placeholder="Altura"readonly>
+        </div>
+        <div class="info-display">
+            <h3>INFORMAÇÕES DO DISPLAY</h3>
+            <label for="codigo-display">CÓDIGO DE BARRAS:</label>
+            <input type="text" id="codigo-display" placeholder="Código de Barras"readonly>
+            <label for="qtd-display">QUANTIDADE NO DISPLAY:</label>
+            <input type="number" id="qtd-display" placeholder="Quantidade"readonly>
+            <label for="peso-display">PESO DISPLAY:</label>
+            <input type="text" id="peso-display" placeholder="Peso"readonly>
+            <label for="comprimento-display">COMPRIMENTO DISPLAY(CM):</label>
+            <input type="text" id="comprimento-display" placeholder="Comprimento"readonly>
+            <label for="largura-display">LARGURA DISPLAY(CM):</label>
+            <input type="text" id="largura-display" placeholder="Largura"readonly>
+            <label for="altura-display">ALTURA DISPLAY(CM):</label>
+            <input type="text" id="altura-display" placeholder="Altura"readonly>
+        </div>
+        <div class="info-unidade">
+            <h3>INFORMAÇÕES DA UNIDADE</h3>
+            <label for="codigo-unidade">CÓDIGO DE BARRAS:</label>
+            <input type="text" id="codigo-unidade" placeholder="Código de Barras"readonly>
+            <label for="peso-unitario">PESO UNITÁRIO:</label>
+            <input type="text" id="peso-unitario" placeholder="Peso Unitário"readonly>
+            <label for="comprimento-unitario">COMPRIMENTO UNITÁRIO(CM):</label>
+            <input type="text" id="comprimento-unitario" placeholder="Comprimento Unitário"readonly>
+            <label for="largura-unitario">LARGURA UNITÁRIO(CM):</label>
+            <input type="text" id="largura-unitario" placeholder="Largura Unitária"readonly>
+            <label for="altura-unitario">ALTURA UNITÁRIO(CM):</label>
+            <input type="text" id="altura-unitario" placeholder="Altura Unitária"readonly>
+        </div>
+        <div class="calculo-palete">
+            <h3>INFORMAÇÕES DE PALETIZAÇÃO</h3>
+            <label for="altura-max">ALTURA MÁXIMA (mts):</label>
+            <input type="text" id="altura-max" placeholder="Altura Máxima"readonly>
+            <label for="altura-pallet">ALTURA PALLET PADRÃO:</label>
+            <input type="text" id="altura-pallet" placeholder="Altura do Pallet"readonly>
+            <label for="qtd-lastro">QUANTIDADE LASTRO:</label>
+            <input type="number" id="qtd-lastro" placeholder="Quantidade de Lastro"readonly>
+            <label for="qtd-altura">QUATIDADE ALTURA:</label>
+            <input type="number" id="qtd-altura" placeholder="Quantidade de Altura"readonly>
+            <label for="cx-plt">QUATIDADE DE CAIXA POR PALLET:</label>
+            <input type="number" id="cx-plt" placeholder="Caixas por Pallet"readonly>
+            <label for="alt-pallet">ALTURA PALLET:</label>
+            <input type="text" id="alt-pallet" placeholder="Altura do Pallet"readonly>
+            <label for="peso-pallet">PESO PALLET:</label>
+            <input type="text" id="peso-pallet" placeholder="Peso do Pallet"readonly>
+        </div>
+    </div>
+
+    <script src="/detalhesProdutos.js?v=1773344427937"></script>
+    <script src="/theme-toggle.js?v=1773344427937"></script>
+   
+</body>
+</html>

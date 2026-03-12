@@ -1,0 +1,644 @@
+
+/* Animações */
+@keyframes animationButtonSend {
+    0% {
+        transform: rotateZ(10deg);
+    }
+    100% {
+        transform: rotateZ(-10deg);
+    }
+}
+
+/* Estilo Geral */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: #caccc6;
+}
+
+.container {
+    width: 95%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+}
+
+.header {
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 2px solid #333;
+    position: relative;
+}
+
+.header img {
+    width: 150px;
+}
+
+.header .date {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: #333;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.button-group button {
+    padding: 10px;
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    min-width: 150px;
+    font-size: 95%;
+}
+
+#button_pdf:hover {
+    background: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
+    color: #fafcfa;
+    font-weight: bold;
+}
+
+.section {
+    margin-top: 20px;
+}
+
+.section-title {
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Define 3 colunas por linha */
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #3f3d3d;
+    margin-top: 10px;
+}
+
+.form-grid div {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-grid label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.form-grid input,
+.form-grid select {
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 3px;
+    width: 100%; /* Ajusta para ocupar toda a largura da célula */
+    box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
+}
+
+/* Estilizar especificamente a div que contém o TIPO DE AÇÃO SOLICITADA */
+div.acao-solicitada-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza horizontalmente apenas esta seção */
+    width: 100%; /* Ocupa toda a largura disponível */
+    margin: 0 auto; /* Centraliza a div no container pai */
+}
+
+/* Ajustar o label e o input */
+.acao_solicita {
+    display: block;
+    width: 70%; /* Define uma largura fixa ou relativa */
+    max-width: 500px; /* Limita a largura máxima */
+    padding: 5px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    box-sizing: border-box; /* Inclui padding e borda na largura */
+}
+
+#acaoSolicita {
+    width: 70%; /* Mesma largura do label */
+    max-width: 500px; /* Mesma largura máxima do label */
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 3px;
+    margin-top: 5px;
+    box-sizing: border-box; /* Inclui padding e borda na largura */
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 20px; /* Define um tamanho base maior */
+    height: 20px; /* Define um tamanho base maior */
+    transform: scale(1.1); /* Aumenta o tamanho em 1.5x (ajuste conforme necessário) */
+    margin-right: 5px; /* Ajusta o espaçamento entre o checkbox e o label */
+    vertical-align: middle; /* Alinha verticalmente com o texto */
+    cursor: pointer; /* Indica que o elemento é clicável */
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    accent-color: green;
+}
+
+.action-table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.action-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.action-table th,
+.action-table td {
+    border: 1px solid #3f3d3d;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle; /* Centraliza verticalmente */
+}
+
+.action-table th {
+    background-color: #333;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.action-table td input[type="text"] {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+}
+
+.action-table td input[type="checkbox"] {
+
+    width: 20px; /* Define um tamanho base maior */
+    height: 20px; /* Define um tamanho base maior */
+    transform: scale(1.1); /* Aumenta o tamanho em 1.5x (ajuste conforme necessário) */
+    display: block;
+    margin: 0 auto; /* Centraliza horizontalmente */
+    cursor: pointer; /* Indica que o elemento é clicável */
+}
+
+.action-table td input[type="checkbox"]:checked{
+    accent-color: green;
+
+}
+
+.investment-table-container {
+    overflow-x: auto;
+}
+
+.investment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.investment-table th,
+.investment-table td {
+    border: 1px solid #3f3d3d;
+    padding: 10px;
+    text-align: center;
+}
+
+.investment-table th {
+    background-color: #333;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.investment-table td input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+}
+
+.investment-table .parcela {
+    width: 20%;
+}
+
+.investment-table .valor {
+    width: 30%;
+}
+
+.investment-table .pago {
+    width: 20%;
+}
+
+.investment-table .valor-pago {
+    width: 30%;
+}
+
+.payment-conditions {
+    margin-top: 20px;
+    border: 1px solid #1b1a1a;
+    padding: 15px;
+    padding-left: 35px;
+    align-items: center;
+}
+
+.payment-conditions label {
+    width: 100%;
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+}
+
+.payment-conditions input {
+    padding: 5px;
+}
+
+.observations {
+    margin-top: 20px;
+}
+
+.observations .obs-title {
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.observations textarea {
+    width: 99.5%;
+    height: 100px;
+    margin-top: 10px;
+    resize: vertical;
+    border-radius: 5px;
+    border: 1px solid #3d3c3c;
+}
+
+.no-print {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.no-print button {
+    border-radius: 8px;
+    border: 1px solid #3d3c3c;
+    padding: 5px;
+    font-weight: 600;
+}
+
+.no-print button:hover {
+    background-color: rgba(225, 0, 152);
+    color: rgb(250, 242, 247);
+    border: none;
+}
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #333;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.link_sites {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+
+.link_sites a {
+    display: flex;
+    justify-content: center;
+    color: #ffffff;
+    text-align: center;
+    padding-left: 20px;
+    text-decoration: none;
+    font-size: 100%;
+}
+
+.link_sites label {
+    display: flex;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.link_sites a:hover {
+    color: rgba(225, 0, 152);
+    font-size: 140%;
+    animation: animationButtonSend 1s;
+}
+
+#logoutButton2:hover {
+    background-color: rgba(225, 0, 152);
+    color: rgb(250, 242, 247);
+    font-size: 140%;
+    animation: animationButtonSend 1s;
+    border: none;
+}
+
+input:focus,
+textarea:focus {
+    border-color: rgba(225, 0, 152);
+    outline: none;
+    box-shadow: 0 0 5px #ff0000;
+}
+
+.investimento {
+    margin-bottom: 20px;
+}
+
+.visita{
+    margin-bottom: -13px;
+}
+
+.textwarning{
+    text-align: center; 
+    font-style: italic; 
+    margin: 10px 0; 
+    color:red
+}
+
+#assinatura {
+    height:70px;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 1040px) {
+    footer {
+        width: 100%;
+    }
+
+    .link_sites {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .link_sites button#logoutButton2 {
+        width: 10%;
+        margin-top: 20px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .link_sites a {
+        margin: 5px;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        padding: 10px;
+    }
+
+    .button-group button {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 1020px) {
+    .payment-conditions input {
+        width: 17%;
+        padding: 5px;
+    }
+}
+
+@media (min-width: 827px) and (max-width: 914px) {
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        padding: 0px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border: 1px solid #ddd;
+    }
+}
+
+@media (min-width: 789px) and (max-width: 975px) {
+    .payment-conditions {
+        margin-top: 20px;
+        border: 1px solid #1b1a1a;
+        padding-left: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .payment-conditions label {
+        flex: 1 1 90px;
+        min-width: 100px;
+        background-color: #333;
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .payment-conditions input {
+        flex: 2 1 90px;
+        padding: 5px;
+    }
+}
+
+@media (min-width: 478px) and (max-width: 788px) {
+    .payment-conditions {
+        margin-top: 20px;
+        padding-left: 0px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .payment-conditions label {
+        width: 70%;
+        background-color: #333;
+        color: #ffffff;
+    }
+
+    .payment-conditions input {
+        width: 50%;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 891px) {
+    .payment-conditions label {
+        width: 50%;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        font-size: 90%;
+    }
+
+    .button-group button {
+        font-size: 100%;
+    }
+
+    .header img {
+        width: 160px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header img {
+        width: 80px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #button_pdf::after {
+        content: "SALVAR EM PDF";
+        color: #fafcfa;
+        font-size: 107%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #button_pdf {
+        position: relative;
+        color: transparent;
+        overflow: hidden;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Em telas menores, muda para 1 coluna */
+    }
+
+    .form-grid label,
+    .form-grid input {
+        width: 100%;
+        margin: 0;
+    }
+
+    .investment-table-container,
+    .action-table-container {
+        overflow-x: scroll;
+    }
+
+    .header img {
+        width: 150px;
+    }
+
+    .acao_solicita,
+    #acaoSolicita {
+        width: 90%; /* Aumenta a largura em telas menores */
+        max-width: 400px; /* Ajusta a largura máxima */
+    }
+}
+
+@media (max-width: 480px) {
+    .header .date {
+        font-size: 10px;
+    }
+
+    .button-group button {
+        font-size: 95%;
+    }
+
+    .investment-table,
+    .action-table {
+        font-size: 12px;
+    }
+
+    .observations textarea {
+        font-size: 12px;
+        width: 98%;
+    }
+
+    .link_sites {
+        padding-left: 15px;
+    }
+
+    .header img {
+        width: 140px;
+    }
+
+    .acao_solicita,
+    #acaoSolicita {
+        width: 95%; /* Ajusta ainda mais para telas muito pequenas */
+        max-width: 300px; /* Ajusta a largura máxima */
+    }
+}
+
+@media (max-width: 896px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid input,
+    .form-grid select {
+        width: 100%; /* Ajusta para telas menores */
+        margin: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .link_sites a {
+        font-size: 80%;
+        padding-left: 15px;
+    }
+}
+
+@media (max-width: 477px) {
+    .payment-conditions {
+        margin-top: 20px;
+        border: 1px solid #1b1a1a;
+        padding-left: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .payment-conditions label {
+        flex: 1 1 120px;
+        min-width: 100px;
+        background-color: #333;
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .payment-conditions input {
+        flex: 2 1 120px;
+        padding: 5px;
+    }
+}

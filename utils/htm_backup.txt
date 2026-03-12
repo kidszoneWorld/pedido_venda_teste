@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORM-PEDIDO</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://cdn.awsli.com.br/400x300/1624/1624738/logo/26bd476ece.png" alt="Imagem KidsZone">
+            <div class="date"></div> <!-- A data e hora serão inseridas aqui -->
+
+                <script>
+                    // Função para formatar a data e hora
+                    function atualizarDataHora() {
+                        const elementoData = document.querySelector('.date');
+                        const agora = new Date();
+                        const dataFormatada = agora.toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
+                        const horaFormatada = agora.toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        elementoData.textContent = `${dataFormatada} ${horaFormatada}`;
+                    }
+            
+                    // Chama a função inicialmente e depois a cada segundo para manter a hora atualizada
+                    atualizarDataHora();
+                    setInterval(atualizarDataHora, 1000);
+                </script>
+
+        </div>
+        <div class="button-group">
+            <button>Salvar em PDF e enviar e-mail</button>
+            <button>INFORME O CNPJ</button>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">DADOS DO CLIENTE</div>
+            <form class="form-group">
+
+                <label for="cnpj">CNPJ:</label> 
+                <input type="text" id="cnpj" placeholder="Digite o CNPJ" maxlength="14">
+
+                <label for="representante" class="label-espaco-esquerda">CÓD REP:</label> 
+                <input type="text" id="representante" placeholder="Representante">
+
+                <label for="ie">IE:</label> 
+                <input type="text" id="ie" placeholder="Inscrição Estadual" readonly>
+
+                <label class="label-espaco-esquerda" for="tipo_pedido">TIPO PEDIDO:</label>
+                <select id="tipo_pedido">
+                    <option value="Venda">Venda</option>
+                    <option value="Promoção">Promoção</option>
+                    <option value="Bonificação">Bonificação</option>
+                </select>
+
+                <label for="razao_social" >RAZÃO SOCIAL:</label> 
+                <input type="text" id="razao_social" placeholder="Razão Social" readonly>
+
+                <label for="cod_cliente" class="label-espaco-esquerda">CÓD CLIENTE:</label> 
+                <input type="text" id="cod_cliente" placeholder="Código Cliente" readonly>
+
+                <label for="endereco">ENDEREÇO:</label> 
+                <input type="text" id="endereco" placeholder="Endereço"readonly>
+
+                <label for="bairro" class="label-espaco-esquerda">BAIRRO:</label> 
+                <input type="text" id="bairro" placeholder="Bairro" readonly>
+
+                <label for="cidade">CIDADE:</label> 
+                <input type="text" id="cidade" placeholder="Cidade"readonly>
+
+                <label for="uf" class="label-espaco-esquerda">UF:</label> 
+                <input type="text" id="uf" placeholder="UF" maxlength="2" readonly>
+
+                <label for="cep">CEP:</label> 
+                <input type="text" id="cep" placeholder="CEP" readonly>
+
+                <label for="telefone" class="label-espaco-esquerda">TEL:</label> 
+                <input type="text" id="telefone" placeholder="Telefone"readonly>
+
+                <label for="email">E-MAIL</label> 
+                <input type="text" id="email" placeholder="E-mail" readonly>
+
+                <label for="contato" class="label-espaco-esquerda">CONTATOS:</label> 
+                <input type="text" id="contato" placeholder="Contato" readonly>
+
+                <label for="contato"  >E-MAIL FISCAL:</label> 
+                <input type="text" id="email_fiscal" placeholder="E-mail Fiscal" readonly>
+
+                <label for="transp" class="label-espaco-esquerda" >TRANSPORTE:</label> 
+                <input type="text" id="transp" placeholder="Transportadora" readonly>
+
+            </form>
+        </div>
+
+        <div class="section">
+            <div class="section-title">DADOS PEDIDO</div>
+            <button type="button" id="adicionarLinha">Adicionar Linha</button>
+            <button type="button" id="excluirLinha">Remover Linha</button>
+            <div class="table-container">
+                <table id="dadosPedido" border="1" class="table">
+                    <thead>
+                        <tr>
+                            <th>CÓD</th>
+                            <th>QTD</th>
+                            <th>UV</th>
+                            <th>PACK</th>
+                            <th>DESCRIÇÃO</th>
+                            <th>IPI</th>
+                            <th>R$ UNIT.</th>
+                            <th>R$ C/ IPI</th>
+                            <th>TOTAL R$</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                             <!-- Linhas do pedido serão adicionadas dinamicamente -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+        <!-- Seção de Condição de Pagamento -->
+        <div class="payment-conditions">
+
+                <label for="pay">CONDIÇÃO PGTO:</label> 
+                <input type="text" id="pay">
+
+                <label class="spaceInputCod" for="codgroup">COD:</label> 
+                <input type="text" id="codgroup">
+
+                <label for="group">TABELA:</label> 
+                <input type="text" id="group">
+
+                <label for="volume">VOLUMES:</label> 
+                <input type="text" id="volume">
+
+                <label for="total">TOTAL PRODUTOS:</label> 
+                <input type="text" id="total">
+
+                <label for="total_imp">TOTAL C/IMP:</label> 
+                <input type="text" id="total_imp">
+
+        </div>
+
+        <!-- Seção de Observações -->
+        <div class="observations">
+            <div class="obs-title">OBSERVAÇÕES</div>
+            <textarea placeholder="Escreva alguma observação"></textarea>
+        </div>
+        
+        <a target="_blank" href="admin.html">Área Administrativa</a>
+    </div>
+    <script src="script2.js"></script>
+</body>
+</html>

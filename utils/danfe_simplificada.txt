@@ -1,0 +1,282 @@
+const { getSpreadsheetData } = require('../utils/apiLogisticaFernando');
+const Danfe = require('danfe-simplificada');
+const puppeteer = require('puppeteer');
+
+
+// Função para converter data no formato Excel para JavaScript Date
+function excelDateToJSDate(serial) {
+    if (!serial || isNaN(serial)) {
+        return null;
+    }
+    const utcDays = Math.floor(serial - 25569);
+    const utcValue = utcDays * 86400;
+    return new Date(utcValue * 1000);
+}
+
+// Função para buscar o XML pelo número da nota (NF)
+async function getXMLByNF(nf) {
+    try {
+        const driveId = 'b!XH-eb-xz-E6X2UiiEteqUdmnlFRU0p5LmLmtxXKjZ0IQdp2f5MVEQqMjT7VUFk1Z';
+        const itemId = '01DKYK72AHRQPTUYSMCRGJB4PLCCLSM7YO';
+        const sheetName = 'ENTREGAS';
+
+        const data = await getSpreadsheetData(driveId, itemId, sheetName);
+        console.log('Dados brutos do OneDrive:', data);
+
+        const nfString = nf.toString().trim();
+        console.log('Procurando NF:', nfString);
+
+        const order = data.slice(4).find(row => {
+            const rowNF = row[0] ? row[0].toString().trim() : '';
+            console.log('Comparando com NF da linha:', rowNF);
+            return rowNF === nfString;
+        });
+
+        if (!order) {
+            console.log('Nota não encontrada:', nfString);
+            return null;
+        }
+
+        const xml = order[18];
+        console.log('XML encontrado:', xml ? 'Sim' : 'Não');
+        return xml || null;
+    } catch (error) {
+        console.error('Erro ao buscar XML no OneDrive:', error);
+        throw error;
+    }
+}
+
+async function fetchLogisticsData(req, res) {
+    try {
+        const driveId = 'b!XH-eb-xz-E6X2UiiEteqUdmnlFRU0p5LmLmtxXKjZ0IQdp2f5MVEQqMjT7VUFk1Z';
+        const itemId = '01DKYK72AHRQPTUYSMCRGJB4PLCCLSM7YO';
+        const sheetName = 'ENTREGAS';
+
+        const data = await getSpreadsheetData(driveId, itemId, sheetName);
+        const userNumero = req.session?.userNumero || null;
+        console.log('Número do Representante na Sessão:', userNumero);
+
+        let formattedData = data.slice(4).map(row => ({
+            NF: row[0],
+            EMISSÃO: row[1] ? (excelDateToJSDate(row[1]) ? excelDateToJSDate(row[1]).toISOString() : null) : null,
+            codCliente: row[2],
+            Rep: row[4],
+            NOME: row[5],
+            UF: row[8],
+            REGIÃO: row[7],
+            VOL: row[9],
+            CodTransporte: row[10],
+            TRANSPORTES: row[11],
+            SAÍDA: row[12] ? (excelDateToJSDate(row[12]) ? excelDateToJSDate(row[12]).toISOString() : null) : null,
+            PrevisaoEntrega: row[13] ? (excelDateToJSDate(row[13]) ? excelDateToJSDate(row[13]).toISOString() : null) : null,
+            ENTREGUE: row[14] ? (excelDateToJSDate(row[14]) ? excelDateToJSDate(row[14]).toISOString() : null) : null,
+            AGENDA: row[16],
+            OCORRÊNCIA: row[17],
+            CNPJ: row[3],
+            STATUS_ENTREGA: row[15],
+            XML: row[18]
+        }));
+
+        if (userNumero) {
+            formattedData = formattedData.filter(order => order.Rep.toString() === userNumero.toString());
+        }
+
+        res.json(formattedData);
+    } catch (error) {
+        console.error('Erro ao buscar dados do OneDrive:', error);
+        res.status(500).json({ error: 'Erro ao buscar dados do OneDrive' });
+    }
+}
+
+async function fetchLogisticsData1(req, res) {
+    try {
+        const driveId = 'b!XH-eb-xz-E6X2UiiEteqUdmnlFRU0p5LmLmtxXKjZ0IQdp2f5MVEQqMjT7VUFk1Z';
+        const itemId = '01DKYK72ENRPET44VS6NC2NCRAFFSQL2WJ';
+        const sheetName = 'ENTREGAS';
+
+        const data = await getSpreadsheetData(driveId, itemId, sheetName);
+        const userNumero = req.session?.userNumero || null;
+        console.log('Número do Representante na Sessão:', userNumero);
+
+        let formattedData = data.slice(4).map(row => ({
+            NF: row[0],
+            EMISSÃO: row[1] ? (excelDateToJSDate(row[1]) ? excelDateToJSDate(row[1]).toISOString() : null) : null,
+            codCliente: row[2],
+            Rep: row[4],
+            NOME: row[5],
+            UF: row[8],
+            REGIÃO: row[7],
+            VOL: row[9],
+            CodTransporte: row[10],
+            TRANSPORTES: row[11],
+            SAÍDA: row[12] ? (excelDateToJSDate(row[12]) ? excelDateToJSDate(row[12]).toISOString() : null) : null,
+            PrevisaoEntrega: row[13] ? (excelDateToJSDate(row[13]) ? excelDateToJSDate(row[13]).toISOString() : null) : null,
+            ENTREGUE: row[14] ? (excelDateToJSDate(row[14]) ? excelDateToJSDate(row[14]).toISOString() : null) : null,
+            AGENDA: row[16],
+            OCORRÊNCIA: row[17],
+            CNPJ: row[3],
+            STATUS_ENTREGA: row[15]
+        }));
+
+        if (userNumero) {
+            formattedData = formattedData.filter(order => order.Rep.toString() === userNumero.toString());
+        }
+
+        res.json(formattedData);
+    } catch (error) {
+        console.error('Erro ao buscar dados do OneDrive:', error);
+        res.status(500).json({ error: 'Erro ao buscar dados do OneDrive' });
+    }
+}
+
+// Rota para baixar o XML
+async function downloadXML(req, res) {
+    try {
+        const nf = req.query.nf;
+        if (!nf) {
+            return res.status(400).send('Nenhum número de nota fornecido.');
+        }
+
+        const xml = await getXMLByNF(nf);
+        if (!xml) {
+            return res.status(404).send('XML não encontrado para esta nota.');
+        }
+
+        res.setHeader('Content-Disposition', `attachment; filename=nota_${nf}.xml`);
+        res.setHeader('Content-Type', 'application/xml');
+        res.send(xml);
+    } catch (error) {
+        console.error('Erro ao baixar o XML:', error);
+        res.status(500).send('Erro ao baixar o XML.');
+    }
+}
+
+// Rota para baixar a DANFE em PDF
+
+async function downloadDANFE(req, res) {
+    try {
+        const nf = req.query.nf;
+        if (!nf) {
+            console.log('Erro: Nenhum número de nota fornecido.');
+            return res.status(400).send('Nenhum número de nota fornecido.');
+        }
+
+        console.log('Buscando XML para NF:', nf);
+        const xml = await getXMLByNF(nf);
+        if (!xml) {
+            console.log('Erro: XML não encontrado para NF:', nf);
+            return res.status(404).send('XML não encontrado para esta nota.');
+        }
+
+        console.log('XML obtido com sucesso:', xml.substring(0, 100) + '...');
+
+        if (typeof xml !== 'string' || !xml.startsWith('<?xml')) {
+            console.error('Erro: XML inválido ou malformado para NF:', nf);
+            return res.status(400).send('XML inválido ou malformado.');
+        }
+
+        console.log('Inicializando a geração da DANFE para NF:', nf);
+        const logoUrl = null; // Remova o logoUrl ou substitua por uma URL válida e acessível
+        const danfe = Danfe.fromXML(xml, logoUrl);
+        const html = danfe.toHtml();
+        console.log('HTML gerado com sucesso.');
+
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+            timeout: 60000 // Aumenta o tempo limite para 60 segundos
+        });
+
+        const page = await browser.newPage();
+        // Ignora erros de carregamento de recursos externos
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+
+        await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
+        const pdfBuffer = await page.pdf({ format: 'A4' });
+        await browser.close();
+        console.log('PDF gerado com sucesso para NF:', nf);
+
+        res.setHeader('Content-Disposition', `attachment; filename=danfe_${nf}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('Erro ao gerar a DANFE para NF:', req.query.nf, error);
+        res.status(500).send(`Erro ao gerar a DANFE: ${error.message}`);
+    }
+}
+
+
+// Rota para exibir o XML
+async function viewXML(req, res) {
+    try {
+        const xml = req.query.xml;
+        if (!xml) {
+            return res.status(400).send('Nenhum XML fornecido.');
+        }
+
+        const decodedXML = decodeURIComponent(xml);
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="pt-BR">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Visualizar XML</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 20px;
+                        background-color: #f4f4f4;
+                    }
+                    h1 {
+                        color: #333;
+                    }
+                    pre {
+                        background-color: #fff;
+                        padding: 15px;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    }
+                    .back-button {
+                        margin-top: 20px;
+                        padding: 10px 20px;
+                        background-color: #007bff;
+                        color: #fff;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    }
+                    .back-button:hover {
+                        background-color: #0056b3;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Visualizar XML da Nota</h1>
+                <pre>${decodedXML}</pre>
+                <button class="back-button" onclick="window.close()">Fechar</button>
+            </body>
+            </html>
+        `);
+    } catch (error) {
+        console.error('Erro ao exibir o XML:', error);
+        res.status(500).send('Erro ao exibir o XML.');
+    }
+}
+
+module.exports = {
+    fetchLogisticsData,
+    fetchLogisticsData1,
+    viewXML,
+    downloadXML,
+    downloadDANFE
+};

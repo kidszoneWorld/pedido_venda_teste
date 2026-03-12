@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FICHA DE CADASTRO</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="/css/cadastroCliente.css?v=1773344427916">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427916">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Aviso!</h2>
+            <p>Você deseja realmente enviar para o sistema?</p>
+            <button id="confirmButton">Sim</button>
+            <button id="cancelButton">Não</button>
+        </div>
+    </div>
+
+    <div id="customModal1" class="modal1">
+        <div class="modal-content1">
+            <span class="close-button1">&times;</span>
+            <h2>Aviso!</h2>
+            <p>Você deseja realmente enviar o e-mail?</p>
+            <button id="confirmButton1">Sim</button>
+            <button id="cancelButton1">Não</button>
+        </div>
+    </div>
+
+    <!-- Novo modal para aviso de limite de tamanho -->
+    <div id="sizeLimitModal" class="modal1">
+        <div class="modal-content1">
+            <span class="close-button1">&times;</span>
+            <h2>Aviso!</h2>
+            <p id="sizeLimitMessage"></p>
+            <button id="sizeLimitOkButton">OK</button>
+        </div>
+    </div>
+
+    <div id="blockModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Aviso!</h2>
+            <p>Por favor enviar o pedido para o sistema para liberar um novo cadastro.</p>
+            <p id="timestamp"></p>
+            <button id="okButton">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal de E-mail -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content email-modal-content">
+            <span class="close-button email-close-button">&times;</span>
+            <h2>Enviar E-mail</h2>
+            <form id="emailForm" class="email-form">
+                <div class="email-field">
+                    <label for="emailTo">Para:</label>
+                    <input type="email" id="emailTo" placeholder="Digite o e-mail do destinatário" required readonly>
+                </div>
+                <div class="email-field tooltip">
+                    <label for="emailCc">Cc:</label>
+                    <input type="text" id="emailCc" placeholder="Digite os e-mails separados por ;">
+                    <span class="tooltiptext">Colocar " ; " para separar os e-mails</span>
+                </div>
+                <div class="email-field">
+                    <label for="emailSubject">Assunto:</label>
+                    <input type="text" id="emailSubject" placeholder="Digite o assunto" required readonly>
+                </div>
+                <div class="email-field">
+                    <label for="emailBody">Mensagem:</label>
+                    <textarea id="emailBody" placeholder="Digite sua mensagem" rows="10" required></textarea>
+                </div>
+                <div class="email-field attachment-wrapper">
+                    <label for="emailAttachment">Anexar Arquivo:</label>
+                    <input type="file" id="emailAttachment" multiple>
+                    <div id="attachmentTooltip" class="attachment-tooltip">
+                        <ul id="attachmentList"></ul>
+                        <!-- Novo elemento para mostrar o tamanho total -->
+                        <p id="totalSizeDisplay" style="margin-top: 10px; font-weight: bold;">Tamanho total: 0 MB</p>
+                    </div>
+                </div>
+                <div class="email-buttons">
+                    <button type="button" id="sendEmailButton">Enviar</button>
+                    <button type="button" id="cancelEmailButton">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-logo">
+            <a href="https://kidszoneworld.com.br/portal-do-representante/">
+                <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+            </a>
+        </div>
+        <h3>KIDS ZONE - FICHA DE CADASTRO DE CLIENTES</h3>
+        <label class="theme-switch" id="seletor">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+        </label>
+        <div class="button-group">
+            <button id="button_pdf">ENVIAR E-MAIL COM ANEXOS</button>
+        </div>
+        <div id="feedback1" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;">
+            Estamos enviando o e-mail, aguarde...
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">DADOS DO CLIENTE</div>
+        <form class="form-group">
+            <label for="razao_social">RAZÃO SOCIAL:</label>
+            <input type="text" id="razao_social" placeholder="Razão Social">
+            <label for="representante" class="label-espaco-esquerda">REPRESENTANTE:</label>
+            <input type="text" id="representante" placeholder="Representante">
+            <label class="IE" for="ie">NOME FANTASIA:</label>
+            <input type="text" id="ie" placeholder="Nome fantasia">
+            <label for="cod_cliente" class="label-espaco-esquerda">CNPJ:</label>
+            <input type="text" id="cod_cliente" placeholder="CNPJ">
+            <label for="endereco">ENDEREÇO:</label>
+            <input type="text" id="endereco" placeholder="Endereço">
+            <label class="IE label-espaco-esquerda" for="ie">INSCRIÇÃO ESTADUAL:</label>
+            <input type="text" id="ie" placeholder="Inscrição Estadual">
+            <label for="cidade">CIDADE:</label>
+            <input type="text" id="cidade" placeholder="Cidade">
+            <label for="bairro" class="label-espaco-esquerda">BAIRRO:</label>
+            <input type="text" id="bairro" placeholder="Bairro">
+            <label for="cep">CEP:</label>
+            <input type="text" id="cep" placeholder="CEP" readonly>
+            <label for="telefone" class="label-espaco-esquerda">TELEFONE:</label>
+            <input type="text" id="telefone" placeholder="Telefone">
+            <label for="email">E-MAIL ARQUIVO XML:</label>
+            <input type="text" id="email" placeholder="E-mail para o XML">
+            <label for="email_fiscal" class="label-espaco-esquerda">E-MAIL COMPRADOR:</label>
+            <input type="text" id="email_fiscal" placeholder="E-mail Fiscal">
+            <label for="pay">E-MAIL AGENDAMENTO:</label>
+            <input type="text" id="pay" placeholder="E-mail para Agendamento">
+            <label for="transp" class="label-espaco-esquerda">E-MAIL FINANCEIRO:</label>
+            <input type="text" id="transp" placeholder="E-mail Financeiro">
+            <label for="group">CONTATO FINANCEIRO:</label>
+            <input type="text" id="contat" placeholder="Contato">
+            <label class="label-espaco-esquerda" for="group">CANAL:</label>
+            <input type="text" id="group" placeholder="Canal">
+            <label for="formPagDescricao">SEGMENTO:</label>
+            <input type="text" id="formPagDescricao" placeholder="Segmento">
+            <label class="label-espaco-esquerda" for="codgroup">TABELA PREÇOS:</label>
+            <input type="text" id="codgroup" placeholder="Tabela Preços">
+        </form>
+    </div>
+
+    <div class="observations">
+        <div class="obs-title">INFORMAÇÕES NECESSÁRIAS</div>
+        <form class="info-form">
+            <div class="info-item">
+                <label for="regime_especial">Possui Regime Especial?</label>
+                <input type="text" id="regime_especial" placeholder="Digite sua resposta">
+            </div>
+            <div class="info-item">
+                <label for="agendamento">É necessário fazer agendamento para entrega?</label>
+                <input type="text" id="agendamento" placeholder="Digite sua resposta">
+            </div>
+            <div class="info-item">
+                <label for="dados_responsavel">Informar os dados como telefone, e-mail e o nome do responsável para entrega:</label>
+                <input type="text" id="dados_responsavel" placeholder="Digite sua resposta">
+            </div>
+            <div class="info-item">
+                <label for="paletizada">A carga deve ser paletizada?</label>
+                <input type="text" id="paletizada" placeholder="Digite sua resposta">
+            </div>
+            <div class="info-item">
+                <label for="horario_entrega">Horário e dia de entrega?</label>
+                <input type="text" id="horario_entrega" placeholder="Digite sua resposta">
+            </div>
+            <div class="info-item">
+                <label for="numero_nf">O número do pedido deve constar na NF?</label>
+                <input type="text" id="numero_nf" placeholder="Digite sua resposta">
+            </div>
+        </form>
+        <p class="info-footer">
+            Caso as informações necessárias não forem repassadas para a empresa e o cliente venha a recusar ou devolver o pedido, 
+            os custos serão repassados ao representante. Vale ressaltar que a empresa NÃO irá arcar com as despesas de devolução de pedido, 
+            assim como frete de IDA e VOLTA.
+        </p>
+    </div>
+
+    <div class="observations">
+        <div class="obs-title">ANEXAR (OBRIGATÓRIO)*</div>
+        <form class="info-form">
+            <div class="info-item1">
+                <label for="regime_especial">* Apresentação</label>
+              
+            </div>
+            <div class="info-item1">
+                <label for="agendamento">* Cópia do Contrato Social</label>
+              
+            </div>
+            <div class="info-item1">
+                <label for="dados_responsavel">* Última Alteração do Contrato Social</label>
+               
+            </div>
+            <div class="info-item1">
+                <label for="paletizada">* DRE</label>
+           
+            </div>
+            <div class="info-item1">
+                <label for="horario_entrega">* Último Balanço Patrimonial Atualizado</label>
+                
+            </div>
+            <div class="info-item1">
+                <label for="numero_nf">* Sintegra</label>
+                
+            </div>
+            <div class="info-item1">
+                <label for="numero_nf">* CNPJ</label>
+                
+            </div>
+           <div class="info-item1">
+                <label for="numero_nf">* Referências Comerciais</label>
+                
+            </div>
+            <div class="info-item1">
+                <label for="numero_nf">* Suframa</label>
+                
+            </div>
+            <div class="info-item1">
+                <label for="numero_nf">* Regime Especial, quando houver o documento</label>
+                
+            </div>
+           <div class="info-item1">
+                <label for="numero_nf">* Foto </label>
+                
+            </div>
+        </form>
+    </div>
+    
+</div>
+
+<script src="/cadastroCliente.js?v=1773344427916"></script>
+<script src="/theme-toggle.js?v=1773344427916"></script>
+<script>
+    document.getElementById('logoutButton2').addEventListener('click', async () => {
+        sessionStorage.clear();
+        localStorage.clear();
+        await fetch('/logout', { method: 'POST' });
+        document.cookie.split(";").forEach(cookie => {
+            document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+        });
+        window.location.href = '/login2';
+    });
+</script>
+
+</body>
+</html>

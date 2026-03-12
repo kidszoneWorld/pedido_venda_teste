@@ -1,0 +1,223 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #caccc6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.header-logo {
+    flex: 0 0 auto;
+    margin-right: 20px;
+}
+
+.header-logo img {
+    width: 70px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.header h3 {
+    margin: 0;
+    text-align: center;
+    flex: 1;
+}
+
+.client-info {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f4e1f2;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.client-info label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.client-info input {
+    width: 600px;
+    height: 35px;
+    padding: 2px;
+    border: 1px solid #fb29d1;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #fff;
+}
+
+.table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 500px;
+    background-color: #f4e1f2;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #fff;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #d28fd2;
+    z-index: 10;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #d28fd2;
+    color: #000;
+    font-weight: bold;
+}
+
+.month-header {
+    position: relative;
+    background-color: #b3007a; /* Rosa mais escuro */
+    color: #ffffff; /* Letras brancas */
+}
+
+.month-header span {
+    display: inline-block;
+}
+
+.toggle-btn {
+    cursor: pointer;
+    font-size: 24px; /* Aumentado para 24px para melhor visibilidade */
+    margin-right: 5px;
+    color: #ffffff; /* Ícone "+" e "-" em branco para contraste */
+    padding: 2px 8px; /* Adiciona padding para aumentar a área clicável */
+    line-height: 1; /* Garante que o tamanho do texto não afete o alinhamento */
+}
+
+.sub-column.active {
+    display: table-cell;
+    background-color: #d28fd2; /* Mesma cor das colunas de meses */
+}
+
+.sub-column.active input {
+    background-color: #f0e0eb;
+    color: #201f1f;
+    border: 1px solid #fff;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.btn-salvar-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0;
+}
+
+#btnSalvarDados1 {
+    background-color: #e10098;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#btnSalvarDados1:hover {
+    background-color: #9f056f;
+    transform: scale(1.15);
+}
+
+.representante {
+    display: none;
+}
+
+.sub-columns-row {
+    display: none;
+}
+
+.sub-columns-row.active {
+    display: table-row;
+}
+
+.sub-columns-row th {
+    padding: 5px;
+    border: 1px solid #ddd;
+}
+
+.sub-column {
+    display: none;
+}
+
+/* Media Query para dispositivos móveis */
+@media (max-width: 768px) {
+    .toggle-btn {
+        font-size: 28px; /* Aumenta ainda mais o tamanho em dispositivos móveis */
+        padding: 4px 10px; /* Mais padding para facilitar o toque */
+    }
+
+    .client-info {
+        flex-direction: column;
+    }
+
+    .client-info input {
+        width: 90%;
+    }
+
+    th, td {
+        padding: 8px; /* Reduz um pouco o padding para caber melhor em telas menores */
+    }
+}
+
+@media (max-width: 990px) {
+    .client-info {
+        flex-direction: column;
+    }
+
+    .client-info input {
+        width: 90%;
+    }
+}

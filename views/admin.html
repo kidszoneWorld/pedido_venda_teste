@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - KidsZone</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <script>
+        // Redireciona para login.html se o usuário não estiver autenticado
+        if (sessionStorage.getItem("authenticated") !== "true") {
+            window.location.href = "/login";
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #333;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #141414;
+            font-size: 16px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        input{
+            width: 97.5%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Área Administrativa</h1>
+    <form>
+        <label for="uploadExcel">Importar Excel para atualizar dados</label>
+        <input type="file" id="uploadExcel" accept=".xls,.xlsx">
+        <button type="button" onclick="importarExcel()">Importar</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+<script>
+    function importarExcel() {
+        var input = document.getElementById('uploadExcel');
+        var file = input.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            var data = new Uint8Array(e.target.result);
+            var workbook = XLSX.read(data, { type: 'array' });
+
+            workbook.SheetNames.forEach(function(sheetName) {
+                var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1});
+                var jsonString = JSON.stringify(jsonData);
+                
+                // Criar e baixar o arquivo JSON
+                var blob = new Blob([jsonString], { type: "application/json" });
+                var link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = sheetName + ".json";
+                link.click();
+
+                // Exibir mensagem de sucesso
+                document.getElementById('result').innerHTML += `<p>Arquivo ${sheetName}.json gerado com sucesso!</p>`;
+            });
+        };
+
+        if (file) {
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert("Por favor, selecione um arquivo Excel.");
+        }
+    }
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,22 @@
+[
+    {
+        "clienteId": 15598,
+        "id": 37,
+        "tipo": "Juridica",
+        "documento": {
+            "numero": 16758234000132,
+            "numeroTexto": "16758234000132",
+            "tipo": 3
+        },
+        "identificacao": "LEH & GAH GIMENES REP., MARKETING E ACOES P. LTDA",
+        "nomeAbreviado": "ANTONIO GIMENES",
+        "email": {
+            "valido": false
+        },
+        "ehPrincipal": true,
+        "comissaoItem": 5.0000,
+        "comissaoServico": 5.0000,
+        "inserirAutomaticamenteNoPedidoVenda": true,
+        "ativo": true
+    }
+]

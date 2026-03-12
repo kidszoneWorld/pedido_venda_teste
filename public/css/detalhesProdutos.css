@@ -1,0 +1,555 @@
+/* Definindo variáveis de cor para os temas claro e escuro */
+:root {
+    --background-color-light: #caccc6;
+    --container-bg-light: #ffffff;
+    --header-bg-light: #ffffff;
+    --text-color-light: #333;
+    --table-bg-light: #ffffff;
+    --table-header-bg-light: #333;
+    --table-text-color-light: #ffffff;
+    --button-bg-light: #333;
+    --button-text-light: #ffffff;
+    --button-hover-bg-light: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
+    --button-hover-text-light: #fafcfa;
+
+    --background-color-dark: #1a1a1a;
+    --container-bg-dark: #2a2a2a;
+    --header-bg-dark: #2a2a2a;
+    --text-color-dark: #bbb5b5;
+    --table-bg-dark: #333;
+    --table-header-bg-dark: #1e1e1e;
+    --table-text-color-dark: #e0e0e0;
+    --button-bg-dark: #838181;
+    --button-text-dark: #ffffff;
+    --button-hover-bg-dark: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
+    --button-hover-text-dark: #fafcfa;
+    --input-bg-dark:#141414
+}
+
+/* Tema claro (padrão) */
+body.light-theme {
+    background-color: var(--background-color-light);
+}
+
+body.light-theme .container {
+    background-color: var(--container-bg-light);
+}
+
+body.light-theme .header {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.light-theme .section-title,
+body.light-theme .obs-title,
+body.light-theme .payment-conditions label {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme .table th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme .table td {
+    background-color: var(--table-bg-light);
+}
+
+body.light-theme .button-group button,
+body.light-theme .no-print button,
+body.light-theme footer {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+}
+
+body.light-theme .button-group button:hover,
+body.light-theme .no-print button:hover {
+    background: var(--button-hover-bg-light);
+    color: var(--button-hover-text-light);
+}
+
+
+
+
+/* Tema escuro */
+body.dark-theme {
+    background-color: var(--background-color-dark);
+}
+
+body.dark-theme .container {
+    background-color: var(--container-bg-dark);
+}
+
+body.dark-theme .header {
+    background-color: rgb(78, 77, 77);
+    color: rgb(252, 249, 249);
+}
+
+
+body.dark-theme .info-caixa-master,
+body.dark-theme .info-display ,
+body.dark-theme .info-unidade ,
+body.dark-theme .calculo-palete {
+    background-color: rgb(66, 66, 66);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme .descricao {
+    background-color: rgb(66, 66, 66);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme #descricao {
+    background-color: rgb(114, 112, 112);
+    color: rgb(248, 112, 187);
+}
+
+body.dark-theme .table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme .table td {
+    background-color: var(--table-bg-dark);
+}
+
+body.dark-theme .button-group button,
+body.dark-theme .no-print button,
+body.dark-theme footer {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+}
+
+body.dark-theme .button-group button:hover,
+body.dark-theme .no-print button:hover {
+    background: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme .date{
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme input{
+    background-color: var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme ::placeholder{
+    color:#3d3d3d;
+}
+
+body.dark-theme .form-group label{
+    color:#ccc8c8;
+}
+
+body.dark-theme #observation , #observacoes , #observacoes1{
+    background-color:var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme select{
+    background-color:var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme #dadosPedido tbody tr td{
+    background-color:var(--table-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme #dadosPedido tbody tr td input{
+    background-color:var(--table-bg-dark);
+    color: var(--button-hover-text-dark);
+    border:none;
+}
+
+body.dark-theme .codigo-item label{
+    color: var(--button-hover-text-dark); 
+}
+
+body.dark-theme .codigo-item #codigo{
+    background-color: rgb(114, 112, 112);
+    color: rgb(243, 119, 187);
+}
+
+body.dark-theme .descricao h3 ,
+body.dark-theme .info-caixa-master h3 ,
+body.dark-theme .info-display h3 ,
+body.dark-theme .info-unidade h3 ,
+body.dark-theme .calculo-palete h3 {
+    background-color: rgb(112, 112, 112);
+    color: rgb(243, 239, 241);
+}
+
+
+/* Animação de inversão de lado */
+@keyframes inverterLado {
+    0%, 100% {
+        transform: rotateY(0deg); /* Lado frontal */
+    }
+    50% {
+        transform: rotateY(180deg); /* Lado de trás */
+    }
+}
+
+@keyframes go-back {
+    0% {
+        transform: rotateZ(2deg);
+    }
+    100% {
+        
+        transform: rotateZ(-2deg);
+        
+    }
+  }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    /*background-color: #f4f4f4;*/
+    background-color: #caccc6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.header-logo {
+    flex: 0 0 auto;
+    margin-right: 20px;
+}
+
+.header-logo img {
+    width: 70px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.header h3 {
+    margin: 0;
+    text-align: center;
+    flex: 1;
+}
+
+.codigo-item {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    gap: 10px;
+  
+}
+
+.codigo-item label {
+    margin-right: 10px;
+}
+
+.codigo-item , .theme-switch{
+    margin-right: 10px;
+}
+
+.codigo-item input {
+    width: 100px;
+    font-size: 1em;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #242323;
+    border-radius: 4px;
+
+}
+
+.codigo-item a{
+    text-decoration: none;
+    color:rgba(225,0,152);
+}
+
+.descricao, .info-caixa-master, .info-display, .info-unidade, .calculo-palete {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #242323;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.descricao h3, .info-caixa-master h3, .info-display h3, .info-unidade h3, .calculo-palete h3 {
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+    margin: 0 0 10px 0;
+    border-radius: 4px;
+}
+
+.descricao-container {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 20px; /* Espaço entre as divisões */
+}
+
+.descricao {
+    flex: 1;
+    width: 50%; /* Cada divisão ocupa 50% */
+    min-width: 0; /* Garante que não ocorra estouro de largura */
+    
+}
+
+input, textarea {
+    width: 100%;
+    font-size: 125%;
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+textarea {
+    resize: none;
+    font-size: 135%;
+    color:rgba(225,0,152);
+    font-weight: bold;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+table th {
+    background-color: #333;
+    color: #ffffff;
+}
+
+img {
+    display: block;
+   /* max-width: 100%;*/
+    width: 120%;
+    height: 50px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    
+}
+
+.imagem-produto {
+    flex: 1;
+    width: 50%; /* Cada divisão ocupa 50% */
+    text-align: center;
+    min-width: 0; /* Garante que não ocorra estouro de largura */
+    color:rgba(225,0,152);
+    font-weight: bold;
+}
+
+.imagem-produto img {
+    max-width: 100%; /* A imagem se ajusta ao contêiner */
+    width: 80%;
+    height: 350px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    animation: go-back 1s infinite alternate;
+    /*animation: inverterLado 30s linear infinite; /* Duração de 3 segundos, linear e looping infinito */
+   /* transform-style: preserve-3d; /* Mantém o efeito 3D */
+    /*backface-visibility: hidden; /* Evita mostrar o verso ao girar */
+    display: block;
+    margin: 0 auto;
+    transform-origin: center; /* Define o ponto central para a rotação */
+   
+}
+
+    .imagem-produto a {
+        display: inline-block;
+        text-decoration: none; /* Remove sublinhado */
+    }
+
+    .imagem-produto a:hover img {
+        transform: scale(1.1); /* Aumenta a imagem em 10% */
+        transition: transform 0.3s ease; /* Suaviza a transição */
+        border: 2px solid rgba(225, 0, 152); /* Adiciona uma borda */
+    }
+
+    .imagem-produto a:hover {
+        cursor: pointer; /* Muda o cursor para "mãozinha" */
+    }
+
+/* Container do link */
+.tooltip-container {
+    position: relative; /* Necessário para posicionar a tooltip */
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* Tooltip personalizada */
+.tooltip {
+    visibility: hidden; /* Esconde por padrão */
+    position: absolute;
+    bottom: 120%; /* Posiciona acima do elemento */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(225, 0, 152, 0.9); /* Fundo da tooltip */
+    color: white; /* Cor do texto */
+    padding: 8px 12px; /* Espaçamento interno */
+    border-radius: 5px; /* Borda arredondada */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: bold; /* Texto em negrito */
+    white-space: nowrap; /* Evita quebra de linha */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Sombra */
+    z-index: 1000; /* Garante que esteja acima de outros elementos */
+    opacity: 0; /* Esconde visualmente */
+    transition: opacity 0.3s ease-in-out; /* Animação suave */
+}
+
+/* Mostra a tooltip ao passar o mouse */
+.tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
+.img_link {
+    width: 70px;
+}
+
+.img_link_excel {
+    width: 40px;
+    cursor: pointer;
+}
+
+.img_link_excel:hover {
+    width: 50px;
+}
+
+#resultados-busca {
+    display: none; 
+    border: 1px solid rgba(225, 0, 152); 
+    border-radius: 5px; padding: 10px; 
+    background-color: #fff; 
+    max-height: 150px; overflow-y: auto;
+
+}
+
+#resultados-busca {
+    position: absolute;
+    z-index: 1000;
+    width: 36%;
+    background-color: #fff;
+    border: 2px solid rgba(225, 0, 152, 0.6); /* Borda com a cor desejada */
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+#lista-resultados li {
+    color: rgba(225, 0, 152); /* Cor do texto */
+    padding: 8px; /* Espaçamento interno */
+    font-family: Arial, sans-serif; /* Fonte padrão */
+    font-size: 14px; /* Tamanho da fonte */
+    border-bottom: 1px solid #ddd; /* Linha separadora */
+    cursor: pointer; /* Muda o cursor ao passar por cima */
+    transition: background-color 0.2s ease-in-out; /* Suaviza a mudança de cor */
+}
+
+#lista-resultados li:last-child {
+    border-bottom: none; /* Remove a linha no último item */
+}
+
+#lista-resultados li:hover {
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247); /* Mantém a cor do texto */
+}
+
+#codigo{
+    color:rgba(225,0,152);
+    font-weight: bold;
+}
+
+
+#button_pdf1 {
+    background-color: #e10098;
+    color: white;
+    border: none;
+    width: 10%;
+    padding: 1% 2%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 80%;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#button_pdf1:hover {
+    background-color: #9f056f;
+    transform: scale(1.15);
+}
+
+
+@media (max-width: 768px) {
+
+    #button_pdf1 {
+        width: 80px;
+        padding: 1% 2%;
+        font-size: 80%;
+      
+    }
+
+    .header h3 {
+        font-size: 90%;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .descricao-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .imagem-produto {
+        text-align: center;
+    }
+
+    .descricao, .imagem-produto {
+        width: 95%; /* Cada divisão ocupa 100% da largura */
+    }
+    #resultados-busca {
+        width: 81%;
+    }
+}

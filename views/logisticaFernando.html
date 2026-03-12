@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes Logística</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/css/logistica.css?v=1773344428043">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344428043">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+    
+</head>
+<body>
+
+<div class="container">
+   
+    <div class="header">
+        <header class="header-container">
+            <div class="header-left">
+                <div class="header-logo">
+                    <a href="https://kidszoneworld.com.br/portal-do-representante/">
+                        <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+                    </a>
+                </div>
+                <h3 class="header-title">Acompanhamento de entrega</h3>
+
+                <!-- Toggle switch -->
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+
+            </div>
+            <div class="header-right">
+                <h4>Você está em: <br/><strong>Norte/Nordeste/Centro-Oeste</strong></h4>
+                <div class="link-wrapper">
+                    <span class="link-label">Ir para:</span>
+                    <a class="link_logistica" href="/logistica02">Sul/Sudeste</a>
+                </div>
+            </div>
+        </header>
+    </div>
+    
+    <div class="sairExcel">
+        <button id="logoutButton1">Sair</button>
+        <img class="img_link_excel" src="/images/excel.png" alt="exportar para excel" id="exportExcel1">
+    </div>
+
+
+    <!-- Feedback -->
+    <div id="feedback1" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;"></div>
+
+ 
+    <!-- Filtros -->
+    <div id="filters">
+        <!-- Botão de menu para telas menores -->
+        <div class="menu-toggle">
+            <button id="menuToggle" class="menu-button">
+                <span class="menu-icon">☰</span> Filtros
+            </button>
+        </div>
+
+        <!-- Contêiner dos filtros (será escondido/mostrado) -->
+        <div class="filter-container" id="filterContainer">
+            <div class="filter-inputs">
+                <div class="filter-row filter-row-top">
+                    <div class="filter-item">
+                        <label for="representanteFilter1">Cód Rep:</label>
+                        <input type="text" id="representanteFilter1" placeholder="Ex.: 37">
+                    </div>
+                    <div class="filter-item">
+                        <label for="notaFilter1">Nota Fiscal:</label>
+                        <input type="text" id="notaFilter1" placeholder="Ex.: 36777">
+                    </div>
+                    <div class="filter-item">
+                        <label for="clienteCNPJFilter1">Cliente CNPJ:</label>
+                        <input type="text" id="clienteCNPJFilter1" placeholder="Ex.: 08712676000110">
+                    </div>
+                </div>
+                <div class="filter-row filter-row-bottom">
+                    <div class="filter-item">
+                        <label for="dataPedidoInicioFilter1">Data Pedido (Início):</label>
+                        <input type="date" id="dataPedidoInicioFilter1">
+                    </div>
+                    <div class="filter-item">
+                        <label for="dataPedidoFimFilter1">Data Pedido (Fim):</label>
+                        <input type="date" id="dataPedidoFimFilter1">
+                    </div>
+                    <div class="filter-item">
+                        <label for="statusFilter1">Status:</label>
+                        <select id="statusFilter1">
+                            <option value="2"></option>
+                            <option value="1">Entregue</option>
+                            <option value="0">Pendente</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Botões de filtro agora dentro do filter-container -->
+            <div class="filter-buttons">
+                <button id="applyFilters1">Aplicar Filtros</button>
+                <button id="clearFilters1">Limpar Filtros</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+        <div class="table-container">
+            <table id="order-table1">
+                <thead>
+                    <tr>
+                        <th class="dataEmissao">Data da emissão</th>
+                        <th class="numNotas">Núm notas</th>
+                        <th class="codCliente">Cód Cliente</th>
+                        <th class="cliente">Cliente</th>
+                        <th class="clienteCNPJ">Cliente CNPJ</th>
+                        <th class="uf">UF</th>
+                        <th class="codRep">Cód Rep</th>
+                        <th class="codTrans">Cód Trans</th>
+                        <th class="transportadora">Transportadora</th>
+                        <th class="saida">Saída</th>
+                        <th class="previsaoEntrega">Previsão de Entrega</th>
+                        <th class="dataEntrega">Data de Entrega</th>
+                        <th class="statusEntrega">Status Entrega</th> 
+                        <th class="agenda">Agenda</th>
+                        <th class="ocorrencia">Ocorrência</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dados serão adicionados dinamicamente -->
+                </tbody>
+            </table>
+         </div>
+ </div>
+    <script src="/logistica03.js?v=1773344428043"></script>
+    <script src="/theme-toggle.js?v=1773344428043"></script>
+</body>
+</html>

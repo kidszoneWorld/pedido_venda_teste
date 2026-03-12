@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes dos Pedidos</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/css/comercial.css?v=1773344427922">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1773344427922">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+    
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <header class="header-container">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <a href="https://pedido-de-venda-producao.vercel.app/">
+                            <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+                        </a>
+                    </div>
+                    <h3 class="header-title">Detalhes do pedido de venda</h3>
+                </div>
+            <!-- Toggle switch -->
+            <label class="theme-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+            </header>
+        </div>
+
+        <div class="sairExcel">
+            <button id="logoutButton">Sair</button>
+            <img class="img_link_excel" src="/images/excel.png" alt="exportar para excel" id="exportExcel1">
+        </div>
+
+        <!-- Feedback -->
+        <div id="feedback" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;">
+        </div>
+
+
+        <!-- Filtros -->
+        <div id="filters">
+
+            <!-- Botão de menu para telas menores -->
+            <div class="menu-toggle">
+                <button id="menuToggle" class="menu-button">
+                    <span class="menu-icon">☰</span> Filtros
+                </button>
+            </div>
+
+
+            <!-- Contêiner dos filtros (será escondido/mostrado) -->
+            <div class="filter-container" id="filterContainer">
+
+                <div class="filter-inputs">
+                    <div class="filter-row filter-row-top">
+                        <div class="filter-item">
+                            <label for="representanteFilter">Cód Rep:</label>
+                            <input type="text" id="representanteFilter" placeholder="Ex.: 37">
+                        </div>
+                        <div class="filter-item">
+                            <label for="clienteCNPJFilter">Cliente CNPJ:</label>
+                            <input type="text" id="clienteCNPJFilter" placeholder="Ex.: 08712676000110">
+                        </div>
+                        <div class="filter-item">
+                            <label for="codClientFilter">Cód Cliente:</label>
+                            <input type="text" id="codClientFilter" placeholder="Ex.: 17666">
+                        </div>
+                    </div>
+                    <div class="filter-row filter-row-bottom">
+                        <div class="filter-item">
+                            <label for="dataPedidoInicioFilter">Data Pedido (Início):</label>
+                            <input type="date" id="dataPedidoInicioFilter">
+                        </div>
+                        <div class="filter-item">
+                            <label for="dataPedidoFimFilter">Data Pedido (Fim):</label>
+                            <input type="date" id="dataPedidoFimFilter">
+                        </div>
+                        <div class="filter-item">
+                            <label for="statusSeparacaoFilter">Status Separação:</label>
+                            <select id="statusSeparacaoFilter">
+                                <option value="0"></option>
+                                <option value="0">Não Separado</option>
+                                <option value="2">Separado</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="statusFilter">Status:</label>
+                            <select id="statusFilter">
+                                <option value="6">Pendente</option>
+                                <option value="5">Faturado</option>
+                                <option value="4">Faturado Parcial</option> 
+                                <option value="3">Em Aprovação</option>                                                                   
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Botões de filtro agora dentro do filter-container -->
+                <div class="filter-buttons">
+                    <button id="applyFilters">Aplicar Filtros</button>
+                    <button id="clearFilters">Limpar Filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="table-container">
+            <table id="order-table">
+                <thead>
+                    <tr>
+                        <th class="dataPedido">Data do Pedido</th>
+                        <th class="codPedido">Cód Pedido</th>
+                        <th class="statusPedido">Status</th>
+                        <th class="statusSeparacao">Status Separação</th>
+                        <th class="notaFiscal">Nota Fiscal</th> <!-- Nova coluna -->
+                        <th class="codCliente">Cód Cliente</th>
+                        <th class="cliente">Cliente</th>
+                        <th class="clienteCNPJ">Cliente CNPJ</th>
+                        <th class="codRep">Cód Rep</th>
+                        <th class="representante">Representante</th>
+                        <th class="valorTotal">Valor Total</th>
+                        <th class="transportadora">Transportadora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dados serão adicionados dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/comercial.js?v=1773344427922"></script>
+    <script src="/theme-toggle.js?v=1773344427922"></script>
+</body>
+
+</html>

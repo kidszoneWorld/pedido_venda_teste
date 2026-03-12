@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+    <link rel="stylesheet" href="/css/login2.css?v=1773344428028">
+    <link rel="stylesheet" href="/css/login2.css?v=1773344428028">
+
+</head>
+<body>  
+    <form id="loginForm">
+        <img class="imagem" src="/images/logo.png" alt="Imagem KidsZone">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevenir submissão padrão do formulário
+    
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+    
+            try {
+                const response = await fetch('/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include', // Garantir envio e recepção de cookies
+                    body: JSON.stringify({ email, senha })
+                });
+    
+                if (response.redirected) {
+                    window.location.href = response.url; // Segue o redirecionamento do servidor
+                } else if (response.ok) {
+                    window.location.href = '/'; // Redireciona após login bem-sucedido
+                }
+            } catch (error) {
+                console.error('Erro ao tentar autenticar:', error);
+                alert('Erro ao tentar autenticar. Tente novamente mais tarde.');
+            }
+        });
+    </script>
+</body>
+</html>

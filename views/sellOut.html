@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SELL-OUT</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/images/site.webmanifest">
+  <link rel="stylesheet" href="/css/sellOut.css?v=1773344428070">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-logo">
+        <a href="https://kidszoneworld.com.br/portal-do-representante/">
+          <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+        </a>
+      </div>
+      <h3>SELL-OUT POR SKU (EM CXs) POR CLIENTE</h3>
+    </div>
+    <div class="client-info">
+      <div class="btn-salvar-container">
+        <button id="btnSalvarDados1">Salvar Dados</button>
+      </div>
+      <label for="cnpj"><strong>CNPJ:</strong></label>
+      <input type="text" id="cnpj" placeholder="Digite o CNPJ">
+      <label for="codgroup"><strong>CÓDIGO CLIENTE:</strong></label>
+      <input type="text" id="codgroup" placeholder="Código do Cliente" readonly>
+      <label for="cliente"><strong>Cliente:</strong></label>
+      <input type="text" id="cliente" placeholder="Nome do Cliente" readonly>
+      <div class="representante">
+        <label for="rep">REPRESENTANTE:</label>
+        <input type="text" id="rep" placeholder="rep" readonly>
+      </div>
+    </div>
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th id="cod_item">COD_item</th>
+            <th id="sku">SKU</th>
+            <th class="month-header" data-month="jan25">
+              <span id="toggle-jan25" class="toggle-btn">+</span>
+              <span id="jan25">Jan/25</span>
+            </th>
+            <th class="month-header" data-month="fev25">
+              <span id="toggle-fev25" class="toggle-btn">+</span>
+              <span id="fev25">Fev/25</span>
+            </th>
+            <th class="month-header" data-month="mar25">
+              <span id="toggle-mar25" class="toggle-btn">+</span>
+              <span id="mar25">Mar/25</span>
+            </th>
+            <th class="month-header" data-month="abr25">
+              <span id="toggle-abr25" class="toggle-btn">+</span>
+              <span id="abr25">Abr/25</span>
+            </th>
+            <th class="month-header" data-month="mai25">
+              <span id="toggle-mai25" class="toggle-btn">+</span>
+              <span id="mai25">Mai/25</span>
+            </th>
+            <th class="month-header" data-month="jun25">
+              <span id="toggle-jun25" class="toggle-btn">+</span>
+              <span id="jun25">Jun/25</span>
+            </th>
+            <th class="month-header" data-month="jul25">
+              <span id="toggle-jul25" class="toggle-btn">+</span>
+              <span id="jul25">Jul/25</span>
+            </th>
+            <th class="month-header" data-month="ago25">
+              <span id="toggle-ago25" class="toggle-btn">+</span>
+              <span id="ago25">Ago/25</span>
+            </th>
+            <th class="month-header" data-month="set25">
+              <span id="toggle-set25" class="toggle-btn">+</span>
+              <span id="set25">Set/25</span>
+            </th>
+            <th class="month-header" data-month="out25">
+              <span id="toggle-out25" class="toggle-btn">+</span>
+              <span id="out25">Out/25</span>
+            </th>
+            <th class="month-header" data-month="nov25">
+              <span id="toggle-nov25" class="toggle-btn">+</span>
+              <span id="nov25">Nov/25</span>
+            </th>
+            <th class="month-header" data-month="dez25">
+              <span id="toggle-dez25" class="toggle-btn">+</span>
+              <span id="dez25">Dez/25</span>
+            </th>
+           
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Linhas serão adicionadas dinamicamente -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  
+  <script src="/sellOut.js?v=1773344428070"></script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92168ef8dfaaadd8',t:'MTc0MjE1MjMwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9216b5bafb93dd1c',t:'MTc0MjE1Mzg5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

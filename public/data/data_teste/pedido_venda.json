@@ -1,0 +1,3734 @@
+{
+    "dados": [
+      {
+        "id": "384cbb2d-55ed-4243-8064-64232683651b",
+        "codigo": 37867,
+        "dataPedido": "2024-11-16T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 32,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 88,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 291555,
+            "logradouro": "AV Alberto Soares Sampaio, 1764 GP Logistic Md A10, Capuava, MAUA - SP CEP: 09380-000",
+            "cidade": {
+              "nome": "MAUA",
+              "codigoIbge": 29401,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [
+            {
+              "id": "34cfd015-4059-4942-8823-d3d1bc87e742",
+              "codigo": 88,
+              "nome": "Roberto Pequim",
+              "nomeAbreviado": "Roberto Pequim",
+              "principal": true,
+              "ativo": true,
+              "tipoInformacao": []
+            }
+          ],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Distribuidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "22/06/2022 - DESCONTO DE 25% + 5% BOLETO - MIRIÃN\r\n03/03/2021 - ALTERADO DESCONTO DE 32% P/ 25% + DESCONTO DE 7% NA DUPLICATA *** MIRIÃN/LEANDRO\r\n*** PEDIDOS ACIMA DE 1000 MIL VOLUMES/ (12 PALET) VERIFICAR COM A LOGISTICA ***  RIBAMAR/JOÃO\r\nHorário de recebimento – de segunda a quinta das 08:00 às 16:00;\r\n04/05/2022 - ATUALIZADO ENDEREÇO  e INSCRIÇÃO ESTADUAL- MIRIÃN \r\n- Todas as entregas deverão ser agendadas através dos contatos: e-mail alexandre.rodrigues@dismax.com.br – Cel.: (11) 96199-0180 --  e-mail douglas.santos@dismax.com.br – Cel.: (11) 98887-1701 -  e-mail katia.santos@dismax.com.br – Cel.: (11) 98897-5730\r\n05/08/20 - SCI OK, SEM PENDENCIAS FINANCEIRAS (ANEXO) MIRIÃN\r\n05/08/20 - SINTEGRA E RECEITA FEDERAL HABILITADO (ANEXO) MIRIÃN",
+          "mensagemFiscal": "**Horário de recebimento – de segunda a quinta das 08:00 às 16:00 HS.**  Todas as entregas deverão ser agendadas através dos contatos: e-mail agendamento@dismax.com.br.",
+          "id": "4b944ee6-681d-4c66-9a8c-f5d88d145006",
+          "codigo": 15598,
+          "razaoSocial": "DISMAX DISTRIB. E REP. DE PROD E GENEROS AL. LTDA",
+          "nomeAbreviado": "DISMAX DISTRIBUIDORA",
+          "documento": {
+            "numero": 8712676000110,
+            "numeroTexto": "08712676000110",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384337,
+            "itemEmpresaId": "1031",
+            "itemId": 58,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 50,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 384337,
+                "id": "7ac47a18-bc45-4edb-8394-602036698349",
+                "dataEntrega": "2024-11-16T00:00:00",
+                "dataPrevistaEntrega": "2024-11-16T00:00:00",
+                "quantidade": 50,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 50,
+                "saldoFaturamento": 50,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384338,
+            "itemEmpresaId": "1151",
+            "itemId": 331,
+            "descricao": "KIDS BURGOMA (CX C/ 160)",
+            "quantidade": 50,
+            "controleLote": true,
+            "pesoBruto": 2.6,
+            "pesoLiquido": 1.6,
+            "entregas": [
+              {
+                "codigo": 384338,
+                "id": "84c77775-af54-407d-8d2d-ab4ffbe825ff",
+                "dataEntrega": "2024-11-16T00:00:00",
+                "dataPrevistaEntrega": "2024-11-16T00:00:00",
+                "quantidade": 50,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 50,
+                "saldoFaturamento": 50,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "204c3d74-da05-45aa-b2e2-bbd7449066cf",
+        "codigo": 37865,
+        "dataPedido": "2024-11-14T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293548,
+            "logradouro": "AL Santos, 2313 12° andar, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "2f44dc94-a6bd-4cc9-83b2-ab1c49a0a50e",
+          "codigo": 17415,
+          "razaoSocial": "REBECA SANTOS CAVALCANTI",
+          "nomeAbreviado": "REBECA CAVALCANTI",
+          "documento": {
+            "numero": 45401097824,
+            "numeroTexto": "45401097824",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384335,
+            "itemEmpresaId": "1008",
+            "itemId": 13,
+            "descricao": "KIDS GIRA POP (CX-C/48)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 4.82,
+            "pesoLiquido": 3.84,
+            "entregas": [
+              {
+                "codigo": 384335,
+                "id": "f9361420-08b8-4ae3-9681-fce8ad3d8bfc",
+                "dataEntrega": "2024-11-14T00:00:00",
+                "dataPrevistaEntrega": "2024-11-14T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 10,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "076c1c7b-de67-4db4-a54f-354f8def7855",
+        "codigo": 37864,
+        "dataPedido": "2024-11-14T00:00:00",
+        "status": 6,
+        "statusSeparacao": 1,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293551,
+            "logradouro": "AL Santos, 2313 12° ANDAR, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "89e125d3-52ba-44d3-b0a6-45425886261a",
+          "codigo": 17418,
+          "razaoSocial": "ALEX LIMA SOUZA DOS SANTOS",
+          "nomeAbreviado": "ALEX LIMA",
+          "documento": {
+            "numero": 36036058888,
+            "numeroTexto": "36036058888",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384334,
+            "itemEmpresaId": "1008",
+            "itemId": 13,
+            "descricao": "KIDS GIRA POP (CX-C/48)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 4.82,
+            "pesoLiquido": 3.84,
+            "entregas": [
+              {
+                "codigo": 384334,
+                "id": "7f76da14-5d30-4ced-b0e4-54aebc083aa9",
+                "dataEntrega": "2024-11-14T00:00:00",
+                "dataPrevistaEntrega": "2024-11-14T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 9,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ddbde189-356e-4497-954e-43cf8fbf6e45",
+        "codigo": 37862,
+        "dataPedido": "2024-11-13T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 32,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 64560,
+            "logradouro": "R Professor Gustavo de Gouveia, 161 LT 8 E 9 / QD-A, Jardim Cláudia, 0, SÃO PAULO - SP CEP: 05546-070",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "** CARGA PALETIZADA NA PLATINUM ** \r\n08/03/2024 - COTAR TRANSPORTE COM RIBAMAR - MIRIÃN/RIBAMAR\r\n23/11/2023 - TROCA DE TRANSPORTE PARA ARLETE - FERNANDO\r\n03/04/2023 - DESCONTO EM DUPLICATA ALTERADO DE 7% PARA 5% CONF. EDMUNDO - VANESSA\r\n03/04/2023 - ALTERADO TRANS JKM PARA PLATINUM - VANESSA\r\n28/01/2021 - DESCONTO FINANCEIRO EM DUPLICATA 7%\r\n12/05/2022 - ALTERADO 66 - OSMAR JUNIOR p/ REP 30 KIDS ZONE  - MIRIÃN \r\n12/05/2022 - ALTERADO REP 30 KIDS ZONE, PARA 66 - OSMAR JUNIOR -MIRIÃN \r\nENTREGAS AGENDADAS C/ Flávio fone: 95149-0175 \r\nENTREGA: SEG A QUINTA DAS 08:00HS AS 15:00HS (NAS ENTREGAS ACIMA DE 2.000 KG SOMENTE NO PERIODO DA MANHÃ)\r\n15/07/2020 - ALTERADO TRANSPORTADO DE 7-JKM TRANSPORTES p/ 2-MARCELO P. REIS - RIBAMAR/MIRIÃN\r\n30/06/2020 - ALTERADO TRANSPORTADO DE 2-MARCELO P. REIS P/ 7-JKM TRANSPORTES - RIBAMAR/MIRIÃN\r\n27/01/2020 - SINTEGRA HABILITADO / CNPJ RECEITA FFDERAL (ANEXO)- MIRÃN",
+          "mensagemFiscal": "*CARGA PALETIZADA NA PLATINUM** AGENDAR ENTREGA COM CATATAU 11 95149-0175 - SEG A QUINTA DAS 08:00HS AS 15:00HS (NAS ENTREGAS ACIMA DE 2.000 KG SOMENTE NO PERIODO DA MANHÃ, A MERCADORIA DEVE SEGUIR PARA ENTREGA PALETIZADA COM 1 SKU POR PALETE CASO O SKU NÃO DE UM PALETE COLOCAR TODOS OS ITENS NO MESMO PALETE.**",
+          "id": "80e12507-3a76-4d73-9e92-42be449db4e1",
+          "codigo": 2353,
+          "razaoSocial": "A.T.DIST.E REPRES.DE PROD E GENEROS ALIMENT. LTDA",
+          "nomeAbreviado": "AT DISTRIBUIDORA",
+          "documento": {
+            "numero": 7782291000166,
+            "numeroTexto": "07782291000166",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384330,
+            "itemEmpresaId": "1025",
+            "itemId": 46,
+            "descricao": "KIDS UNICORNIO EXPANDE OVO (CX-C/12)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 0.99,
+            "pesoLiquido": 0.78,
+            "entregas": [
+              {
+                "codigo": 384330,
+                "id": "0982399c-0fe0-455a-b018-c947c2045d8b",
+                "dataEntrega": "2024-11-13T00:00:00",
+                "dataPrevistaEntrega": "2024-11-13T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 10,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384331,
+            "itemEmpresaId": "1026",
+            "itemId": 48,
+            "descricao": "KIDS DRAGAO EXPANDE OVO (CX-C/12)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 0.96,
+            "pesoLiquido": 0.75,
+            "entregas": [
+              {
+                "codigo": 384331,
+                "id": "b8e2d9bd-28ae-4b87-a078-20d614e208b3",
+                "dataEntrega": "2024-11-13T00:00:00",
+                "dataPrevistaEntrega": "2024-11-13T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 10,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384332,
+            "itemEmpresaId": "1032",
+            "itemId": 60,
+            "descricao": "KIDS KACO HIT (CX-C/24)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.8,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 384332,
+                "id": "a7c45473-37da-4b34-a7a0-90830fe9b15b",
+                "dataEntrega": "2024-11-13T00:00:00",
+                "dataPrevistaEntrega": "2024-11-13T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 10,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "b58ac295-926a-46b3-a76c-1d152b0f6773",
+        "codigo": 37860,
+        "dataPedido": "2024-11-13T00:00:00",
+        "status": 6,
+        "statusSeparacao": 2,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293550,
+            "logradouro": "AL Santos, 2313 12° ANDAR, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "043cdfd2-1aa1-4d33-b2b4-67ad9a023a71",
+          "codigo": 17417,
+          "razaoSocial": "BIANCA ALVES MAZZO",
+          "nomeAbreviado": "BIANCA MAZZO",
+          "documento": {
+            "numero": 45499792836,
+            "numeroTexto": "45499792836",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384325,
+            "itemEmpresaId": "1031",
+            "itemId": 57,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 384325,
+                "id": "a76617e9-3b7a-474a-8c0c-4582b0a7daf5",
+                "dataEntrega": "2024-11-13T00:00:00",
+                "dataPrevistaEntrega": "2024-11-13T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5abda6ce-0137-4f14-869d-de2da88f6319",
+        "codigo": 37858,
+        "dataPedido": "2024-11-13T00:00:00",
+        "status": 6,
+        "statusSeparacao": 2,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293551,
+            "logradouro": "AL Santos, 2313 12° ANDAR, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "89e125d3-52ba-44d3-b0a6-45425886261a",
+          "codigo": 17418,
+          "razaoSocial": "ALEX LIMA SOUZA DOS SANTOS",
+          "nomeAbreviado": "ALEX LIMA",
+          "documento": {
+            "numero": 36036058888,
+            "numeroTexto": "36036058888",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384321,
+            "itemEmpresaId": "1001",
+            "itemId": 1,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 384321,
+                "id": "e11f353d-c625-43e9-a513-b9687b138f22",
+                "dataEntrega": "2024-11-13T00:00:00",
+                "dataPrevistaEntrega": "2024-11-13T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384322,
+            "itemEmpresaId": "1031",
+            "itemId": 57,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 384322,
+                "id": "2aac2430-5030-4bc0-81c0-965a71cf1978",
+                "dataEntrega": "2024-11-13T00:00:00",
+                "dataPrevistaEntrega": "2024-11-13T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "a3fc0896-08bd-4b4c-85d6-a65055b61088",
+        "codigo": 37856,
+        "dataPedido": "2024-11-12T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293551,
+            "logradouro": "AL Santos, 2313 12° ANDAR, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "89e125d3-52ba-44d3-b0a6-45425886261a",
+          "codigo": 17418,
+          "razaoSocial": "ALEX LIMA SOUZA DOS SANTOS",
+          "nomeAbreviado": "ALEX LIMA",
+          "documento": {
+            "numero": 36036058888,
+            "numeroTexto": "36036058888",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384319,
+            "itemEmpresaId": "1001",
+            "itemId": 1,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 384319,
+                "id": "25a96420-3b25-48f4-9531-6054cb5fef02",
+                "dataEntrega": "2024-11-12T00:00:00",
+                "dataPrevistaEntrega": "2024-11-12T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 10,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "82be3836-264b-40c2-a76d-fe6bd359d0b7",
+        "codigo": 37855,
+        "dataPedido": "2024-11-12T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293551,
+            "logradouro": "AL Santos, 2313 12° ANDAR, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "89e125d3-52ba-44d3-b0a6-45425886261a",
+          "codigo": 17418,
+          "razaoSocial": "ALEX LIMA SOUZA DOS SANTOS",
+          "nomeAbreviado": "ALEX LIMA",
+          "documento": {
+            "numero": 36036058888,
+            "numeroTexto": "36036058888",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384318,
+            "itemEmpresaId": "1001",
+            "itemId": 1,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 384318,
+                "id": "5229d42a-b5a1-4330-9fab-08860f053330",
+                "dataEntrega": "2024-11-12T00:00:00",
+                "dataPrevistaEntrega": "2024-11-12T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 10,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "494ae3b9-eab7-4066-81a0-2e449ce52aa2",
+        "codigo": 37854,
+        "dataPedido": "2024-11-12T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": false,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293551,
+            "logradouro": "AL Santos, 2313 12° ANDAR, Cerqueira César, SÃO PAULO - SP CEP: 01419-101",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Consumidor",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "id": "89e125d3-52ba-44d3-b0a6-45425886261a",
+          "codigo": 17418,
+          "razaoSocial": "ALEX LIMA SOUZA DOS SANTOS",
+          "nomeAbreviado": "ALEX LIMA",
+          "documento": {
+            "numero": 36036058888,
+            "numeroTexto": "36036058888",
+            "tipo": 2
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384317,
+            "itemEmpresaId": "1001",
+            "itemId": 1,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 100,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 384317,
+                "id": "412c3520-9712-4f18-932d-679be490ef23",
+                "dataEntrega": "2024-11-12T00:00:00",
+                "dataPrevistaEntrega": "2024-11-12T00:00:00",
+                "quantidade": 100,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 100,
+                "saldoFaturamento": 100,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "e32cedf2-b7ae-4327-b2ed-703e26f75f53",
+        "codigo": 37852,
+        "dataPedido": "2024-11-06T00:00:00",
+        "status": 6,
+        "statusSeparacao": 2,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 32,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 64560,
+            "logradouro": "R Professor Gustavo de Gouveia, 161 LT 8 E 9 / QD-A, Jardim Cláudia, 0, SÃO PAULO - SP CEP: 05546-070",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "** CARGA PALETIZADA NA PLATINUM ** \r\n08/03/2024 - COTAR TRANSPORTE COM RIBAMAR - MIRIÃN/RIBAMAR\r\n23/11/2023 - TROCA DE TRANSPORTE PARA ARLETE - FERNANDO\r\n03/04/2023 - DESCONTO EM DUPLICATA ALTERADO DE 7% PARA 5% CONF. EDMUNDO - VANESSA\r\n03/04/2023 - ALTERADO TRANS JKM PARA PLATINUM - VANESSA\r\n28/01/2021 - DESCONTO FINANCEIRO EM DUPLICATA 7%\r\n12/05/2022 - ALTERADO 66 - OSMAR JUNIOR p/ REP 30 KIDS ZONE  - MIRIÃN \r\n12/05/2022 - ALTERADO REP 30 KIDS ZONE, PARA 66 - OSMAR JUNIOR -MIRIÃN \r\nENTREGAS AGENDADAS C/ Flávio fone: 95149-0175 \r\nENTREGA: SEG A QUINTA DAS 08:00HS AS 15:00HS (NAS ENTREGAS ACIMA DE 2.000 KG SOMENTE NO PERIODO DA MANHÃ)\r\n15/07/2020 - ALTERADO TRANSPORTADO DE 7-JKM TRANSPORTES p/ 2-MARCELO P. REIS - RIBAMAR/MIRIÃN\r\n30/06/2020 - ALTERADO TRANSPORTADO DE 2-MARCELO P. REIS P/ 7-JKM TRANSPORTES - RIBAMAR/MIRIÃN\r\n27/01/2020 - SINTEGRA HABILITADO / CNPJ RECEITA FFDERAL (ANEXO)- MIRÃN",
+          "mensagemFiscal": "*CARGA PALETIZADA NA PLATINUM** AGENDAR ENTREGA COM CATATAU 11 95149-0175 - SEG A QUINTA DAS 08:00HS AS 15:00HS (NAS ENTREGAS ACIMA DE 2.000 KG SOMENTE NO PERIODO DA MANHÃ, A MERCADORIA DEVE SEGUIR PARA ENTREGA PALETIZADA COM 1 SKU POR PALETE CASO O SKU NÃO DE UM PALETE COLOCAR TODOS OS ITENS NO MESMO PALETE.**",
+          "id": "80e12507-3a76-4d73-9e92-42be449db4e1",
+          "codigo": 2353,
+          "razaoSocial": "A.T.DIST.E REPRES.DE PROD E GENEROS ALIMENT. LTDA",
+          "nomeAbreviado": "AT DISTRIBUIDORA",
+          "documento": {
+            "numero": 7782291000166,
+            "numeroTexto": "07782291000166",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384304,
+            "itemEmpresaId": "1001",
+            "itemId": 2,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 384304,
+                "id": "b404e8b8-1aa2-41bd-9fa7-dcfc3307ce5a",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384305,
+            "itemEmpresaId": "1003",
+            "itemId": 6,
+            "descricao": "KIDS FITA GOMA DE MASCAR (CX-C/96)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.7,
+            "pesoLiquido": 1.54,
+            "entregas": [
+              {
+                "codigo": 384305,
+                "id": "fc5917c1-b069-452e-bae4-4fc96bf249a2",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384306,
+            "itemEmpresaId": "1009",
+            "itemId": 16,
+            "descricao": "KIDS FAN CHOCOLIX (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.48,
+            "pesoLiquido": 1.2,
+            "entregas": [
+              {
+                "codigo": 384306,
+                "id": "20ab70a6-84a2-48d7-b27f-25bddc987e31",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384307,
+            "itemEmpresaId": "1031",
+            "itemId": 58,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 384307,
+                "id": "6906f167-cb8f-4c91-828e-d3142ae21875",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384308,
+            "itemEmpresaId": "1099",
+            "itemId": 211,
+            "descricao": "KIDS MASKAPUXA (CX C/ 144)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 9.13,
+            "pesoLiquido": 5.76,
+            "entregas": [
+              {
+                "codigo": 384308,
+                "id": "9de3cd06-fc80-4bbe-88f5-958c7e87a56c",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384309,
+            "itemEmpresaId": "1099-A",
+            "itemId": 239,
+            "descricao": "KIDS MASKAPUXA (CX C/48)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 3.08,
+            "pesoLiquido": 1.92,
+            "entregas": [
+              {
+                "codigo": 384309,
+                "id": "1a1772b7-9016-4275-8b1e-7856a7b6da70",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384310,
+            "itemEmpresaId": "1034",
+            "itemId": 287,
+            "descricao": "KIDS FANTOCHE (CX-C/20)",
+            "quantidade": 50,
+            "controleLote": true,
+            "pesoBruto": 3.4,
+            "pesoLiquido": 3.46,
+            "entregas": [
+              {
+                "codigo": 384310,
+                "id": "0bd74def-d35d-4f69-a1ba-df4fba3de0c4",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 50,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 50,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384311,
+            "itemEmpresaId": "1150",
+            "itemId": 329,
+            "descricao": "KIDS AIAAI! H:A GOMA DE MASCAR SEM AÇÚCAR (CX C/ 24)",
+            "quantidade": 300,
+            "controleLote": true,
+            "pesoBruto": 2.24,
+            "pesoLiquido": 0.94,
+            "entregas": [
+              {
+                "codigo": 384311,
+                "id": "bc062904-caaf-4c81-b1c1-4465dddca2b7",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 300,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 300,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 384312,
+            "itemEmpresaId": "1151",
+            "itemId": 331,
+            "descricao": "KIDS BURGOMA (CX C/ 160)",
+            "quantidade": 100,
+            "controleLote": true,
+            "pesoBruto": 2.6,
+            "pesoLiquido": 1.6,
+            "entregas": [
+              {
+                "codigo": 384312,
+                "id": "2137c873-062b-4c98-895a-c8dc1243ee7c",
+                "dataEntrega": "2024-11-06T00:00:00",
+                "dataPrevistaEntrega": "2024-11-06T00:00:00",
+                "quantidade": 100,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 100,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "eef19d7b-6025-4b0c-ace1-e315e336b6fd",
+        "codigo": 37837,
+        "dataPedido": "2024-10-28T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 13,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 87678,
+            "logradouro": "RDV BR-230, 2000 KM 334, SETE CASAS, 0, PATOS - PB CEP: 58705-275",
+            "cidade": {
+              "nome": "PATOS",
+              "codigoIbge": 10808,
+              "uf": 25,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "LOJA COM TOMBAMENTO *** GRUPO ATACADÃO ***  23/01/2023- - ALTERADA DE TRANS M.O.S P/ MANN - VANESSA",
+          "id": "9a2ae597-fe71-4965-abff-4cc38b69a865",
+          "codigo": 12020,
+          "razaoSocial": "ATACADAO S.A - LJ. 199",
+          "nomeAbreviado": "ATACADAO - LJ 199",
+          "documento": {
+            "numero": 75315333019985,
+            "numeroTexto": "75315333019985",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 384270,
+            "itemEmpresaId": "1151",
+            "itemId": 331,
+            "descricao": "KIDS BURGOMA (CX C/ 160)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.6,
+            "pesoLiquido": 1.6,
+            "entregas": [
+              {
+                "codigo": 384270,
+                "id": "4241d2bb-f0b3-46bb-825e-0bc343e2ab57",
+                "dataEntrega": "2024-10-28T00:00:00",
+                "dataPrevistaEntrega": "2024-10-28T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 1,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "859c3fa6-4e0e-4831-82ec-958f77a0846a",
+        "codigo": 37337,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 15,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292140,
+            "logradouro": "RDV RS-118, 9478 M 9 A 11 27 28 29, Neópolis, GRAVATAI - RS CEP: 94100-420",
+            "cidade": {
+              "nome": "GRAVATAI",
+              "codigoIbge": 9209,
+              "uf": 43,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN \r\n28/04/2022 - ALTERADO TRANSP. DE 04-SÃO MIGUEL P / 15-DLT - RIBAMAR/MIRIÃN\r\n17/12/2020 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n17/12/2020 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)\r\n17/12/2020 - PRAZO DE PAGT 150 DIAS A PARTIR DA ENTREGA.",
+          "id": "e6a7acf0-4f94-4514-a773-99f91a3c0dfd",
+          "codigo": 16099,
+          "razaoSocial": "AMERICANAS S.A.",
+          "nomeAbreviado": "LOJAS AMERIC 2001",
+          "documento": {
+            "numero": 776574172607,
+            "numeroTexto": "00776574172607",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381220,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 13,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381220,
+                "id": "eda3b484-ea11-4c75-a007-e42e28d090b2",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 13,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 13,
+                "saldoFaturamento": 13,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7b008cae-ef1b-4cd8-b685-3bcf9c938dfd",
+        "codigo": 37336,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 15,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292142,
+            "logradouro": "R Francisco Munõz Madrid, 625 BL 3 - AREA 3, ROSEIRA DE SAO SEBASTIAO, SÃO JOSÉ DOS PINHAIS - PR CEP: 83070-152",
+            "cidade": {
+              "nome": "SÃO JOSÉ DOS PINHAIS",
+              "codigoIbge": 25506,
+              "uf": 41,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN\r\n26/07/2022 - CLIENTE COM REGIME ESPECIAL (ANEXO) - MIRIÃN \r\n28/04/2022 - ALTERADO TRANSP. DE 04-SÃO MIGUEL P / 15-DLT - RIBAMAR/MIRIÃN\r\n02/09/2021 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n02/09/2021 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)\r\n02/09/2021 - PRAZO DE PAGT 150 DIAS A PARTIR DA ENTREGA.",
+          "id": "f2cf6226-2cbd-47b4-974b-f9bf952821b2",
+          "codigo": 16101,
+          "razaoSocial": "AMERICANAS S.A.",
+          "nomeAbreviado": "AMERICANAS CD 2009",
+          "documento": {
+            "numero": 776574172526,
+            "numeroTexto": "00776574172526",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381219,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 14,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381219,
+                "id": "ae830d17-5d54-4471-9a67-155b2b07bf84",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 14,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 14,
+                "saldoFaturamento": 14,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d0e99567-c0f0-4f5b-9098-1c9e12877107",
+        "codigo": 37335,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 26,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292471,
+            "logradouro": "EST DO SEST SENAT, 9880 MODULO GP A1 PARTE 3, CIA I, SIMOES FILHO - BA CEP: 43700-000",
+            "cidade": {
+              "nome": "SIMOES FILHO",
+              "codigoIbge": 30709,
+              "uf": 29,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN \r\n14/09/2022 - ALTERADO TRANSP. DE MOS P/ MAN - RIBA/MIRIÃN\r\n05/07/2022 - CLIENTE COM REGIME ESPECIAL (ANEXO) - MIRIÃN\r\n05/07/2022 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n05/07/2022 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)",
+          "id": "8e30b248-cda7-4dc7-b113-56aa34b3764e",
+          "codigo": 16419,
+          "razaoSocial": "AMERICANAS S.A.",
+          "nomeAbreviado": "AMERICANAS-CD 2014",
+          "documento": {
+            "numero": 776574194767,
+            "numeroTexto": "00776574194767",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381218,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 24,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381218,
+                "id": "e18fbd3c-83c3-4193-bd07-760a597cc693",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 24,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 24,
+                "saldoFaturamento": 24,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "8e2c6307-6c6c-4e66-978f-6ba91fb1adb0",
+        "codigo": 37334,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 17,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292432,
+            "logradouro": "RDV BR 316 - KM 20, S/N LOG BELEM BUSINESS P, CANUTAMA, BENEVIDES - PA CEP: 68795-000",
+            "cidade": {
+              "nome": "BENEVIDES",
+              "codigoIbge": 1501,
+              "uf": 15,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n20/05/2022  - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n20/05/2022  - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)\r\n20/05/2022 - PRAZO DE PAGT 150 DIAS A PARTIR DA ENTREGA.",
+          "id": "f132b221-7742-452b-80a8-6a438aa4040f",
+          "codigo": 16381,
+          "razaoSocial": "AMERICANAS S.A",
+          "nomeAbreviado": "AMERICANAS CD 2015",
+          "documento": {
+            "numero": 776574194503,
+            "numeroTexto": "00776574194503",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381217,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 13,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381217,
+                "id": "658c67f2-542c-42e8-b7ca-4ee77b6916e3",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 13,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 13,
+                "saldoFaturamento": 13,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "611abdfb-8459-4801-b3f7-212c462ea104",
+        "codigo": 37333,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 37,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292145,
+            "logradouro": "RDV BR-101 SUL, 2822, DISTRITO INDUSTRIAL SANTO ESTEVAO, Cabo de Santo Agostinho - PE CEP: 54503-010",
+            "cidade": {
+              "nome": "Cabo de Santo Agostinho",
+              "codigoIbge": 2902,
+              "uf": 26,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN \r\n02/09/2021 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n30/11/2022 - ALTERADO TRANSP. DE MOS P/ MANN - MIRIÃN \r\n02/09/2021 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)\r\n02/09/2021 - PRAZO DE PAGT 150 DIAS A PARTIR DA ENTREGA.",
+          "id": "a368fbb9-bd82-45f4-9b3b-5115e455dc03",
+          "codigo": 16104,
+          "razaoSocial": "AMERICANAS S.A.",
+          "nomeAbreviado": "AMERICANAS - CD 150",
+          "documento": {
+            "numero": 776574107031,
+            "numeroTexto": "00776574107031",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381216,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 43,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381216,
+                "id": "3fc684b6-a30f-4d8e-af68-ba7c2cf3f2b2",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 43,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 43,
+                "saldoFaturamento": 43,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d6dbbe2d-4b23-4b1c-8ad2-2de832d5534c",
+        "codigo": 37332,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 7,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292435,
+            "logradouro": "R EST DOS ALPES, 555 GALPAOA ANEXO B, ITAQUI, ITAPEVI - SP CEP: 06696-900",
+            "cidade": {
+              "nome": "ITAPEVI",
+              "codigoIbge": 22505,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN\r\n28/07/2023 - ALTERADO ENDEREÇO - VANESSA\r\n28/07/2023 - IE 206695856110 INEXISTENTE - ALTERADO CADASTRO CONF DADOS SINTEGRA - VANESSA\r\n26/05/2022 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n26/05/2022 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)",
+          "id": "68667265-3704-47fa-b7b7-793db2586d6d",
+          "codigo": 16384,
+          "razaoSocial": "AMERICANAS S.A.",
+          "nomeAbreviado": "AMERICANAS CD 180",
+          "documento": {
+            "numero": 776574146010,
+            "numeroTexto": "00776574146010",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381215,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 91,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381215,
+                "id": "1c42695f-b1ff-4d2d-9612-876fcade1434",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 91,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 91,
+                "saldoFaturamento": 91,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7b584133-00a5-4641-9d74-26983110a92e",
+        "codigo": 37331,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 8,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292146,
+            "logradouro": "RDV BR-497 - \tKM RURAL KM 1 480M GALPAO 2 - CTR, S/N KM RURAL KM 1 480M, Jardim Europa, UBERLÂNDIA - MG CEP: 38414-583",
+            "cidade": {
+              "nome": "UBERLÂNDIA",
+              "codigoIbge": 70206,
+              "uf": 31,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN\r\n22/06/2023 - alteração de e-mail fiscal - CAMILA\r\n30/11/2021 - CLIENTE COM REGIME ESPCIAL ST - ALE/MIRIÃN\r\n02/09/2021 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - MIRIÃN\r\n02/09/2021 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)\r\n02/09/2021 - PRAZO DE PAGT 150 DIAS A PARTIR DA ENTREGA.",
+          "id": "c2037986-19e8-4951-8bc2-438b04fc974c",
+          "codigo": 16105,
+          "razaoSocial": "AMERICANAS S.A.",
+          "nomeAbreviado": "AMERICANAS - CD 220",
+          "documento": {
+            "numero": 776574152177,
+            "numeroTexto": "00776574152177",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381214,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 42,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381214,
+                "id": "4a1e44bf-69f9-4623-8e07-22453c8f806f",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 42,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 42,
+                "saldoFaturamento": 42,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "e15f557f-5ee4-4278-ada4-fe9a47430779",
+        "codigo": 37330,
+        "dataPedido": "2024-10-01T00:00:00",
+        "status": 6,
+        "statusSeparacao": 0,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 37,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 292986,
+            "logradouro": "EST EST DE MIGUEL PEREIRA, 125 GALPAO2 DOCAS DE 36, SAO MIGUEL, SEROPEDICA - RJ CEP: 23893-890",
+            "cidade": {
+              "nome": "SEROPEDICA",
+              "codigoIbge": 5554,
+              "uf": 33,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "***GRUPO AMERICANAS***\r\n15/04/2024 - ALTERADO E-MAIL FISCAL DE nfelasa@lasa.com.br P/ recebimento.lasa@americanas.io - MIRIÃN \r\n04/05/2023 - SINTEGRA E CNPJ HABILITADOS (ANEXO) - VANESSA\r\n04/05/2023 - DESCONTO DE 4% BONIFICAÇÃO NA DUPLICATA - VANESSA\r\n04/05/2023 - DESCONTO 18,66 ( Desconto Logístico:3,00% + Diferença Icms), já incluso na tabela Lasa 34,92%)\r\n04/05/2023 - PRAZO DE PAGT 150 DIAS A PARTIR DA ENTREGA.",
+          "id": "dd043858-449e-4681-9368-147baa519612",
+          "codigo": 16881,
+          "razaoSocial": "AMERICANAS S.A",
+          "nomeAbreviado": "AMERICANAS - LJ 546",
+          "documento": {
+            "numero": 776574083698,
+            "numeroTexto": "00776574083698",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 381213,
+            "itemEmpresaId": "1119",
+            "itemId": 245,
+            "descricao": "KIDS MISTURA MÁGICA (CX-C/12)",
+            "quantidade": 59,
+            "controleLote": true,
+            "pesoBruto": 1.62,
+            "pesoLiquido": 1.5,
+            "entregas": [
+              {
+                "codigo": 381213,
+                "id": "002e9970-c208-4e7c-99ec-bb9a98cae859",
+                "dataEntrega": "2024-10-01T00:00:00",
+                "dataPrevistaEntrega": "2024-10-01T00:00:00",
+                "quantidade": 59,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 59,
+                "saldoFaturamento": 59,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9163e43b-a9ef-4d8e-a44c-06e7bb24e0af",
+        "codigo": 37060,
+        "dataPedido": "2024-09-27T00:00:00",
+        "status": 6,
+        "statusSeparacao": 1,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 18,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": false,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 79634,
+            "logradouro": "R Domingos de Morais, 1321 NULL, Vila Mariana, 0, SÃO PAULO - SP CEP: 04009-003",
+            "cidade": {
+              "nome": "SÃO PAULO",
+              "codigoIbge": 50308,
+              "uf": 35,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "*** GRUPO RI HAPPY - PBKIDS***\r\n09/05/2022 - ALTERADO TRANSP. DE 15-DLT LOGISTICA P/ RODOVIARIO BEDIN - RIBAMAR/MIRIÃN \r\n06/05/2021 - SINTEGRA HABILITADO (ANEXO) MIRIÃN",
+          "mensagemFiscal": "** AGENDAR ENTREGA (11) 99268-3288 - 11 55755171 - 11 55737422 - loja177@rihappy.com.br **",
+          "id": "c1f2a906-b154-422b-8e05-915a83d4e584",
+          "codigo": 7413,
+          "razaoSocial": "RI HAPPY BRINQUEDOS S/A - LJ 177",
+          "nomeAbreviado": "RI HAPPY - LJ 177",
+          "documento": {
+            "numero": 58731662017430,
+            "numeroTexto": "58731662017430",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 377794,
+            "itemEmpresaId": "1001",
+            "itemId": 2,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 377794,
+                "id": "a6e96243-4423-4d00-b71f-80a5e5af3dd2",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377795,
+            "itemEmpresaId": "1009",
+            "itemId": 16,
+            "descricao": "KIDS FAN CHOCOLIX (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.48,
+            "pesoLiquido": 1.2,
+            "entregas": [
+              {
+                "codigo": 377795,
+                "id": "1538b5fd-aa02-49ac-acb9-a9cf0829aeab",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377796,
+            "itemEmpresaId": "1010",
+            "itemId": 18,
+            "descricao": "KIDS FLASH POP (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.81,
+            "pesoLiquido": 1.55,
+            "entregas": [
+              {
+                "codigo": 377796,
+                "id": "9b1bd11b-1b52-4a44-a71a-c100665ffec7",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377797,
+            "itemEmpresaId": "1027",
+            "itemId": 50,
+            "descricao": "KIDS DINO EXPANDE OVO (CX-C/12)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 0.92,
+            "pesoLiquido": 0.71,
+            "entregas": [
+              {
+                "codigo": 377797,
+                "id": "777dcbfc-9cbd-475f-8aed-f3173806b046",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377798,
+            "itemEmpresaId": "1034",
+            "itemId": 287,
+            "descricao": "KIDS FANTOCHE (CX-C/20)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 3.4,
+            "pesoLiquido": 3.46,
+            "entregas": [
+              {
+                "codigo": 377798,
+                "id": "af423148-ffb6-43df-8861-5b274ceff68f",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377799,
+            "itemEmpresaId": "1028",
+            "itemId": 52,
+            "descricao": "KIDS PULA MASSA (CX-C/8)",
+            "quantidade": 2,
+            "controleLote": true,
+            "pesoBruto": 0.792,
+            "pesoLiquido": 0.671,
+            "entregas": [
+              {
+                "codigo": 377799,
+                "id": "a0a434ba-f3db-455d-9e17-f892e771dd0e",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 2,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 2,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377800,
+            "itemEmpresaId": "1061",
+            "itemId": 117,
+            "descricao": "KIDS SURPRESA EGGS HELLO KITTY  (CX-C/36)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.72,
+            "pesoLiquido": 1.44,
+            "entregas": [
+              {
+                "codigo": 377800,
+                "id": "1adecd61-f8d0-49f2-b588-bbbf194c1ae2",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377801,
+            "itemEmpresaId": "1012",
+            "itemId": 22,
+            "descricao": "KIDS SURPRESA EGGS UNICORNIO (CX-C/36)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2,
+            "pesoLiquido": 1.25,
+            "entregas": [
+              {
+                "codigo": 377801,
+                "id": "b2b3e34f-a056-4b45-89ff-f2a7d9bf6033",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377802,
+            "itemEmpresaId": "1019",
+            "itemId": 34,
+            "descricao": "KIDS CHICLE TWIST (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.38,
+            "pesoLiquido": 2.24,
+            "entregas": [
+              {
+                "codigo": 377802,
+                "id": "5af8b64d-491f-41db-bb61-f3190c13240e",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377803,
+            "itemEmpresaId": "1075",
+            "itemId": 149,
+            "descricao": "KIDS CROC SERIE 2 (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.24,
+            "pesoLiquido": 1.03,
+            "entregas": [
+              {
+                "codigo": 377803,
+                "id": "86e71e54-eda1-4db2-8046-f8140893104c",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377804,
+            "itemEmpresaId": "1066",
+            "itemId": 129,
+            "descricao": "KIDS ALIEN SHOT (CX-C/24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.88,
+            "pesoLiquido": 1.61,
+            "entregas": [
+              {
+                "codigo": 377804,
+                "id": "b84f59b4-92d2-4237-80bd-83f6a62ced4b",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377805,
+            "itemEmpresaId": "1110",
+            "itemId": 227,
+            "descricao": "KIDS BIG DINOVO (CX C/ 12)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.78,
+            "pesoLiquido": 1.48,
+            "entregas": [
+              {
+                "codigo": 377805,
+                "id": "573fd407-6433-4c5c-820c-4e47128ce560",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377806,
+            "itemEmpresaId": "1117",
+            "itemId": 241,
+            "descricao": "KIDS LATÃO BUFA (CX-C/ 24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.94,
+            "pesoLiquido": 2.8,
+            "entregas": [
+              {
+                "codigo": 377806,
+                "id": "e033ceee-520f-450f-967c-43262af00aad",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377807,
+            "itemEmpresaId": "1129",
+            "itemId": 265,
+            "descricao": "KIDS CHICLE TUBO (CX-C/48)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.55,
+            "pesoLiquido": 1.68,
+            "entregas": [
+              {
+                "codigo": 377807,
+                "id": "8ad29860-d08a-450b-b39d-35928ffd753b",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 1,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377808,
+            "itemEmpresaId": "1139",
+            "itemId": 289,
+            "descricao": "KIDS DINO CAPS (CX C/30)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.8,
+            "pesoLiquido": 1.6,
+            "entregas": [
+              {
+                "codigo": 377808,
+                "id": "42cfb66a-7d43-40b4-956d-72447028eac9",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377809,
+            "itemEmpresaId": "1074",
+            "itemId": 175,
+            "descricao": "KIDS SLIME ECAO (CX-C/ 24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 3.35,
+            "pesoLiquido": 3.26,
+            "entregas": [
+              {
+                "codigo": 377809,
+                "id": "79495a83-2a4c-45df-80b8-d9a712c1bc0a",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377810,
+            "itemEmpresaId": "1146",
+            "itemId": 303,
+            "descricao": "KIDS DINO CHOMP! (CX C/ 24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.1,
+            "pesoLiquido": 1.82,
+            "entregas": [
+              {
+                "codigo": 377810,
+                "id": "11655a39-a797-412b-a293-4e871a24341d",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377811,
+            "itemEmpresaId": "1147",
+            "itemId": 305,
+            "descricao": "KIDS SPIN POPS PAW PATROL (CX C/ 24)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 1.4557,
+            "pesoLiquido": 1.23,
+            "entregas": [
+              {
+                "codigo": 377811,
+                "id": "84b20085-a278-46dc-8f2e-a578b403a3f9",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377812,
+            "itemEmpresaId": "1087",
+            "itemId": 177,
+            "descricao": "KIDS SOUR BUSTERS MEGA SLIME (CX C/32)",
+            "quantidade": 2,
+            "controleLote": true,
+            "pesoBruto": 3.3,
+            "pesoLiquido": 2.56,
+            "entregas": [
+              {
+                "codigo": 377812,
+                "id": "dcdca4d5-6b49-4015-b374-ecb486d13c76",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 2,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 2,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 377813,
+            "itemEmpresaId": "1141",
+            "itemId": 295,
+            "descricao": "KIDS SOUR BUSTERS TRIPLO SLIME (CX C/ 36)",
+            "quantidade": 1,
+            "controleLote": true,
+            "pesoBruto": 2.33,
+            "pesoLiquido": 1.584,
+            "entregas": [
+              {
+                "codigo": 377813,
+                "id": "7de17257-3096-4ccb-a438-80b70dfbc4b7",
+                "dataEntrega": "2024-09-27T00:00:00",
+                "dataPrevistaEntrega": "2024-09-27T00:00:00",
+                "quantidade": 1,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 1,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "34deca75-7493-4d36-87dc-ec2602ae0850",
+        "codigo": 34758,
+        "dataPedido": "2024-07-17T00:00:00",
+        "status": 6,
+        "statusSeparacao": 2,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 17,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": true,
+          "percentualDesoneracaoIcms": 0,
+          "endereco": {
+            "codigo": 293284,
+            "logradouro": "R Tancredo Neves, 528, São Lázaro, MACAPA - AP CEP: 68908-530",
+            "cidade": {
+              "nome": "MACAPA",
+              "codigoIbge": 303,
+              "uf": 16,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": false,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "DESCONTO DUPLICATA 4% (1% ANEIVERSÁRIO+2,5% FINANCEIRO + 0,50 INAUGURAÇÃO) ACORDO COMERCIAL(ANEXO).\r\n21/05/2024 - SUFRAMA 201141191 - MIRIÃN\r\n16/02/2024 - DESCONTO LOGISTICO DE 2,5% SOMENTE PARA O CD CAJAMAR-SP - MIRIÃN\r\n16/02/2024- SINTEGRA E CNPJ HABILITADO (ANEXO)  - MIRIÃN",
+          "id": "efe32cbd-8fbb-4875-a8cb-cddbd3337cfa",
+          "codigo": 17164,
+          "razaoSocial": "SENDAS DISTRIBUIDORA S/A - LJ 325",
+          "nomeAbreviado": "SENDAS/ASSAI- LJ 325",
+          "documento": {
+            "numero": 6057223055405,
+            "numeroTexto": "06057223055405",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 348857,
+            "itemEmpresaId": "1071",
+            "itemId": 139,
+            "descricao": "KIDS SURPRESA EGGS 3D PAW PATROL (CX-C/36)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.66,
+            "pesoLiquido": 1.37,
+            "entregas": [
+              {
+                "codigo": 348857,
+                "id": "dda6cb9a-8b15-4f34-8e6e-614cd8448016",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348858,
+            "itemEmpresaId": "1031",
+            "itemId": 58,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 348858,
+                "id": "13456c8c-d9e6-48e3-a78d-3add3cd73b4d",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348859,
+            "itemEmpresaId": "1023",
+            "itemId": 42,
+            "descricao": "KIDS POP SHOKS (CX-C/60)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.16,
+            "pesoLiquido": 0.88,
+            "entregas": [
+              {
+                "codigo": 348859,
+                "id": "8c0d2bfb-64e3-4524-ae7c-7c4c74535b4b",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348860,
+            "itemEmpresaId": "1112",
+            "itemId": 231,
+            "descricao": "KIDS MINI POP SPORTS (CX-C/ 24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.32,
+            "pesoLiquido": 1.16,
+            "entregas": [
+              {
+                "codigo": 348860,
+                "id": "773518a8-7f13-4cfc-b227-285e64324243",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348861,
+            "itemEmpresaId": "1001",
+            "itemId": 2,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 348861,
+                "id": "0d633d75-4cce-47a9-84d7-3d653852e9b8",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348862,
+            "itemEmpresaId": "1008",
+            "itemId": 14,
+            "descricao": "KIDS GIRA POP (CX-C/48)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 4.82,
+            "pesoLiquido": 3.84,
+            "entregas": [
+              {
+                "codigo": 348862,
+                "id": "7607a3f1-ef7a-4543-ae26-fb36bb52f2a3",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348863,
+            "itemEmpresaId": "1019",
+            "itemId": 34,
+            "descricao": "KIDS CHICLE TWIST (CX-C/24)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 2.38,
+            "pesoLiquido": 2.24,
+            "entregas": [
+              {
+                "codigo": 348863,
+                "id": "1fd7b285-82d8-4c31-8e11-b7b84e1533ea",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348864,
+            "itemEmpresaId": "1028",
+            "itemId": 52,
+            "descricao": "KIDS PULA MASSA (CX-C/8)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 0.792,
+            "pesoLiquido": 0.671,
+            "entregas": [
+              {
+                "codigo": 348864,
+                "id": "eb42a115-3580-44c2-8bd1-48914c20f6a7",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348865,
+            "itemEmpresaId": "1066",
+            "itemId": 129,
+            "descricao": "KIDS ALIEN SHOT (CX-C/24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.88,
+            "pesoLiquido": 1.61,
+            "entregas": [
+              {
+                "codigo": 348865,
+                "id": "623e514e-debe-4044-b872-1cae7588c195",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348866,
+            "itemEmpresaId": "1074",
+            "itemId": 175,
+            "descricao": "KIDS SLIME ECAO (CX-C/ 24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 3.35,
+            "pesoLiquido": 3.26,
+            "entregas": [
+              {
+                "codigo": 348866,
+                "id": "b77b7dfc-06e7-4708-88e5-67bd37859390",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1aa9a767-b2ef-410b-b4c5-66db030c9f34",
+        "codigo": 34719,
+        "dataPedido": "2024-07-17T00:00:00",
+        "status": 6,
+        "statusSeparacao": 1,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 17,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": true,
+          "percentualDesoneracaoIcms": 100,
+          "endereco": {
+            "codigo": 292777,
+            "logradouro": "AV Torquato Tapajós, 2200, Flores, MANAUS - AM CEP: 69058-830",
+            "cidade": {
+              "nome": "MANAUS",
+              "codigoIbge": 2603,
+              "uf": 13,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": true,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "09/01/2022 - Cliente com suframa desbilitado, antes de faturar falar com Camila/Comercial - Miriãn \r\n03/201/2023 - ** DESCONTO DUPLICATA 6,5% (1% ANEIVERSÁRIO + 2,5% FINANCEIRO + 0,50 INAUGURAÇÃO) ACORDO COMERCIAL (ANEXO)  - MIRIÃN\r\n11/01/2023 - DESCONTO LOGISTICO DE 2,5% SOMENTE PARA O CD CAJAMAR-SP - MIRIÃN\r\n04/01/2023 - SUFRAMA 210133449-TIPO(S) DE INCENTIVO(S)Tributo: IPI/Tributo: ICMS (ANEXO) - MIRIÃN\r\n03/01/2023 - PROCEDIMENTOS DE ENTREGA (ANEXO) - MIRIÃN \r\n03/01/2023- SINTEGRA E CNPJ HABILITADO (ANEXO)  - MIRIÃN",
+          "mensagemFiscal": "** AGENDAR ENTREGA agendamento@assai.com.br **",
+          "id": "c04cb3a4-248c-4ba1-b707-7a0e1a3b29ed",
+          "codigo": 16690,
+          "razaoSocial": "SENDAS DISTRIBUIDORA S.A - LJ 210",
+          "nomeAbreviado": "SENDAS/ASSAI- LJ 210",
+          "documento": {
+            "numero": 6057223043571,
+            "numeroTexto": "06057223043571",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 348438,
+            "itemEmpresaId": "1071",
+            "itemId": 139,
+            "descricao": "KIDS SURPRESA EGGS 3D PAW PATROL (CX-C/36)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.66,
+            "pesoLiquido": 1.37,
+            "entregas": [
+              {
+                "codigo": 348438,
+                "id": "de615b0b-df42-48dc-b736-1bf2481408c7",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348439,
+            "itemEmpresaId": "1031",
+            "itemId": 58,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 348439,
+                "id": "abbfade9-bded-43c4-8255-40beb4e096cd",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348440,
+            "itemEmpresaId": "1023",
+            "itemId": 42,
+            "descricao": "KIDS POP SHOKS (CX-C/60)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.16,
+            "pesoLiquido": 0.88,
+            "entregas": [
+              {
+                "codigo": 348440,
+                "id": "75eeb6f3-5971-41de-8ab2-54ac637f748b",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348441,
+            "itemEmpresaId": "1033",
+            "itemId": 267,
+            "descricao": "KIDS BUBBLE CLETE (CX-C/60)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.65,
+            "pesoLiquido": 1.2,
+            "entregas": [
+              {
+                "codigo": 348441,
+                "id": "00b83f0b-70b9-43d3-984c-cfd564cca5ca",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348442,
+            "itemEmpresaId": "1086",
+            "itemId": 173,
+            "descricao": "KIDS POP SHOKS LOL SURPRISE (CX-C/60)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.06,
+            "pesoLiquido": 0.96,
+            "entregas": [
+              {
+                "codigo": 348442,
+                "id": "b72d99d9-3319-40dd-9590-37d30e110423",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 5,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348443,
+            "itemEmpresaId": "1001",
+            "itemId": 2,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 348443,
+                "id": "05f054c1-848a-4625-9798-d8c3df5653bf",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348444,
+            "itemEmpresaId": "1008",
+            "itemId": 14,
+            "descricao": "KIDS GIRA POP (CX-C/48)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 4.82,
+            "pesoLiquido": 3.84,
+            "entregas": [
+              {
+                "codigo": 348444,
+                "id": "92a8679d-7954-444e-a13c-fe6a9443992a",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348445,
+            "itemEmpresaId": "1019",
+            "itemId": 34,
+            "descricao": "KIDS CHICLE TWIST (CX-C/24)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 2.38,
+            "pesoLiquido": 2.24,
+            "entregas": [
+              {
+                "codigo": 348445,
+                "id": "85accc00-34b2-4305-92d7-1297df783595",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348446,
+            "itemEmpresaId": "1028",
+            "itemId": 52,
+            "descricao": "KIDS PULA MASSA (CX-C/8)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 0.792,
+            "pesoLiquido": 0.671,
+            "entregas": [
+              {
+                "codigo": 348446,
+                "id": "b4192fba-8900-4242-b20d-30b8375489b8",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348447,
+            "itemEmpresaId": "1066",
+            "itemId": 129,
+            "descricao": "KIDS ALIEN SHOT (CX-C/24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.88,
+            "pesoLiquido": 1.61,
+            "entregas": [
+              {
+                "codigo": 348447,
+                "id": "73fdb2a7-9cfc-4644-a4b3-a9a69ae10063",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 348448,
+            "itemEmpresaId": "1074",
+            "itemId": 175,
+            "descricao": "KIDS SLIME ECAO (CX-C/ 24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 3.35,
+            "pesoLiquido": 3.26,
+            "entregas": [
+              {
+                "codigo": 348448,
+                "id": "88d66b49-88bd-4533-a2d5-fc56cae73778",
+                "dataEntrega": "2024-07-17T00:00:00",
+                "dataPrevistaEntrega": "2024-07-17T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "79ea119a-83ca-414f-b6cd-994c02eb3e9d",
+        "codigo": 34668,
+        "dataPedido": "2024-07-16T00:00:00",
+        "status": 6,
+        "statusSeparacao": 2,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 17,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": true,
+          "percentualDesoneracaoIcms": 100,
+          "endereco": {
+            "codigo": 292779,
+            "logradouro": "AV Ephigênio Salles, 2045, Aleixo, MANAUS - AM CEP: 69060-020",
+            "cidade": {
+              "nome": "MANAUS",
+              "codigoIbge": 2603,
+              "uf": 13,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": true,
+          "possuiAbatimentoContribuicoesSociais": false,
+          "ehEstrangeiro": false,
+          "observacao": "03/01/2022 - ** DESCONTO DUPLICATA 6,5% (1% ANEIVERSÁRIO + 2,5% FINANCEIRO + 0,50 INAUGURAÇÃO) ACORDO COMERCIAL (ANEXO) - MIRIÃN\r\n11/01/2023 - DESCONTO LOGISTICO DE 2,5% SOMENTE PARA O CD CAJAMAR-SP - MIRIÃN\r\n04/01/2023 - SUFRAMA 200171062-TIPO(S) DE INCENTIVO(S) Tributo: IPI/Tributo: ICMS (ANEXO) -MIRIÃN\r\n03/01/2023 - PROCEDIMENTOS DE ENTREGA (ANEXO) - MIRIÃN \r\n03/01/2023- SINTEGRA E CNPJ HABILITADO (ANEXO)  - MIRIÃN",
+          "mensagemFiscal": "** AGENDAR ENTREGA agendamento@assai.com.br **",
+          "id": "99c92b3f-f9cb-490d-9193-ee7bdf7cf665",
+          "codigo": 16692,
+          "razaoSocial": "SENDAS DISTRIBUIDORA S.A - LJ 146",
+          "nomeAbreviado": "SENDAS/ASSAI- LJ 146",
+          "documento": {
+            "numero": 6057223036362,
+            "numeroTexto": "06057223036362",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 347814,
+            "itemEmpresaId": "1071",
+            "itemId": 139,
+            "descricao": "KIDS SURPRESA EGGS 3D PAW PATROL (CX-C/36)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.66,
+            "pesoLiquido": 1.37,
+            "entregas": [
+              {
+                "codigo": 347814,
+                "id": "1844e1fe-1058-4888-9d9a-68787d76f05b",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347815,
+            "itemEmpresaId": "1031",
+            "itemId": 58,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 347815,
+                "id": "3838d2f4-044d-4a42-a2ed-f5d254920b96",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347816,
+            "itemEmpresaId": "1024",
+            "itemId": 44,
+            "descricao": "KIDS ROCK SHOKS (CX-C/24)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.5,
+            "pesoLiquido": 1.15,
+            "entregas": [
+              {
+                "codigo": 347816,
+                "id": "157e4188-a515-44ed-93e0-5ba906cd616f",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347817,
+            "itemEmpresaId": "1033",
+            "itemId": 267,
+            "descricao": "KIDS BUBBLE CLETE (CX-C/60)",
+            "quantidade": 10,
+            "controleLote": true,
+            "pesoBruto": 1.65,
+            "pesoLiquido": 1.2,
+            "entregas": [
+              {
+                "codigo": 347817,
+                "id": "aa21b844-7062-4b72-b8b6-f97fb5a63f76",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 10,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 10,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347818,
+            "itemEmpresaId": "1001",
+            "itemId": 2,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 347818,
+                "id": "01d275af-57e3-4855-91cc-bf236843f14c",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347819,
+            "itemEmpresaId": "1008",
+            "itemId": 14,
+            "descricao": "KIDS GIRA POP (CX-C/48)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 4.82,
+            "pesoLiquido": 3.84,
+            "entregas": [
+              {
+                "codigo": 347819,
+                "id": "d0dbee93-7624-4d16-9c0d-c1d36d0ae8ff",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347820,
+            "itemEmpresaId": "1019",
+            "itemId": 34,
+            "descricao": "KIDS CHICLE TWIST (CX-C/24)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 2.38,
+            "pesoLiquido": 2.24,
+            "entregas": [
+              {
+                "codigo": 347820,
+                "id": "7a383644-bc25-42db-ad88-aef6cd7c221b",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347821,
+            "itemEmpresaId": "1028",
+            "itemId": 52,
+            "descricao": "KIDS PULA MASSA (CX-C/8)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 0.792,
+            "pesoLiquido": 0.671,
+            "entregas": [
+              {
+                "codigo": 347821,
+                "id": "c8ed9396-d60b-4f34-9b1e-acafcafa7b4c",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347822,
+            "itemEmpresaId": "1066",
+            "itemId": 129,
+            "descricao": "KIDS ALIEN SHOT (CX-C/24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.88,
+            "pesoLiquido": 1.61,
+            "entregas": [
+              {
+                "codigo": 347822,
+                "id": "3b8f41e6-0261-40f8-8f84-db413dd61e2e",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347823,
+            "itemEmpresaId": "1074",
+            "itemId": 175,
+            "descricao": "KIDS SLIME ECAO (CX-C/ 24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 3.35,
+            "pesoLiquido": 3.26,
+            "entregas": [
+              {
+                "codigo": 347823,
+                "id": "556de5ee-93fc-46d3-9228-bdd1ec7fa96b",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d239843c-fc31-44c8-bbc2-5b9c12789cb5",
+        "codigo": 34655,
+        "dataPedido": "2024-07-16T00:00:00",
+        "status": 6,
+        "statusSeparacao": 1,
+        "statusConferencia": 0,
+        "observacaoInterna": "",
+        "transportadoraCodigo": 17,
+        "statusEntrega": 3,
+        "cliente": {
+          "contatoId": 0,
+          "ehContribuinteIcms": true,
+          "ehExportacao": false,
+          "possuiAbatimentoLivreComercioSuframa": true,
+          "percentualDesoneracaoIcms": 100,
+          "endereco": {
+            "codigo": 82950,
+            "logradouro": "AV Autaz Mirim, 8755 PARTE 1, NOVO ALEIXO, 0, MANAUS - AM CEP: 69099-045",
+            "cidade": {
+              "nome": "MANAUS",
+              "codigoIbge": 2603,
+              "uf": 13,
+              "pais": 1058
+            }
+          },
+          "contato": [],
+          "tipoCadastro": 0,
+          "documentoEstadual": {
+            "tipo": 0
+          },
+          "status": 0,
+          "contribuinteIcms": false,
+          "tipoPessoa": 0,
+          "tipoFrete": 0,
+          "tipoEstabelecimento": "Varejista",
+          "enquadramentoFiscal": 0,
+          "desoneracaoIcmsSuframa": false,
+          "desconsideraPercentualComissaoPromocao": false,
+          "localIcms": false,
+          "calcularMargemDeValorAgregadoComBaseNoCnaeDestinatario": false,
+          "frete": 0,
+          "descontoPercentualComissaoPromocao": false,
+          "ativo": true,
+          "suspenso": false,
+          "classificacaoFinanceira": 0,
+          "ehAreaLivreComercioSuframa": true,
+          "possuiAbatimentoContribuicoesSociais": true,
+          "ehEstrangeiro": false,
+          "observacao": "03/01/2023 - ** DESCONTO DUPLICATA 6,5% (1% ANEIVERSÁRIO + 2,5% FINANCEIRO + 0,50 INAUGURAÇÃO + 2,5% LOGISTICO) ACORDO COMERCIAL ANEXO - MIRIÃN\r\n04/01/2022 - SUFRAMA 200114280: TIPO(S) DE INCENTIVO(S)/Tributo: IPI/Tributo: ICMS(ANEXO) - MIRIÃN \r\n03/01/2023 - PROCEDIMENTOS DE ENTREGA (ANEXO) - MIRIÃN \r\n03/01/2023- SINTEGRA E CNPJ HABILITADO (ANEXO)  - MIRIÃN",
+          "id": "8dfb32f5-72c3-4667-8b55-ef2b837894d0",
+          "codigo": 10204,
+          "razaoSocial": "SENDAS DISTRIBUIDORA S.A - LJ 122",
+          "nomeAbreviado": "SENDAS/ASSAI-LJ 122",
+          "documento": {
+            "numero": 6057223030089,
+            "numeroTexto": "06057223030089",
+            "tipo": 3
+          }
+        },
+        "itens": [
+          {
+            "itemPedidoVendaId": 347600,
+            "itemEmpresaId": "1071",
+            "itemId": 139,
+            "descricao": "KIDS SURPRESA EGGS 3D PAW PATROL (CX-C/36)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.66,
+            "pesoLiquido": 1.37,
+            "entregas": [
+              {
+                "codigo": 347600,
+                "id": "3a07ebfb-1852-43c7-b6c4-b3911ce10790",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347601,
+            "itemEmpresaId": "1031",
+            "itemId": 58,
+            "descricao": "KIDS ZÓIO GOMA (CX-C/72)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.47,
+            "pesoLiquido": 1.34,
+            "entregas": [
+              {
+                "codigo": 347601,
+                "id": "83bf2a55-06e2-47b3-84dc-a6e4ad20a96a",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347602,
+            "itemEmpresaId": "1033",
+            "itemId": 267,
+            "descricao": "KIDS BUBBLE CLETE (CX-C/60)",
+            "quantidade": 2,
+            "controleLote": true,
+            "pesoBruto": 1.65,
+            "pesoLiquido": 1.2,
+            "entregas": [
+              {
+                "codigo": 347602,
+                "id": "74316341-6e00-4e60-b280-798b2779872e",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 2,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 2,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347603,
+            "itemEmpresaId": "1086",
+            "itemId": 173,
+            "descricao": "KIDS POP SHOKS LOL SURPRISE (CX-C/60)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.06,
+            "pesoLiquido": 0.96,
+            "entregas": [
+              {
+                "codigo": 347603,
+                "id": "24384a58-43fe-4c25-8361-d93ae493e9a9",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 5,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347604,
+            "itemEmpresaId": "1001",
+            "itemId": 2,
+            "descricao": "KIDS AIAAI! GOMA DE MASCAR (CX-C/24)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 2.48,
+            "pesoLiquido": 1.12,
+            "entregas": [
+              {
+                "codigo": 347604,
+                "id": "dd2fb6cb-7008-4744-b0fa-d05f4af53822",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347605,
+            "itemEmpresaId": "1008",
+            "itemId": 14,
+            "descricao": "KIDS GIRA POP (CX-C/48)",
+            "quantidade": 3,
+            "controleLote": true,
+            "pesoBruto": 4.82,
+            "pesoLiquido": 3.84,
+            "entregas": [
+              {
+                "codigo": 347605,
+                "id": "f2aebeaa-b828-4651-b5a0-d3349b08382a",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 3,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 3,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347606,
+            "itemEmpresaId": "1019",
+            "itemId": 34,
+            "descricao": "KIDS CHICLE TWIST (CX-C/24)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 2.38,
+            "pesoLiquido": 2.24,
+            "entregas": [
+              {
+                "codigo": 347606,
+                "id": "57b6891a-a214-43a4-8ab0-4a381056a2fd",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347607,
+            "itemEmpresaId": "1028",
+            "itemId": 52,
+            "descricao": "KIDS PULA MASSA (CX-C/8)",
+            "quantidade": 6,
+            "controleLote": true,
+            "pesoBruto": 0.792,
+            "pesoLiquido": 0.671,
+            "entregas": [
+              {
+                "codigo": 347607,
+                "id": "a0b75b16-56ed-468e-b0ba-5d6f3b831525",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 6,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 6,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347608,
+            "itemEmpresaId": "1066",
+            "itemId": 129,
+            "descricao": "KIDS ALIEN SHOT (CX-C/24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 1.88,
+            "pesoLiquido": 1.61,
+            "entregas": [
+              {
+                "codigo": 347608,
+                "id": "4dac7a60-f203-4ba7-b6f7-90bdfa72ade2",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          },
+          {
+            "itemPedidoVendaId": 347609,
+            "itemEmpresaId": "1074",
+            "itemId": 175,
+            "descricao": "KIDS SLIME ECAO (CX-C/ 24)",
+            "quantidade": 5,
+            "controleLote": true,
+            "pesoBruto": 3.35,
+            "pesoLiquido": 3.26,
+            "entregas": [
+              {
+                "codigo": 347609,
+                "id": "0dd722ee-af19-4991-bca4-5485e1d849b7",
+                "dataEntrega": "2024-07-16T00:00:00",
+                "dataPrevistaEntrega": "2024-07-16T00:00:00",
+                "quantidade": 5,
+                "quantidadeFaturada": 0,
+                "saldoSeparacao": 0,
+                "saldoFaturamento": 5,
+                "fazParteDeNovaSeparacaoNaoSalvaImpressa": false,
+                "foraLeadTime": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "numero": 1,
+    "tamanho": 1000000,
+    "totalRegistros": 24,
+    "paginas": 1,
+    "endpointPath": {
+      "primeiraPagina": "/vendas-service/pedido?PageNumber=1&PageSize=1000000",
+      "ultimaPagina": "/vendas-service/pedido?PageNumber=1&PageSize=1000000"
+    }
+  }

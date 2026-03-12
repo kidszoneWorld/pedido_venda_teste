@@ -1,0 +1,1221 @@
+ 
+ /* Definindo variáveis de cor para os temas claro e escuro */
+:root {
+    --background-color-light: #caccc6;
+    --container-bg-light: #ffffff;
+    --header-bg-light: #ffffff;
+    --text-color-light: #333;
+    --table-bg-light: #ffffff;
+    --table-header-bg-light: #333;
+    --table-text-color-light: #ffffff;
+    --button-bg-light: #333;
+    --button-text-light: #ffffff;
+    --button-hover-bg-light: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
+    --button-hover-text-light: #fafcfa;
+
+    --background-color-dark: #1a1a1a;
+    --container-bg-dark: #2a2a2a;
+    --header-bg-dark: #2a2a2a;
+    --text-color-dark: #bbb5b5;
+    --table-bg-dark: #333;
+    --table-header-bg-dark: #1e1e1e;
+    --table-text-color-dark: #e0e0e0;
+    --button-bg-dark: #838181;
+    --button-text-dark: #ffffff;
+    --button-hover-bg-dark: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
+    --button-hover-text-dark: #fafcfa;
+    --input-bg-dark:#141414;
+}
+
+/* Tema claro (padrão) */
+body.light-theme {
+    background-color: var(--background-color-light);
+}
+
+body.light-theme .container {
+    background-color: var(--container-bg-light);
+}
+
+body.light-theme .header {
+    background-color: var(--header-bg-light);
+    color: var(--text-color-light);
+}
+
+body.light-theme .section-title,
+body.light-theme .obs-title,
+body.light-theme .payment-conditions label {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme .table th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.light-theme .table td {
+    background-color: var(--table-bg-light);
+}
+
+body.light-theme .button-group button,
+body.light-theme .no-print button,
+body.light-theme footer {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+}
+
+body.light-theme .button-group button:hover,
+body.light-theme .no-print button:hover {
+    background: var(--button-hover-bg-light);
+    color: var(--button-hover-text-light);
+}
+
+
+
+
+/* Tema escuro */
+body.dark-theme {
+    background-color: var(--background-color-dark);
+}
+
+body.dark-theme .container {
+    background-color: var(--container-bg-dark);
+}
+
+body.dark-theme .header {
+    background-color: var(--header-bg-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-theme .section-title,
+body.dark-theme .obs-title,
+body.dark-theme .payment-conditions label {
+    background-color: rgb(114, 112, 112);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme .table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme .table td {
+    background-color: var(--table-bg-dark);
+}
+
+body.dark-theme .button-group button,
+body.dark-theme .no-print button,
+body.dark-theme footer {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+}
+
+body.dark-theme .button-group button:hover,
+body.dark-theme .no-print button:hover {
+    background: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme .date{
+    color: var(--table-text-color-dark);
+}
+
+body.dark-theme input{
+    background-color: var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme ::placeholder{
+    color:#3d3d3d;
+}
+
+body.dark-theme .form-group label{
+    color:#ccc8c8;
+}
+
+body.dark-theme #observation , #observacoes , #observacoes1{
+    background-color:var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme select{
+    background-color:var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme #dadosPedido tbody tr td{
+    background-color:var(--table-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme #dadosPedido tbody tr td input{
+    background-color:var(--table-bg-dark);
+    color: var(--button-hover-text-dark);
+    border:none;
+}
+
+
+
+ /* Definição da animação */
+ @keyframes animationButtonSend {
+    0% {
+        transform: rotateZ(10deg);
+    }
+    100% {
+        transform: rotateZ(-10deg);
+    }
+}
+
+@keyframes modalAnimation {
+    from{
+        opacity: 0;
+        transform: translate3d(0,-20px,-5px);
+    }
+    to{
+        opacity: 1;
+        transform: translate3d(0,0,0);
+    }
+    
+}
+ 
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+ 
+
+ /* Estilo Geral */
+ body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    /* background-color: #f3f3f3;*/
+    background-color: #caccc6;
+    /* background-color: rgb(248, 184, 228)*/
+}
+.container {
+    width: 95%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+}
+
+
+.header {
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 2px solid #333;
+    position: relative;
+}
+.header img {
+    width: 150px;
+}
+.header .date {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: #333;
+}
+.header .version {
+    font-size: 12px;
+    color: #333;
+}
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+}
+.button-group button {
+    padding: 10px;
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    min-width: 150px;
+    font-size: 95%;
+}
+
+#button_pdf:hover , #button_sistema:hover {
+    background: linear-gradient(90deg,rgba(225,0,152) 0%,#f18fc7 100%);
+    color:#fafcfa;
+    font-weight: bold;
+    
+}
+
+.section {
+    margin-top: 20px;
+}
+.section-title {
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+.form-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.form-group label {
+    font-weight: bold;
+    margin-top: 10px
+}
+
+.label-espaco-esquerda {
+    margin-left: 20px; /* Ajuste o valor conforme o espaçamento desejado */
+}  
+ 
+
+.form-group input {
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 3px;
+    width: 120%;
+    margin-left: -60px;
+}
+
+#tipo_pedido {
+    padding: 8px;
+    border: 1px solid #242323;
+    color:rgba(225, 0, 152);
+    font-weight: 600;
+    border-radius: 3px;
+    width: 128%;
+    margin-left: -60px;
+}
+
+.table-container {
+     overflow-x: auto;
+}
+.table {
+    width: 1000px;
+    border-collapse: collapse;
+    margin-top: 10px;
+    min-width: 800px;
+}
+.table, .table th, .table td {
+    border: 1px solid #ddd;
+}
+
+
+.table th, .table td {
+    padding: 10px;
+    text-align: center;
+}
+.table th {
+    background-color: #333;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+/* Seção tabela de dados dos itens */
+.descricao{
+    width: 30%;
+}
+.pack {
+    width: 1%;
+}
+
+.uv{
+    width: 6%;
+}
+
+.cod{
+    width: 7%;
+}
+
+.qtd{
+    width: 8%;
+}
+
+.ipi{
+    width: 8%;
+}
+
+.unit{
+    width: 11%;
+}
+
+.vipi{
+    width: 11%;
+}
+
+.total{
+    width: 13%;
+}
+
+/* Seção Condição de Pagamento e Observações */
+.payment-conditions {
+    margin-top: 20px;
+    border: 1px solid #1b1a1a;
+    padding: 15px;
+    padding-left: 35px;
+    align-items: center;
+   
+}
+
+.payment-conditions label {
+    width: 100%;
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+}
+
+.payment-conditions input {
+    padding: 5px;
+}
+
+
+.observations{
+    margin-top: 20px;
+}
+.observations .obs-title {
+    background-color: #333;
+    color: #ffffff;
+    padding: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+.observations textarea {
+    width: 99.5%;
+    height: 100px;
+    margin-top: 10px;
+    resize: vertical;
+    /*padding: 10px;*/
+    border-radius: 5px;
+    border: 1px solid #3d3c3c;
+}
+
+ 
+/* classe criada para ocultar botoes na hora da impressão */
+    .no-print {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 12px;
+        padding: 10px 0;
+  
+    }
+
+    .esconder , #esconder{
+        display: none;
+       
+    }
+
+
+footer {
+
+    display: flex;
+    justify-content:space-between;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #333;
+    width: 100%;
+ 
+    margin: 0 auto;
+   
+
+}
+
+.link_sites {
+    display: flex;
+    justify-content:center;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 30px;
+   /* padding: 15px;*/
+ 
+ 
+}
+
+
+.link_sites a {
+    display: flex;
+    justify-content:center;
+    color:#ffffff ;
+    text-align: center;
+    padding-left: 20px;
+    text-decoration: none;
+    font-size: 100%;
+
+}
+
+.link_sites label {
+    display: flex;
+    justify-content:center;
+    margin-right: 15px;
+
+}
+
+
+.link_sites a:hover {
+    color:rgba(225,0,152);
+    font-size: 140%;
+    animation: animationButtonSend 1s;
+
+}
+#logoutButton2:hover{
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247);
+    font-size: 140%;
+    animation: animationButtonSend 1s;
+    border:none;
+     
+}
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+
+/* Adiciona o asterisco vermelho ao lado do texto CNPJ e TIPO PEDIDO */
+label[for="cnpj"]::after,
+label[for="tipo_pedido"]::after {
+    content: " *"; /* Insere o asterisco */
+    color: rgba(225, 0, 152); /* Cor vermelha */
+    font-weight: bold; /* Deixa o asterisco em negrito */
+    font-size: 22px; /* Tamanho do asterisco */
+}
+
+label[for="referencia"]::after {
+    content: " ? "; /* Insere o asterisco */
+    color: rgba(225, 0, 152); /* Cor vermelha */
+    font-weight: bold; /* Deixa o asterisco em negrito */
+    font-size: 15px; /* Tamanho do asterisco */
+    vertical-align: super; /* Eleva o "?" */
+    margin-left: 2px; /* Espaçamento entre "REFERÊNCIA" e o "?" */
+    
+}
+
+.label-referencia , .label-obrigatorio {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip1 {
+    visibility: hidden;
+    width: 290px;
+    background-color: rgba(225, 0, 152);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 8px;
+    position: absolute;
+    bottom: 125%; /* Ajusta a posição acima do texto */
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.tooltip1::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* Triângulo abaixo da tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(225, 0, 152) transparent transparent transparent;
+}
+
+.label-referencia:hover .tooltip1  {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+
+.tooltip2 {
+    visibility: hidden;
+    width: 170px;
+    background-color: rgba(225, 0, 152);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 8px;
+    position: absolute;
+    bottom: 125%; /* Ajusta a posição acima do texto */
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.tooltip2::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* Triângulo abaixo da tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(225, 0, 152) transparent transparent transparent;
+}
+
+.label-obrigatorio:hover .tooltip2 {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+
+.no-print button{
+    border-radius: 8px;
+    border: 1px solid #3d3c3c;
+    padding: 5px;
+    font-weight: 600;
+}
+
+.no-print button:hover{
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247); /* Mantém a cor do texto */
+    border:none;
+}
+
+/* Estilo para a label */
+.label-referencia {
+    color: rgba(225, 0, 152);
+    font-size: 90%;
+}
+
+/* Estilo para o placeholder */
+#referencia::placeholder {
+    color: rgba(225, 0, 152);
+}
+
+
+.modal , .modal1 {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    animation: modalAnimation 0.70s;
+  }
+  
+  .modal-content , .modal-content1{
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 40%;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .close-button , .close-button1 {
+    color: red;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .close-button:hover , .close-button1:hover{
+    color: darkred;
+  }
+
+  #confirmButton:hover , 
+  #cancelButton:hover ,
+  #confirmButton1:hover ,
+  #cancelButton1:hover {
+    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
+    color: rgb(250, 242, 247); /* Mantém a cor do texto */
+    border:none;
+    cursor: pointer;
+  }
+
+/* Botão de ajuda fixado */
+#helpContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.help-icon {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+   /* background-color: #25D366; */
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  /*   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); */
+    position: relative; /* Necessário para posicionar o span */
+    animation: shake 0.8s ease-in-out infinite;
+    animation-iteration-count:2;
+}
+
+/* Oculta o texto inicialmente */
+.help-icon span {
+    position: absolute;
+    bottom: 100%; /* Posiciona acima do ícone */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    margin-right: 50px;
+    border-radius: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+
+/* Exibe o texto ao passar o mouse */
+.help-icon:hover span {
+    opacity: 1;
+    visibility: visible;
+}
+
+.help-icon img {
+    width: 60px;
+    height: 60px;
+
+}
+
+.help-icon:hover {
+    background-color: #128C7E;
+}
+
+/* Overlay de desfoque */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999; /* Abaixo do modal, mas acima do restante */
+    backdrop-filter: blur(5px); /* Aplica o desfoque */
+}
+
+/* Modal de ajuda */
+.help-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Conteúdo do modal */
+.help-modal-content {
+    display: flex;
+    flex-direction: column; /* Organiza os itens em uma coluna */
+    align-items: center; /* Centraliza horizontalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Conteúdo do modal */
+.help-modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 24px; /* Tamanho do título */
+    color: #333;
+}
+
+.help-modal-content p {
+    margin-bottom: 15px;
+    font-size: 18px; /* Tamanho do texto */
+    color: #666;
+}
+
+.help-modal-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-modal-content li {
+    margin: 10px 0;
+}
+
+
+.help-modal-content a {
+    color: #25D366;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.help-modal-content a:hover {
+    color: #128C7E;
+}
+
+.close-modal {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    background-color: #d32f2f;
+}
+
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#okButton:hover{  
+    background-color: rgba(225, 0, 152);
+}
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+/* Animação para o modal */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+
+/* Media Queries para responsividade */
+
+@media (max-width: 1040px) {
+    footer {
+        width: 100%;
+     
+    }
+
+    .link_sites {
+        flex-direction: column; /* Garante que os itens fiquem em coluna */
+        align-items: center;
+       
+    }
+
+    .link_sites button#logoutButton2 {
+        width: 10%; /* Mantém a largura relativa em telas menores */
+        margin-top: 20px;
+        text-align: center;
+        margin-bottom: 15px; /* Espaçamento abaixo do botão */
+    }
+
+    .link_sites a {
+        margin: 5px ;
+        padding: 5px ;
+    }
+}
+
+
+/* Estilo Geral Responsivo */
+@media (max-width: 1024px) {
+    /* Ajuste geral para tablets */
+    .container {
+        padding: 10px;
+    }
+    .button-group button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    
+}
+
+@media (max-width: 1020px) {
+
+ 
+    
+    .payment-conditions input {
+        width: 17%;
+        padding: 5px;
+    }
+    
+
+}
+
+@media (min-width: 827px) and (max-width: 914px) {
+
+    .form-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        padding: 0px;
+        padding-top:15px ;
+        padding-bottom:15px ;
+        border: 1px solid #ddd;
+    }
+
+}
+
+@media (min-width: 789px) and (max-width: 975px) {
+   /* Seção Condição de Pagamento e Observações */
+.payment-conditions {
+    margin-top: 20px;
+    border: 1px solid #1b1a1a;
+    /*padding: 15px;*/
+    padding-left: 15px;
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha quando necessário */
+    gap: 15px; /* Espaço entre os itens */
+}
+
+/* Ajusta os elementos (rótulos e inputs) */
+.payment-conditions label {
+    flex: 1 1 90px; /* Define largura mínima */
+    min-width: 100px;
+    background-color: #333;
+    color: #ffffff;
+    /*padding: 5px;*/
+    text-align: center;
+}
+
+.payment-conditions input {
+    flex: 2 1 90px; /* Define largura mínima */
+    padding: 5px;
+}
+
+
+}
+
+
+@media (min-width: 478px) and (max-width: 788px) {
+    /* Seção Condição de Pagamento e Observações */
+ .payment-conditions {
+     margin-top: 20px;
+     padding-left: 0px;
+     display: flex;
+     flex-direction: column;
+     gap: 5px;
+
+ }
+ 
+ /* Ajusta os elementos (rótulos e inputs) */
+ .payment-conditions label {
+     width: 70%;
+     background-color: #333;
+     color: #ffffff;
+
+
+ }
+ 
+ .payment-conditions input {
+    width: 50%;
+     padding: 5px;
+  
+ }
+ 
+ 
+ }
+
+@media (max-width: 891px) {
+    .payment-conditions label {
+        width: 50%;
+        padding-top:5px ;
+        padding-bottom: 5px;
+        font-size: 90%;
+    }
+
+    .button-group button {
+        font-size: 100%;
+    }
+
+    .header img {
+        width: 160px;
+    }
+
+}
+
+@media (max-width: 768px) {
+    /* Ajustes para dispositivos móveis (tela menor) */
+    .header img {
+        width: 80px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #button_pdf::after{
+        content: "SALVAR EM PDF";
+        color: #fafcfa;
+        font-size: 107%;
+        position: absolute; /* Garante que o ::after não interfira no layout */
+        top: 50%; /* Centraliza verticalmente */
+        left: 50%; /* Centraliza horizontalmente */
+        transform: translate(-50%, -50%); /* Alinha corretamente o texto */
+        text-align: center;
+        display: flex; /* Alternativa para alinhamento */
+        align-items: center; /* Alinha verticalmente */
+        justify-content: center; /* Alinha horizontalmente */
+        
+    
+    }
+    
+    #button_pdf {
+        position: relative; /* Necessário para que o ::after seja posicionado corretamente */
+        color: transparent; /* Oculta o texto original */
+        overflow: hidden; /* Evita que o ::after interfira no tamanho do botão */
+    }
+
+    .form-group {
+        grid-template-columns: 1fr;
+    }
+    .form-group label,
+    .form-group input {
+        width: 100%;
+        margin: 0;
+    }
+    .table-container {
+        overflow-x: scroll;
+    }
+
+    .header img {
+        width: 150px;
+    }
+
+    .help-modal-content h2 {
+        font-size: 20px;
+    }
+
+    .help-modal-content p {
+        font-size: 16px;
+    }
+
+    .help-modal-content a {
+        font-size: 14px;
+    }
+
+    .help-modal-content {
+        width: 95%;
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    /* Ajustes para telas menores como celulares */
+    .header .date {
+        font-size: 10px;
+    }
+    .button-group button {
+        font-size: 95%;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+    .observations textarea {
+        font-size: 12px;
+        /*padding: 8px;*/
+        width: 98%;
+    }
+
+    .link_sites {
+        padding-left: 15px;
+         
+      
+      }
+
+      .header img {
+        width: 140px;
+    }
+
+    #helpContainer {
+        bottom: 75px;
+     
+    }
+    .help-icon img {
+        width: 40px;
+        height: 40px;
+    }
+  
+}
+
+@media (max-width: 896px) {
+
+    .form-group {
+        grid-template-columns: 1fr; /* Alterne para uma coluna em telas menores */
+    }
+
+    .form-group input {
+        width:80%;
+        margin:auto
+     
+    }
+}
+
+
+
+@media (max-width: 896px) {
+
+    #tipo_pedido {
+        padding: 8px;
+        border-radius: 3px;
+        width: 82%;
+        margin:auto
+    }
+}
+
+@media (max-width: 560px) {
+   
+    .link_sites a{
+      font-size: 80%;
+      padding-left: 15px;
+       
+    
+    }
+
+}
+
+@media (max-width: 477px) {
+
+/* Seção Condição de Pagamento e Observações */
+.payment-conditions {
+    margin-top: 20px;
+    border: 1px solid #1b1a1a;
+    /*padding: 15px;*/
+    padding-left: 15px;
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha quando necessário */
+    gap: 15px; /* Espaço entre os itens */
+}
+
+/* Ajusta os elementos (rótulos e inputs) */
+.payment-conditions label {
+    flex: 1 1 120px; /* Define largura mínima */
+    min-width: 100px;
+    background-color: #333;
+    color: #ffffff;
+    /*padding: 5px;*/
+    text-align: center;
+}
+
+.payment-conditions input {
+    flex: 2 1 120px; /* Define largura mínima */
+    padding: 5px;
+}
+
+}
+
+/* Botão remover linha (tabela) */
+.btn-remover-linha {
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #3d3c3c;
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hover – igual aos outros botões */
+.btn-remover-linha:hover {
+    background: var(--button-hover-bg-light);
+    color: var(--button-hover-text-light);
+    border: none;
+}
+
+/* Tema escuro */
+body.dark-theme .btn-remover-linha {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+    border: 1px solid #555;
+}
+
+body.dark-theme .btn-remover-linha:hover {
+    background: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-dark);
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+  <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+  <link rel="manifest" href="/images/site.webmanifest">
+  <link rel="stylesheet" href="/css/display.css?v=1773344427942">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-logo">
+        <a href="https://kidszoneworld.com.br/portal-do-representante/">
+          <img class="img_link" src="/images/logo.png" alt="Imagem KidsZone">
+        </a>
+      </div>
+      <h3>CONTROLE DE DISPLAYS POR CLIENTE</h3>
+    </div> 
+    
+    <div class="client-info">
+
+      <div class="btn-salvar-container">
+        <button id="btnSalvarDados1">Salvar Dados</button>
+      </div>
+
+      <label for="cnpj"><strong>CNPJ:</strong></label>
+      <input type="text" id="cnpj" placeholder="Digite o CNPJ">
+      <label for="codgroup"><strong>CÓDIGO CLIENTE:</strong></label>
+      <input type="text" id="codgroup" placeholder="Código do Cliente" readonly>
+      <label for="cliente"><strong>Cliente:</strong></label>
+      <input type="text" id="cliente" placeholder="Nome do Cliente" readonly>
+      <div class="representante">
+        <label for="rep">REPRESENTANTE:</label>
+        <input type="text" id="rep" placeholder="rep" readonly>
+      </div>
+
+    </div>
+  
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th id="razao_social">RAZÃO SOCIAL</th>
+            <th id="cnpj">CNPJ</th>
+            <th id="endereco">ENDEREÇO</th>
+            <th id="bairro">BAIRRO</th>
+            <th id="cidade">CIDADE</th>
+            <th id="uf">UF</th>
+            <th id="qtd_display">QUANTIDADE DISPLAYS</th>
+            <th id="modelo_display">MODELO DISPLAY</th>
+            <th id="jan25">Jan/25</th>
+            <th id="fev25">Fev/25</th>
+            <th id="mar25">Mar/25</th>
+            <th id="abr25">Abr/25</th>
+            <th id="mai25">Mai/25</th>
+            <th id="jun25">Jun/25</th>
+            <th id="jul25">Jul/25</th>
+            <th id="ago25">Ago/25</th>
+            <th id="set25">Set/25</th>
+            <th id="out25">Out/25</th>
+            <th id="nov25">Nov/25</th>
+            <th id="dez25">Dez/25</th>
+            <th id="acao">Ação</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Linhas serão adicionadas dinamicamente -->
+        </tbody>
+      </table>
+    </div>
+    <button id="adicionaLinha" >Adicionar Linha</button>
+  </div>
+  
+  <script src="/display.js?v=1773344427942"></script>
+</body>
+</html>
