@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="manifest" href="/images/site.webmanifest">
-    <link rel="stylesheet" href="/css/login2.css?v=1773334397842">
+    <link rel="stylesheet" href="/css/login2.css?v=1773334766357">
 </head>
 <body>
     <form id="loginForm">
@@ -41,16 +41,18 @@
                 });
 
                 if (response.redirected) {
-                    window.location.assign(response.url);
-                    return;
-                }
+    window.location.assign(response.url);
+    return;
+}
 
-                if (response.ok) {
-                    window.location.assign('/');
-                    return;
-                }
+if (response.ok) {
+    window.location.assign('/');
+    return;
+}
 
-                alert('Falha no login.');
+const texto = await response.text();
+console.error('Resposta do /auth:', response.status, texto);
+alert(`Falha no login. Status: ${response.status}`);
             } catch (error) {
                 console.error('Erro ao fazer login:', error);
                 alert('Erro ao tentar fazer login. Tente novamente.');
