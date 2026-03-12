@@ -1,62 +1,100 @@
+const { writeAuditLog } = require('../utils/auditLogger');
+
 const REPRESENTANTES = require('../public/data/representantes.json');
 
-function authMiddleware(req, res, next) {
+const ADMIN_EMAILS = [
+    "ti.kz@kidszoneworld.com.br",
+    "comercial.kz@kidszoneworld.com.br",
+    "financeiro.kz@kidszoneworld.com.br",
+    "gerencia.kz@kidszoneworld.com.br",
+    "logistica.kz@kidszoneworld.com.br",
+    "marketing.kz@kidszoneworld.com.br"
+];
 
+function getPasswordField(email) {
+    if (email === "ti.kz@kidszoneworld.com.br") return "dadoTi";
+    if (email === "comercial.kz@kidszoneworld.com.br") return "dadocm";
+    if (email === "financeiro.kz@kidszoneworld.com.br") return "dadofn";
+    if (email === "gerencia.kz@kidszoneworld.com.br") return "dadogr";
+    if (email === "logistica.kz@kidszoneworld.com.br") return "dadolg";
+    if (email === "marketing.kz@kidszoneworld.com.br") return "dadolg";
+    if (email.startsWith("rep")) return "senha";
+    return null;
+}
+
+function authMiddleware(req, res, next) {
     console.log('Middleware de autenticação - Sessão:', req.session);
-    console.log('Sessão autenticada?', req.session.isAuthenticated);
 
     if (req.session && req.session.isAuthenticated) {
-
-        console.log('Usuário autenticado:', req.session.user);
-
-        // Usuário autenticado, permitir acesso
         return next();
     }
-    // Redirecionar para a página de login caso não esteja autenticado
-    console.warn('Usuário não autenticado, redirecionando para login2');
+
     res.redirect('/login2');
 }
 
-function authenticateUser(req, res) {
+function adminMiddleware(req, res, next) {
+    if (!req.session || !req.session.isAuthenticated) {
+        return res.redirect('/login2');
+    }
 
+    if (!req.session.userEmail || !ADMIN_EMAILS.includes(req.session.userEmail)) {
+        return res.status(403).send('Acesso negado.');
+    }
+
+    return next();
+}
+
+function authenticateUser(req, res) {
     const { email, senha } = req.body;
 
-    // Verifica se o e-mail está na lista de representantes
     if (REPRESENTANTES[email]) {
         const user = REPRESENTANTES[email];
+        const passwordField = getPasswordField(email);
 
-        // Valida senha para o usuário "ti.kz" ou demais representantes
-        if (
-            (email === "ti.kz@kidszoneworld.com.br" && senha === user.dadoTi) ||
-            (email === "comercial.kz@kidszoneworld.com.br" && senha === user.dadocm) ||
-            (email === "financeiro.kz@kidszoneworld.com.br" && senha === user.dadofn) ||
-            (email === "gerencia.kz@kidszoneworld.com.br" && senha === user.dadogr) ||
-            (email === "logistica.kz@kidszoneworld.com.br" && senha === user.dadolg) ||
-            (email === "marketing.kz@kidszoneworld.com.br" && senha === user.dadolg) ||
-            (email.startsWith("rep") && senha === "Repkz@2024")
-        ) {
+        if (passwordField && senha === user[passwordField]) {
             req.session.isAuthenticated = true;
             req.session.user = user;
+            req.session.userEmail = email;
+            req.session.isAdmin = ADMIN_EMAILS.includes(email);
 
-            // Se for um representante, salva o número do representante na sessão
             if (email.startsWith("rep")) {
                 req.session.userNumero = user.numero;
             }
 
-            console.log(`Usuário autenticado: ${email}`);
-            res.redirect("/");
-        } else {
+            writeAuditLog({
+    usuario: email,
+    acao: 'LOGIN',
+    detalhes: 'Login realizado com sucesso',
+    ip: req.ip,
+    sucesso: true
+});
 
-             console.warn('Senha incorreta');
-              // Redireciona para a página de erro 401
-              res.redirect('/error-401');
+console.log(`Usuário autenticado: ${email}`);
+return res.redirect("/");
+        } else {
+            writeAuditLog({
+    usuario: email,
+    acao: 'LOGIN',
+    detalhes: 'Tentativa com senha incorreta',
+    ip: req.ip,
+    sucesso: false
+});
+
+console.warn('Senha incorreta');
+return res.redirect('/error-401');
         }
     } else {
+        writeAuditLog({
+    usuario: email,
+    acao: 'LOGIN',
+    detalhes: 'Usuário não encontrado',
+    ip: req.ip,
+    sucesso: false
+});
 
-          console.warn('Usuário não encontrado');
-           // Redireciona para a página de erro 404
-           res.redirect('/error-404');
+console.warn('Usuário não encontrado');
+return res.redirect('/error-404');
     }
 }
 
-module.exports = { authMiddleware, authenticateUser };
+module.exports = { authMiddleware, adminMiddleware, authenticateUser, getPasswordField };

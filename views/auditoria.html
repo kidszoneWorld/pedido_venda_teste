@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Auditoria</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        a.botao, button {
+            padding: 10px 14px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #333;
+            color: white;
+        }
+
+        .ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .erro {
+            color: red;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 6px;
+            }
+
+            .topo {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topo">
+            <h1>Painel de Auditoria</h1>
+            <div>
+                <button onclick="carregarLogs()">Atualizar</button>
+                <a class="botao" href="/">Voltar</a>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Detalhes</th>
+                    <th>IP</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="logsBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function carregarLogs() {
+            const response = await fetch('/api/auditoria', {
+                credentials: 'include'
+            });
+
+            const logs = await response.json();
+            const tbody = document.getElementById('logsBody');
+            tbody.innerHTML = '';
+
+            logs.forEach(log => {
+                const tr = document.createElement('tr');
+
+                tr.innerHTML = `
+                    <td>${new Date(log.dataHora).toLocaleString('pt-BR')}</td>
+                    <td>${log.usuario || ''}</td>
+                    <td>${log.acao || ''}</td>
+                    <td>${log.detalhes || ''}</td>
+                    <td>${log.ip || ''}</td>
+                    <td class="${log.sucesso ? 'ok' : 'erro'}">${log.sucesso ? 'SUCESSO' : 'ERRO'}</td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        carregarLogs();
+    </script>
+</body>
+</html>
