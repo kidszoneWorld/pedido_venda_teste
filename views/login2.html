@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
     <link rel="manifest" href="/images/site.webmanifest">
-    <link rel="stylesheet" href="/css/login2.css?v=1773334766357">
+    <link rel="stylesheet" href="/css/login2.css?v=1773400846762">
+    <link rel="stylesheet" href="/css/login2.css?v=1773400846762">
+
 </head>
-<body>
+<body>  
     <form id="loginForm">
         <img class="imagem" src="/images/logo.png" alt="Imagem KidsZone">
-
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
-
+        
         <label for="senha">Senha:</label>
         <input type="password" id="senha" name="senha" required>
 
@@ -25,37 +26,29 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
-
+            event.preventDefault(); // Prevenir submissão padrão do formulário
+    
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-
+    
             try {
                 const response = await fetch('/auth', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    credentials: 'include',
+                    credentials: 'include', // Garantir envio e recepção de cookies
                     body: JSON.stringify({ email, senha })
                 });
-
+    
                 if (response.redirected) {
-    window.location.assign(response.url);
-    return;
-}
-
-if (response.ok) {
-    window.location.assign('/');
-    return;
-}
-
-const texto = await response.text();
-console.error('Resposta do /auth:', response.status, texto);
-alert(`Falha no login. Status: ${response.status}`);
+                    window.location.href = response.url; // Segue o redirecionamento do servidor
+                } else if (response.ok) {
+                    window.location.href = '/'; // Redireciona após login bem-sucedido
+                }
             } catch (error) {
-                console.error('Erro ao fazer login:', error);
-                alert('Erro ao tentar fazer login. Tente novamente.');
+                console.error('Erro ao tentar autenticar:', error);
+                alert('Erro ao tentar autenticar. Tente novamente mais tarde.');
             }
         });
     </script>

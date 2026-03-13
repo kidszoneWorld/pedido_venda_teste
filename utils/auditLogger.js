@@ -1,52 +1,43 @@
-let logsMemoria = [];
+const fs = require('fs');
+const path = require('path');
 
-let redis = null;
+const logPath = path.join(__dirname, '..', 'logs', 'auditoria.json');
 
-try {
-  const Redis = require("ioredis");
-  if (process.env.REDIS_URL) {
-    redis = new Redis(process.env.REDIS_URL);
-  }
-} catch (e) {
-  console.log("Redis não configurado, usando memória.");
+function ensureLogFile() {
+    if (!fs.existsSync(logPath)) {
+        fs.writeFileSync(logPath, '[]', 'utf8');
+    }
 }
 
-async function logAudit(action, email, details = {}) {
-  const log = {
-    action,
-    email,
-    details,
-    date: new Date().toISOString()
-  };
+function writeAuditLog({ usuario, acao, detalhes = '', ip = '', sucesso = true }) {
+    try {
+        ensureLogFile();
 
-  try {
-    if (redis) {
-      await redis.lpush("auditoria_logs", JSON.stringify(log));
-      await redis.ltrim("auditoria_logs", 0, 500);
-    } else {
-      logsMemoria.unshift(log);
-      logsMemoria = logsMemoria.slice(0, 500);
+        const raw = fs.readFileSync(logPath, 'utf8');
+        const logs = JSON.parse(raw);
+
+        logs.unshift({
+            dataHora: new Date().toISOString(),
+            usuario,
+            acao,
+            detalhes,
+            ip,
+            sucesso
+        });
+
+        fs.writeFileSync(logPath, JSON.stringify(logs, null, 2), 'utf8');
+    } catch (error) {
+        console.error('Erro ao gravar log de auditoria:', error);
     }
-  } catch (error) {
-    console.error("Erro ao salvar auditoria:", error);
-  }
 }
 
-async function getAuditLogs() {
-  try {
-    if (redis) {
-      const logs = await redis.lrange("auditoria_logs", 0, 100);
-      return logs.map(l => JSON.parse(l));
-    }
-
-    return logsMemoria;
-  } catch (error) {
-    console.error("Erro ao buscar auditoria:", error);
-    return [];
-  }
+function readAuditLogs() {
+    ensureLogFile();
+    const raw = fs.readFileSync(logPath, 'utf8');
+    return JSON.parse(raw);
 }
 
 module.exports = {
-  logAudit,
-  getAuditLogs
+    writeAuditLog,
+    readAuditLogs
 };

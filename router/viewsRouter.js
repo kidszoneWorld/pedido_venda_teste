@@ -1,4 +1,4 @@
-const { getAuditLogs, writeAuditLog } = require('../utils/auditLogger');
+const { readAuditLogs, writeAuditLog } = require('../utils/auditLogger');
 
 const express = require('express');
 const path = require('path');
@@ -201,14 +201,9 @@ router.put('/api/admin/representantes/:email/senha', adminMiddleware, adminUsers
 router.get('/auditoria', adminMiddleware, (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'views', 'auditoria.html'));
 });
-router.get('/api/auditoria', adminMiddleware, async (req, res) => {
-    try {
-        const logs = await getAuditLogs();
-        res.json(logs);
-    } catch (error) {
-        console.error('Erro ao buscar auditoria:', error);
-        res.status(500).json({ error: 'Erro ao buscar auditoria.' });
-    }
+router.get('/api/auditoria', adminMiddleware, (req, res) => {
+    const logs = readAuditLogs();
+    res.json(logs);
 });
 
 module.exports = router;

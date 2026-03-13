@@ -1,4 +1,5 @@
 const { writeAuditLog } = require('../utils/auditLogger');
+
 const REPRESENTANTES = require('../public/data/representantes.json');
 
 const ADMIN_EMAILS = [
@@ -28,7 +29,7 @@ function authMiddleware(req, res, next) {
         return next();
     }
 
-    return res.redirect('/login2');
+    res.redirect('/login2');
 }
 
 function adminMiddleware(req, res, next) {
@@ -46,47 +47,54 @@ function adminMiddleware(req, res, next) {
 function authenticateUser(req, res) {
     const { email, senha } = req.body;
 
-    if (!REPRESENTANTES[email]) {
-        console.warn('Usuário não encontrado:', email);
-        return res.status(401).json({ error: 'Usuário não encontrado' });
-    }
+    if (REPRESENTANTES[email]) {
+        const user = REPRESENTANTES[email];
+        const passwordField = getPasswordField(email);
 
-    const user = REPRESENTANTES[email];
-    const passwordField = getPasswordField(email);
+        if (passwordField && senha === user[passwordField]) {
+            req.session.isAuthenticated = true;
+            req.session.user = user;
+            req.session.userEmail = email;
+            req.session.isAdmin = ADMIN_EMAILS.includes(email);
 
-    if (!passwordField) {
-        console.warn('Campo de senha não encontrado para:', email);
-        return res.status(401).json({ error: 'Tipo de usuário inválido' });
-    }
+            if (email.startsWith("rep")) {
+                req.session.userNumero = user.numero;
+            }
 
-    if (senha !== user[passwordField]) {
-        console.warn('Senha incorreta para:', email);
-        return res.status(401).json({ error: 'Senha incorreta' });
-    }
+            writeAuditLog({
+    usuario: email,
+    acao: 'LOGIN',
+    detalhes: 'Login realizado com sucesso',
+    ip: req.ip,
+    sucesso: true
+});
 
-    req.session.isAuthenticated = true;
-    req.session.user = user;
-    req.session.userEmail = email;
-    req.session.isAdmin = ADMIN_EMAILS.includes(email);
+console.log(`Usuário autenticado: ${email}`);
+return res.redirect("/");
+        } else {
+            writeAuditLog({
+    usuario: email,
+    acao: 'LOGIN',
+    detalhes: 'Tentativa com senha incorreta',
+    ip: req.ip,
+    sucesso: false
+});
 
-    if (email.startsWith('rep')) {
-        req.session.userNumero = user.numero;
-    }
-
-    return req.session.save((err) => {
-        if (err) {
-            console.error('Erro ao salvar sessão:', err);
-            return res.status(500).json({ error: 'Erro ao salvar sessão' });
+console.warn('Senha incorreta');
+return res.redirect('/error-401');
         }
+    } else {
+        writeAuditLog({
+    usuario: email,
+    acao: 'LOGIN',
+    detalhes: 'Usuário não encontrado',
+    ip: req.ip,
+    sucesso: false
+});
 
-        console.log('Login realizado com sucesso:', email);
-        return res.status(200).json({ ok: true });
-    });
+console.warn('Usuário não encontrado');
+return res.redirect('/error-404');
+    }
 }
 
-module.exports = {
-    authMiddleware,
-    adminMiddleware,
-    authenticateUser,
-    getPasswordField
-};
+module.exports = { authMiddleware, adminMiddleware, authenticateUser, getPasswordField };
