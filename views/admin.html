@@ -5,213 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - KidsZone</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
     <link rel="manifest" href="/images/site.webmanifest">
+
+    <script>
+        // Redireciona para login.html se o usuário não estiver autenticado
+        if (sessionStorage.getItem("authenticated") !== "true") {
+            window.location.href = "/login";
+        }
+    </script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-
         .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: #fff;
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
-        h1, h2 {
+        h1 {
+            text-align: center;
             color: #333;
         }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #333;
         }
-
         input, button {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            background: #333;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-        }
-
-        button:hover {
-            background: #111;
-        }
-
-        table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
             padding: 10px;
-            text-align: left;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #141414;
+            font-size: 16px;
         }
-
-        th {
-            background: #333;
-            color: #fff;
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
-
-        .senha-box {
-            display: flex;
-            gap: 8px;
+        button:hover {
+            background-color: #4cae4c;
         }
-
-        .msg {
-            margin: 10px 0;
-            font-weight: bold;
-        }
-
-        @media (max-width: 900px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .senha-box {
-                flex-direction: column;
-            }
+        input{
+            width: 97.5%;
         }
     </style>
 </head>
 <body>
+
 <div class="container">
     <h1>Área Administrativa</h1>
+    <form>
+        <label for="uploadExcel">Importar Excel para atualizar dados</label>
+        <input type="file" id="uploadExcel" accept=".xls,.xlsx">
+        <button type="button" onclick="importarExcel()">Importar</button>
+    </form>
 
-    <h2>Cadastrar representante</h2>
-    <div class="grid">
-        <input type="email" id="novoEmail" placeholder="Email">
-        <input type="text" id="novoNome" placeholder="Nome">
-        <input type="text" id="novoNumero" placeholder="Número">
-        <input type="text" id="novaSenha" placeholder="Senha inicial">
-    </div>
-    <button onclick="cadastrarRepresentante()">Cadastrar representante</button>
-
-    <div id="mensagem" class="msg"></div>
-
-    <h2>Representantes cadastrados</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>Nome</th>
-                <th>Número</th>
-                <th>Senha</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="listaRepresentantes"></tbody>
-    </table>
+    <div id="result"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <script>
-    async function carregarRepresentantes() {
-        const response = await fetch('/api/admin/representantes', {
-            credentials: 'include'
-        });
+    function importarExcel() {
+        var input = document.getElementById('uploadExcel');
+        var file = input.files[0];
+        var reader = new FileReader();
 
-        if (!response.ok) {
-            document.getElementById('mensagem').innerText = 'Erro ao carregar representantes.';
-            return;
-        }
+        reader.onload = function(e) {
+            var data = new Uint8Array(e.target.result);
+            var workbook = XLSX.read(data, { type: 'array' });
 
-        const representantes = await response.json();
-        const tbody = document.getElementById('listaRepresentantes');
-        tbody.innerHTML = '';
+            workbook.SheetNames.forEach(function(sheetName) {
+                var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1});
+                var jsonString = JSON.stringify(jsonData);
+                
+                // Criar e baixar o arquivo JSON
+                var blob = new Blob([jsonString], { type: "application/json" });
+                var link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = sheetName + ".json";
+                link.click();
 
-        representantes.forEach(rep => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${rep.email}</td>
-                <td><input type="text" id="nome_${rep.email}" value="${rep.nome}"></td>
-                <td><input type="text" id="numero_${rep.email}" value="${rep.numero}"></td>
-                <td>
-                    <div class="senha-box">
-                        <input type="text" id="senha_${rep.email}" value="${rep.senha}">
-                    </div>
-                </td>
-                <td>
-                    <button onclick="salvarDados('${rep.email}')">Salvar dados</button>
-                    <button onclick="salvarSenha('${rep.email}')">Salvar senha</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+                // Exibir mensagem de sucesso
+                document.getElementById('result').innerHTML += `<p>Arquivo ${sheetName}.json gerado com sucesso!</p>`;
+            });
+        };
 
-    async function cadastrarRepresentante() {
-        const email = document.getElementById('novoEmail').value.trim();
-        const nome = document.getElementById('novoNome').value.trim();
-        const numero = document.getElementById('novoNumero').value.trim();
-        const senha = document.getElementById('novaSenha').value.trim();
-
-        const response = await fetch('/api/admin/representantes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ email, nome, numero, senha })
-        });
-
-        const data = await response.json();
-
-        document.getElementById('mensagem').innerText = data.message || data.error;
-
-        if (response.ok) {
-            document.getElementById('novoEmail').value = '';
-            document.getElementById('novoNome').value = '';
-            document.getElementById('novoNumero').value = '';
-            document.getElementById('novaSenha').value = '';
-            carregarRepresentantes();
+        if (file) {
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert("Por favor, selecione um arquivo Excel.");
         }
     }
-
-    async function salvarDados(email) {
-        const nome = document.getElementById(`nome_${email}`).value.trim();
-        const numero = document.getElementById(`numero_${email}`).value.trim();
-
-        const response = await fetch(`/api/admin/representantes/${encodeURIComponent(email)}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ nome, numero })
-        });
-
-        const data = await response.json();
-        document.getElementById('mensagem').innerText = data.message || data.error;
-    }
-
-    async function salvarSenha(email) {
-        const senha = document.getElementById(`senha_${email}`).value.trim();
-
-        const response = await fetch(`/api/admin/representantes/${encodeURIComponent(email)}/senha`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ senha })
-        });
-
-        const data = await response.json();
-        document.getElementById('mensagem').innerText = data.message || data.error;
-    }
-
-    carregarRepresentantes();
 </script>
+
 </body>
 </html>
+
