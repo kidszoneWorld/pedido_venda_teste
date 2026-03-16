@@ -735,6 +735,7 @@ console.log('Itens:', itensPedidoVenda);
         if (response.ok && (!result.ErrorMessages || result.ErrorMessages.length === 0)) {
             alert("Pedido enviado com sucesso!");
             console.log("Resposta da API:", result);
+            location.reload();
         } else {
             alert(`Erro ao enviar pedido: ${result.ErrorMessages?.join(", ") || "Erro desconhecido"}`);
             console.error("Erro da API:", result);
