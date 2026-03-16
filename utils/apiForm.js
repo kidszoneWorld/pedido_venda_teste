@@ -3,14 +3,15 @@ const fetch = require('node-fetch');
 let authToken = null;
 let tokenExpirationTime = null;
 // Tokens necessários para autenticação
-const ApplicationToken = '62ca18a8-aa3b-41b7-a54e-f669a437d326';
-const CompanyToken = 'b5b984c5-cbfa-490b-8513-448fc67a39b6';
-
+const ApplicationToken = process.env.APPLICATION_TOKEN;
+const CompanyToken = process.env.COMPANY_TOKEN;
+const ngLink = process.env.NG_LINK
+const pcrLink = process.env.PCR_LINK
 
 // Função para autenticar e obter o token
 async function authenticate() {
   try {
-    const response = await fetch('https://gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
+    const response = await fetch(`${ngLink}/identidade-service/autenticar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ async function fetchClientDetails(cnpj) {
       }
     
       try {
-        const response = await fetch(`https://gateway-ng.dbcorp.com.br:55500/pessoa-service/cliente/documento/${cnpj}`, {
+        const response = await fetch(`${ngLink}/pessoa-service/cliente/documento/${cnpj}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`,
@@ -99,9 +100,9 @@ async function fetchClientsWithRepresentatives(cnpj) {
       const clienteId = clientData.codigo;
   
       // 2. Buscar os representantes desse cliente
-      const representativeEndpoint = `https://gateway-ng.dbcorp.com.br:55500/pessoa-service/representante?ClienteCodigo=${clienteId}`;
+      const representativeEndpoint = `/pessoa-service/representante?ClienteCodigo=${clienteId}`;
       
-      const repResponse = await fetch(representativeEndpoint, {
+      const repResponse = await fetch(`${ngLink}${representativeEndpoint}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -142,12 +143,12 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
   
        const transportId = clientRepresentative.transportadoraId
   
-       const transportEndpoint = `https://gateway-ng.dbcorp.com.br:55500/pessoa-service/transportadora/codigo/${transportId}`
+       const transportEndpoint = `/pessoa-service/transportadora/codigo/${transportId}`
   
       let transData = [];
   
       try {
-         const transResponse = await fetch(transportEndpoint, {
+         const transResponse = await fetch(`${ngLink}${transportEndpoint}`, {
                 method: 'GET',
                   headers: {
                   'Authorization': `Bearer ${authToken}`,
@@ -189,12 +190,12 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
   
       const cnpjID= clientRepresentativeWithTransport.documento.numeroTexto;
   
-      const cnpjEndpoint = `http://kidszone-api-integracao.dbcorp.com.br/v1/Cliente/BuscarPorCnpjCpf/${cnpjID}`;
+      const cnpjEndpoint = `/v1/Cliente/BuscarPorCnpjCpf/${cnpjID}`;
   
       let cnpjData = [];
   
       try {
-        const cnpjResponse = await fetch(cnpjEndpoint, {
+        const cnpjResponse = await fetch(`${pcrLink}${cnpjEndpoint}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -235,12 +236,12 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
   
       const codClientId = clientOld.codigo;
   
-      const priceListtEndpoint = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/lista-preco?ClienteCodigo=${codClientId}`;
+      const priceListtEndpoint = `/vendas-service/lista-preco?ClienteCodigo=${codClientId}`;
       console.log(`Codigo do Cliente: ${codClientId}`);
       let priceListData = [];
   
       try {
-        const priceListResponse = await fetch(priceListtEndpoint, {
+        const priceListResponse = await fetch(`${ngLink}${priceListtEndpoint}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`,
@@ -279,12 +280,12 @@ async function fetchPaymentCondition(cnpj) {
   
        const paytId = clientWithPriceList.condicaoPagamentoId
   
-       const payEndpoint = `http://kidszone-api-integracao.dbcorp.com.br/v1/CondicaoPagamento/BuscarPorId/${paytId}`;
+       const payEndpoint = `/v1/CondicaoPagamento/BuscarPorId/${paytId}`;
   
       let payData = [];
   
       try {
-         const payResponse = await fetch(payEndpoint, {
+         const payResponse = await fetch(`${pcrLink}${payEndpoint}`, {
                 method: 'GET',
                   headers: {
                     'Content-Type': 'application/json',
@@ -329,12 +330,12 @@ async function fetchPaymentCondition(cnpj) {
   
        const payMethodtId = clientWithPaymentCondition.codigo
   
-       const payMethodEndpoint = `https://gateway-ng.dbcorp.com.br:55500/financeiro-service/forma-de-pagamento?ClienteCodigo=${payMethodtId}&EmpresaCodigo=2`
+       const payMethodEndpoint = `/financeiro-service/forma-de-pagamento?ClienteCodigo=${payMethodtId}&EmpresaCodigo=2`
   
       let payMethodData = [];
   
       try {
-         const payMethodResponse = await fetch(payMethodEndpoint, {
+         const payMethodResponse = await (`${ngLink}${payMethodEndpoint}`, {
                 method: 'GET',
                   headers: {
                   'Authorization': `Bearer ${authToken}`,
@@ -379,12 +380,12 @@ async function fetchPaymentCondition(cnpj) {
   
        const clientId = clientWithPaymentMethod.codigo
   
-       const contatEndpoint = `https://gateway-ng.dbcorp.com.br:55500/pessoa-service/cliente/${clientId}/contatos`
+       const contatEndpoint = `/pessoa-service/cliente/${clientId}/contatos`
   
       let contatData = [];
   
       try {
-         const contatResponse = await fetch(contatEndpoint, {
+         const contatResponse = await fetch(`${ngLink}${contatEndpoint}`, {
                 method: 'GET',
                   headers: {
                   'Authorization': `Bearer ${authToken}`,
@@ -418,10 +419,10 @@ async function fetchPaymentCondition(cnpj) {
   
 //Buscar lista de preço:
 async function fetchPriceListItems(codigoLista) {
-  const endpoint = `http://kidszone-api-integracao.dbcorp.com.br/v1/ListaPreco/BuscarItemPorId/${codigoLista}`;
+  const endpoint = `/v1/ListaPreco/BuscarItemPorId/${codigoLista}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await fetch(`${pcrLink}${endpoint}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

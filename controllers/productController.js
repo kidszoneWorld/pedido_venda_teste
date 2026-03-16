@@ -1,15 +1,14 @@
 const apiForm = require('../utils/apiForm');
 console.log('fetch existe?', typeof fetch);
-const ApplicationToken = '62ca18a8-aa3b-41b7-a54e-f669a437d326';
-const CompanyToken = 'b5b984c5-cbfa-490b-8513-448fc67a39b6';
-
-
+const ApplicationToken = process.env.APPLICATION_TOKEN;
+const CompanyToken = process.env.COMPANY_TOKEN;
+const ngLink = process.env.NG_LINK
+const pcrLink = process.env.PCR_LINK
 let authToken = null;
 let tokenExpirationTime = null;
-
 async function authenticate() {
   try {
-    const response = await fetch('https://gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
+    const response = await fetch(`${ngLink}/identidade-service/autenticar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,9 +44,9 @@ async function checkToken() {
 async function verificarStatusItem(itemEmpresaId) {
     await checkToken();
 
-    const url = `https://gateway-ng.dbcorp.com.br:55500/produto-service/item/${itemEmpresaId}/empresa/2`;
+    const url = `/produto-service/item/${itemEmpresaId}/empresa/2`;
 
-    const response = await fetch(url, {
+    const response = await fetch(`${ngLink}${url}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${authToken}`,
@@ -78,9 +77,9 @@ async function getListaPreco(req, res) {
         const { listaId } = req.params;
         const { codigo } = req.query;
 
-        const endpoint = `http://kidszone-api-integracao.dbcorp.com.br/v1/ListaPreco/BuscarItemPorId/${listaId}`;
+        const endpoint = `/v1/ListaPreco/BuscarItemPorId/${listaId}`;
 
-        const response = await fetch(endpoint, {
+        const response = await fetch(`${pcrLink}${endpoint}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

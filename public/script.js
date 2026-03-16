@@ -121,7 +121,7 @@ cnpjInput1.addEventListener('focus', () => {
         el('timestamp').textContent = new Date().toLocaleString('pt-BR');
         return;
     }
-    limparCamposCliente();
+   // limparCamposCliente();
 });
 
 // ======================================================================
@@ -301,7 +301,10 @@ function atualizarTotalProdutos() {
 
     linhas.forEach(tr => {
         const quantidadeCell = tr.cells[1]?.querySelector('input');
-        const valorUnitarioCell = tr.cells[5]?.querySelector('input');
+        const valorUnitarioCell = tr.cells[6]?.querySelector('input');
+        console.log('Quantidade cell:', quantidadeCell);
+        console.log('Valor unitário cell:', valorUnitarioCell);
+
         if (quantidadeCell && valorUnitarioCell && quantidadeCell.value && valorUnitarioCell.value) {
             const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
             const valorUnitario = parseFloat(valorUnitarioCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
@@ -329,6 +332,8 @@ function atualizarTotalComImposto() {
             }
         }
     });
+    
+    document.getElementById('totalComIpi').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 ////////////////////////////////////////////////////////////////////////////// garantido até aqui
 
@@ -396,6 +401,9 @@ function adicionarNovaLinha() {
                 tr.remove();
                 atualizarTotais();
                 garantirLinhaInicial();
+            });
+             btn.addEventListener('adicionarLinha', () => {
+                adicionarNovaLinha();
             });
 
             td.appendChild(btn);
@@ -735,8 +743,8 @@ console.log('Itens:', itensPedidoVenda);
         console.error("Erro de conexão:", error);
         alert("Erro ao conectar com o servidor.");
     } finally {
-    limparCamposCliente();
-    zerarCamposPedido();   // ← ISSO É FUNDAMENTAL
+  //  limparCamposCliente();
+    //zerarCamposPedido();   // ← ISSO É FUNDAMENTAL
     feedbackDiv.style.display = "none";
 }
 });

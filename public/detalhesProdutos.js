@@ -184,8 +184,7 @@ function preencherCamposProduto(detalhes, imagem) {
     document.getElementById('ipi').value =  detalhes[24] 
                                             ? `${detalhes[24].toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
                                             : '0%'; // IPI
-    document.getElementById('preco-ref').value = `R$ ${detalhes[23].toFixed(2).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',')}`; // Preço Referência
-    document.getElementById('preco-ipi').value = `R$ ${((detalhes[23] * (1 + (detalhes[24] || 0) / 100))).toFixed(2).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',')}`; // Preço com IPI
+   
     document.getElementById('codigo-master').value = `${detalhes[3]}`;
     document.getElementById('qtd-caixa').value = `${detalhes[4]}`;
     document.getElementById('peso-caixa').value = `${detalhes[5]}`;

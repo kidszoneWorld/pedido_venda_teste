@@ -1,8 +1,10 @@
 const fetch = require('node-fetch'); 
 
 // Tokens necessários para autenticação
-const ApplicationToken = '35f65072-81d0-4b7e-bf2c-39158de0e885';
-const CompanyToken = '0ab623b7-2d37-4353-9490-902710162dda';
+const ApplicationToken = process.env.APPLICATION_TOKEN;
+const CompanyToken = process.env.COMPANY_TOKEN;
+const ngLink = process.env.NG_LINK
+const pcrLink = process.env.PCR_LINK
 
 /**
  * Função para enviar os dados do pedido para a API externa.
@@ -11,11 +13,11 @@ const CompanyToken = '0ab623b7-2d37-4353-9490-902710162dda';
  */
 async function OrdersInput(data) {
   
-    const apiUrl = 'http://homolog-kidszone-api-integracao.dbcorp.com.br/v1/PedidoVenda/Incluir'; 
+    const apiUrl = '/v1/PedidoVenda/Incluir'; 
 
     try {
         // Realiza a requisição POST para a API
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`${pcrLink}${apiUrl}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

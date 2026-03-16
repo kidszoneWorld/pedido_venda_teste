@@ -2,11 +2,14 @@ const fetch = require('node-fetch');
 
 let authToken = null;
 let tokenExpirationTime = null;
-
+const ApplicationToken = process.env.APPLICATION_TOKEN;
+const CompanyToken = process.env.COMPANY_TOKEN;
+const ngLink = process.env.NG_LINK
+const pcrLink = process.env.PCR_LINK
 // Função para autenticar e obter o token
 async function authenticate() {
   try {
-    const response = await fetch('https://gateway-ng.dbcorp.com.br:55500/identidade-service/autenticar', {
+    const response = await fetch(`${ngLink}/identidade-service/autenticar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,10 +75,10 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
   let hasMoreData = true;
 
   // Endpoints para as requisições adicionais
-  const representativeEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/pessoa-service/representante?ClienteCodigo=';
-  const orderDetailsEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/vendas-service/pedido/';
-  const transportEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/pessoa-service/transportadora/codigo/';
-  const invoiceEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/documentos-fiscais-service/nota-fiscal?PedidoDeVendaCodigo=';
+  const representativeEndpoint = '/pessoa-service/representante?ClienteCodigo=';
+  const orderDetailsEndpoint = '/vendas-service/pedido/';
+  const transportEndpoint = '/pessoa-service/transportadora/codigo/';
+  const invoiceEndpoint = '/documentos-fiscais-service/nota-fiscal?PedidoDeVendaCodigo=';
 
   while (hasMoreData && allOrders.length < maxRecords) {
     try {
@@ -83,7 +86,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
       
       // 1. Buscar pedidos da página atual
       // Constrói a URL dinamicamente, incluindo StatusSeparacao apenas se fornecido
-      let url = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/pedido?DataPedidoInicio=${dataInicio}&DataPedidoFim=${dataFim}&status=${status}&EmpresaCodigo=2&PageNumber=${currentPage}&PageSize=${pageSize}`;
+      let url = `/vendas-service/pedido?DataPedidoInicio=${dataInicio}&DataPedidoFim=${dataFim}&status=${status}&EmpresaCodigo=2&PageNumber=${currentPage}&PageSize=${pageSize}`;
       if (userStatusSeparacao !== null) {
         url += `&StatusSeparacao=${userStatusSeparacao}`;
       }
@@ -91,7 +94,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
         url += `&ClienteCodigo=${usercodCliente}`;
       }
 
-      const response = await fetch(url, {
+      const response = await fetch(`${ngLink},${url}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -114,7 +117,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.1 Buscar representante
           let representante = null;
           try {
-            const repResponse = await fetch(`${representativeEndpoint}${order.cliente.codigo}`, {
+            const repResponse = await fetch(`${ngLink}${representativeEndpoint}${order.cliente.codigo}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -132,7 +135,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.2 Buscar detalhes do pedido
           let detalhes = null;
           try {
-            const detailsResponse = await fetch(`${orderDetailsEndpoint}${order.id}`, {
+            const detailsResponse = await fetch(`${ngLink}${orderDetailsEndpoint}${order.id}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -149,7 +152,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.3 Buscar detalhes da transportadora
           let detalhes_transporte = null;
           try {
-            const transportResponse = await fetch(`${transportEndpoint}${order.transportadoraCodigo}`, {
+            const transportResponse = await fetch(`${ngLink}${transportEndpoint}${order.transportadoraCodigo}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -166,7 +169,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.4 Buscar notas fiscais
           let notas_fiscais = null;
           try {
-            const invoiceResponse = await fetch(`${invoiceEndpoint}${order.codigo}`, {
+            const invoiceResponse = await fetch(`${ngLink}${invoiceEndpoint}${order.codigo}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -236,13 +239,13 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
 
   try {
     // Endpoints para as requisições
-    const representativeEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/pessoa-service/representante?ClienteCodigo=';
-    const orderDetailsEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/vendas-service/pedido/';
-    const transportEndpoint = 'https://gateway-ng.dbcorp.com.br:55500/pessoa-service/transportadora/codigo/';
-    const detailsOrderEndpoint = `https://gateway-ng.dbcorp.com.br:55500/vendas-service/pedido?PedidoCodigo=${CodPedido}`;
+    const representativeEndpoint = '/pessoa-service/representante?ClienteCodigo=';
+    const orderDetailsEndpoint = '/vendas-service/pedido/';
+    const transportEndpoint = '/pessoa-service/transportadora/codigo/';
+    const detailsOrderEndpoint = `/vendas-service/pedido?PedidoCodigo=${CodPedido}`;
 
     // 1. Buscar dados básicos do pedido
-    const detailsOrderResponse = await fetch(detailsOrderEndpoint, {
+    const detailsOrderResponse = await fetch(`${ngLink}${detailsOrderEndpoint}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -268,7 +271,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     // 2. Buscar representante
     let representante = null;
     try {
-      const repResponse = await fetch(`${representativeEndpoint}${order.dados[0].cliente.codigo}`, {
+      const repResponse = await fetch(`${ngLink}${representativeEndpoint}${order.dados[0].cliente.codigo}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -287,7 +290,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     // 3. Buscar detalhes do pedido
     let detalhes = null;
     try {
-      const detailsResponse = await fetch(`${orderDetailsEndpoint}${order.dados[0].id}`, {
+      const detailsResponse = await fetch(`${ngLink}${orderDetailsEndpoint}${order.dados[0].id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -307,7 +310,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     // 4. Buscar detalhes da transportadora
     let detalhes_transporte = null;
     try {
-      const transportResponse = await fetch(`${transportEndpoint}${order.dados[0].transportadoraCodigo}`, {
+      const transportResponse = await fetch(`${ngLink}${transportEndpoint}${order.dados[0].transportadoraCodigo}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
