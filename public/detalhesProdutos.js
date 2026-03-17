@@ -177,31 +177,32 @@ function preencherCamposProduto(detalhes, imagem) {
         }
     }
 
-
+//
     
     document.getElementById('descricao').value = detalhes[1]; // Descrição
     document.getElementById('classificacao').value = detalhes[2]; // Classificação Fiscal
-    document.getElementById('ipi').value =  detalhes[24] 
-                                            ? `${detalhes[24].toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
+    document.getElementById('ipi').value =  detalhes[25] 
+                                            ? `${detalhes[25].toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
                                             : '0%'; // IPI
-   
+
     document.getElementById('codigo-master').value = `${detalhes[3]}`;
     document.getElementById('qtd-caixa').value = `${detalhes[4]}`;
     document.getElementById('peso-caixa').value = `${detalhes[5]}`;
     document.getElementById('comprimento-caixa').value = `${detalhes[6]}`;
     document.getElementById('largura-caixa').value = `${detalhes[7]}`;
     document.getElementById('altura-caixa').value = `${detalhes[8]}`;
-    document.getElementById('codigo-display').value = `${detalhes[9]}`;
-    document.getElementById('qtd-display').value = `${detalhes[10]}`;
-    document.getElementById('peso-display').value = `${detalhes[11]}`;
-    document.getElementById('comprimento-display').value = `${detalhes[12]}`;
-    document.getElementById('largura-display').value = `${detalhes[13]}`;
-    document.getElementById('altura-display').value = `${detalhes[14]}`;
-    document.getElementById('codigo-unidade').value = `${detalhes[15]}`;
-    document.getElementById('peso-unitario').value = `${detalhes[16]}`;
-    document.getElementById('comprimento-unitario').value = `${detalhes[17]}`;
-    document.getElementById('largura-unitario').value = `${detalhes[18]}`;
-    document.getElementById('altura-unitario').value = `${detalhes[19]}`;
+    document.getElementById('garantia').value = `${detalhes[9]} MESES`;
+    document.getElementById('codigo-display').value = `${detalhes[10]}`;
+    document.getElementById('qtd-display').value = `${detalhes[11]}`;
+    document.getElementById('peso-display').value = `${detalhes[12]}`;
+    document.getElementById('comprimento-display').value = `${detalhes[13]}`;
+    document.getElementById('largura-display').value = `${detalhes[14]}`;
+    document.getElementById('altura-display').value = `${detalhes[15]}`;
+    document.getElementById('codigo-unidade').value = `${detalhes[16]}`;
+    document.getElementById('peso-unitario').value = `${detalhes[17]}`;
+    document.getElementById('comprimento-unitario').value = `${detalhes[18]}`;
+    document.getElementById('largura-unitario').value = `${detalhes[19]}`;
+    document.getElementById('altura-unitario').value = `${detalhes[20]}`;
     document.getElementById('altura-max').value = 1.30;
     document.getElementById('altura-pallet').value = 0.15;
 

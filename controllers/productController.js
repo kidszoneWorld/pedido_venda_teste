@@ -4,6 +4,9 @@ const ApplicationToken = process.env.APPLICATION_TOKEN;
 const CompanyToken = process.env.COMPANY_TOKEN;
 const ngLink = process.env.NG_LINK
 const pcrLink = process.env.PCR_LINK
+const usuarioDbCorp = process.env.USUARIO_DBCORP
+const senhabCorp = process.env.SENHA_DBCORP
+
 let authToken = null;
 let tokenExpirationTime = null;
 async function authenticate() {
@@ -15,8 +18,8 @@ async function authenticate() {
         'Origin': 'https://kidszone-ng.dbcorp.com.br'
       },
       body: JSON.stringify({
-        usuario: "alex.l",
-        senha: "@Al@2313",
+        usuario: usuarioDbCorp,
+        senha: senhabCorp,
         origin: "kidszone-ng"
       })
     });

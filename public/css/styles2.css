@@ -260,6 +260,18 @@ body.dark-theme #dadosPedido tbody tr td input{
     
 }
 
+.btn-mobile {
+    display: none;
+}
+
+/* Aplica estilos apenas para telas menores que 768px (tablets e celulares) */
+@media only screen and (max-width: 767px) {
+    .btn-mobile {
+        display: block; /* Ou flex/inline-block para mostrar */
+        /* Adicione outros estilos aqui, ex: background-color: blue; */
+    }
+}
+
 .section {
     margin-top: 20px;
 }

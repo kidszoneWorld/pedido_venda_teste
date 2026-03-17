@@ -375,6 +375,8 @@ function adicionarNovaLinha() {
     const tbody = document.querySelector('#dadosPedido tbody');
     const tr = document.createElement('tr');
 
+
+
     for (let i = 0; i < 10; i++) {
         const td = document.createElement('td');
 
@@ -402,9 +404,7 @@ function adicionarNovaLinha() {
                 atualizarTotais();
                 garantirLinhaInicial();
             });
-             btn.addEventListener('adicionarLinha', () => {
-                adicionarNovaLinha();
-            });
+             
 
             td.appendChild(btn);
             tr.appendChild(td);
@@ -424,7 +424,7 @@ function adicionarNovaLinha() {
 
         td.appendChild(input);
         tr.appendChild(td);
-
+        
         // =========================
         // NAVEGAÇÃO ↑ ↓ TAB
         // =========================
@@ -472,6 +472,7 @@ function adicionarNovaLinha() {
             // próxima linha
             linhas[linhaAtual + 1]?.cells[0]?.querySelector('input')?.focus();
         }
+        
     }
 
     // se estiver no CÓDIGO (coluna 0)
@@ -592,6 +593,10 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
         alert("Nenhuma linha para remover");
     }
 });
+    //botão para adicionar linha caso a tela esteja do tamanho de um celular
+    document.getElementById('adicionarLinha').addEventListener('click', function () {
+                    adicionarNovaLinha(); 
+    });
 
 // Função para verificar duplicatas de código na tabela
 function verificarCodigoDuplicado(codigo) {
@@ -651,7 +656,6 @@ cancelButton.addEventListener("click", () => {
 
 // Executa a lógica de envio ao clicar no botão "Sim"
 confirmButton.addEventListener("click", async () => {
-    console.log('CONFIRM BUTTON CLICADO');
     modal.style.display = "none"; // Fecha o modal
 
     // Exibe a mensagem de feedback
@@ -759,6 +763,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeModal = document.getElementById('closeModal');
 
      const confirmButton = document.getElementById('confirmButton');
+
+    
 
     if (!confirmButton) {
         console.error('confirmButton não encontrado no DOM');

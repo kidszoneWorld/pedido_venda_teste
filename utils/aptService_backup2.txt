@@ -12,9 +12,7 @@ async function authenticate() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        usuario: "alex.l",
-        senha: "@Al@2313",
-        origin: "kidszone-ng"
+        //
       })
     });
 

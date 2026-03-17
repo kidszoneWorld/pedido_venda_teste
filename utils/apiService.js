@@ -4,20 +4,22 @@ let authToken = null;
 let tokenExpirationTime = null;
 const ApplicationToken = process.env.APPLICATION_TOKEN;
 const CompanyToken = process.env.COMPANY_TOKEN;
-const ngLink = process.env.NG_LINK
-const pcrLink = process.env.PCR_LINK
+const NgLink = process.env.NG_LINK
+const PcrLink = process.env.PCR_LINK
+const usuarioDbCorp = process.env.USUARIO_DBCORP
+const senhabCorp = process.env.SENHA_DBCORP
 // Função para autenticar e obter o token
 async function authenticate() {
   try {
-    const response = await fetch(`${ngLink}/identidade-service/autenticar`, {
+    const response = await fetch(`${NgLink}/identidade-service/autenticar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Origin': 'https://kidszone-ng.dbcorp.com.br'
       },
       body: JSON.stringify({
-        usuario: "alex.l",
-        senha: "@Al@2313",
+        usuario: usuarioDbCorp,
+        senha: senhabCorp,
         origin: "kidszone-ng"
       })
     });
@@ -94,7 +96,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
         url += `&ClienteCodigo=${usercodCliente}`;
       }
 
-      const response = await fetch(`${ngLink},${url}`, {
+      const response = await fetch(`${NgLink}${url}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -117,7 +119,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.1 Buscar representante
           let representante = null;
           try {
-            const repResponse = await fetch(`${ngLink}${representativeEndpoint}${order.cliente.codigo}`, {
+            const repResponse = await fetch(`${NgLink}${representativeEndpoint}${order.cliente.codigo}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -131,11 +133,10 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           } catch (error) {
             console.error(`Erro ao buscar representante para cliente ${order.cliente.codigo}:`, error);
           }
-          console.log(representante , 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
           // 2.2 Buscar detalhes do pedido
           let detalhes = null;
           try {
-            const detailsResponse = await fetch(`${ngLink}${orderDetailsEndpoint}${order.id}`, {
+            const detailsResponse = await fetch(`${NgLink}${orderDetailsEndpoint}${order.id}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -152,7 +153,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.3 Buscar detalhes da transportadora
           let detalhes_transporte = null;
           try {
-            const transportResponse = await fetch(`${ngLink}${transportEndpoint}${order.transportadoraCodigo}`, {
+            const transportResponse = await fetch(`${NgLink}${transportEndpoint}${order.transportadoraCodigo}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -169,7 +170,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
           // 2.4 Buscar notas fiscais
           let notas_fiscais = null;
           try {
-            const invoiceResponse = await fetch(`${ngLink}${invoiceEndpoint}${order.codigo}`, {
+            const invoiceResponse = await fetch(`${NgLink}${invoiceEndpoint}${order.codigo}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -245,7 +246,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     const detailsOrderEndpoint = `/vendas-service/pedido?PedidoCodigo=${CodPedido}`;
 
     // 1. Buscar dados básicos do pedido
-    const detailsOrderResponse = await fetch(`${ngLink}${detailsOrderEndpoint}`, {
+    const detailsOrderResponse = await fetch(`${NgLink}${detailsOrderEndpoint}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -271,7 +272,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     // 2. Buscar representante
     let representante = null;
     try {
-      const repResponse = await fetch(`${ngLink}${representativeEndpoint}${order.dados[0].cliente.codigo}`, {
+      const repResponse = await fetch(`${NgLink}${representativeEndpoint}${order.dados[0].cliente.codigo}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -290,7 +291,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     // 3. Buscar detalhes do pedido
     let detalhes = null;
     try {
-      const detailsResponse = await fetch(`${ngLink}${orderDetailsEndpoint}${order.dados[0].id}`, {
+      const detailsResponse = await fetch(`${NgLink}${orderDetailsEndpoint}${order.dados[0].id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -310,7 +311,7 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
     // 4. Buscar detalhes da transportadora
     let detalhes_transporte = null;
     try {
-      const transportResponse = await fetch(`${ngLink}${transportEndpoint}${order.dados[0].transportadoraCodigo}`, {
+      const transportResponse = await fetch(`${NgLink}${transportEndpoint}${order.dados[0].transportadoraCodigo}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
