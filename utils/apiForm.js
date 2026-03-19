@@ -15,7 +15,7 @@ async function authenticate() {
   try {
     const response = await fetch(`${ngLink}/identidade-service/autenticar`, {
       method: 'POST',
-      headers: {
+      headers: {  
         'Content-Type': 'application/json',
         'Origin': 'https://kidszone-ng.dbcorp.com.br'
       },
