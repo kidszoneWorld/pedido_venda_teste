@@ -485,6 +485,8 @@ function adicionarNovaLinha() {
 
         });
 
+
+
         // =========================
         // CÓDIGO DO ITEM
         // =========================
@@ -508,7 +510,6 @@ if (i === 0) {
 
         // 🔄 FEEDBACK VISUAL
         
-        LimpaCamposItens();
         cells[1].value = '';
         cells[2].value = '';
         cells[3].value = '';
