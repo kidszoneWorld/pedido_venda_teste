@@ -340,6 +340,7 @@ function atualizarTotalComImposto() {
 //Buscar IPI pelo código do item
 function buscarIpiDoItem(codigoItem) {
     if (!Array.isArray(listaPrecosIpiData) || listaPrecosIpiData.length < 2) {
+        atualizarTotais();
         return 0;
     }
 
@@ -506,6 +507,16 @@ if (i === 0) {
         const cells = tr.querySelectorAll('td input');
 
         // 🔄 FEEDBACK VISUAL
+        
+        LimpaCamposItens();
+        cells[1].value = '';
+        cells[2].value = '';
+        cells[3].value = '';
+        cells[4].value = '';
+        cells[5].value = '';
+        cells[6].value = '';
+        cells[7].value = '';
+        atualizarTotais();
         cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
         cells[1].readOnly = true;
@@ -606,6 +617,7 @@ function verificarCodigoDuplicado(codigo) {
     linhas.forEach(tr => {
         const inputCodigo = tr.cells[0]?.querySelector('input');
         if (inputCodigo && inputCodigo.value === codigo) {
+            atualizarTotais();
             contador++;
         }
     });
