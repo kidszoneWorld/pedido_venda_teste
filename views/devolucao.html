@@ -26,6 +26,25 @@
 </head>
 
 <body id="corpo">
+    <footer>
+                <div class="link_sites">
+
+            <!-- Toggle switch -->
+            <label class="theme-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+
+           <button id="logoutButton2">Sair</button>
+           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
+           <a target="_blank" href="/comercial">Área Comercial</a>
+           <a target="_blank" href="/">Pedido de Venda</a>
+           <a target="_blank" href="/logistica03">Área logística</a>
+           <a target="_blank" href="/detalhesProdutos">Detalhes do Produto</a>
+           <a target="_blank" href="/cadastroCliente">Cadastrar Cliente</a>
+           <a target="_blank" href="/investComercial">Investimento</a>
+        </div>
+            </footer>
     <div class="container">
 
         <div id="customModal" class="modal">
@@ -95,7 +114,8 @@
         </div>
         <div class="button-group">
             <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL </button>
-            <button id="button_sistema">ENVIAR PARA O SISTEMA</button>
+
+            <button id="button_pdf" class="label-obrigatorio">ANEXAR IMAGENS (OBRIGATÓRIO)</button>
         </div>
    
         <div class="section">
@@ -138,13 +158,13 @@
 
 
 
-                <label class="IE" for="ie">INSCRIÇÃO ESTADO:</label> 
-                <input type="text" id="ie" placeholder="Inscrição Estadual" readonly>
+                <label class="IE esconder" for="ie">INSCRIÇÃO ESTADO:</label> 
+                <input type="text" id="ie" class="esconder" placeholder="Inscrição Estadual" readonly>
 
-                <label class="label-espaco-esquerda label-obrigatorio" for="tipo_pedido">TIPO PEDIDO:
-                     <span class="tooltip2">Campo Obrigatório</span>
+                <label class="esconder" for="tipo_pedido">TIPO PEDIDO:
+                     <span class="tooltip2 esconder">Campo Obrigatório</span>
                 </label>
-                <select id="tipo_pedido">
+                <select id="tipo_pedido" class="esconder">
                     <option value="Venda">Venda</option>
                   <!--  <option value="Promoção">Promoção</option> -->
                     <option value="Bonificação">Bonificação</option>
@@ -180,25 +200,25 @@
                 <label for="email_fiscal" class="label-espaco-esquerda">E-MAIL FISCAL:</label> 
                 <input type="text" id="email_fiscal" placeholder="E-mail Fiscal" readonly>
 
-                <label for="pay">CONDIÇÃO PGTO:</label> 
-                <input type="text" id="pay" placeholder=" Condição de pagamento" readonly>
+                <label for="pay" class="esconder">CONDIÇÃO PGTO:</label> 
+                <input type="text" id="pay" class="esconder" placeholder=" Condição de pagamento" readonly>
 
-                <label for="transp" class="label-espaco-esquerda" >TRANSPORTE:</label> 
-                <input type="text" id="transp" placeholder="Transportadora" readonly>
+                <label for="transp" class="label-espaco-esquerda esconder" >TRANSPORTE:</label> 
+                <input type="text" id="transp" placeholder="Transportadora" class="esconder" readonly>
 
-                <label class="spaceInputCod" class="label-espaco-esquerda" for="codgroup">CÓDIGO TABELA:</label> 
-                <input type="text" id="codgroup" placeholder="Código Tabela" readonly>
+                <label class="spaceInputCod" for="codgroup" hidden>CÓDIGO TABELA:</label> 
+                <input type="text" id="codgroup" class="esconder" placeholder="Código Tabela" readonly>
 
-                <label class="label-espaco-esquerda" for="group">TABELA:</label> 
-                <input type="text" id="group" placeholder="Descrição Grupo" readonly>
+                <label class="label-espaco-esquerda esconder" for="group">TABELA:</label> 
+                <input type="text" id="group" placeholder="Descrição Grupo" class="esconder" readonly>
 
-                <label  for="formPagDescricao">FORMA PAGAMENTO:</label> 
-                <input type="text" id="formPagDescricao" placeholder="Forma de Pagamento" readonly>
+                <label  for="formPagDescricao" class="esconder">FORMA PAGAMENTO:</label> 
+                <input type="text" id="formPagDescricao" placeholder="Forma de Pagamento" class="esconder" readonly>
 
-                <label class="label-espaco-esquerda label-referencia" for="referencia">ORDEM DE COMPRA:
-                    <span class="tooltip1">Digite a ordem de compra do cliente</span>
+                <label class="esconder" for="referencia">ORDEM DE COMPRA:
+                    <span class="tooltip1 esconder">Digite a ordem de compra do cliente</span>
                 </label> 
-                <input type="text" id="referencia" placeholder="Digite o numero do pedido do cliente (opcional) ">
+                <input type="text" id="referencia" class="esconder" placeholder="Digite o numero do pedido do cliente (opcional) ">
 
             </form>
         </div>
@@ -218,9 +238,7 @@
                             <th class="uv" >UV</th>
                             <th class="pack">Excluir</th>
                             <th class="descricao">DESCRIÇÃO</th>
-                            <th class="ipi">IPI</th>
                             <th class="unit">R$ UNIT.</th>
-                            <th class="vipi">R$ C/ IPI</th>
                             <th class="total" >TOTAL R$</th>
                             <th class="itemId" id="esconder">Item ID</th>
                         </tr>
@@ -242,8 +260,6 @@
                 <label for="total">TOTAL PRODUTOS:</label> 
                 <input type="text" id="total" readonly>
 
-                <label for="totalComIpi">TOTAL C/IPI:</label> 
-                <input type="text" id="totalComIpi" readonly>
             </center>
 
         </div>
@@ -308,7 +324,7 @@
         
     </footer>
     
-    <script src="/script.js?v=1774285542584"></script>
+    <script src="/scriptDev.js?v=1774285542584"></script>
     <script  src="/pdf.js?v=1742259354185"></script>
     <script src="/theme-toggle.js?v=1774285542584"></script>
 

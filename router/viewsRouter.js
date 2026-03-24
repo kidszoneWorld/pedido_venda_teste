@@ -36,6 +36,11 @@ router.get('/login2', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'views', 'login2.html'));
 });
 
+// Rota para a página de devolução
+router.get('/devolucao',authMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'devolucao.html'));
+});
+
 // Rota para a página de administração
 router.get('/admin', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'views', 'admin.html'));
