@@ -262,8 +262,8 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
     if (tipoPedido1 === 'Bonificação') {
         document.getElementById('referencia').value = 'BONIFICAÇÃO';
     } else {
-        document.getElementById('referencia').value = '';
-    }
+        document.getElementById('referencia').value='';
+}
 });
 
 
@@ -299,15 +299,15 @@ function atualizarTotalProdutos() {
 
     linhas.forEach(tr => {
         const quantidadeCell = tr.cells[1]?.querySelector('input');
-        const valorUnitarioCell = tr.cells[6]?.querySelector('input');
+        const valorTotalLinhaCell = tr.cells[6]?.querySelector('input');
         console.log('Quantidade cell:', quantidadeCell);
-        console.log('Valor unitário cell:', valorUnitarioCell);
+        console.log('Valor unitário cell:', valorTotalLinhaCell);
 
-        if (quantidadeCell && valorUnitarioCell && quantidadeCell.value && valorUnitarioCell.value) {
+        if (quantidadeCell && valorTotalLinhaCell && quantidadeCell.value && valorTotalLinhaCell.value) {
             const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
-            const valorUnitario = parseFloat(valorUnitarioCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
-            if (!isNaN(quantidade) && !isNaN(valorUnitario)) {
-                totalProdutos += quantidade * valorUnitario;
+            const valorTotalLinha = parseFloat(valorTotalLinhaCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
+            if (!isNaN(quantidade) && !isNaN(valorTotalLinha)) {
+                totalProdutos += valorTotalLinha;
             }
         }
     });
@@ -395,7 +395,7 @@ function adicionarNovaLinha() {
                 }
             }
 
-            if (e.key === 'Tab' && !e.shiftKey && i === 1 && linhaAtual === linhas.length - 1) {
+            if (e.key === 'Tab' && !e.shiftKey && i === 2 && linhaAtual === linhas.length - 1) {
                 e.preventDefault();
                 setTimeout(() => {
                     tbody.lastChild.cells[0].querySelector('input').focus();
@@ -424,6 +424,10 @@ function adicionarNovaLinha() {
     if (i === 0) {
         tr.cells[1]?.querySelector('input')?.focus();
     }
+    // se estiver na quantidade (coluna 1)
+    if (i === 1) {
+        tr.cells[5]?.querySelector('input')?.focus();
+    }
 }
 
 
@@ -448,13 +452,12 @@ if (i === 0) {
         }
 
         const listaId = document.getElementById('codgroup').value;
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',listaId);
         const cells = tr.querySelectorAll('td input');
 
         // 🔄 FEEDBACK VISUAL
         cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
-        cells[1].readOnly = true;
+
 
         try {
             const response = await fetch(
@@ -472,33 +475,30 @@ if (i === 0) {
             }
 
             const item = data[0];
-            const preco = Number(item.PrecoVenda);
-
-
             cells[2].value = 'UN';
+            cells[2].readOnly = true;
             cells[3].value = item.ItemDescricao;
-
-
-            cells[5].readOnly = false 
-
-
-             cells[1].readOnly = false;
+            cells[4].readOnly = false 
+            cells[1].readOnly = false;
             cells[1].focus();
+            cells[4].addEventListener('input', (e) => {
 
-            cells[1].addEventListener('input', () => {
+                const preco = parseFloat(cells[4].value.replace(',', '.')) || 0;
                 const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
-                const totalLinha = qtd * preco;
 
-                cells[5].value = totalLinha.toLocaleString('pt-BR', {
+                const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
-                    currency: 'BRL'
+                    currency: 'BRL',
                 });
 
+            totalLinha = preco * qtd;
+                cells[5].value = formatador.format(totalLinha)
                 tr.dataset.itemId = item.ItemId;
-                cells[6].value = totalLinha
                 atualizarTotais();
             });
+            
 
+            
         } catch (error) {
             alert(error.message);
             this.value = '';
