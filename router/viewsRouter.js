@@ -11,6 +11,7 @@ const redesController = require('../controllers/redesController');
 const sellOutController = require('../controllers/sellOutController');
 const fernandoController = require('../controllers/fernandoController');
 const clientController = require('../controllers/clientController');
+const devController = require('../controllers/devController');
 const clientePdfController = require('../controllers/clientePdfController');
 const pdfInvestComercialController = require('../controllers/pdf_invest_comercialController');
 const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorController');
@@ -165,6 +166,8 @@ router.post('/send-pdf-investComercial', pdfInvestComercialController.sendPdf);
 router.post('/send-pdf-investPromotor', pdfInvestPromotorController.sendPdf);
 router.post('/generate-upload-url', clientePdfController.generateUploadUrl);
 router.post('/send-client-pdf', clientePdfController.sendClientPdf);
+router.post('/generate-upload-url-dev', devController.generateUploadUrlDev);
+router.post('/send-client-pdf-dev', devController.sendClientPdfDev);
 
 
 // Rota para autenticação

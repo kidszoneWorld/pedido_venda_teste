@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIDSZONE-DEVOLUÇÃO</title>
@@ -12,9 +12,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="/css/styles2.css?v=1774285542584">
+    <link rel="stylesheet" href="/css/styles2.css?v=1774987249931">
 
-    <link rel="stylesheet" href="/css/theme-toggle.css?v=1774285542584">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1774987249931">
     <!-- Script inline para aplicar o tema imediatamente -->
     <script>
         (function() {
@@ -30,7 +30,7 @@
                 <div class="link_sites">
 
             <!-- Toggle switch -->
-            <label class="theme-switch">
+            <label class="theme-switch" id="seletor">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
             </label>
@@ -47,35 +47,58 @@
             </footer>
     <div class="container">
 
-        <div id="customModal" class="modal">
-            <div class="modal-content">
-              <span class="close-button">&times;</span>
-              <h2>Aviso!</h2>
-              <p>Você deseja realmente enviar para o sistema?</p>
-              <button id="confirmButton">Sim</button>
-              <button id="cancelButton">Não</button>
-            </div>
-          </div>
+           <!-- Modal de E-mail -->
+    <div id="emailModalDevolucao" class="modal">
+        <div class="modal-content email-modal-content">
+            <span class="close-button email-close-button">&times;</span>
+            <h2>Enviar E-mail</h2>
+            <form id="emailForm" class="email-form">
+                <div class="email-field">
+                    <label for="emailTo">Para:</label>
+                    <input type="email" id="emailTo" placeholder="Digite o e-mail do destinatário" required readonly>
+                </div>
+                <div class="email-field tooltip">
+                    <label for="emailCc">Cc:</label>
+                    <input type="text" id="emailCc" placeholder="Digite os e-mails separados por ;">
+                    <span class="tooltiptext">Colocar " ; " para separar os e-mails</span>
+                </div>
+                <div class="email-field">
+                    <label for="emailSubject">Assunto:</label>
+                    <input type="text" id="emailSubject" placeholder="Digite o assunto" required readonly>
+                </div>
+                <div class="email-field">
+                    <label for="emailBody">Mensagem:</label>
+                    <textarea id="emailBody" placeholder="Digite sua mensagem" rows="10" required></textarea>
+                </div>
+                <div class="email-field attachment-wrapper">
+                    <label for="emailAttachment">Anexar Arquivo:</label>
+                    <input type="file" id="emailAttachment" multiple>
+                    <div id="attachmentTooltip" class="attachment-tooltip">
+                        <ul id="attachmentList"></ul>
+                        <!-- Novo elemento para mostrar o tamanho total -->
+                        <p id="totalSizeDisplay" style="margin-top: 10px; font-weight: bold;">Tamanho total: 0 MB</p>
+                    </div>
+                </div>
+                <div class="email-buttons">
+                    <button type="button" id="sendEmailButton">Enviar</button>
+                    <button type="button" id="cancelEmailButton">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-          <div id="customModal1" class="modal1">
-            <div class="modal-content1">
-              <span class="close-button1">&times;</span>
-              <h2>Aviso!</h2>
-              <p>Você deseja realmente enviar o e-mail?</p>
-              <button id="confirmButton1">Sim</button>
-              <button id="cancelButton1">Não</button>
-            </div>
-          </div>
+        <!-- Novo modal para aviso de limite de tamanho -->
+    <div id="sizeLimitModal" class="modal1">
+        <div class="modal-content1">
+            <span class="close-button1">&times;</span>
+            <h2>Aviso!</h2>
+            <p id="sizeLimitMessage"></p>
+            <button id="sizeLimitOkButton">OK</button>
+        </div>
+    </div>
 
-          <div id="blockModal" class="modal">
-            <div class="modal-content">
-              <span class="close-button">&times;</span>
-              <h2>Aviso!</h2>
-              <p>Por favor enviar o pedido para o sistema para liberar um novo cadastro.</p>
-              <p id="timestamp"></p>
-              <button id="okButton">OK</button>
-            </div>
-          </div>
+
+
 
         <div class="header">
            <a href="https://kidszoneworld.com.br/portal-do-representante/"><img src="/images/logo.png" alt="Imagem KidsZone"></a> 
@@ -116,9 +139,7 @@
 
         </div>
         <div class="button-group">
-            <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL </button>
-
-            <button id="button_pdf" class="label-obrigatorio">ANEXAR IMAGENS (OBRIGATÓRIO)</button>
+            <button id="button_pdf">INSERIR ANEXOS E ENVIAR E-MAIL </button>
         </div>
    
         <div class="section">
@@ -132,8 +153,6 @@
 
                 <label for="representante" class="label-espaco-esquerda">CÓDIGO REP:</label> 
                 <input type="text" id="representante" placeholder="Representante" readonly>
-
-
 
                   <!-- input escondidos  -->
                 <label for="representanteId" class="esconder">Rep ID:</label> 
@@ -158,8 +177,6 @@
                 <input type="text" class="esconder" id="email_rep" placeholder="Descrição Grupo" readonly>
 
                   <!-- input escondidos  -->
-
-
 
                 <label class="IE esconder" for="ie">INSCRIÇÃO ESTADO:</label> 
                 <input type="text" id="ie" class="esconder" placeholder="Inscrição Estadual" readonly>
@@ -308,9 +325,9 @@
     </div>
 
    
-    <script src="/scriptDev.js?v=1774285542584"></script>
-    <script  src="/pdf.js?v=1742259354185"></script>
-    <script src="/theme-toggle.js?v=1774285542584"></script>
+    <script src="/scriptDev.js?v=1774987249931"></script>
+    <!-- <script  src="/pdf.js?v=1742259354185"></script> -->
+    <script src="/theme-toggle.js?v=1774987249931"></script>
 
     <script>
          // Função para limpar dados do usuário e redirecionar para a página de login

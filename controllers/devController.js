@@ -16,7 +16,7 @@ const s3 = new S3Client({
 });
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
-exports.generateUploadUrl = async (req, res) => {
+exports.generateUploadUrlDev = async (req, res) => {
   try {
     const { fileName, fileType } = req.body;
 
@@ -36,59 +36,59 @@ exports.generateUploadUrl = async (req, res) => {
       return res.status(400).json({ error: "Dados incompletos" });
     }
 
-    const key = `clientes/${Date.now()}-${safeFileName}`;
+    const key = `devolucoes/${Date.now()}-${safeFileName}`;
 
-    const putCommand = new PutObjectCommand({
+const putCommand = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET,
       Key: key,
       ContentType: fileType,
     });
-
-    const uploadUrl = await getSignedUrl(s3, putCommand, {
-      expiresIn: 300,
-    });
-
-    res.json({ uploadUrl, key });
-
-  } catch (error) {
-    console.error("Erro ao gerar URL:", error);
-    res.status(500).json({ error: "Erro ao gerar URL" });
-  }
-};
-exports.sendClientPdf = async (req, res) => {
-  try {
-    const { files, razaoSocial, emailTo, emailCc, subject, message } = req.body;
-
-    console.log("sendClientPdf FOI CHAMADO");
-    console.log("BODY RECEBIDO:", req.body);
-
-    if (!files || !files.length || !emailTo || !subject || !message) {
-      return res.status(400).send("Dados incompletos.");
-    }
-
-    console.log("📎 Arquivos recebidos:", files);
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    });
-
-    const downloadLinks = files.map(file => {
-      return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/baixar/${file.key}\n`;
-    }).join("\n");
-
-    console.log("📧 Tentando enviar e-mail...");
-
+    
+        const uploadUrl = await getSignedUrl(s3, putCommand, {
+          expiresIn: 300,
+        });
+    
+        res.json({ uploadUrl, key });
+    
+      } catch (error) {
+        console.error("Erro ao gerar URL:", error);
+        res.status(500).json({ error: "Erro ao gerar URL" });
+      }
+    };
+    exports.sendClientPdfDev = async (req, res) => {
+      try {
+        const { files, razaoSocial, emailTo, emailCc, subject, message } = req.body;
+    
+        console.log("sendClientPdf FOI CHAMADO");
+        console.log("BODY RECEBIDO:", req.body);
+    
+        if (!files || !files.length || !emailTo || !subject || !message) {
+          return res.status(400).send("Dados incompletos.");
+        }
+    
+        console.log("📎 Arquivos recebidos:", files);
+    
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD,
+          },
+        });
+    
+        const downloadLinks = files.map(file => {
+          return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/baixar/${file.key}\n`;
+        }).join("\n");
+    
+        console.log("📧 Tentando enviar e-mail...");
     const info = await transporter.sendMail({
-      from: "Cadastro de Clientes <kidzonkidszonemail@gmail.com>",
+      from: "Devoluções KIDS ZONE <kidzonkidszonemail@gmail.com>",
       to: "pedidoskz@kidszoneworld.com.br",
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `
 ${message}
+
 
 Baixe os arquivos abaixo:
 
