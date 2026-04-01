@@ -481,6 +481,24 @@ if (i === 1) {
             cells[4].value = item.ItemDescricao;
             cells[6].readOnly = false; 
             cells[7].readOnly = true;
+
+            cells[2].addEventListener('input', (e) => {
+
+                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[2].value.replace(',', '.')) || 0;
+                console.log(preco);
+                const formatador = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                });
+
+            totalLinha = preco * qtd;
+                cells[6].value = formatador.format(totalLinha)
+                tr.dataset.itemId = item.ItemId;
+                atualizarTotais();
+            });
+            
+
             cells[5].addEventListener('input', (e) => {
 
                 const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
