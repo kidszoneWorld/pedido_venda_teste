@@ -44,11 +44,11 @@ const putCommand = new PutObjectCommand({
       ContentType: fileType,
     });
     
-        const uploadUrl = await getSignedUrl(s3, putCommand, {
+        const uploadUrlDev = await getSignedUrl(s3, putCommand, {
           expiresIn: 300,
         });
     
-        res.json({ uploadUrl, key });
+        res.json({ uploadUrlDev, key });
     
       } catch (error) {
         console.error("Erro ao gerar URL:", error);
@@ -83,7 +83,7 @@ const putCommand = new PutObjectCommand({
         console.log("📧 Tentando enviar e-mail...");
     const info = await transporter.sendMail({
       from: "Devoluções KIDS ZONE <kidzonkidszonemail@gmail.com>",
-      to: "pedidoskz@kidszoneworld.com.br",
+      to: "financeiro.kz@kidszoneworld.com.br",
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `
@@ -106,7 +106,7 @@ ${downloadLinks}
     return res.status(500).send(error.message);
   }
   finally {
-    setTimeout(() => emailsRecentes.delete(emailKey), 10000);
+    //setTimeout(() => emailsRecentes.delete(emailKey), 10000);
   }
 };
  

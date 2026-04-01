@@ -220,12 +220,9 @@ function garantirLinhaInicial() {
     if (!tbody.querySelector('tr')) adicionarNovaLinha();
 }
 
-// (demais funções de tabela permanecem exatamente como estão)
-
 // ======================================================================
 // 🚀 ENVIO DO PEDIDO
 // ======================================================================
-// (mantido igual, apenas usando atualizarTotais() onde aplicável)
 
 
 
@@ -599,8 +596,6 @@ function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
 
 
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
-
-const btSistema = document.getElementById('button_sistema');
 const feedbackDiv = document.getElementById('feedback1');
 const modal = document.getElementById('customModal');
 const closeButton = document.querySelector('.close-button');
@@ -613,111 +608,6 @@ const cnpjInput = document.getElementById('cnpj');
 // Fecha o modal ao clicar no botão "Não" ou no botão de fechar
 closeButton.addEventListener("click", () => {
     modal.style.display = "none";
-});
-
-cancelButton.addEventListener("click", () => {
-    modal.style.display = "none";
-    console.log('Envio cancelado.');
-});
-
-// Executa a lógica de envio ao clicar no botão "Sim"
-confirmButton.addEventListener("click", async () => {
-    modal.style.display = "none"; // Fecha o modal
-
-    // Exibe a mensagem de feedback
-    feedbackDiv.textContent = 'Estamos enviando o pedido, aguarde...';
-    feedbackDiv.style.display = "block";
-    cnpjInput.readOnly = false; // Habilita o campo CNPJ
-
-    try {
-
-        // Captura as linhas da tabela
-        const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
-
-        // Cria o array dinâmico para ItensPedidoVenda
-        const itensPedidoVenda = Array.from(tableRows)
-            .map(row => {
-                const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
-
-                // Verifica se a linha tem dados válidos antes de adicioná-la
-                const itemId = row.dataset.itemId || 0;
-                const quantidade = Number(cells[2]?.value || 0); // Quantidade na segunda célula
-
-                // Só adiciona a linha se tiver um ItemId e Quantidade válidos
-                if (itemId > 0 && quantidade > 0) {
-                    return {
-                        ItemValorDesconto: 0,
-                        ItemPercentualDesconto: 0,
-                        EntregasItemPedidoVenda: [
-                            {
-                                Data: new Date().toISOString(), 
-                                DataPrevista: new Date().toISOString(),
-                                Quantidade: quantidade,
-                            }
-                        ],
-                        ItemId: itemId,
-                        Quantidade: quantidade,
-                    };
-                }
-
-                return null; // Retorna null para linhas inválidas
-            })
-            .filter(item => item !== null); // Remove itens nulos do array
-
-        // Cria o corpo da requisição com base nos inputs
-        const requestBody = {
-            ListaPrecoId: Number(document.getElementById('codgroup').value),
-            CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
-            FormaPagamentoId: Number(document.getElementById('formPagId').value),
-            ValorDesconto: 0,
-            PercentualDesconto: 0,
-            ItensPedidoVenda: itensPedidoVenda,
-            RepresentantesPedidoVendas: [
-                {
-                    RepresentanteId: Number(document.getElementById('representanteId').value),
-                    RepresentantePrincipal: true,
-                    PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
-                    PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
-                }
-            ],
-            ClienteId: Number(document.getElementById('cod_cliente').value),
-            ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
-            NumeroReferencia: document.getElementById('referencia').value,
-            Observacao: document.getElementById('observation').value,
-        };
-
-        // Loga o JSON no console
-        console.log("JSON enviado para a API:", requestBody);
-        console.log('ClienteId:', document.getElementById('cod_cliente').value);
-console.log('Itens:', itensPedidoVenda);
-
-        // Envia os dados para a API
-        const response = await fetch('/api/pedidos/input', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        });
-
-        const result = await response.json();
-
-        if (response.ok && (!result.ErrorMessages || result.ErrorMessages.length === 0)) {
-            alert("Pedido enviado com sucesso!");
-            console.log("Resposta da API:", result);
-            location.reload();
-        } else {
-            alert(`Erro ao enviar pedido: ${result.ErrorMessages?.join(", ") || "Erro desconhecido"}`);
-            console.error("Erro da API:", result);
-        }
-    } catch (error) {
-        console.error("Erro de conexão:", error);
-        alert("Erro ao conectar com o servidor.");
-    } finally {
-  //  limparCamposCliente();
-    //zerarCamposPedido();   // ← ISSO É FUNDAMENTAL
-    feedbackDiv.style.display = "none";
-}
 });
 
 
@@ -766,12 +656,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-
-
-
-
-
-
   // Função para validar uma lista de e-mails separados por ";"
     function validateEmailList(emailString) {
         if (!emailString) return true; // Campo vazio é válido (para "Cc")
@@ -795,7 +679,8 @@ const { uploadUrlDev, key } = await response.json();
             body: file,
             headers: {
                 'Content-Type': file.type
-            }
+            },
+            body: file
         });
 
         return {
@@ -1145,47 +1030,7 @@ const response = await fetch('/send-client-pdf-dev', {
 } finally {
     hideFeedback();
 }
-}); // correto
-
-
-
-
-
-
-
-    const helpIcon = document.getElementById('helpIcon');
-    const helpModal = document.getElementById('helpModal');
-    const overlay = document.getElementById('overlay');
-    const closeModal = document.getElementById('closeModal');
-
-     const confirmButton = document.getElementById('confirmButton');
-
-    
-
-    if (!confirmButton) {
-        console.error('confirmButton não encontrado no DOM');
-        return;
-    }
-
-    confirmButton.addEventListener('click', async () => {
-        console.log('BOTÃO CONFIRMAR CLICADO');
-    });
-    // Abrir modal
-    helpIcon.addEventListener('click', () => {
-        overlay.style.display = 'block'; // Exibe o overlay
-        helpModal.style.display = 'block'; // Exibe o modal
-    });
-
-    // Fechar modal
-    function closeHelpModal() {
-        overlay.style.display = 'none'; // Oculta o overlay
-        helpModal.style.display = 'none'; // Oculta o modal
-    }
-
-    closeModal.addEventListener('click', closeHelpModal);
-
-    // Fechar modal ao clicar no overlay
-    overlay.addEventListener('click', closeHelpModal);
+});
 });
 
 
