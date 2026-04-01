@@ -301,6 +301,42 @@ function atualizarTotalProdutos() {
     document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+
+function validarTabelaPedido() {
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    if (!linhas.length) {
+        alert("Adicione pelo menos um item no pedido.");
+        return false;
+    }
+
+    for (let i = 0; i < linhas.length; i++) {
+        const tr = linhas[i];
+        const inputs = tr.querySelectorAll('input');
+
+        // Campos obrigatórios por índice da coluna:
+        // 1 = código
+        // 2 = quantidade
+        // 5 = valor unitário
+        // 6 = total
+
+        const nf = inputs[0]?.value.trim()
+        const codigo = inputs[1]?.value.trim();
+        const quantidade = inputs[2]?.value.trim();
+        const valor = inputs[5]?.value.trim();
+        const total = inputs[6]?.value.trim();
+
+        if (!codigo || !quantidade || !valor || !total || !nf) {
+            alert(`Preencha todos os campos da linha ${i + 1}`);
+            inputs[0]?.focus();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 // Função para adicionar uma nova linha à tabela
 function adicionarNovaLinha() {
     const tbody = document.querySelector('#dadosPedido tbody');
@@ -311,7 +347,7 @@ function adicionarNovaLinha() {
     for (let i = 0; i < 9; i++) {
         const td = document.createElement('td');
 
-        // 🔴 coluna oculta (ItemId)
+        // coluna oculta (ItemId)
         if (i === 8) {
             td.style.display = 'none';
         }
@@ -432,7 +468,7 @@ if (i === 1) {
         const cod = this.value.trim().toUpperCase();
         if (!cod) return;
 
-        // 🚫 VERIFICA DUPLICIDADE
+        // VERIFICA DUPLICIDADE
         if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
             alert('Este item já foi adicionado ao pedido.');
             this.value = '';
@@ -925,6 +961,12 @@ const { uploadUrlDev, key } = await response.json();
             alert('Por favor, preencha todos os campos obrigatórios');
             return;
         }
+
+          
+        if (!validarTabelaPedido()) {
+            return;
+        }
+
         await gerarPDF();
         if (generatedPdfFile) {
             additionalFiles = [];
