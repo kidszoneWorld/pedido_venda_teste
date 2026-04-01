@@ -8,7 +8,6 @@ let foraDeLinhaData;
 let listaPrecosData;
 let icmsSTData;
 let listaPrecosIpiData;
- 
   
 
 // Helper DOM
@@ -48,6 +47,8 @@ async function carregarListaPrecos(listaId) {
 
 console.log('script.js carregado');
 
+ limparCamposCliente();
+ atualizarTotais();
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
 // ======================================================================
@@ -80,19 +81,6 @@ function buscarCliente(cnpj) {
 }
 
 
-function buscarPromocao(cod) {
-    for (let i = 1; i < promocaoData.length; i++) {
-        if (promocaoData[i][0] == cod) return promocaoData[i];
-    }
-    return null;
-}
-
-function verificarForaDeLinha(cod) {
-    for (let i = 1; i < foraDeLinhaData.length; i++) {
-        if (foraDeLinhaData[i][0] == cod) return true;
-    }
-    return false;
-}
 
 // ======================================================================
 // 👤 CLIENTE / CNPJ
@@ -593,6 +581,18 @@ function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
     return false;
 }
 
+function verificarItensSemPreenchimento(codigo, linhaAtual) {
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    for (const tr of linhas) {
+        const inputCodigo = tr.cells[1]?.querySelector('input');
+        if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
@@ -736,6 +736,7 @@ const { uploadUrlDev, key } = await response.json();
                 'razao_social',
                 'cod_cliente',
                 'representante',
+                'observation',
             ];
             for (let campo of campos) {
                 const input = document.getElementById(campo);
@@ -746,11 +747,11 @@ const { uploadUrlDev, key } = await response.json();
             return true;
         }
 
-
         // Função para gerar o PDF automaticamente
     async function gerarPDF() {
         const content = document.querySelector('.container');
         const razaoSocial = document.getElementById('razao_social').value || "Cliente";
+        const obs = document.getElementById('observation').value 
         const timestamp = formatarDataBrasileira();
         const filename = `Devolucao_${razaoSocial}_${timestamp}.pdf`;
 
@@ -918,7 +919,7 @@ const { uploadUrlDev, key } = await response.json();
      // Ao clicar no botão "ENVIAR E-MAIL COM ANEXOS", verifica os campos obrigatórios antes de gerar o PDF e abrir o modal
     buttonPdf.addEventListener('click', async () => {
         if (!verificarCamposObrigatorios()) {
-            alert('Por favor, preencha todos os campos obrigatórios na seção "INFORMAÇÕES NECESSÁRIAS"');
+            alert('Por favor, preencha todos os campos obrigatórios');
             return;
         }
         await gerarPDF();
@@ -1029,6 +1030,7 @@ const response = await fetch('/send-client-pdf-dev', {
     alert('Erro ao enviar o e-mail: ' + error.message);
 } finally {
     hideFeedback();
+    window.location.reload();
 }
 });
 });

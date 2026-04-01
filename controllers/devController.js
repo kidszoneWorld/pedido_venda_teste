@@ -100,13 +100,14 @@ ${downloadLinks}
 
     console.log("✅ E-mail enviado:", info.response);
     return res.status(200).send("E-mail enviado com sucesso!");
-
+    
   } catch (error) {
     console.error("❌ ERRO REAL:", error);
     return res.status(500).send(error.message);
   }
   finally {
     //setTimeout(() => emailsRecentes.delete(emailKey), 10000);
+
   }
 };
  
