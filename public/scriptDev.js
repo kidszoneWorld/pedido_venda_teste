@@ -273,7 +273,7 @@ function atualizarTotalVolumes() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     linhas.forEach(tr => {
-        const cell = tr.cells[1]?.querySelector('input');
+        const cell = tr.cells[2]?.querySelector('input');
         if (cell && cell.value) {
             const quantidade = parseFloat(cell.value.replace(",", "."));
             if (!isNaN(quantidade)) {
@@ -296,8 +296,8 @@ function atualizarTotalProdutos() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     linhas.forEach(tr => {
-        const quantidadeCell = tr.cells[1]?.querySelector('input');
-        const valorTotalLinhaCell = tr.cells[6]?.querySelector('input');
+        const quantidadeCell = tr.cells[2]?.querySelector('input');
+        const valorTotalLinhaCell = tr.cells[7]?.querySelector('input');
         console.log('Quantidade cell:', quantidadeCell);
         console.log('Valor unitário cell:', valorTotalLinhaCell);
 
@@ -320,16 +320,16 @@ function adicionarNovaLinha() {
 
 
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 9; i++) {
         const td = document.createElement('td');
 
         // 🔴 coluna oculta (ItemId)
-        if (i === 7) {
+        if (i === 8) {
             td.style.display = 'none';
         }
 
         // 🗑 BOTÃO REMOVER LINHA
-        if (i === 3) {
+        if (i === 4) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.classList.add('btn-remover-linha');
@@ -358,8 +358,8 @@ function adicionarNovaLinha() {
         const input = document.createElement('input');
         input.type = 'text';
         
-        // TAB só código e quantidade
-        input.tabIndex = (i === 0 || i === 1 || i=== 3) ? 0 : -1;
+        // TAB só código, nf origem e quantidade
+        input.tabIndex = (i === 0 || i === 1 || i=== 2|| i=== 6) ? 0 : -1;
 
         input.style.padding = '5px';
         input.style.width = '100%';
@@ -383,7 +383,7 @@ function adicionarNovaLinha() {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
 
-                if (linhaAtual === linhas.length - 1 && i === 1) {
+                if (linhaAtual === linhas.length - 1 && i === 6) {
                     adicionarNovaLinha();
                     setTimeout(() => {
                         tbody.lastChild.cells[0].querySelector('input').focus();
@@ -393,7 +393,7 @@ function adicionarNovaLinha() {
                 }
             }
 
-            if (e.key === 'Tab' && !e.shiftKey && i === 2 && linhaAtual === linhas.length - 1) {
+            if (e.key === 'Tab' && !e.shiftKey && i === 6 && linhaAtual === linhas.length - 1) {
                 e.preventDefault();
                 setTimeout(() => {
                     tbody.lastChild.cells[0].querySelector('input').focus();
@@ -403,8 +403,8 @@ function adicionarNovaLinha() {
             if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
     e.preventDefault();
 
-    // se estiver na QUANTIDADE (coluna 1)
-    if (i === 5) {
+    // se estiver no valor (coluna 6)
+    if (i === 6) {
         if (linhaAtual === linhas.length - 1) {
             // última linha → cria nova
             adicionarNovaLinha();
@@ -417,14 +417,17 @@ function adicionarNovaLinha() {
         }
         
     }
-
-    // se estiver no CÓDIGO (coluna 0)
+        // se estiver no NF Origem (coluna 0)
     if (i === 0) {
         tr.cells[1]?.querySelector('input')?.focus();
     }
-    // se estiver na quantidade (coluna 1)
+    // se estiver no CÓDIGO (coluna 1)
     if (i === 1) {
-        tr.cells[5]?.querySelector('input')?.focus();
+        tr.cells[2]?.querySelector('input')?.focus();
+    }
+    // se estiver na quantidade (coluna 2)
+    if (i === 2) {
+        tr.cells[6]?.querySelector('input')?.focus();
     }
 }
 
@@ -436,7 +439,7 @@ function adicionarNovaLinha() {
         // =========================
        // =========================
 
-if (i === 0) {
+if (i === 1) {
     input.addEventListener('blur', async function () {
         const cod = this.value.trim().toUpperCase();
         if (!cod) return;
@@ -453,7 +456,7 @@ if (i === 0) {
         const cells = tr.querySelectorAll('td input');
 
         // 🔄 FEEDBACK VISUAL
-        cells[3].value = 'Carregando item, por favor aguarde...';
+        cells[4].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
 
 
@@ -473,24 +476,23 @@ if (i === 0) {
             }
 
             const item = data[0];
-            cells[2].value = 'UN';
-            cells[2].readOnly = true;
-            cells[3].value = item.ItemDescricao;
-            cells[4].readOnly = false 
-            cells[1].readOnly = false;
-            cells[1].focus();
-            cells[4].addEventListener('input', (e) => {
+            cells[3].value = 'UN';
+            cells[3].readOnly = true;
+            cells[4].value = item.ItemDescricao;
+            cells[6].readOnly = false; 
+            cells[7].readOnly = true;
+            cells[5].addEventListener('input', (e) => {
 
-                const preco = parseFloat(cells[4].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
-
+                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[2].value.replace(',', '.')) || 0;
+                console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
                 });
 
             totalLinha = preco * qtd;
-                cells[5].value = formatador.format(totalLinha)
+                cells[6].value = formatador.format(totalLinha)
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
@@ -536,7 +538,7 @@ function verificarCodigoDuplicado(codigo) {
     let contador = 0;
 
     linhas.forEach(tr => {
-        const inputCodigo = tr.cells[0]?.querySelector('input');
+        const inputCodigo = tr.cells[1]?.querySelector('input');
         if (inputCodigo && inputCodigo.value === codigo) {
             contador++;
         }
@@ -551,7 +553,7 @@ function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
     for (const tr of linhas) {
         if (tr === linhaAtual) continue; // ignora a própria linha
 
-        const inputCodigo = tr.cells[0]?.querySelector('input');
+        const inputCodigo = tr.cells[1]?.querySelector('input');
         if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
             return true;
         }
@@ -604,7 +606,7 @@ confirmButton.addEventListener("click", async () => {
 
                 // Verifica se a linha tem dados válidos antes de adicioná-la
                 const itemId = row.dataset.itemId || 0;
-                const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
+                const quantidade = Number(cells[2]?.value || 0); // Quantidade na segunda célula
 
                 // Só adiciona a linha se tiver um ItemId e Quantidade válidos
                 if (itemId > 0 && quantidade > 0) {
