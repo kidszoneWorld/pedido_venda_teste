@@ -47,8 +47,11 @@ async function carregarListaPrecos(listaId) {
 
 console.log('script.js carregado');
 
+//run once
+
  limparCamposCliente();
  atualizarTotais();
+
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
 // ======================================================================
@@ -89,7 +92,7 @@ function limparCamposCliente() {
     [
         'razao_social','representante','endereco','bairro','cidade','uf',
         'cep','telefone','email','email_fiscal','cod_cliente','pay','group',
-        'transp','codgroup','email_rep'
+        'transp','codgroup','email_rep','observation'
     ].forEach(id => el(id).value = '');
 }
 
