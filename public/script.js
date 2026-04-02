@@ -366,7 +366,6 @@ function atualizarTotalComImposto() {
     
     document.getElementById('totalComIpi').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
-////////////////////////////////////////////////////////////////////////////// garantido até aqui
 
 //Buscar IPI pelo código do item
 function buscarIpiDoItem(codigoItem) {
