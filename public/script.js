@@ -94,15 +94,15 @@ function validarTabelaPedido() {
         // Campos obrigatórios por índice da coluna:
         // 0 = código
         // 1 = quantidade
-        // 4 = valor unitário
-        // 5 = total
+        // 5 = valor unitário
+        // 6 = total
 
         const codigo = inputs[0]?.value.trim()
         const quantidade = inputs[1]?.value.trim();
-        const valor = inputs[4]?.value.trim();
-        const total = inputs[5]?.value.trim();
+        const valor = inputs[5]?.value.trim();
+        const total = inputs[6]?.value.trim();
 
-        if (!codigo || !quantidade || !valor || !total || codigo == 0 || quantidade == 0 || valor == 0 || total == 0) {
+        if (!codigo || !quantidade || !valor || !total || quantidade == 0) {
             alert(`Preencha todos os campos da linha ${i + 1}`);
             inputs[1]?.focus();
             return false;
