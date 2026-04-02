@@ -79,7 +79,38 @@ function buscarCliente(cnpj) {
     return null;
 }
 
+function validarTabelaPedido() {
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
+    if (!linhas.length) {
+        alert("Adicione pelo menos um item no pedido.");
+        return false;
+    }
+
+    for (let i = 0; i < linhas.length; i++) {
+        const tr = linhas[i];
+        const inputs = tr.querySelectorAll('input');
+
+        // Campos obrigatórios por índice da coluna:
+        // 0 = código
+        // 1 = quantidade
+        // 4 = valor unitário
+        // 5 = total
+
+        const codigo = inputs[0]?.value.trim()
+        const quantidade = inputs[1]?.value.trim();
+        const valor = inputs[4]?.value.trim();
+        const total = inputs[5]?.value.trim();
+
+        if (!codigo || !quantidade || !valor || !total || codigo == 0 || quantidade == 0 || valor == 0 || total == 0) {
+            alert(`Preencha todos os campos da linha ${i + 1}`);
+            inputs[1]?.focus();
+            return false;
+        }
+    }
+
+    return true;
+}
 function buscarPromocao(cod) {
     for (let i = 1; i < promocaoData.length; i++) {
         if (promocaoData[i][0] == cod) return promocaoData[i];
@@ -657,11 +688,14 @@ cancelButton.addEventListener("click", () => {
 // Executa a lógica de envio ao clicar no botão "Sim"
 confirmButton.addEventListener("click", async () => {
     modal.style.display = "none"; // Fecha o modal
-
+    if(!validarTabelaPedido())
+        return;
     // Exibe a mensagem de feedback
     feedbackDiv.textContent = 'Estamos enviando o pedido, aguarde...';
     feedbackDiv.style.display = "block";
     cnpjInput.readOnly = false; // Habilita o campo CNPJ
+
+    
 
     try {
 
