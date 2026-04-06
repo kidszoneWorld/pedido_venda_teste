@@ -571,7 +571,7 @@ if (i === 0) {
         const cod = this.value.trim().toUpperCase();
         if (!cod) return;
 
-        // 🚫 VERIFICA DUPLICIDADE
+        // VERIFICA DUPLICIDADE
         if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
             alert('Este item já foi adicionado ao pedido.');
             this.value = '';
@@ -586,6 +586,12 @@ if (i === 0) {
         cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
         cells[1].readOnly = true;
+        cells[1].value = '';
+        cells[2].value = '';
+        cells[4].value = '';
+        cells[5].value = '';
+        cells[6].value = '';
+        cells[7].value = '';
 
         try {
             const response = await fetch(

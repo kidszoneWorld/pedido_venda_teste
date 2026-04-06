@@ -117,6 +117,8 @@ async function getListaPreco(req, res) {
     }
 
     // 🔍 VERIFICA STATUS DO ITEM
+
+
     const item = itens[0];
 
     const status = await verificarStatusItem(item.ItemCodigo);
@@ -131,9 +133,9 @@ async function getListaPreco(req, res) {
 
     else if (status.foraLinha == true) {
         return res.status(400).json({ message: 'Item fora de linha' });
-    }
+    
 }
-
+        }
 
         res.json(itens);
 
