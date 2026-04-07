@@ -1,6 +1,9 @@
 const nodemailer = require('nodemailer');
 const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const Devolucao = require('../models/Devolucao');
+
+
 const crypto = require("crypto");
 
 let emailsRecentes = new Map();
@@ -15,6 +18,29 @@ const s3 = new S3Client({
   },
 });
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
+
+// Salvar devolução
+exports.salvarDevolucao = async (req, res) => {
+  try {
+    const novaDevolucao = new Devolucao(req.body);
+    await novaDevolucao.save();
+
+    res.status(201).json({ message: 'Devolução salva com sucesso' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Buscar devoluções
+exports.listarDevolucoes = async (req, res) => {
+  try {
+    const devolucoes = await Devolucao.find();
+    res.json(devolucoes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 exports.generateUploadUrlDev = async (req, res) => {
   try {

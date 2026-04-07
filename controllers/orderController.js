@@ -61,7 +61,7 @@ async function getClientDetailsEndpoint(req, res) {
       res.status(500).send('Erro ao obter detalhes dos clientes');
   }
 }
-
+ 
 module.exports = { 
     getOrderDetails, 
     getClientDetailsEndpoint    

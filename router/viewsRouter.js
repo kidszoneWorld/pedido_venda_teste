@@ -16,9 +16,6 @@ const clientePdfController = require('../controllers/clientePdfController');
 const pdfInvestComercialController = require('../controllers/pdf_invest_comercialController');
 const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorController');
 const productController = require('../controllers/productController');
-
-
-
 const router = express.Router();
 
 // Rota para a página inicial
@@ -130,7 +127,11 @@ router.get('/api/logistica/onedrive', invoicesController.fetchLogisticsData);
 router.get('/api/logistica/logistica03', fernandoController.fetchLogisticsData);
 router.get('/api/logistica/logistica02', fernandoController.fetchLogisticsData1);
 
+// salvar
+router.post('/api/devolucao', devController.salvarDevolucao);
 
+// listar
+router.get('/api/devolucao', devController.listarDevolucoes);
 
 // Rota para página de erro 401 (Senha incorreta)
 router.get('/error-401', (req, res) => {

@@ -17,6 +17,7 @@ Estrutura do projeto:
 |-/controllers
 |   |-ClientController.js
 |   |-clientePdfController.js
+|   |-devController.js
 |   |-displayController.js
 |   |-eficienciaController.js
 |   |-fernandoController.js
@@ -103,6 +104,7 @@ Estrutura do projeto:
 |   |-comercial.js
 |   |-detalges-item-ativos.xlsx
 |   |-detalhes.js
+|   |-devolucao.js
 |   |-detalhesProdutos.js
 |   |-display.js
 |   |-eficiencia.js
@@ -141,6 +143,7 @@ Estrutura do projeto:
 |   |-comercial.html
 |   |-Detalhes dos produtos.html
 |   |-detalhes.html
+|   |-devolucao.html
 |   |-display.html
 |   |-eficiencia.html
 |   |-error-401.html

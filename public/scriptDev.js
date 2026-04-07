@@ -252,6 +252,83 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
 }
 });
 
+//mongo
+
+function montarObjetoDevolucao() {
+    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+
+    const produtos = [];
+
+    linhas.forEach(tr => {
+        const cells = tr.querySelectorAll('input');
+
+        if (!cells[1]?.value) return; // ignora linha vazia
+
+        produtos.push({
+            nforigem: cells[0]?.value,
+            data: new Date(), // ou você pode ter um campo de data
+            codigoItem: cells[1]?.value,
+            lote: "", // se tiver campo, mapeia aqui
+            quantidade: parseFloat(cells[2]?.value.replace(',', '.')) || 0,
+            uv: cells[3]?.value,
+            descricao: cells[4]?.value,
+            precounitario: parseFloat(
+                cells[5]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
+            ) || 0,
+            total: parseFloat(
+                cells[6]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
+            ) || 0
+        });
+    });
+
+    const devolucao = {
+        pedidoId: Date.now().toString(), // ou outro ID
+        cnpj: document.getElementById('cnpj').value.replace(/\D/g, ''),
+        razaosocial: document.getElementById('razao_social').value,
+        endereco: document.getElementById('endereco').value,
+        cidade: document.getElementById('cidade').value,
+        Cep: document.getElementById('cep').value,
+        email: document.getElementById('email').value,
+        representante: document.getElementById('representante').value,
+        codCliente: Number(document.getElementById('cod_cliente').value),
+        bairro: document.getElementById('bairro').value,
+        uf: document.getElementById('uf').value,
+        telefone: document.getElementById('telefone').value,
+        emailFiscal: document.getElementById('email_fiscal').value,
+        motivo: document.getElementById('observation').value,
+        produtos
+    };
+
+    return devolucao;
+}
+
+async function salvarDevolucaoMongo() {
+    if (!validarTabelaPedido()) return;
+
+    const dados = montarObjetoDevolucao();
+
+    try {
+        const res = await fetch('/api/devolucao', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dados)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+            alert('Devolução salva no MongoDB!');
+        } else {
+            throw new Error(result.error);
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert('Erro ao salvar devolução');
+    }
+}
 
 
 
@@ -261,7 +338,7 @@ function atualizarTotalVolumes() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     linhas.forEach(tr => {
-        const cell = tr.cells[2]?.querySelector('input');
+        const cell = tr.cells[4]?.querySelector('input');
         if (cell && cell.value) {
             const quantidade = parseFloat(cell.value.replace(",", "."));
             if (!isNaN(quantidade)) {
@@ -284,8 +361,8 @@ function atualizarTotalProdutos() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     linhas.forEach(tr => {
-        const quantidadeCell = tr.cells[2]?.querySelector('input');
-        const valorTotalLinhaCell = tr.cells[7]?.querySelector('input');
+        const quantidadeCell = tr.cells[4]?.querySelector('input');
+        const valorTotalLinhaCell = tr.cells[9]?.querySelector('input');
         console.log('Quantidade cell:', quantidadeCell);
         console.log('Valor unitário cell:', valorTotalLinhaCell);
 
@@ -321,12 +398,14 @@ function validarTabelaPedido() {
         // 6 = total
 
         const nf = inputs[0]?.value.trim()
-        const codigo = inputs[1]?.value.trim();
-        const quantidade = inputs[2]?.value.trim();
-        const valor = inputs[5]?.value.trim();
-        const total = inputs[6]?.value.trim();
+        const data = inputs[1]?.value.trim();
+        const codigo = inputs[2]?.value.trim();
+        const lote = inputs[3]?.value.trim();
+        const quantidade = inputs[4]?.value.trim();
+        const valor = inputs[7]?.value.trim();
+        const total = inputs[8]?.value.trim();
 
-        if (!codigo || !quantidade || !valor || !total || !nf) {
+        if (!codigo || !quantidade || !valor || !total || !nf || !lote || !data) {
             alert(`Preencha todos os campos da linha ${i + 1}`);
             inputs[0]?.focus();
             return false;
@@ -344,16 +423,16 @@ function adicionarNovaLinha() {
 
 
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 11; i++) {
         const td = document.createElement('td');
 
         // coluna oculta (ItemId)
-        if (i === 8) {
+        if (i === 10) {
             td.style.display = 'none';
         }
 
         // 🗑 BOTÃO REMOVER LINHA
-        if (i === 4) {
+        if (i === 6) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.classList.add('btn-remover-linha');
@@ -382,8 +461,8 @@ function adicionarNovaLinha() {
         const input = document.createElement('input');
         input.type = 'text';
         
-        // TAB só código, nf origem e quantidade
-        input.tabIndex = (i === 0 || i === 1 || i=== 2|| i=== 6) ? 0 : -1;
+        // TAB só em quase tudo
+        input.tabIndex = (i === 0 || i === 1 || i === 2 || i === 3 || i === 4 || i === 8) ? 0 : -1;
 
         input.style.padding = '5px';
         input.style.width = '100%';
@@ -407,7 +486,7 @@ function adicionarNovaLinha() {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
 
-                if (linhaAtual === linhas.length - 1 && i === 6) {
+                if (linhaAtual === linhas.length - 1 && i === 10) {
                     adicionarNovaLinha();
                     setTimeout(() => {
                         tbody.lastChild.cells[0].querySelector('input').focus();
@@ -417,7 +496,7 @@ function adicionarNovaLinha() {
                 }
             }
 
-            if (e.key === 'Tab' && !e.shiftKey && i === 6 && linhaAtual === linhas.length - 1) {
+            if (e.key === 'Tab' && !e.shiftKey && i === 10 && linhaAtual === linhas.length - 1) {
                 e.preventDefault();
                 setTimeout(() => {
                     tbody.lastChild.cells[0].querySelector('input').focus();
@@ -428,7 +507,7 @@ function adicionarNovaLinha() {
     e.preventDefault();
 
     // se estiver no valor (coluna 6)
-    if (i === 6) {
+    if (i === 8) {
         if (linhaAtual === linhas.length - 1) {
             // última linha → cria nova
             adicionarNovaLinha();
@@ -451,7 +530,13 @@ function adicionarNovaLinha() {
     }
     // se estiver na quantidade (coluna 2)
     if (i === 2) {
-        tr.cells[6]?.querySelector('input')?.focus();
+        tr.cells[3]?.querySelector('input')?.focus();
+    }
+    if (i === 3) {
+        tr.cells[4]?.querySelector('input')?.focus();
+    }
+    if (i === 4) {
+        tr.cells[8]?.querySelector('input')?.focus();
     }
 }
 
@@ -463,7 +548,7 @@ function adicionarNovaLinha() {
         // =========================
        // =========================
 
-if (i === 1) {
+if (i === 2) {
     input.addEventListener('blur', async function () {
         const cod = this.value.trim().toUpperCase();
         if (!cod) return;
@@ -480,7 +565,7 @@ if (i === 1) {
         const cells = tr.querySelectorAll('td input');
 
         // 🔄 FEEDBACK VISUAL
-        cells[4].value = 'Carregando item, por favor aguarde...';
+        cells[6].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
 
 
@@ -500,33 +585,21 @@ if (i === 1) {
             }
 
             const item = data[0];
-            cells[3].value = 'UN';
-            cells[3].readOnly = true;
-            cells[4].value = item.ItemDescricao;
-            cells[6].readOnly = false; 
-            cells[7].readOnly = true;
-
-            cells[1].addEventListener('input', (e) => {
-                cells[5].value = '';
-                cells[2].value = '';
-                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[2].value.replace(',', '.')) || 0;
-                console.log(preco);
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-
-            totalLinha = preco * qtd;
-                cells[6].value = formatador.format(totalLinha)
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
+            cells[5].value = 'UN';
+            cells[5].readOnly = true;
+            cells[6].value = item.ItemDescricao;
+            cells[7].readOnly = false; 
+            cells[8].readOnly = true;
+            cells[6].readOnly = true;
 
             cells[2].addEventListener('input', (e) => {
-
-                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[2].value.replace(',', '.')) || 0;
+                cells[7].value = '';
+                cells[1].value = '';
+                cells[0].value = '';
+                cells[3].value = '';
+                cells[4].value = '';
+                const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[4].value.replace(',', '.')) || 0;
                 console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -534,16 +607,18 @@ if (i === 1) {
                 });
 
             totalLinha = preco * qtd;
-                cells[6].value = formatador.format(totalLinha)
+                cells[8].value = formatador.format(totalLinha)
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
+
+
             
 
-            cells[5].addEventListener('input', (e) => {
+            cells[7].addEventListener('input', (e) => {
 
-                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[2].value.replace(',', '.')) || 0;
+                const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[4].value.replace(',', '.')) || 0;
                 console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -551,7 +626,7 @@ if (i === 1) {
                 });
 
             totalLinha = preco * qtd;
-                cells[6].value = formatador.format(totalLinha)
+                cells[8].value = formatador.format(totalLinha)
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
@@ -597,7 +672,7 @@ function verificarCodigoDuplicado(codigo) {
     let contador = 0;
 
     linhas.forEach(tr => {
-        const inputCodigo = tr.cells[1]?.querySelector('input');
+        const inputCodigo = tr.cells[2]?.querySelector('input');
         if (inputCodigo && inputCodigo.value === codigo) {
             contador++;
         }
@@ -612,7 +687,7 @@ function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
     for (const tr of linhas) {
         if (tr === linhaAtual) continue; // ignora a própria linha
 
-        const inputCodigo = tr.cells[1]?.querySelector('input');
+        const inputCodigo = tr.cells[2]?.querySelector('input');
         if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
             return true;
         }
@@ -624,7 +699,7 @@ function verificarItensSemPreenchimento(codigo, linhaAtual) {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     for (const tr of linhas) {
-        const inputCodigo = tr.cells[1]?.querySelector('input');
+        const inputCodigo = tr.cells[2]?.querySelector('input');
         if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
             return true;
         }
@@ -1007,6 +1082,7 @@ const { uploadUrlDev, key } = await response.json();
 
     // Envia o e-mail ao clicar no botão "Enviar"
     sendEmailButton.addEventListener('click', async () => {
+        await salvarDevolucaoMongo();
         let emailTo = emailToInput.value;
         let emailCc = document.getElementById('emailCc').value;
         const emailSubject = emailSubjectInput.value;
