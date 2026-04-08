@@ -343,28 +343,28 @@ body.dark-theme #dadosPedido tbody tr td input{
 
 /* Seção tabela de dados dos itens */
 .nfOrigem{
-    width: 7%;
+    width: 8%;
 }
 .data{
-    width: 10%;
+    width: 9%;
 }
 .cod{
-    width: 6%;
+    width: 9%;
 }
 .lote{
     width: 10%;
 }
 .qtd{
-    width: 5%;
+    width: 7%;
 }
 .uv{
-    width: 5%;
+    width: 6%;
 }
 .pack{
     width: 5%;
 }
 .descricao{
-    width: 25%;
+    width: 20%;
 }
 .unit{
     width: 8%;

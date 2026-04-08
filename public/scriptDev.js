@@ -95,7 +95,7 @@ function limparCamposCliente() {
         'transp','codgroup','email_rep','observation'
     ].forEach(id => el(id).value = '');
 }
-
+const emailRep = document.getElementById('email_rep');
 // Feedback
 const showFeedback = msg => { el('feedback1').style.display = 'block'; el('feedback1').textContent = msg; };
 const hideFeedback = () => { el('feedback1').style.display = 'none'; el('feedback1').textContent = ''; };
@@ -253,7 +253,10 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
 });
 
 //mongo
-
+const dataBR = new Date()
+const dataFormatada = dataBR.toLocaleDateString('pt-BR', {
+    timeZone: 'UTC'
+});
 function montarObjetoDevolucao() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
@@ -295,6 +298,7 @@ function montarObjetoDevolucao() {
         uf: document.getElementById('uf').value,
         telefone: document.getElementById('telefone').value,
         emailFiscal: document.getElementById('email_fiscal').value,
+        data: dataFormatada,
         motivo: document.getElementById('observation').value,
         produtos
     };
@@ -319,7 +323,7 @@ async function salvarDevolucaoMongo() {
         const result = await res.json();
 
         if (res.ok) {
-            alert('Devolução salva, enviando email......');
+            console.log('Devolução salva, aperte ok para enviar o email......');
         } else {
             throw new Error(result.error);
         }
@@ -640,7 +644,22 @@ if (i === 2) {
             });
 
 
-            
+            cells[4].addEventListener('input', (e) => {
+
+                const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[4].value.replace(',', '.')) || 0;
+                console.log(preco);
+                const formatador = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                });
+                
+
+            totalLinha = preco * qtd;
+                cells[8].value = formatador.format(totalLinha)
+                tr.dataset.itemId = item.ItemId;
+                atualizarTotais();
+            });
 
             cells[7].addEventListener('input', (e) => {
 
@@ -651,6 +670,7 @@ if (i === 2) {
                     style: 'currency',
                     currency: 'BRL',
                 });
+                
 
             totalLinha = preco * qtd;
                 cells[8].value = formatador.format(totalLinha)
@@ -782,7 +802,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     
     // E-mail fixo que não pode ser removido
-    const FIXED_EMAIL = "financeiro.kz@kidszoneworld.com.br";
+    const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`;
     let generatedPdfFile = null;
     let additionalFiles = [];
 
@@ -982,25 +1002,31 @@ const { uploadUrlDev, key } = await response.json();
 
 
 // Função para preencher o modal de e-mail com valores fixos
-    function preencherFormularioEmail() {
-        const razaoSocial = document.getElementById('razao_social').value || "Cliente";
+   function preencherFormularioEmail() {
+    const razaoSocial = document.getElementById('razao_social').value || "Cliente";
+    const emailRep = document.getElementById('email_rep').value;
 
-        emailToInput.value = FIXED_EMAIL;
-        emailToInput.setAttribute('data-fixed', FIXED_EMAIL);
+    emailToInput.value = FIXED_EMAIL;
+    emailToInput.setAttribute('data-fixed', FIXED_EMAIL);
 
-        const fixedSubject = `Devolução ${razaoSocial}`;
-        emailSubjectInput.value = fixedSubject;
-        emailSubjectInput.setAttribute('data-fixed', fixedSubject);
+    const fixedSubject = `Devolução ${razaoSocial}`;
+    emailSubjectInput.value = fixedSubject;
+    emailSubjectInput.setAttribute('data-fixed', fixedSubject);
 
-        const fixedMessage = `Segue os documentos solicitados para a devolução do cliente ${razaoSocial}\n\n`;
-        emailBodyInput.value = fixedMessage;
-        emailBodyInput.setAttribute('data-fixed', fixedMessage);
+    const fixedMessage = `Segue os documentos solicitados para a devolução do cliente ${razaoSocial}\n\n`;
+    emailBodyInput.value = fixedMessage;
+    emailBodyInput.setAttribute('data-fixed', fixedMessage);
 
-        if (generatedPdfFile) {
-            atualizarAnexos();
-            atualizarListaAnexos();
-        }
+    // 👇 AQUI É O QUE FALTAVA
+    if (emailRep) {
+        document.getElementById('emailCc').value = emailRep;
     }
+
+    if (generatedPdfFile) {
+        atualizarAnexos();
+        atualizarListaAnexos();
+    }
+}
 
     
     // Função para atualizar os anexos, mantendo o PDF fixo

@@ -163,7 +163,7 @@ function validarPedidoMinimo() {
     if(limite[estado]<=totalComIpiPed)
         return true;
     else
-        alert(`Limite mínimo de ${limite[estado]} não atingido!`);
+        alert(`Limite mínimo de R$${limite[estado]},00 não atingido!`);
         return false;
 }
 

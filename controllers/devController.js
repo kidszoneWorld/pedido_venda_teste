@@ -50,7 +50,7 @@ exports.salvarDevolucao = async (req, res) => {
     const novaDevolucao = new Devolucao(req.body);
     await novaDevolucao.save();
 
-    res.status(201).json({ message: 'Devolução salva com sucesso' });
+    res.status(201).json({ message: 'Devolução salva, aperte ok para enviar o email......' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -134,7 +134,7 @@ const putCommand = new PutObjectCommand({
         console.log("📧 Tentando enviar e-mail...");
     const info = await transporter.sendMail({
       from: "Devoluções KIDS ZONE <kidzonkidszonemail@gmail.com>",
-      to: "financeiro.kz@kidszoneworld.com.br",
+      to: "devolucao.kz@kidszoneworld.com.br",
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `
