@@ -194,6 +194,7 @@ router.post('/logout', (req, res) => {
 
 router.post('/api/pedidos/input', inputOrdersController.fetchImputOrders)
 router.get('/api/lista-preco/:listaId', productController.getListaPreco);
+router.get('/api/lista-preco-Sem-Verificar/:listaId', productController.getListaPrecoSemVerificar);
 
 
 /////banco de dados mogondb atlas

@@ -145,6 +145,66 @@ async function getListaPreco(req, res) {
     }
 }
 
+
+async function getListaPrecoSemVerificar(req, res) {
+    try {
+        const { listaId } = req.params;
+        const { codigo } = req.query;
+
+        const endpoint = `/v1/ListaPreco/BuscarItemPorId/${listaId}`;
+
+        const response = await fetch(`${pcrLink}${endpoint}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'ApplicationToken': ApplicationToken,
+                'CompanyToken': CompanyToken
+            }
+        });
+
+        if (!response.ok) {
+            console.warn(`Erro ao buscar itens da lista de preço: ${response.statusText}`);
+            return res.status(502).json({ error: 'Erro ao buscar itens da lista de preço' });
+        }
+
+        const data = await response.json();
+
+
+        if (!data.Result?.length) {
+            return res.status(404).json({ message: 'Lista vazia' });
+        }
+
+        let itens = data.Result;
+
+        if (codigo) {
+    const cod = String(codigo).trim();
+
+    itens = itens.filter(
+        i => String(i.ItemCodigo).trim() === cod
+    );
+
+    if (!itens.length) {
+        return res.status(404).json({ message: 'Item não encontrado' });
+    }
+
+    // 🔍 VERIFICA STATUS DO ITEM
+
+
+    const item = itens[0];
+
+
+        }
+
+        res.json(itens);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erro interno' });
+    }
+}
+
+
+
 async function getProductsDetails(req, res) {
   try {
     const { listaId } = req.params;
@@ -209,5 +269,6 @@ function formatProductsFromPriceList(products) {
 
 module.exports = {
     getProductsDetails,
-    getListaPreco
+    getListaPreco,
+    getListaPrecoSemVerificar
 };

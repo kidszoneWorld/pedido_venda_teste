@@ -40,7 +40,7 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
 
 
 async function carregarListaPrecos(listaId) {
-    const response = await fetch(`/api/lista-preco/${listaId}`);
+    const response = await fetch(`/api/lista-preco-Sem-Verificar/${listaId}`);
     listaPrecosData = await response.json();
     console.log('LISTA DE PREÇOS CARREGADA:', Array.isArray(listaPrecosData) ? listaPrecosData.length : listaPrecosData);
 }
@@ -598,7 +598,7 @@ if (i === 2) {
 
         try {
             const response = await fetch(
-                `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
+                `/api/lista-preco-Sem-Verificar/${listaId}?codigo=${encodeURIComponent(cod)}`
             );
 
             if (!response.ok) {
