@@ -54,6 +54,10 @@ router.get('/detalhes',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'detalhes.html'));
 });
 
+router.get('/devolucaoPanel',authMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'devolucaoPanel.html'));
+});
+
 // Rota para a página de detalhes do produto (Detalhes_Produtos.html)
 router.get('/detalhesProdutos',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.html'));
@@ -210,6 +214,7 @@ router.get('/api/sellOut/:codgroup', sellOutController.getSellOutBycodgroup);
 router.post('/api/sellOut/salvar', sellOutController.salvarSellOut);        
 router.delete('/api/sellOut/remover', sellOutController.removerLinhaSellOut);
 
+router.get('/api/devolucao', devController.listarDevolucoes);
 
 
 module.exports = router;

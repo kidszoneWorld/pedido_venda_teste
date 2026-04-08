@@ -12,7 +12,7 @@
     --button-text-light: #ffffff;
     --button-hover-bg-light: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
     --button-hover-text-light: #fafcfa;
-
+ 
     --background-color-dark: #1a1a1a;
     --container-bg-dark: #2a2a2a;
     --header-bg-dark: #2a2a2a;
@@ -342,40 +342,37 @@ body.dark-theme #dadosPedido tbody tr td input{
 }
 
 /* Seção tabela de dados dos itens */
-.descricao{
-    width: 30%;
-}
-.pack {
-    width: 1%;
-}
-
-.uv{
-    width: 6%;
-}
-
-.cod{
+.nfOrigem{
     width: 7%;
 }
-
+.data{
+    width: 10%;
+}
+.cod{
+    width: 6%;
+}
+.lote{
+    width: 10%;
+}
 .qtd{
-    width: 8%;
+    width: 5%;
 }
-
-.ipi{
-    width: 8%;
+.uv{
+    width: 5%;
 }
-
+.pack{
+    width: 5%;
+}
+.descricao{
+    width: 25%;
+}
 .unit{
-    width: 11%;
+    width: 8%;
 }
-
-.vipi{
-    width: 11%;
-}
-
 .total{
-    width: 13%;
+    width: 10%;
 }
+
 
 /* Seção Condição de Pagamento e Observações */
 .payment-conditions {

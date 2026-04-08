@@ -19,6 +19,16 @@ const s3 = new S3Client({
 });
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
+// lista as devolucoes
+exports.listarDevolucoes = async (req, res) => {
+  try {
+    const devolucoes = await Devolucao.find().sort({ data: -1 });
+    res.json(devolucoes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Salvar devolução
 exports.salvarDevolucao = async (req, res) => {
   try {

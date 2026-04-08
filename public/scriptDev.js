@@ -319,7 +319,7 @@ async function salvarDevolucaoMongo() {
         const result = await res.json();
 
         if (res.ok) {
-            alert('Devolução salva no MongoDB!');
+            alert('Devolução salva, enviando email......');
         } else {
             throw new Error(result.error);
         }
@@ -378,6 +378,15 @@ function atualizarTotalProdutos() {
     document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+function dataMaiorQue6Meses(dataInput) {
+    const dataSelecionada = new Date(dataInput);
+    const hoje = new Date();
+
+    const limite = new Date();
+    limite.setMonth(limite.getMonth() - 6); // volta 6 meses
+
+    return dataSelecionada < limite;
+}
 
 function validarTabelaPedido() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
@@ -399,6 +408,18 @@ function validarTabelaPedido() {
 
         const nf = inputs[0]?.value.trim()
         const data = inputs[1]?.value.trim();
+        if (!data) {
+            alert(`Preencha a data na linha ${i + 1}`);
+            inputs[1]?.focus();
+            return false;
+        }
+
+        // 🚫 BLOQUEIO DE 6 MESES
+        if (dataMaiorQue6Meses(data)) {
+            alert(`A data da linha ${i + 1} é superior a 6 meses. Não é permitido.`);
+            inputs[1]?.focus();
+            return false;
+}
         const codigo = inputs[2]?.value.trim();
         const lote = inputs[3]?.value.trim();
         const quantidade = inputs[4]?.value.trim();
@@ -457,10 +478,16 @@ function adicionarNovaLinha() {
             continue; 
         }
 
+        
+        
         // ✏️ INPUT NORMAL
         const input = document.createElement('input');
-        input.type = 'text';
-        
+        if(i === 1){
+            input.type = 'date';
+        }
+        else {
+            input.type = 'text';
+        }
         // TAB só em quase tudo
         input.tabIndex = (i === 0 || i === 1 || i === 2 || i === 3 || i === 4 || i === 8) ? 0 : -1;
 
