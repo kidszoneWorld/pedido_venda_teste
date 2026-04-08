@@ -230,7 +230,7 @@ function zerarCamposPedido() {
 
     garantirLinhaInicial();
 
-    // 🔥 foco automático no código do item
+    //foco automático no código do item
     setTimeout(() => {
         const primeiraLinha = document.querySelector('#dadosPedido tbody tr');
         primeiraLinha?.cells[0]?.querySelector('input')?.focus();
