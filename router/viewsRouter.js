@@ -59,6 +59,11 @@ router.get('/devolucaoPanel',authMiddleware, (req, res) => {
 });
 
 // Rota para a página de detalhes do produto (Detalhes_Produtos.html)
+router.get('/devolucaoDetalhe.html', (req, res) => {
+  res.sendFile(require('path').join(__dirname, '../views/devolucaoDetalhe.html'));
+});
+
+//Rota para a pagina de detalhes de devoulção
 router.get('/detalhesProdutos',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.html'));
 });
@@ -133,6 +138,7 @@ router.get('/api/logistica/logistica02', fernandoController.fetchLogisticsData1)
 
 // salvar
 router.post('/api/devolucao', devController.salvarDevolucao);
+router.get('/api/devolucao/:id', devController.buscarDevolucaoPorId);
 
 // listar
 router.get('/api/devolucao', devController.listarDevolucoes);

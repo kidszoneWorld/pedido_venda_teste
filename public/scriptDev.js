@@ -266,17 +266,17 @@ function montarObjetoDevolucao() {
 
         produtos.push({
             nforigem: cells[0]?.value,
-            data: new Date(), // ou você pode ter um campo de data
-            codigoItem: cells[1]?.value,
-            lote: "", // se tiver campo, mapeia aqui
-            quantidade: parseFloat(cells[2]?.value.replace(',', '.')) || 0,
-            uv: cells[3]?.value,
-            descricao: cells[4]?.value,
+            data: cells[1]?.value, // ou você pode ter um campo de data
+            codigoItem: cells[2]?.value,
+            lote: cells[3]?.value, // se tiver campo, mapeia aqui
+            quantidade: cells[4]?.value || 0,
+            uv: cells[5]?.value,
+            descricao: cells[6]?.value,
             precounitario: parseFloat(
-                cells[5]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
+                cells[7]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
             ) || 0,
             total: parseFloat(
-                cells[6]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
+                cells[8]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
             ) || 0
         });
     });

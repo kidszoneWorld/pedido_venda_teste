@@ -29,6 +29,21 @@ exports.listarDevolucoes = async (req, res) => {
   }
 };
 
+exports.buscarDevolucaoPorId = async (req, res) => {
+  try {
+    const dev = await Devolucao.findById(req.params.id);
+
+    if (!dev) {
+      return res.status(404).json({ error: 'Devolução não encontrada' });
+    }
+
+    res.json(dev);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Salvar devolução
 exports.salvarDevolucao = async (req, res) => {
   try {

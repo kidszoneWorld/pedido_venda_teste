@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes da Devolução</title>
+  <link rel="stylesheet" href="/css/styles2.css">
+
+  <style>
+    body { padding: 20px; font-family: Arial; }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    h2 { margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+<h1>Detalhes da Devolução</h1>
+
+<div class="card">
+  <h2>Dados da devolução</h2>
+  <div class="grid" id="dadosPedido"></div>
+</div>
+
+<div class="card">
+  <h2>Produtos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>NF</th>
+        <th>Data</th>
+        <th>Código</th>
+        <th>Lote</th>
+        <th>Qtd</th>
+        <th>UN</th>
+        <th>Descrição</th>
+        <th>Preço</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaProdutos"></tbody>
+  </table>
+  <div class="card">
+  <h2>Resumo</h2>
+  <div id="resumoTotais"></div>
+</div>
+</div>
+
+<script src="/devolucaoDetalhe.js"></script>
+</body>
+</html>

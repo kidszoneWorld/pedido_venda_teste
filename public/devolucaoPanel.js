@@ -23,7 +23,7 @@ function renderizarTabela(lista) {
             <td>${dev.razaosocial}</td>
             <td>${formatarCNPJ(dev.cnpj)}</td>
             <td>${dev.cidade}</td>
-            <td>${formatarData(dev.data)}</td>
+            <td>${dev.data}</td>
             <td>${totalItens}</td>
             <td>
                 <button onclick="verDetalhes('${dev._id}')">Ver</button>
