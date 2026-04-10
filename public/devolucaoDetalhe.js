@@ -58,8 +58,8 @@ function renderizarResumo(produtos) {
 
 function renderizarDados(dev) {
     const container = document.getElementById('dadosPedido');
-    if(dev.finalizado === 1)
-        finalizado = "Finalizado!!!"
+    console.log(dev.finalizado, finalizado);
+    const isFinalizado = dev.finalizado === 1;
     container.innerHTML = `
         <div><b>Devolução:</b> ${dev.pedidoId}</div>
         <div><b>Cliente:</b> ${dev.razaosocial}</div>
@@ -74,7 +74,7 @@ function renderizarDados(dev) {
         <div><b>Email Fiscal:</b> ${dev.emailFiscal}</div>
         <div><b>Representante:</b> ${dev.representante}</div>
         <div><b>Status:</b> ${dev.status}</div>
-        <div><b>Finalizado:</b> ${finalizado}</div>
+        <div><b>Finalizado:</b> ${isFinalizado ? 'Finalizado' : 'Não FInalizado'}</div>
         <div><b>Motivo:</b> ${dev.motivo}</div>
     `;
 }
