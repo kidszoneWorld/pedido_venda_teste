@@ -16,6 +16,8 @@ const DevolucaoSchema = new mongoose.Schema({
       emailFiscal: String,
       data: String,
       motivo: String,
+      status: String,
+      finalizado: Number,
   produtos: [
     {
       nforigem: String,

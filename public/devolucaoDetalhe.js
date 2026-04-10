@@ -1,3 +1,5 @@
+const finalizado = "Não finalizado"
+
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id');
@@ -56,7 +58,8 @@ function renderizarResumo(produtos) {
 
 function renderizarDados(dev) {
     const container = document.getElementById('dadosPedido');
-
+    if(dev.finalizado === 1)
+        finalizado = "Finalizado!!!"
     container.innerHTML = `
         <div><b>Devolução:</b> ${dev.pedidoId}</div>
         <div><b>Cliente:</b> ${dev.razaosocial}</div>
@@ -70,6 +73,8 @@ function renderizarDados(dev) {
         <div><b>Email:</b> ${dev.email}</div>
         <div><b>Email Fiscal:</b> ${dev.emailFiscal}</div>
         <div><b>Representante:</b> ${dev.representante}</div>
+        <div><b>Status:</b> ${dev.status}</div>
+        <div><b>Finalizado:</b> ${finalizado}</div>
         <div><b>Motivo:</b> ${dev.motivo}</div>
     `;
 }
@@ -77,7 +82,6 @@ function renderizarDados(dev) {
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('tabelaProdutos');
     tbody.innerHTML = '';
-
     produtos.forEach(p => {
         const tr = document.createElement('tr');
 

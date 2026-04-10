@@ -6,21 +6,58 @@
   <link rel="stylesheet" href="/css/styles2.css">
 </head>
 <body>
+    <footer>
+                <div class="link_sites">
 
+            <!-- Toggle switch -->
+            <!-- <label class="theme-switch" id="seletor">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label> -->
+
+           <button id="logoutButton2">Sair</button>
+           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
+           <a target="_blank" href="/comercial">Área Comercial</a>
+           <a target="_blank" href="/">Pedido de Venda</a>
+           <a target="_blank" href="/logistica03">Área logística</a>
+           <a target="_blank" href="/detalhesProdutos">Detalhes do Produto</a>
+           <a target="_blank" href="/cadastroCliente">Cadastrar Cliente</a>
+           <a target="_blank" href="/investComercial">Investimento</a>
+        </div>
+            </footer>
 <h2>Painel de Devoluções</h2>
 
-<input type="text" id="filtro" placeholder="Buscar por cliente ou CNPJ">
+<input type="text" id="filtroCliente" placeholder="Cliente ou CNPJ">
+<input type="text" id="filtroRepresentante" placeholder="Representante">
+<input type="text" id="filtroDevolucao" placeholder="Nº Devolução">
+
+<select id="filtroStatus">
+  <option value="">Todos Status</option>
+  <option value="pendente">Pendente</option>
+  <option value="aprovado">Aprovado</option>
+  <option value="reprovado">Reprovado</option>
+</select>
+
+<select id="filtroFinalizado">
+  <option value="">Todos</option>
+  <option value="1">Finalizado</option>
+  <option value="0">Não Finalizado</option>
+</select>
 
 <table border="1" width="100%" id="tabelaDevolucoes">
   <thead>
     <tr>
       <th>Devolução</th>
       <th>Cliente</th>
+      <th>Status</th>
       <th>CNPJ</th>
-      <th>Cidade</th>
+      <th>Representante</th>
       <th>Data</th>
       <th>Total Itens</th>
-      <th>Ações</th>
+      <th>Detalhes</th>
+      <th>Status</th>
+      <th>Finalizado</th>
+      <th>Salvar</th>
     </tr>
   </thead>
   <tbody></tbody>

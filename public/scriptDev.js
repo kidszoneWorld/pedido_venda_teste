@@ -300,6 +300,8 @@ function montarObjetoDevolucao() {
         emailFiscal: document.getElementById('email_fiscal').value,
         data: dataFormatada,
         motivo: document.getElementById('observation').value,
+        status: "pendente",
+        finalizado: 0,
         produtos
     };
 

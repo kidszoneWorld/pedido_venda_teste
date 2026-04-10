@@ -44,6 +44,23 @@ exports.buscarDevolucaoPorId = async (req, res) => {
   }
 };
 
+exports.atualizarDevolucao = async (req, res) => {
+  
+  try {
+    const { status, finalizado } = req.body;
+
+    const dev = await Devolucao.findByIdAndUpdate(
+      req.params.id,
+      { status, finalizado },
+      { new: true }
+    );
+
+    res.json(dev);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Salvar devolução
 exports.salvarDevolucao = async (req, res) => {
   try {
