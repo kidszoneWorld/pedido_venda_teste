@@ -1,4 +1,4 @@
-const finalizado = "Não finalizado"
+
 
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -58,7 +58,6 @@ function renderizarResumo(produtos) {
 
 function renderizarDados(dev) {
     const container = document.getElementById('dadosPedido');
-    console.log(dev.finalizado, finalizado);
     const isFinalizado = dev.finalizado === 1;
     container.innerHTML = `
         <div><b>Devolução:</b> ${dev.pedidoId}</div>
