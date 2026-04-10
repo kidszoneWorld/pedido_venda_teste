@@ -11,7 +11,12 @@ async function carregarDevolucoes() {
         console.error('Erro ao carregar devoluções', err);
     }
 }
-
+function formatarMoeda(valor) {
+    return valor?.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }) || 'R$ 0,00';
+}
 function renderizarTabela(lista) {
     
     const tbody = document.querySelector('#tabelaDevolucoes tbody');
@@ -45,7 +50,7 @@ tr.innerHTML = `
     <td>${formatarCNPJ(dev.cnpj)}</td>
     <td>${dev.representante}</td>
     <td>${dev.data}</td>
-    <td>${totalItens}</td>
+    <td>${formatarMoeda(totalItens)}</td>
     <td>
     <center>
         <button onclick="verDetalhes('${dev._id}')">Ver</button>

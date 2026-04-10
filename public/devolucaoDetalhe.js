@@ -38,7 +38,6 @@ function calcularTotais(produtos) {
         totalVolumes += qtd;
         totalValor += total;
     });
-
     return {
         totalVolumes,
         totalValor
