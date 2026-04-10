@@ -18,6 +18,7 @@ const DevolucaoSchema = new mongoose.Schema({
       motivo: String,
       status: String,
       finalizado: Number,
+      nfVinculada: String,
   produtos: [
     {
       nforigem: String,

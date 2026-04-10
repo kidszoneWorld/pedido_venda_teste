@@ -73,7 +73,8 @@ function renderizarDados(dev) {
         <div><b>Representante:</b> ${dev.representante}</div>
         <div><b>Status:</b> ${dev.status}</div>
         <div><b>Finalizado:</b> ${isFinalizado ? 'Finalizado' : 'Não FInalizado'}</div>
-        <div><b>Motivo:</b> ${dev.motivo}</div>
+        <div><b>nfVinculada:</b> ${dev.nfVinculada}</div>
+        <div><b>Motivo:</b> <textarea rows="4" cols="50" disabled>${dev.motivo}</textarea></div>
     `;
 }
 

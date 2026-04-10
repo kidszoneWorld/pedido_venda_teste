@@ -301,6 +301,7 @@ function montarObjetoDevolucao() {
         motivo: document.getElementById('observation').value,
         status: "pendente",
         finalizado: 0,
+        nfVinculada: '',
         produtos
     };
 

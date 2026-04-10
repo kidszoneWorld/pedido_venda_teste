@@ -45,7 +45,7 @@ function renderizarTabela(lista) {
 
 tr.innerHTML = `
     <td>${dev.pedidoId}</td>
-    <td>${dev.razaosocial}</td>
+    <td><font size="-5">${dev.razaosocial}</font></td>
     <td>${dev.status}</td>
     <td>${formatarCNPJ(dev.cnpj)}</td>
     <td>${dev.representante}</td>
@@ -69,6 +69,7 @@ tr.innerHTML = `
     <input type="checkbox" 
     ${finalizado ? 'checked' : ''} 
     ${(isPendente || isReprovado) ? 'disabled' : ''}>
+    <input type="number" name="nfVinculada" placeholder="nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''}>
     </center></td>
     <td>
         <button onclick="salvar('${dev._id}', this)">Salvar</button>
@@ -84,6 +85,7 @@ document.getElementById('filtroRepresentante').addEventListener('input', aplicar
 document.getElementById('filtroDevolucao').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
 document.getElementById('filtroFinalizado').addEventListener('change', aplicarFiltros);
+document.getElementById('filtroNfVinculada').addEventListener('input', aplicarFiltros);
 
 // helpers
 function formatarCNPJ(cnpj) {
@@ -120,6 +122,7 @@ function aplicarFiltros() {
     const devolucao = document.getElementById('filtroDevolucao').value.toLowerCase();
     const status = document.getElementById('filtroStatus').value;
     const finalizado = document.getElementById('filtroFinalizado').value;
+    const nfVinculada = document.getElementById('filtroNfVinculada').value;
 
     const filtrados = listaOriginal.filter(dev => {
 
@@ -141,7 +144,11 @@ function aplicarFiltros() {
             (finalizado === "1" && dev.finalizado === 1) ||
             (finalizado === "0" && dev.finalizado !== 1);
 
-        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado;
+        const matchNfVinculada = 
+            !nfVinculada || dev.nfVinculada?.includes(nfVinculada);
+
+
+        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado && matchNfVinculada;
     });
 
     renderizarTabela(filtrados);
@@ -153,7 +160,9 @@ function salvar(id, btn) {
 
     const finalizado = tr.querySelector('input[type="checkbox"]').checked;
 
-    console.log({ id, statusSelecionado, finalizado });
+    const nfVinculada = tr.querySelector('input[type="number"]')?.value;
+
+    console.log({ id, statusSelecionado, finalizado, nfVinculada });
 
     if (!statusSelecionado) {
         alert("Selecione um status!");
@@ -167,7 +176,8 @@ function salvar(id, btn) {
         },
         body: JSON.stringify({
             status: statusSelecionado.toLowerCase(),
-            finalizado
+            finalizado,
+            nfVinculada
         })
     })
     .then(res => res.json())

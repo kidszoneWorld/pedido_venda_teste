@@ -46,7 +46,7 @@ exports.buscarDevolucaoPorId = async (req, res) => {
 
 exports.atualizarDevolucao = async (req, res) => {
   try {
-    let { status, finalizado } = req.body;
+    let { status, finalizado, nfVinculada } = req.body;
 
     const statusLower = status?.toLowerCase();
 
@@ -61,7 +61,7 @@ exports.atualizarDevolucao = async (req, res) => {
 
     const dev = await Devolucao.findByIdAndUpdate(
       req.params.id,
-      { status: statusLower, finalizado },
+      { status: statusLower, finalizado, nfVinculada},
       { new: true }
     );
 
