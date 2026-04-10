@@ -49,8 +49,8 @@ console.log('script.js carregado');
 
 //run once
 
- limparCamposCliente();
- atualizarTotais();
+//  limparCamposCliente();
+//  atualizarTotais();
 
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
@@ -285,7 +285,6 @@ function montarObjetoDevolucao() {
     });
 
     const devolucao = {
-        pedidoId: Date.now().toString(), // ou outro ID
         cnpj: document.getElementById('cnpj').value.replace(/\D/g, ''),
         razaosocial: document.getElementById('razao_social').value,
         endereco: document.getElementById('endereco').value,

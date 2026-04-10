@@ -24,7 +24,19 @@ function renderizarTabela(lista) {
 
         const status = (dev.status || '').toLowerCase();
         const isPendente = status === 'pendente';
-        const finalizado = dev.finalizado === 1 && !isPendente;
+        const isReprovado = status === 'reprovado';
+
+        let finalizado = dev.finalizado === 1;
+
+        // regras de negócio
+        if (isPendente) {
+            finalizado = false;
+        }
+
+        if (isReprovado) {
+            finalizado = true;
+}
+        
 
 tr.innerHTML = `
     <td>${dev.pedidoId}</td>
@@ -50,8 +62,8 @@ tr.innerHTML = `
     </td>
     <td><center>
     <input type="checkbox" 
-        ${finalizado ? 'checked' : ''} 
-        ${isPendente ? 'disabled' : ''}>
+    ${finalizado ? 'checked' : ''} 
+    ${(isPendente || isReprovado) ? 'disabled' : ''}>
     </center></td>
     <td>
         <button onclick="salvar('${dev._id}', this)">Salvar</button>
@@ -82,10 +94,17 @@ function controlarFinalizado(id, radio) {
     const tr = radio.closest('tr');
     const checkbox = tr.querySelector('input[type="checkbox"]');
 
-    if (radio.value.toLowerCase() === 'pendente') {
+    const valor = radio.value.toLowerCase();
+
+    if (valor === 'pendente') {
         checkbox.checked = false;
         checkbox.disabled = true;
-    } else {
+    } 
+    else if (valor === 'reprovado') {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+    } 
+    else {
         checkbox.disabled = false;
     }
 }
@@ -135,8 +154,7 @@ function salvar(id, btn) {
         alert("Selecione um status!");
         return;
     }
-
-    // 🔥 AQUI você envia pro backend
+    //envia pro backend
     fetch(`/devolucao/${id}`, {
         method: 'PUT',
         headers: {

@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const Devolucao = require('../models/Devolucao');
-
+const Counter = require('../models/Counter');
 
 const crypto = require("crypto");
 
@@ -45,17 +45,28 @@ exports.buscarDevolucaoPorId = async (req, res) => {
 };
 
 exports.atualizarDevolucao = async (req, res) => {
-  
   try {
-    const { status, finalizado } = req.body;
+    let { status, finalizado } = req.body;
+
+    const statusLower = status?.toLowerCase();
+
+    // REGRAS DE NEGÓCIO
+    if (statusLower === 'pendente') {
+      finalizado = 0;
+    }
+
+    if (statusLower === 'reprovado') {
+      finalizado = 1;
+    }
 
     const dev = await Devolucao.findByIdAndUpdate(
       req.params.id,
-      { status, finalizado },
+      { status: statusLower, finalizado },
       { new: true }
     );
 
     res.json(dev);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -64,10 +75,25 @@ exports.atualizarDevolucao = async (req, res) => {
 // Salvar devolução
 exports.salvarDevolucao = async (req, res) => {
   try {
-    const novaDevolucao = new Devolucao(req.body);
+
+    // gera número sequencial
+    const contador = await Counter.findOneAndUpdate(
+      { name: 'devolucao' },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+
+    const novoNumero = contador.seq;
+
+    const novaDevolucao = new Devolucao({
+      ...req.body,
+      pedidoId: novoNumero
+    });
+
     await novaDevolucao.save();
 
-    res.status(201).json({ message: 'Devolução salva, aperte ok para enviar o email......' });
+    res.json(novaDevolucao);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
