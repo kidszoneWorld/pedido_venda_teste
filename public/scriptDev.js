@@ -191,7 +191,6 @@ cnpjInput1.addEventListener('blur', async function () {
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
-        setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
     }
 });
 
