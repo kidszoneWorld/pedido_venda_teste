@@ -25,13 +25,30 @@ function renderizarTabela(lista) {
     lista.forEach(dev => {
         const tr = document.createElement('tr');
 
+        const status = (dev.status || '').toLowerCase();
+
+        let finalizado = dev.finalizado === 1;
+        if (status === 'pendente') {
+            tr.style.backgroundColor = '#fff3cd'; // amarelo claro
+        }
+
+        if (status === 'aprovado' && finalizado) {
+            tr.style.backgroundColor = '#d4edda'; // verde claro
+        }
+
+        if (status === 'aprovado' && !finalizado) {
+            tr.style.backgroundColor = '#fff3cd'; // verde claro
+        }
+
+        if (status === 'reprovado') {
+            tr.style.backgroundColor = '#f8d7da'; // vermelho claro
+        }
+
         const totalItens = dev.produtos.reduce((acc, p) => acc + p.total, 0);
 
-        const status = (dev.status || '').toLowerCase();
         const isPendente = status === 'pendente';
         const isReprovado = status === 'reprovado';
 
-        let finalizado = dev.finalizado === 1;
 
         // regras de negócio
         if (isPendente) {
