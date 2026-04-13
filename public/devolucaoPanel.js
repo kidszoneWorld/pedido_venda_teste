@@ -37,7 +37,7 @@ function renderizarTabela(lista) {
         }
 
         if (status === 'aprovado' && !finalizado) {
-            tr.style.backgroundColor = '#fff3cd'; // verde claro
+            tr.style.backgroundColor = '#fffFcd'; //  amarelo claro
         }
 
         if (status === 'reprovado') {
@@ -97,9 +97,10 @@ tr.innerHTML = `
     });
 }
 
+document.getElementById('filtroDevolucao').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroCliente').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroRepresentante').addEventListener('input', aplicarFiltros);
-document.getElementById('filtroDevolucao').addEventListener('input', aplicarFiltros);
+document.getElementById('filtroNfOrigem').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
 document.getElementById('filtroFinalizado').addEventListener('change', aplicarFiltros);
 document.getElementById('filtroNfVinculada').addEventListener('input', aplicarFiltros);
@@ -136,6 +137,7 @@ function controlarFinalizado(id, radio) {
 function aplicarFiltros() {
     const cliente = document.getElementById('filtroCliente').value.toLowerCase();
     const representante = document.getElementById('filtroRepresentante').value.toLowerCase();
+    const nfOrigem = document.getElementById('filtroNfOrigem').value;
     const devolucao = document.getElementById('filtroDevolucao').value.toLowerCase();
     const status = document.getElementById('filtroStatus').value;
     const finalizado = document.getElementById('filtroFinalizado').value;
@@ -149,6 +151,12 @@ function aplicarFiltros() {
 
         const matchRepresentante =
             !representante || dev.representante?.toLowerCase().includes(representante);
+
+        const matchNfOrigem =
+            !nfOrigem ||
+            dev.produtos?.some(p =>
+                p.nforigem?.toLowerCase().includes(nfOrigem)
+            );
 
         const matchDevolucao =
             !devolucao || dev.pedidoId?.toString().includes(devolucao);
@@ -165,7 +173,7 @@ function aplicarFiltros() {
             !nfVinculada || dev.nfVinculada?.includes(nfVinculada);
 
 
-        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado && matchNfVinculada;
+        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado && matchNfVinculada && matchNfOrigem;
     });
 
     renderizarTabela(filtrados);
