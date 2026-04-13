@@ -22,35 +22,6 @@
             document.documentElement.classList.add(savedTheme + '-theme');
         })();
 
-        alert(
-"Atenção!\n\n" +
-
-"Bem-vindo(a) à tela de Devolução.\n\n" +
-
-"Não serão permitidas devoluções com mais de 180 dias\n\n"+
-
-"Para solicitar uma devolução:\n\n" +
-
-"1. Informe o CNPJ do cliente.\n" +
-"As informações serão carregadas automaticamente.\n\n" +
-
-"2. Preencha o motivo da devolução.\n\n" +
-
-"3. Adicione os itens a serem devolvidos, preenchendo TODOS os campos:\n" +
-"- NF de origem\n" +
-"- Data da NF\n" +
-"- Código do item (carrega automaticamente a descrição)\n" +
-"- Lote\n" +
-"- Quantidade\n" +
-"- Valor unitário\n\n" +
-
-"Obs.: Os campos 'UV' e 'Total' são calculados automaticamente.\n\n" +
-
-"4. Clique em 'Enviar por e-mail'.\n" +
-"Anexe as imagens dos itens devolvidos e, se necessário, adicione destinatários em cópia (CC) separados por ;.\n\n" +
-
-"Em caso de dúvidas, entre em contato com o suporte."
-);
     </script>
 
 </head>
@@ -359,6 +330,20 @@
             window.location.href = '/login2';
         });
     </script>
+
+//tutorial
+
+
+<div id="tutorialOverlay"></div>
+
+<div id="tutorialBox">
+    <p id="tutorialText"></p>
+    <div class="tutorial-buttons">
+        <button onclick="prevStep()">Voltar</button>
+        <button onclick="nextStep()">Próximo</button>
+        <button onclick="endTutorial()">Finalizar</button>
+    </div>
+</div>
 
 </body>
 </html>

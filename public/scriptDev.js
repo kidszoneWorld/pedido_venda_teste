@@ -9,6 +9,7 @@ let listaPrecosData;
 let icmsSTData;
 let listaPrecosIpiData;
   
+let step = 0;
 
 // Helper DOM
 const el = id => document.getElementById(id);
@@ -779,7 +780,7 @@ closeButton.addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-
+showStep();
 
 
 //consts email
@@ -1221,11 +1222,118 @@ document.addEventListener("DOMContentLoaded", () => {
         el('overlay').style.display = 'block';
         el('helpModal').style.display = 'block';
     };
-    el('closeModal').onclick = closeHelp;
-    el('overlay').onclick = closeHelp;
 
-    function closeHelp() {
-        el('overlay').style.display = 'none';
-        el('helpModal').style.display = 'none';
-    }
+
 });
+
+//tutorial
+
+
+const tutorialSteps = [
+    {
+        element: '#cnpj',
+        text: 'Olá Sr.Representante,\nSomente serão aceitas devoluções com menos de 180 dias!!!\n\n Aperte em próximo para continuar com o tutorial ou pressione finalizar para sair '
+    },
+    {
+        element: '#cnpj',
+        text: 'Passo 1. Informe o CNPJ do cliente.\n\n As demais informações serão carregadas automaticamente.'
+    },
+    {
+        element: '#observation',
+        text: 'Passo 2. Informe o motivo da devolução.'
+    },
+    {
+        element: '#dadosPedido',
+        text: "Passo 3. Adicione os itens a serem devolvidos, preenchendo TODOS os campos:\n" +
+            "- NF de origem\n" +
+            "- Data da NF\n" +
+            "- Código do item (carrega automaticamente a descrição)\n" +
+            "- Lote\n" +
+            "- Quantidade\n" +
+            "- Valor unitário\n\n" 
+    },    
+    {
+        element: '#dadosPedido',
+        text: "OBS: Os campos 'UV' e 'Total' são calculados automaticamente. "
+    },
+    {
+        element: '#button_pdf',
+        text: "Passo 4. Clique em 'Enviar por e-mail'.\n" +
+            "Anexe as imagens dos itens devolvidos e, se necessário, adicione destinatários em cópia (CC) separando os emails por ;.\n\n"
+    }
+];
+
+function showStep() {
+    console.log("step" + step)
+    const overlay = document.getElementById('tutorialOverlay');
+    const box = document.getElementById('tutorialBox');
+    const text = document.getElementById('tutorialText');
+
+    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+
+    const stepData = tutorialSteps[step];
+    const element = document.querySelector(stepData.element);
+
+    if (!element) return;
+
+    element.classList.add('highlight');
+
+    // 🔥TRATAMENTO ESPECIAL PARA O PRIMEIRO STEP
+    if (step === 0) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        setTimeout(() => {
+            const rect = element.getBoundingClientRect();
+
+            box.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+            box.style.left = (rect.left + window.scrollX) + 'px';
+
+            text.innerText = stepData.text;
+            overlay.style.display = 'block';
+        }, 100); // tempo maior pra garantir render
+
+    }
+
+    // outros steps
+    element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+
+    setTimeout(() => {
+        const rect = element.getBoundingClientRect();
+
+        box.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        box.style.left = (rect.left + window.scrollX) + 'px';
+
+        text.innerText = stepData.text;
+        overlay.style.display = 'block';
+    }, 300);
+
+}
+
+function nextStep() {
+    if (step < tutorialSteps.length - 1) {
+        step++;
+        showStep();
+    } else {
+        endTutorial();
+    }
+}
+
+function prevStep() {
+    if (step > 0) {
+        step--;
+        showStep();
+    }
+}
+
+function endTutorial() {
+    document.getElementById('tutorialOverlay').style.display = 'none';
+    document.getElementById('tutorialBox').style.display = 'none';
+
+    document.querySelectorAll('.highlight')
+        .forEach(el => el.classList.remove('highlight'));
+
+    step = 0; // reseta o tutorial
+}
