@@ -1232,7 +1232,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const tutorialSteps = [
     {
         element: '#cnpj',
-        text: 'Olá Sr.Representante,\nSomente serão aceitas devoluções com menos de 180 dias!!!\n\n Aperte em próximo para continuar com o tutorial ou pressione finalizar para sair '
+        text: 'Olá Sr(a).Representante,\nSomente serão aceitas devoluções com menos de 180 dias!!!\n\n Aperte em próximo para continuar com o tutorial ou pressione finalizar para sair '
     },
     {
         element: '#cnpj',
@@ -1249,13 +1249,9 @@ const tutorialSteps = [
             "- Data da NF\n" +
             "- Código do item (carrega automaticamente a descrição)\n" +
             "- Lote\n" +
-            "- Quantidade\n" +
+            "- Quantidade (em unidades)\n" +
             "- Valor unitário\n\n" 
     },    
-    {
-        element: '#dadosPedido',
-        text: "OBS: Os campos 'UV' e 'Total' são calculados automaticamente. "
-    },
     {
         element: '#button_pdf',
         text: "Passo 4. Clique em 'Enviar por e-mail'.\n" +
