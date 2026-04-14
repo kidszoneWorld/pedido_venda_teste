@@ -122,7 +122,7 @@ async function carregarDevolucoes() {
 
         listaOriginal = dados;
 
-        aplicarFiltros(); // 👈 AQUI é o lugar correto
+        aplicarFiltros();
 
     } catch (err) {
         console.error('Erro ao carregar devoluções', err);
@@ -192,7 +192,7 @@ tr.innerHTML = `
     <td>${formatarMoeda(totalItens)}</td>
     <td>
     <center>
-        <button onclick="verDetalhes('${dev._id}')">Ver</button>
+        <button target="_blank" onclick="verDetalhes('${dev._id}')">Ver</button>
     </center>
     </td>
     <td>
@@ -347,7 +347,7 @@ function salvar(id, btn) {
 
 // 🔎 botão detalhes
 function verDetalhes(id) {
-    window.location.href = `/devolucaoDetalhe.html?id=${id}`;
+    window.location.href = `/devolucaoDetalhe.html?id=${id}`, '_blank';
 }
 
 carregarDevolucoes();

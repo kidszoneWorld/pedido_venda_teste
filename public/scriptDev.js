@@ -1231,7 +1231,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const tutorialSteps = [
     {
         element: '#cnpj',
-        text: 'Olá Sr(a).Representante,\nSomente serão aceitas devoluções com menos de 180 dias!!!\n\n Aperte em próximo para continuar com o tutorial ou pressione finalizar para sair '
+        text: 'Olá Sr(a).Representante,\nSomente serão aceitas devoluções com menos de 180 dias a partir do faturamento!!!\n\n Aperte em próximo para continuar com o tutorial ou pressione finalizar para sair '
     },
     {
         element: '#cnpj',
