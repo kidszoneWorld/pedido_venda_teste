@@ -406,6 +406,9 @@ body.dark-theme #dadosPedido tbody tr td input{
     padding: 5px;
     font-weight: bold;
     text-align: center;
+
+
+    
 }
 .observations textarea {
     width: 99.5%;
@@ -503,12 +506,15 @@ input:focus , textarea:focus{
 
 /* Adiciona o asterisco vermelho ao lado do texto CNPJ e TIPO PEDIDO */
 label[for="cnpj"]::after,
+label[for="motivo"]::after,
 label[for="tipo_pedido"]::after {
     content: " *"; /* Insere o asterisco */
     color: rgba(225, 0, 152); /* Cor vermelha */
     font-weight: bold; /* Deixa o asterisco em negrito */
     font-size: 22px; /* Tamanho do asterisco */
 }
+
+
 
 label[for="referencia"]::after {
     content: " ? "; /* Insere o asterisco */

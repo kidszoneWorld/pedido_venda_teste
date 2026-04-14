@@ -1,15 +1,69 @@
 let listaOriginal = [];
 
+document.addEventListener("DOMContentLoaded", () => {
+    aplicarRestricaoRepresentante();
+});
+
+async function aplicarRestricaoRepresentante() {
+    try {
+        window.isRepresentante = true;
+        
+        // Faz a requisição para obter os dados da sessão
+        const response = await fetch('/session-data');
+        const sessionData = await response.json();
+
+        // Define os dados no front-end
+        if (sessionData.isAuthenticated) {
+            window.sessionData = sessionData;
+
+            const userNumero = window.sessionData?.userNumero || null;
+            
+            if (!userNumero) {
+                window.isRepresentante = false;
+                return;
+            }
+            const inputRep = document.getElementById('filtroRepresentante');
+
+            // força valor
+            inputRep.value = userNumero;
+            
+                inputRep.readOnly = true;
+                inputRep.style.backgroundColor = '#e9ecef';
+                inputRep.style.cursor = 'not-allowed';
+            
+
+
+        } else {
+            console.warn('Usuário não autenticado');
+            window.location.href = '/login2'; // Redireciona para a página de login
+        }
+    } catch (error) {
+        console.error('Erro ao carregar os dados da sessão:', error);
+    }
+};
+
+
+
+
+
 async function carregarDevolucoes() {
     try {
+        await aplicarRestricaoRepresentante(); // ok manter aqui
+
         const res = await fetch('/api/devolucao');
         const dados = await res.json();
 
-        listaOriginal = dados; 
-        renderizarTabela(dados);
+        listaOriginal = dados;
+
+        aplicarFiltros(); // 👈 AQUI é o lugar correto
+
     } catch (err) {
         console.error('Erro ao carregar devoluções', err);
     }
+}
+function extrairNumeroRep(email) {
+    const match = email.match(/^rep(\d+)@/i);
+    return match ? match[1] : null;
 }
 function formatarMoeda(valor) {
     return valor?.toLocaleString('pt-BR', {
@@ -18,7 +72,8 @@ function formatarMoeda(valor) {
     }) || 'R$ 0,00';
 }
 function renderizarTabela(lista) {
-    
+    const isRep = window.isRepresentante;
+
     const tbody = document.querySelector('#tabelaDevolucoes tbody');
     tbody.innerHTML = '';
     
@@ -75,21 +130,21 @@ tr.innerHTML = `
     </td>
     <td>
         <input type="radio" name="status-${dev._id}" value="Pendente"
-        ${status === 'pendente' ? 'checked' : ''}
-        onchange="controlarFinalizado('${dev._id}', this)">
+        ${status === 'pendente' ? 'checked' : '' }
+        onchange="controlarFinalizado('${dev._id}', this)" ${isRep ? 'disabled' : ''}>
         Pendente<br>
-        <input type="radio" name="status-${dev._id}" value="Aprovado" ${status === 'aprovado' ? 'checked' : ''}> Aprovado<br>
+        <input type="radio" name="status-${dev._id}" value="Aprovado" ${status === 'aprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Aprovado<br>
 
-        <input type="radio" name="status-${dev._id}" value="Reprovado" ${status === 'reprovado' ? 'checked' : ''}> Reprovado
+        <input type="radio" name="status-${dev._id}" value="Reprovado" ${status === 'reprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Reprovado
     </td>
     <td><center>
     <input type="checkbox" 
     ${finalizado ? 'checked' : ''} 
-    ${(isPendente || isReprovado) ? 'disabled' : ''}>
-    <input type="number" name="nfVinculada" placeholder="nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''}>
+    ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
+    <input type="number" name="nfVinculada" placeholder="nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
-        <button onclick="salvar('${dev._id}', this)">Salvar</button>
+        <button onclick="salvar('${dev._id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
     </td>
 `;
 
@@ -134,6 +189,13 @@ function controlarFinalizado(id, radio) {
     }
 }
 
+function extrairNumeroDoRepresentante(rep) {
+    if (!rep) return null;
+
+    // pega tudo antes do " - "
+    return rep.split('-')[0].trim();
+}
+
 function aplicarFiltros() {
     const cliente = document.getElementById('filtroCliente').value.toLowerCase();
     const representante = document.getElementById('filtroRepresentante').value.toLowerCase();
@@ -150,7 +212,7 @@ function aplicarFiltros() {
             dev.cnpj?.includes(cliente);
 
         const matchRepresentante =
-            !representante || dev.representante?.toLowerCase().includes(representante);
+            !representante || extrairNumeroDoRepresentante(dev.representante) === representante;
 
         const matchNfOrigem =
             !nfOrigem ||
