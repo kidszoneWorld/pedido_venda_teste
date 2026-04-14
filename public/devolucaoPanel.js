@@ -347,7 +347,7 @@ function salvar(id, btn) {
 
 // 🔎 botão detalhes
 function verDetalhes(id) {
-    window.location.href = `/devolucaoDetalhe.html?id=${id}`, '_blank';
+    window.open( `/devolucaoDetalhe.html?id=${id}`, '_blank');
 }
 
 carregarDevolucoes();
