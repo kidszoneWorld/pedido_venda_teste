@@ -43,7 +43,74 @@ async function aplicarRestricaoRepresentante() {
 };
 
 
+function exportarExcel() {
+    // usa os dados já filtrados (IMPORTANTE)
+    const cliente = document.getElementById('filtroCliente').value.toLowerCase();
+    const representante = document.getElementById('filtroRepresentante').value.toLowerCase();
+    const nfOrigem = document.getElementById('filtroNfOrigem').value;
+    const devolucao = document.getElementById('filtroDevolucao').value.toLowerCase();
+    const status = document.getElementById('filtroStatus').value;
+    const finalizado = document.getElementById('filtroFinalizado').value;
+    const nfVinculada = document.getElementById('filtroNfVinculada').value;
 
+    const filtrados = listaOriginal.filter(dev => {
+
+        const matchCliente =
+            dev.razaosocial?.toLowerCase().includes(cliente) ||
+            dev.cnpj?.includes(cliente);
+
+        const matchRepresentante =
+            !representante || extrairNumeroDoRepresentante(dev.representante) === representante;
+
+        const matchNfOrigem =
+            !nfOrigem ||
+            dev.produtos?.some(p =>
+                p.nforigem?.toLowerCase().includes(nfOrigem)
+            );
+
+        const matchDevolucao =
+            !devolucao || dev.pedidoId?.toString().includes(devolucao);
+
+        const matchStatus =
+            !status || dev.status === status;
+
+        const matchFinalizado =
+            !finalizado ||
+            (finalizado === "1" && dev.finalizado === 1) ||
+            (finalizado === "0" && dev.finalizado !== 1);
+
+        const matchNfVinculada = 
+            !nfVinculada || dev.nfVinculada?.includes(nfVinculada);
+
+        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado && matchNfVinculada && matchNfOrigem;
+    });
+
+    // transforma dados para excel
+    const dadosExcel = filtrados.map(dev => {
+        const totalItens = dev.produtos.reduce((acc, p) => acc + p.total, 0);
+
+        return {
+            Pedido: dev.pedidoId,
+            Cliente: dev.razaosocial,
+            CNPJ: formatarCNPJ(dev.cnpj),
+            Representante: dev.representante,
+            Data: formatarData(dev.data),
+            Status: dev.status,
+            Finalizado: dev.finalizado ? 'Sim' : 'Não',
+            "NF Vinculada": dev.nfVinculada || '',
+            Total: totalItens
+        };
+    });
+
+    // cria planilha
+    const ws = XLSX.utils.json_to_sheet(dadosExcel);
+    const wb = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(wb, ws, "Devoluções");
+
+    // download
+    XLSX.writeFile(wb, "devolucoes.xlsx");
+}
 
 
 async function carregarDevolucoes() {

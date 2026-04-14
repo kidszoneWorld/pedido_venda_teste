@@ -5,6 +5,8 @@ function getIdFromUrl() {
     return params.get('id');
 }
 
+let devolucaoAtual = null; // 👈 GLOBAL
+
 async function carregarDetalhe() {
     const id = getIdFromUrl();
 
@@ -17,6 +19,8 @@ async function carregarDetalhe() {
         const res = await fetch(`/api/devolucao/${id}`);
         const dev = await res.json();
 
+        devolucaoAtual = dev; // 👈 salva global
+
         renderizarDados(dev);
         renderizarProdutos(dev.produtos);
         renderizarResumo(dev.produtos);
@@ -25,6 +29,80 @@ async function carregarDetalhe() {
         console.error(err);
         alert('Erro ao carregar devolução');
     }
+}
+
+function exportarDetalheExcel() {
+    if (!devolucaoAtual) {
+        alert("Dados ainda não carregados!");
+        return;
+    }
+
+    const dev = devolucaoAtual;
+
+    let csv = [];
+
+    // ===== DADOS GERAIS =====
+    csv.push(["DEVOLUÇÃO"]);
+    csv.push(["Pedido", dev.pedidoId]);
+    csv.push(["Cliente", dev.razaosocial]);
+    csv.push(["CNPJ", formatarCNPJ(dev.cnpj)]);
+    csv.push(["Cidade", dev.cidade]);
+    csv.push(["UF", dev.uf]);
+    csv.push(["Representante", dev.representante]);
+    csv.push(["Status", dev.status]);
+    csv.push(["Finalizado", dev.finalizado === 1 ? "Sim" : "Não"]);
+    csv.push(["NF Vinculada", dev.nfVinculada]);
+    csv.push([]); // linha em branco
+
+    // ===== PRODUTOS =====
+    csv.push([
+        "NF Origem",
+        "Data",
+        "Código",
+        "Lote",
+        "Quantidade",
+        "UV",
+        "Descrição",
+        "Preço Unitário",
+        "Total"
+    ]);
+
+    dev.produtos.forEach(p => {
+        csv.push([
+            p.nforigem,
+            formatarData(p.data),
+            p.codigoItem,
+            p.lote,
+            p.quantidade,
+            p.uv,
+            p.descricao,
+            p.precounitario,
+            p.total
+        ]);
+    });
+
+    // ===== TOTAIS =====
+    const { totalVolumes, totalValor } = calcularTotais(dev.produtos);
+
+    csv.push([]);
+    csv.push(["Totais"]);
+    csv.push(["Total Volumes", totalVolumes]);
+    csv.push(["Total R$", totalValor]);
+
+    // ===== CONVERTE CSV =====
+    const conteudo = csv.map(linha => linha.join(";")).join("\n");
+
+    const BOM = "\uFEFF"; // 👈 ESSENCIAL
+
+    const blob = new Blob([BOM + conteudo], {
+        type: "text/csv;charset=utf-8;"
+    });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `devolucao_${dev.pedidoId}.csv`;
+
+    link.click();
 }
 
 function calcularTotais(produtos) {

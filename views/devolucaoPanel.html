@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Painel de Devoluções</title>
   <link rel="stylesheet" href="/css/styles2.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <footer>
@@ -26,7 +27,7 @@
         </div>
             </footer>
 <h2>Painel de Devoluções</h2>
-
+<button onclick="exportarExcel()">Exportar Excel</button>
 <input type="text" id="filtroDevolucao" placeholder="Nº Devolução">
 <input type="text" id="filtroCliente" placeholder="Cliente ou CNPJ">
 <input type="text" id="filtroRepresentante" placeholder="Representante">
