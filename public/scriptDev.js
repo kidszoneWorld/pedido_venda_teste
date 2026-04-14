@@ -1248,7 +1248,7 @@ const tutorialSteps = [
             "- Data da NF\n" +
             "- Código do item (carrega automaticamente a descrição)\n" +
             "- Lote\n" +
-            "- Quantidade (em unidades)\n" +
+            "- Quantidade (em unidade)\n" +
             "- Valor unitário\n\n" 
     },    
     {
