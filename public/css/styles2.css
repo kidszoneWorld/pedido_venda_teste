@@ -484,14 +484,14 @@ footer {
 .link_sites a:hover {
     color:rgba(225,0,152);
     font-size: 140%;
-    animation: animationButtonSend 1s;
+    
 
 }
 #logoutButton2:hover{
     background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
     color: rgb(250, 242, 247);
     font-size: 140%;
-    animation: animationButtonSend 1s;
+    
     border:none;
      
 }

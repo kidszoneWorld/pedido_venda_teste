@@ -553,3 +553,108 @@ img {
         width: 81%;
     }
 }
+
+
+body.light-theme .button-group button,
+body.light-theme .no-print button,
+body.light-theme footer {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+}
+
+body.dark-theme .button-group button,
+body.dark-theme .no-print button,
+body.dark-theme footer {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+}
+footer {
+
+    display: flex;
+    justify-content:space-between;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #333;
+    width: 100%;
+ 
+    margin: 0 auto;
+   
+
+}
+
+@media (max-width: 1040px) {
+    footer {
+        width: 100%;
+     
+    }
+
+    .link_sites {
+        flex-direction: column; /* Garante que os itens fiquem em coluna */
+        align-items: center;
+       
+    }
+
+    .link_sites button#logoutButton2 {
+        width: 10%; /* Mantém a largura relativa em telas menores */
+        margin-top: 20px;
+        text-align: center;
+        margin-bottom: 15px; /* Espaçamento abaixo do botão */
+    }
+
+    .link_sites a {
+        margin: 5px ;
+        padding: 5px ;
+    }
+}
+
+    .link_sites {
+        padding-left: 15px;
+         
+      
+      }
+@media (max-width: 560px) {
+   
+    .link_sites a{
+      font-size: 80%;
+      padding-left: 15px;
+       
+    
+    }
+
+}
+.link_sites {
+    display: flex;
+    justify-content:center;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 30px;
+   /* padding: 15px;*/
+ 
+ 
+}
+.link_sites a {
+    display: flex;
+    justify-content:center;
+    color:#ffffff ;
+    text-align: center;
+    padding-left: 20px;
+    text-decoration: none;
+    font-size: 100%;
+
+}
+
+.link_sites label {
+    display: flex;
+    justify-content:center;
+    margin-right: 15px;
+
+}
+
+
+.link_sites a:hover {
+    color:rgba(225,0,152);
+    font-size: 140%;
+    
+
+}

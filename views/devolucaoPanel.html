@@ -11,21 +11,21 @@
                 <div class="link_sites">
 
             <!-- Toggle switch -->
-            <!-- <label class="theme-switch" id="seletor">
+            <label class="theme-switch" id="seletor">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
-            </label> -->
-
+            </label>
            <button id="logoutButton2">Sair</button>
            <!--<a target="_blank" href="/admin">Área T.I.</a>-->
-           <a target="_blank" href="/comercial">Área Comercial</a>
-           <a target="_blank" href="/">Pedido de Venda</a>
-           <a target="_blank" href="/logistica03">Área logística</a>
-           <a target="_blank" href="/detalhesProdutos">Detalhes do Produto</a>
-           <a target="_blank" href="/cadastroCliente">Cadastrar Cliente</a>
-           <a target="_blank" href="/investComercial">Investimento</a>
-        </div>
-            </footer>
+           <a href="/">Pedido de Venda</a>
+           <a href="/devolucao">Pedido de Devolução</a>
+           <a href="/comercial">Área Comercial</a>
+           <a href="/logistica03">Área logística</a>
+           <a href="/detalhesProdutos">Detalhes do Produto</a>
+           <a href="/cadastroCliente">Cadastrar Cliente</a>
+           <a href="/investComercial">Investimento</a>
+           </div>
+      </footer>
 <h2>Painel de Devoluções</h2>
 <button onclick="exportarExcel()">Exportar Excel</button>
 <input type="text" id="filtroDevolucao" placeholder="Nº Devolução">
@@ -66,7 +66,26 @@
   </thead>
   <tbody></tbody>
 </table>
-
+<script src="/theme-toggle.js?v=1775071807385"></script>
 <script src="/devolucaoPanel.js"></script>
+<script>
+         // Função para limpar dados do usuário e redirecionar para a página de login
+        document.getElementById('logoutButton2').addEventListener('click', async () => {
+            // Limpa os dados locais
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Faz a requisição ao servidor para destruir a sessão
+            await fetch('/logout', { method: 'POST' });
+
+            // Limpa cookies manualmente (como precaução)
+            document.cookie.split(";").forEach(cookie => {
+                document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+            });
+
+            // Redireciona para a página de login
+            window.location.href = '/login2';
+        });
+    </script>
 </body>
 </html>
