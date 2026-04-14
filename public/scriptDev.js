@@ -1015,7 +1015,7 @@ const { uploadUrlDev, key } = await response.json();
     emailSubjectInput.value = fixedSubject;
     emailSubjectInput.setAttribute('data-fixed', fixedSubject);
 
-    const fixedMessage = `Segue os documentos solicitados para a devolução do cliente ${razaoSocial}\n\n`;
+    const fixedMessage = `Segue fotos solicitadas para a devolução do cliente ${razaoSocial}\n\n`;
     emailBodyInput.value = fixedMessage;
     emailBodyInput.setAttribute('data-fixed', fixedMessage);
 
