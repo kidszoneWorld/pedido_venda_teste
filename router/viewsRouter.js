@@ -59,7 +59,7 @@ router.get('/devolucaoPanel',authMiddleware, (req, res) => {
 });
 
 // Rota para a página de detalhes do produto (Detalhes_Produtos.html)
-router.get('/devolucaoDetalhe.html', (req, res) => {
+router.get('/devolucaoDetalhe.html',authMiddleware, (req, res) => {
   res.sendFile(require('path').join(__dirname, '../views/devolucaoDetalhe.html'));
 });
 

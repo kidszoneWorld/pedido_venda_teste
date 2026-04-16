@@ -14,6 +14,8 @@ O versionamento do site é controlado apenas pela branch main do site do github 
 Estrutura do projeto:
 
 /pedido-de-venda-producao
+|-/config
+|   |-db.js
 |-/controllers
 |   |-ClientController.js
 |   |-clientePdfController.js
