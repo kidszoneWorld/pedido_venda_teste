@@ -115,19 +115,28 @@ function exportarExcel() {
 
 async function carregarDevolucoes() {
     try {
-        await aplicarRestricaoRepresentante(); // ok manter aqui
+        const res = await fetch('/api/devolucoes');
 
-        const res = await fetch('/api/devolucao');
-        const dados = await res.json();
+        console.log("STATUS:", res.status);
 
-        listaOriginal = dados;
+        const text = await res.text();
+        console.log("RESPOSTA BRUTA:", text);
 
+        const json = JSON.parse(text);
+
+        if (!json.success || !Array.isArray(json.data)) {
+            throw new Error("Resposta inválida da API");
+        }
+
+        listaOriginal = json.data;
         aplicarFiltros();
 
     } catch (err) {
-        console.error('Erro ao carregar devoluções', err);
+        console.error("Erro ao carregar devoluções:", err);
+        listaOriginal = [];
     }
 }
+
 function extrairNumeroRep(email) {
     const match = email.match(/^rep(\d+)@/i);
     return match ? match[1] : null;

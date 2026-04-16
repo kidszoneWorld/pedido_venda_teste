@@ -3,6 +3,7 @@ const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const Devolucao = require('../models/Devolucao');
 const Counter = require('../models/Counter');
+const connectDB = require('../config/db');
 
 const crypto = require("crypto");
 
@@ -23,9 +24,20 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 exports.listarDevolucoes = async (req, res) => {
   try {
     const devolucoes = await Devolucao.find().sort({ data: -1 });
-    res.json(devolucoes);
+
+    res.json({
+      success: true,
+      data: devolucoes
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Erro listarDevolucoes:", err);
+
+    res.status(500).json({
+      success: false,
+      data: [],
+      error: err.message
+    });
   }
 };
 
@@ -40,7 +52,11 @@ exports.buscarDevolucaoPorId = async (req, res) => {
     res.json(dev);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+  success: false,
+  data: [],
+  error: err.message
+});
   }
 };
 
@@ -103,9 +119,16 @@ exports.salvarDevolucao = async (req, res) => {
 exports.listarDevolucoes = async (req, res) => {
   try {
     const devolucoes = await Devolucao.find();
-    res.json(devolucoes);
+    res.json({
+  success: true,
+  data: devolucoes
+});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+  success: false,
+  data: [],
+  error: err.message
+});
   }
 };
 

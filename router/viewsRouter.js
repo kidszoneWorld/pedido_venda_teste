@@ -141,7 +141,7 @@ router.post('/api/devolucao', devController.salvarDevolucao);
 router.get('/api/devolucao/:id', devController.buscarDevolucaoPorId);
 
 // Devolucao
-router.get('/api/devolucao', devController.listarDevolucoes);
+router.get('/api/devolucoes', devController.listarDevolucoes);
 router.put('/devolucao/:id', devController.atualizarDevolucao);
 
 // Rota para página de erro 401 (Senha incorreta)
@@ -222,7 +222,9 @@ router.get('/api/sellOut/:codgroup', sellOutController.getSellOutBycodgroup);
 router.post('/api/sellOut/salvar', sellOutController.salvarSellOut);        
 router.delete('/api/sellOut/remover', sellOutController.removerLinhaSellOut);
 
-router.get('/api/devolucao', devController.listarDevolucoes);
+router.post('/api/devolucoes', devController.salvarDevolucao);
+router.get('/api/devolucoes/:id', devController.buscarDevolucaoPorId);
+router.put('/api/devolucoes/:id', devController.atualizarDevolucao);
 
 
 module.exports = router;

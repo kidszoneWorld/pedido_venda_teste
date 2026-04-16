@@ -1,4 +1,6 @@
 // app.js
+
+const connectDB = require('./config/db');
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -28,8 +30,15 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
-
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error("Erro ao conectar Mongo:", err);
+        res.status(500).json({ error: "Erro ao conectar com banco" });
+    }
+});
 // Adicionar esta linha para configurar o proxy
 app.set('trust proxy', 1); // Necessário para cookies seguros em proxies (como Vercel)
 
@@ -75,14 +84,6 @@ app.get('/teste', (req, res) => {
 
 
 /////banco de dados mogondb atlas
-const mongoose = require('mongoose');
-
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log("MongoDB Conectado"))
-    .catch(err => console.error("Erro ao conectar MongoDB", err));
 
 
 app.use((req, res, next) => {
