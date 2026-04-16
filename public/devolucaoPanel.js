@@ -120,7 +120,7 @@ async function carregarDevolucoes() {
         console.log("STATUS:", res.status);
 
         const text = await res.text();
-        console.log("RESPOSTA BRUTA:", text);
+        console.log("RESPOSTA BRUTA: deu bom");
 
         const json = JSON.parse(text);
 
