@@ -164,11 +164,11 @@ function renderizarTabela(lista) {
         }
 
         if (status === 'aprovado' && finalizado) {
-            tr.style.backgroundColor = '#d4edda'; // verde claro
+            tr.style.backgroundColor = '#98ecad'; // verde escuro
         }
 
         if (status === 'aprovado' && !finalizado) {
-            tr.style.backgroundColor = '#fffFcd'; //  amarelo claro
+            tr.style.backgroundColor = '#c0e9ca'; //  verde claro
         }
 
         if (status === 'reprovado') {

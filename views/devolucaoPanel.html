@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel de Devoluções</title>
-  <link rel="stylesheet" href="/css/styles2Dev.css?v=1776368451152">
+  <link rel="stylesheet" href="/css/stylesDevPanel.css?v=1776368451152">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
+  <div class="container">
     <footer>
                 <div class="link_sites">
 
             <!-- Toggle switch -->
-            <!-- <label class="theme-switch" id="seletor">
+            <label class="theme-switch" id="seletor">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
-            </label> -->
+            </label> 
            <button id="logoutButton2">Sair</button>
            <!--<a target="_blank" href="/admin">Área T.I.</a>-->
            <a href="/">Pedido de Venda</a>
@@ -27,7 +28,7 @@
            </div>
       </footer>
 <h2>Painel de Devoluções</h2>
-<button onclick="exportarExcel()">Exportar Excel</button>
+<button class="no-print" onclick="exportarExcel()">Exportar Excel</button>
 <input type="text" id="filtroDevolucao" placeholder="Nº Devolução">
 <input type="text" id="filtroCliente" placeholder="Cliente ou CNPJ">
 <input type="text" id="filtroRepresentante" placeholder="Representante">
@@ -46,8 +47,8 @@
   <option value="1">Finalizado</option>
   <option value="0">Não Finalizado</option>
 </select>
-
-<table border="1" width="100%" id="tabelaDevolucoes">
+<div class="table-container">
+<table class="table" border="1" width="100%" id="tabelaDevolucoes">
   <thead>
     <tr>
       <th>N°</th>
@@ -65,6 +66,7 @@
   </thead>
   <tbody></tbody>
 </table>
+</div>
 <script src="/theme-toggle.js?v=1776368451152"></script>
 <script src="/devolucaoPanel.js?v=1776368451152"></script>
 <script>
@@ -86,5 +88,6 @@
             window.location.href = '/login2';
         });
     </script>
+    </div>
 </body>
 </html>

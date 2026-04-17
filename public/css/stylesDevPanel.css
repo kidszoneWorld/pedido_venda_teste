@@ -12,7 +12,6 @@
     --button-text-light: #ffffff;
     --button-hover-bg-light: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
     --button-hover-text-light: #fafcfa;
- 
     --background-color-dark: #1a1a1a;
     --container-bg-dark: #2a2a2a;
     --header-bg-dark: #2a2a2a;
@@ -48,14 +47,14 @@ body.light-theme .payment-conditions label {
     color: var(--table-text-color-light);
 }
 
-body.light-theme .table th {
+/* body.light-theme .table th {
     background-color: var(--table-header-bg-light);
     color: var(--table-text-color-light);
-}
-
+} */
+/* 
 body.light-theme .table td {
     background-color: var(--table-bg-light);
-}
+} */
 
 body.light-theme .button-group button,
 body.light-theme .no-print button,
@@ -69,9 +68,6 @@ body.light-theme .no-print button:hover {
     background: var(--button-hover-bg-light);
     color: var(--button-hover-text-light);
 }
-
-
-
 
 /* Tema escuro */
 body.dark-theme {
@@ -94,14 +90,14 @@ body.dark-theme .payment-conditions label {
     color: var(--table-text-color-dark);
 }
 
-body.dark-theme .table th {
+/* body.dark-theme .table th {
     background-color: var(--table-header-bg-dark);
     color: var(--table-text-color-dark);
-}
-
+} */
+/* 
 body.dark-theme .table td {
     background-color: var(--table-bg-dark);
-}
+} */
 
 body.dark-theme .button-group button,
 body.dark-theme .no-print button,
@@ -126,7 +122,7 @@ body.dark-theme input{
 }
 
 body.dark-theme ::placeholder{
-    color:#3d3d3d;
+    color:#d8d8d8;
 }
 
 body.dark-theme .form-group label{
@@ -153,8 +149,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     color: var(--button-hover-text-dark);
     border:none;
 }
-
-
 
  /* Definição da animação */
  @keyframes animationButtonSend {
@@ -189,7 +183,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     }
 }
  
-
  /* Estilo Geral */
  body {
     font-family: Arial, sans-serif;
@@ -202,7 +195,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 }
 .container {
     width: 95%;
-    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     background-color: #ffffff;
@@ -212,7 +204,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     border-radius: 12px;
     overflow: visible;
 }
-
 
 .header {
     text-align: center;
@@ -297,7 +288,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 .label-espaco-esquerda {
     margin-left: 20px; /* Ajuste o valor conforme o espaçamento desejado */
 }  
- 
 
 .form-group input {
     padding: 8px;
@@ -321,18 +311,16 @@ body.dark-theme #dadosPedido tbody tr td input{
      overflow-x: auto;
 }
 .table {
-    width: 1000px;
     border-collapse: collapse;
     margin-top: 10px;
     min-width: 800px;
 }
-.table, .table th, .table td {
+/* .table, .table th, .table td {
     border: 1px solid #ddd;
-}
+} */
 
 
 .table th, .table td {
-    padding: 10px;
     text-align: center;
 }
 .table th {
@@ -405,10 +393,8 @@ body.dark-theme #dadosPedido tbody tr td input{
     padding: 5px;
     font-weight: bold;
     text-align: center;
-
-
-    
 }
+
 .observations textarea {
     width: 99.5%;
     height: 100px;
@@ -419,7 +405,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     border: 1px solid #3d3c3c;
 }
 
- 
 /* classe criada para ocultar botoes na hora da impressão */
     .no-print {
         display: flex;
@@ -434,9 +419,7 @@ body.dark-theme #dadosPedido tbody tr td input{
        
     }
 
-
 footer {
-
     display: flex;
     justify-content:space-between;
     flex-wrap: wrap;
@@ -444,10 +427,7 @@ footer {
     padding-top: 20px;
     background-color: #333;
     width: 100%;
- 
     margin: 0 auto;
-   
-
 }
 
 .link_sites {
@@ -457,10 +437,7 @@ footer {
     padding-top: 20px;
     padding-bottom: 30px;
    /* padding: 15px;*/
- 
- 
 }
-
 
 .link_sites a {
     display: flex;
