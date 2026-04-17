@@ -115,6 +115,7 @@ function exportarExcel() {
 
 async function carregarDevolucoes() {
     try {
+
         const res = await fetch('/api/devolucoes');
 
         console.log("STATUS:", res.status);
@@ -123,6 +124,8 @@ async function carregarDevolucoes() {
         console.log("RESPOSTA BRUTA: deu bom");
 
         const json = JSON.parse(text);
+         setTimeout(() => {
+  console.log("This runs after 2 seconds.");
 
         if (!json.success || !Array.isArray(json.data)) {
             throw new Error("Resposta inválida da API");
@@ -130,7 +133,7 @@ async function carregarDevolucoes() {
 
         listaOriginal = json.data;
         aplicarFiltros();
-
+}, 500);
     } catch (err) {
         console.error("Erro ao carregar devoluções:", err);
         listaOriginal = [];
@@ -231,6 +234,12 @@ tr.innerHTML = `
 document.getElementById('filtroDevolucao').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroCliente').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroRepresentante').addEventListener('input', aplicarFiltros);
+
+
+
+
+
+
 document.getElementById('filtroNfOrigem').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
 document.getElementById('filtroFinalizado').addEventListener('change', aplicarFiltros);

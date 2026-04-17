@@ -50,8 +50,8 @@ console.log('script.js carregado');
 
 // limpar tudo ao atualizar page (run once)
 
-limparCamposCliente();
-atualizarTotais();
+// limparCamposCliente();
+// atualizarTotais();
 
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
@@ -728,8 +728,8 @@ btSistema.addEventListener("click", () => {
     if(!validarTabelaPedido())
         return;
 
-    if(!validarPedidoMinimo())
-        return;
+   // if(!validarPedidoMinimo())                                Habilitar 04/05/2026
+     //   return;
     modal.style.display = "block"; // Exibe o modal
 });
 
@@ -1051,8 +1051,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!validarTabelaPedido())
             return;
 
-        if(!validarPedidoMinimo())
-            return;
+        // if(!validarPedidoMinimo())                       habilitar 04/05/2026
+        //     return;
 
         gerarEEnviarPDF();
     
