@@ -105,8 +105,5 @@ ${downloadLinks}
     console.error("❌ ERRO REAL:", error);
     return res.status(500).send(error.message);
   }
-  finally {
-    setTimeout(() => emailsRecentes.delete(emailKey), 10000);
-  }
 };
  
