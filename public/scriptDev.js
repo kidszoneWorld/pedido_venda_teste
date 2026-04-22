@@ -52,7 +52,7 @@ console.log('script.js carregado');
 
 //  limparCamposCliente();
 //  atualizarTotais();
-alert('Olá Sr(a).Representante,\nSomente serão aceitas devoluções com até 180 dias, a partir entrega da nota fiscal de origem!!!\n\n Aperte em próximo para continuar com o tutorial ou pressione finalizar para sair')
+alert('Olá Sr(a).Representante,\nSomente serão aceitas devoluções com até 180 dias, a partir entrega da nota fiscal de origem!!!')
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
 // ======================================================================
@@ -1232,7 +1232,7 @@ const tutorialSteps = [
 
     {
         element: '#cnpj',
-        text: 'Passo 1. Informe o CNPJ do cliente.\n\n As demais informações serão carregadas automaticamente.'
+        text: 'Passo 1. Informe o CNPJ do cliente.\n\n As demais informações serão carregadas automaticamente.\n\nAperte em próximo para continuar com o tutorial ou pressione finalizar para sair'
     },
     {
         element: '#observation',
