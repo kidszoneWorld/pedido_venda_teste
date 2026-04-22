@@ -363,7 +363,7 @@ function atualizarListaAnexos() {
             alert('Por favor, preencha os campos obrigatórios (Para, Assunto e Mensagem).');
             return;
         }
-
+        
         // Valida os e-mails no campo "Para"
         if (!validateEmailList(emailTo)) {
             alert('Por favor, insira e-mails válidos no campo "Para". Use ";" para separar os e-mails.');
