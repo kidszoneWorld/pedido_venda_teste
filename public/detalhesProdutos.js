@@ -21,7 +21,7 @@ function carregarDados() {
 }
 
 // Função para carregar os JSONs 
-fetch(`/data/item_ativos_detalhes.json?cacheBust=${timestamp1}`)
+fetch(`/data/detalhesProdutos.json?cacheBust=${timestamp1}`)
     .then(response => response.json())
     .then(data => {
         itemData = data;
