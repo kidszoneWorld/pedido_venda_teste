@@ -144,58 +144,90 @@
     <div class="section">
         <div class="section-title">DADOS DO CLIENTE</div>
         <form class="form-group">
-            <label for="razao_social">RAZÃO SOCIAL:</label>
+            <label class="label-obrigatorio" for="razao_social">RAZÃO SOCIAL:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="razao_social" placeholder="Razão Social">
 
-            <label for="representante" class="label-espaco-esquerda">REPRESENTANTE:</label>
+            <label class="label-obrigatorio" for="representante" class="label-obrigatorio">REPRESENTANTE:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="representante" placeholder="Representante">
 
-            <label class="IE" for="ie">NOME FANTASIA:</label>
+            <label class="label-obrigatorio" for="nFan">NOME FANTASIA:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="nFan" placeholder="Nome fantasia">
 
-            <label for="cod_cliente" class="label-espaco-esquerda">CNPJ:</label>
+            <label for="cod_cliente" class="label-obrigatorio">CNPJ:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="cod_cliente" placeholder="CNPJ">
 
-            <label for="endereco">ENDEREÇO:</label>
+            <label class="label-obrigatorio" for="endereco">ENDEREÇO:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="endereco" placeholder="Endereço">
 
-            <label class="IE label-espaco-esquerda" for="ie">INSCRIÇÃO ESTADUAL:</label>
+            <label class="label-obrigatorio"   for="ie">INSCRIÇÃO ESTADUAL:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="ie" placeholder="Inscrição Estadual">
 
-            <label for="cidade">CIDADE:</label>
+            <label class="label-obrigatorio"  for="cidade">CIDADE:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="cidade" placeholder="Cidade">
 
-            <label for="bairro" class="label-espaco-esquerda">BAIRRO:</label>
+            <label for="bairro" class="label-obrigatorio">BAIRRO:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="bairro" placeholder="Bairro">
 
-            <label for="cep">CEP:</label>
+            <label class="label-obrigatorio"  for="cep">CEP:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="cep" placeholder="CEP">
 
-            <label for="telefone" class="label-espaco-esquerda">TELEFONE:</label>
+            <label for="telefone" class="label-obrigatorio">TELEFONE:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="telefone" placeholder="Telefone">
 
-            <label for="email">E-MAIL ARQUIVO XML:</label>
+            <label class="label-obrigatorio" for="email">E-MAIL ARQUIVO XML:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="email" placeholder="E-mail para o XML">
 
-            <label for="email_fiscal" class="label-espaco-esquerda">E-MAIL COMPRADOR:</label>
+            <label for="email_fiscal" class="label-obrigatorio">E-MAIL COMPRADOR:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="email_fiscal" placeholder="E-mail Fiscal">
 
             <label for="pay">E-MAIL AGENDAMENTO. (OPCIONAL):</label>
             <input type="text" id="pay" placeholder="E-mail para Agendamento">
 
-            <label for="transp" class="label-espaco-esquerda">E-MAIL FINANCEIRO:</label>
+            <label for="transp" class="label-obrigatorio">E-MAIL FINANCEIRO:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="transp" placeholder="E-mail Financeiro">
 
-            <label for="group">CONTATO FINANCEIRO:</label>
+            <label class="label-obrigatorio" for="group">CONTATO FINANCEIRO:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="contat" placeholder="Contato">
 
-            <label class="label-espaco-esquerda" for="group">CANAL (OPCIONAL):</label>
+            <label  for="canal">CANAL (OPCIONAL):</label>
             <input type="text" id="group" placeholder="Canal">
 
-            <label for="formPagDescricao">SEGMENTO:</label>
+            <label class="label-obrigatorio"  for="formPagDescricao">SEGMENTO:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="formPagDescricao" placeholder="Segmento">
             
-            <label class="label-espaco-esquerda" for="codgroup">TABELA PREÇOS:</label>
+            <label class="label-obrigatorio" for="codgroup">TABELA PREÇOS:
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
             <input type="text" id="codgroup" placeholder="Tabela Preços">
         </form>
     </div>
@@ -204,27 +236,39 @@
         <div class="obs-title">INFORMAÇÕES NECESSÁRIAS</div>
         <form class="info-form">
             <div class="info-item">
-                <label for="regime_especial">Possui Regime Especial?</label>
+                <label for="regime_especial" class="label-obrigatorio">Possui Regime Especial?
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
                 <input type="text" id="regime_especial" placeholder="Digite sua resposta">
             </div>
             <div class="info-item">
-                <label for="agendamento">É necessário fazer agendamento para entrega?</label>
+                <label for="agendamento" class="label-obrigatorio">É necessário fazer agendamento para entrega?
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
                 <input type="text" id="agendamento" placeholder="Digite sua resposta">
             </div>
             <div class="info-item">
-                <label for="dados_responsavel">Informar os dados como telefone, e-mail e o nome do responsável para entrega:</label>
+                <label for="dados_responsavel" class="label-obrigatorio">Informar os dados como telefone, e-mail e o nome do responsável para entrega:
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
                 <input type="text" id="dados_responsavel" placeholder="Digite sua resposta">
             </div>
             <div class="info-item">
-                <label for="paletizada">A carga deve ser paletizada?</label>
+                <label for="paletizada" class="label-obrigatorio">A carga deve ser paletizada?
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
                 <input type="text" id="paletizada" placeholder="Digite sua resposta">
             </div>
             <div class="info-item">
-                <label for="horario_entrega">Horário e dia de entrega?</label>
+                <label for="horario_entrega" class="label-obrigatorio">Horário e dia de entrega?
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
                 <input type="text" id="horario_entrega" placeholder="Digite sua resposta">
             </div>
             <div class="info-item">
-                <label for="numero_nf">O número do pedido deve constar na NF?</label>
+                <label for="numero_nf" class="label-obrigatorio">O número do pedido deve constar na NF?
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
                 <input type="text" id="numero_nf" placeholder="Digite sua resposta">
             </div>
         </form>

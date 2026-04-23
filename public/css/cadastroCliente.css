@@ -554,6 +554,32 @@ label[for="referencia"]::after {
     margin-left: 2px; /* Espaçamento entre "REFERÊNCIA" e o "?" */
     
 }
+label[for="razao_social"]::after,
+label[for="representante"]::after,
+label[for="nFan"]::after,
+label[for="endereco"]::after,
+label[for="cidade"]::after,
+label[for="bairro"]::after,
+label[for="cep"]::after,
+label[for="email"]::after,
+label[for="email_fiscal"]::after,
+label[for="formPagDescricao"]::after,
+label[for="transp"]::after,
+label[for="group"]::after,
+label[for="codgroup"]::after,
+label[for="regime_especial"]::after,
+label[for="agendamento"]::after,
+label[for="dados_responsavel"]::after,
+label[for="paletizada"]::after,
+label[for="horario_entrega"]::after,
+label[for="numero_nf"]::after,
+label[for="obs-title"]::after,
+label[for="cod_cliente"]::after {
+  content: " *";
+  color: rgba(225, 0, 152);
+  font-weight: bold;
+  font-size: 22px;
+}
 
 .label-referencia , .label-obrigatorio {
     position: relative;
