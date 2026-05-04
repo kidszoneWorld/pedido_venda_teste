@@ -727,9 +727,9 @@ const btPdfGeneration = document.getElementById('button_pdf');
 btSistema.addEventListener("click", () => {
     if(!validarTabelaPedido())
         return;
-
-    if(!validarPedidoMinimo()) 
-        return;
+    if(document.getElementById('tipo_pedido').value == "Venda")
+        if(!validarPedidoMinimo())                          
+            return;
     modal.style.display = "block"; // Exibe o modal
 });
 
@@ -1050,9 +1050,9 @@ document.addEventListener("DOMContentLoaded", () => {
     btPdfGeneration.addEventListener("click", () =>{
         if(!validarTabelaPedido())
             return;
-
-         if(!validarPedidoMinimo()) 
-             return;
+        if(document.getElementById('tipo_pedido').value == "Venda")
+            if(!validarPedidoMinimo())
+                return;
 
         gerarEEnviarPDF();
     
