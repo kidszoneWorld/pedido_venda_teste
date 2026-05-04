@@ -728,8 +728,8 @@ btSistema.addEventListener("click", () => {
     if(!validarTabelaPedido())
         return;
 
-   // if(!validarPedidoMinimo())                                Habilitar 04/05/2026
-     //   return;
+    if(!validarPedidoMinimo()) 
+        return;
     modal.style.display = "block"; // Exibe o modal
 });
 
@@ -1051,8 +1051,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!validarTabelaPedido())
             return;
 
-        // if(!validarPedidoMinimo())                       habilitar 04/05/2026
-        //     return;
+         if(!validarPedidoMinimo()) 
+             return;
 
         gerarEEnviarPDF();
     
