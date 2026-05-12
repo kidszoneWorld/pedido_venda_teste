@@ -52,6 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const elementsToHide = document.querySelectorAll('.no-print, .button-group');
         elementsToHide.forEach(el => el.style.display = 'none');
 
+        const textareaObs = document.getElementById('observacoes');
+        const observacoesPdf = document.getElementById('observacoesPdf');
+
+        // Copia o texto do textarea para a div
+        observacoesPdf.textContent = textareaObs.value;
+
+        // Mostra a div e esconde o textarea
+        observacoesPdf.style.display = 'block';
+        textareaObs.style.display = 'none';
+
         const content = document.querySelector('.container');
         const cliente = clienteInput.value;
         const cnpj = cnpjInput.value;
@@ -125,17 +135,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.error('Erro ao enviar o e-mail:', error);
                     alert('Erro ao enviar o e-mail.');
                 } finally {
-                    feedbackDiv.style.display = 'none';
-                    elementsToHide.forEach(el => el.style.display = 'flex');
-                }
+                        feedbackDiv.style.display = 'none';
+
+                        textareaObs.style.display = 'block';
+                        observacoesPdf.style.display = 'none';
+
+                        elementsToHide.forEach(el => el.style.display = 'flex');
+                    }
             };
         } catch (error) {
             console.error('Erro ao salvar ou enviar o PDF:', error);
             alert('Erro no processo: ' + error.message);
-        } finally {
-            btPdfGeneration.disabled = false;
-            elementsToHide.forEach(el => el.style.display = 'flex');
-        }
+        }  finally {
+    btPdfGeneration.disabled = false;
+    elementsToHide.forEach(el => el.style.display = 'flex');
+}
     }
 
     btPdfGeneration.addEventListener("click", gerarEEnviarPDF);
