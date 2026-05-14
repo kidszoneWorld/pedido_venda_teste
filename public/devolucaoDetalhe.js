@@ -63,7 +63,7 @@ function exportarDetalheExcel() {
         "Quantidade",
         "UV",
         "Descrição",
-        "Preço Unitário",
+        "Preço Unitário com IPI",
         "Total"
     ]);
 
