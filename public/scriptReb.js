@@ -374,7 +374,7 @@ function atualizarTotalProdutos() {
 
     linhas.forEach(tr => {
         const quantidadeCell = tr.cells[4]?.querySelector('input');
-        const valorTotalLinhaCell = tr.cells[9]?.querySelector('input');
+        const valorTotalLinhaCell = tr.cells[8]?.querySelector('input');
         console.log('Quantidade cell:', quantidadeCell);
         console.log('Valor unitário cell:', valorTotalLinhaCell);
 
@@ -561,20 +561,17 @@ function adicionarNovaLinha() {
         tr.cells[1]?.querySelector('input')?.focus();
     }
     // se estiver no CÓDIGO (coluna 1)
-    if (i === 1) {
+    else if (i === 1) {
         tr.cells[3]?.querySelector('input')?.focus();
     }
     // se estiver na quantidade (coluna 2)
-    if (i === 3) {
+    else if (i === 3) {
         tr.cells[4]?.querySelector('input')?.focus();
     }
-    if (i === 4) {
+    else if (i === 4) {
         tr.cells[5]?.querySelector('input')?.focus();
     }
-    if (i === 5) {
-        tr.cells[6]?.querySelector('input')?.focus();
-    }
-    if (i === 6) {
+    else if (i === 5) {
         tr.cells[7]?.querySelector('input')?.focus();
     }
 }
@@ -652,16 +649,16 @@ if (i === 1) {
 
             cells[7].addEventListener('input', (e) => {
 
-                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
+                const rebaixa = parseFloat(cells[5].value.replace(',', '.')) || 0;
                 const qtd = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                console.log(preco);
+
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
                 });
                 
 
-            totalLinha = preco * qtd;
+            totalLinha = rebaixa * qtd;
                 cells[8].value = formatador.format(totalLinha)
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
@@ -669,8 +666,9 @@ if (i === 1) {
 
             cells[5].addEventListener('input', (e) => {
 
-                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
+                const preco = parseFloat(cells[4].value.replace(',', '.')) || 0;
                 const qtd = parseFloat(cells[7].value.replace(',', '.')) || 0;
+                const rebaixa = parseFloat(cells[5].value.replace(',', '.')) || 0;
                 console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -678,11 +676,37 @@ if (i === 1) {
                 });
                 
 
-            totalLinha = preco * qtd;
+            totalLinha = rebaixa * qtd;
                 cells[8].value = formatador.format(totalLinha)
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
+
+            totalAtual= preco - rebaixa;
+                cells[6].value = formatador.format(totalAtual)
+                tr.dataset.itemId = item.ItemId;
+                atualizarTotais();
             });
+
+            cells[4].addEventListener('input', (e) => {
+                const preco = parseFloat(cells[4].value.replace(',', '.')) || 0;
+                const rebaixa = parseFloat(cells[5].value.replace(',', '.')) || 0;
+                const formatador = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                });
+                
+
+
+            totalAtual = preco - rebaixa;
+                cells[6].value = formatador.format(totalAtual)
+                tr.dataset.itemId = item.ItemId;
+                atualizarTotais();
+            });
+
+
+
+
+
             
 
             
