@@ -12,6 +12,7 @@ const sellOutController = require('../controllers/sellOutController');
 const fernandoController = require('../controllers/fernandoController');
 const clientController = require('../controllers/clientController');
 const devController = require('../controllers/devController');
+const rebController = require('../controllers/rebController');
 const clientePdfController = require('../controllers/clientePdfController');
 const pdfInvestComercialController = require('../controllers/pdf_invest_comercialController');
 const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorController');
@@ -39,6 +40,10 @@ router.get('/devolucao',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'devolucao.html'));
 });
 
+router.get('/rebaixa',authMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'rebaixa.html'));
+});
+
 // Rota para a página de administração
 router.get('/admin', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'views', 'admin.html'));
@@ -58,8 +63,16 @@ router.get('/devolucaoPanel',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'devolucaoPanel.html'));
 });
 
+router.get('/rebaixaPanel',authMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'devolucaoPanel.html'));
+});
+
 // Rota para a página de detalhes do produto (Detalhes_Produtos.html)
 router.get('/devolucaoDetalhe.html',authMiddleware, (req, res) => {
+  res.sendFile(require('path').join(__dirname, '../views/devolucaoDetalhe.html'));
+});
+
+router.get('/rebaixaDetalhe.html',authMiddleware, (req, res) => {
   res.sendFile(require('path').join(__dirname, '../views/devolucaoDetalhe.html'));
 });
 
@@ -143,6 +156,17 @@ router.get('/api/devolucao/:id', devController.buscarDevolucaoPorId);
 // Devolucao
 router.get('/api/devolucoes', devController.listarDevolucoes);
 router.put('/devolucao/:id', devController.atualizarDevolucao);
+
+
+// salvar Rebaixa
+router.post('/api/rebaixa', rebController.salvarRebaixa);
+router.get('/api/rebaixa/:id', rebController.buscarRebaixaPorId);
+
+// Rebaixa
+router.get('/api/rebaixa', rebController.listarRebaixas);
+router.put('/rebaixa/:id', rebController.atualizarRebaixa);
+
+
 
 // Rota para página de erro 401 (Senha incorreta)
 router.get('/error-401', (req, res) => {

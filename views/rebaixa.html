@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KIDSZONE-PEDIDOS</title>
+    <title>KIDSZONE-REBAIXA</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
     <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
@@ -12,21 +12,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="/css/styles2.css?v=1778777229759">
+    <link rel="stylesheet" href="/css/styles2Dev.css?v=1778777229733">
 
-    <link rel="stylesheet" href="/css/theme-toggle.css?v=1778777229759">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1778777229733">
     <!-- Script inline para aplicar o tema imediatamente -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.classList.add(savedTheme + '-theme');
         })();
+
     </script>
 
 </head>
 
 <body id="corpo">
-        <footer>
+    <footer>
                 <div class="link_sites">
 
             <!-- Toggle switch -->
@@ -34,10 +35,11 @@
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
             </label>
+
            <button id="logoutButton2">Sair</button>
            <!--<a target="_blank" href="/admin">Área T.I.</a>-->
            <a href="/">Pedido de Venda</a>
-           <a href="/devolucao">Pedido de Devolução</a>           
+           <a href="/devolucao">Pedido de Devolução</a>
            <a href="/rebaixa">Solicitação de Rebaixa</a>
            <a href="/comercial">Área Comercial</a>
            <a href="/logistica03">Área logística</a>
@@ -45,41 +47,67 @@
            <a href="/cadastroCliente">Cadastrar Cliente</a>
            <a href="/investComercial">Investimento</a>
            </div>
-      </footer>
+        </footer>
     <div class="container">
 
-        <div id="customModal" class="modal">
-            <div class="modal-content">
-              <span class="close-button">&times;</span>
-              <h2>Aviso!</h2>
-              <p>Você deseja realmente enviar para o sistema?</p>
-              <button id="confirmButton">Sim</button>
-              <button id="cancelButton">Não</button>
-            </div>
-          </div>
+           <!-- Modal de E-mail -->
+    <div id="emailModalRebaixa" class="modal">
+        <div class="modal-content email-modal-content">
+            <span class="close-button email-close-button">&times;</span>
+            <h2>Enviar E-mail</h2>
+            <form id="emailForm" class="email-form">
+                <div class="email-field">
+                    <label for="emailTo">Para:</label>
+                    <input type="email" id="emailTo" placeholder="Digite o e-mail do destinatário" required readonly>
+                </div>
+                <div class="email-field tooltip">
+                    <label for="emailCc">Cc:</label>
+                    <input type="text" id="emailCc" placeholder="Digite os e-mails separados por ;">
+                    <span class="tooltiptext">Colocar " ; " para separar os e-mails</span>
+                </div>
+                <div class="email-field">
+                    <label for="emailSubject">Assunto:</label>
+                    <input type="text" id="emailSubject" placeholder="Digite o assunto" required readonly>
+                </div>
+                <div class="email-field">
+                    <label for="emailBody">Mensagem:</label>
+                    <textarea id="emailBody" placeholder="Digite sua mensagem" rows="10" required></textarea>
+                </div>
+                <div class="email-field attachment-wrapper">
+                    <label for="emailAttachment">Anexar evidências e históricos comprobatórios:</label>
+                    <input type="file" id="emailAttachment" multiple>
+                    <div id="attachmentTooltip" class="attachment-tooltip">
+                        <ul id="attachmentList"></ul>
+                        <!-- Novo elemento para mostrar o tamanho total -->
+                        <p id="totalSizeDisplay" style="margin-top: 10px; font-weight: bold;">Tamanho total: 0 MB</p>
+                    </div>
+                </div>
+                <div class="email-buttons">
+                    <button type="button" id="sendEmailButton">Enviar</button>
+                    <button type="button" id="cancelEmailButton">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-          <div id="customModal1" class="modal1">
-            <div class="modal-content1">
-              <span class="close-button1">&times;</span>
-              <h2>Aviso!</h2>
-              <p>Você deseja realmente enviar o e-mail?</p>
-              <button id="confirmButton1">Sim</button>
-              <button id="cancelButton1">Não</button>
-            </div>
-          </div>
+        <!-- Novo modal para aviso de limite de tamanho -->
+    <div id="sizeLimitModal" class="modal1">
+        <div class="modal-content1">
+            <span class="close-button1">&times;</span>
+            <h2>Aviso!</h2>
+            <p id="sizeLimitMessage"></p>
+            <button id="sizeLimitOkButton">OK</button>
+        </div>
+    </div>
 
-          <div id="blockModal" class="modal">
-            <div class="modal-content">
-              <span class="close-button">&times;</span>
-              <h2>Aviso!</h2>
-              <p>Por favor enviar o pedido para o sistema para liberar um novo cadastro.</p>
-              <p id="timestamp"></p>
-              <button id="okButton">OK</button>
-            </div>
-          </div>
+
+
 
         <div class="header">
            <a href="/"><img src="/images/logo.png" alt="Imagem KidsZone"></a> 
+
+            <H1>SOLICITAÇÃO DE REBAIXA</H1>
+
             <div class="date"></div> <!-- A data e hora serão inseridas aqui -->
 
                 <script>
@@ -114,8 +142,7 @@
 
         </div>
         <div class="button-group">
-            <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL </button>
-            <button id="button_sistema">ENVIAR PARA O SISTEMA</button>
+            <button id="button_pdf">INSERIR ANEXOS E ENVIAR E-MAIL </button>
         </div>
    
         <div class="section">
@@ -129,8 +156,6 @@
 
                 <label for="representante" class="label-espaco-esquerda">CÓDIGO REP:</label> 
                 <input type="text" id="representante" placeholder="Representante" readonly>
-
-
 
                   <!-- input escondidos  -->
                 <label for="representanteId" class="esconder">Rep ID:</label> 
@@ -156,15 +181,13 @@
 
                   <!-- input escondidos  -->
 
+                <label class="IE esconder" for="ie">INSCRIÇÃO ESTADO:</label> 
+                <input type="text" id="ie" class="esconder" placeholder="Inscrição Estadual" readonly>
 
-
-                <label class="IE" for="ie">INSCRIÇÃO ESTADO:</label> 
-                <input type="text" id="ie" placeholder="Inscrição Estadual" readonly>
-
-                <label class="label-espaco-esquerda label-obrigatorio" for="tipo_pedido">TIPO PEDIDO:
-                     <span class="tooltip2">Campo Obrigatório</span>
+                <label class="esconder" for="tipo_pedido">TIPO PEDIDO:
+                     <span class="tooltip2 esconder">Campo Obrigatório</span>
                 </label>
-                <select id="tipo_pedido">
+                <select id="tipo_pedido" class="esconder">
                     <option value="Venda">Venda</option>
                   <!--  <option value="Promoção">Promoção</option> -->
                     <option value="Bonificação">Bonificação</option>
@@ -200,31 +223,40 @@
                 <label for="email_fiscal" class="label-espaco-esquerda">E-MAIL FISCAL:</label> 
                 <input type="text" id="email_fiscal" placeholder="E-mail Fiscal" readonly>
 
-                <label for="pay">CONDIÇÃO PGTO:</label> 
-                <input type="text" id="pay" placeholder=" Condição de pagamento" readonly>
+                <label for="pay" class="esconder">CONDIÇÃO PGTO:</label> 
+                <input type="text" id="pay" class="esconder" placeholder=" Condição de pagamento" readonly>
 
-                <label for="transp" class="label-espaco-esquerda" >TRANSPORTE:</label> 
-                <input type="text" id="transp" placeholder="Transportadora" readonly>
+                <label for="transp" class="label-espaco-esquerda esconder" >TRANSPORTE:</label> 
+                <input type="text" id="transp" placeholder="Transportadora" class="esconder" readonly>
 
-                <label class="spaceInputCod" class="label-espaco-esquerda" for="codgroup">CÓDIGO TABELA:</label> 
-                <input type="text" id="codgroup" placeholder="Código Tabela" readonly>
+                <label class="spaceInputCod" for="codgroup" hidden>CÓDIGO TABELA:</label> 
+                <input type="text" id="codgroup" class="esconder" placeholder="Código Tabela" readonly>
+ 
+                <label class="label-espaco-esquerda esconder" for="group">TABELA:</label> 
+                <input type="text" id="group" placeholder="Descrição Grupo" class="esconder" readonly>
 
-                <label class="label-espaco-esquerda" for="group">TABELA:</label> 
-                <input type="text" id="group" placeholder="Descrição Grupo" readonly>
+                <label  for="formPagDescricao" class="esconder">FORMA PAGAMENTO:</label> 
+                <input type="text" id="formPagDescricao" placeholder="Forma de Pagamento" class="esconder" readonly>
 
-                <label  for="formPagDescricao">FORMA PAGAMENTO:</label> 
-                <input type="text" id="formPagDescricao" placeholder="Forma de Pagamento" readonly>
-
-                <label class="label-espaco-esquerda label-referencia" for="referencia">ORDEM DE COMPRA:
-                    <span class="tooltip1">Digite a ordem de compra do cliente</span>
+                <label class="esconder" for="referencia">ORDEM DE COMPRA:
+                    <span class="tooltip1 esconder">Digite a ordem de compra do cliente</span>
                 </label> 
-                <input type="text" id="referencia" placeholder="Digite o numero do pedido do cliente (opcional) ">
+                <input type="text" id="referencia" class="esconder" placeholder="Digite o numero do pedido do cliente (opcional) ">
+
+                
 
             </form>
         </div>
-
+        <!-- Seção de Observações -->
+        <div class="observations">
+            <div class="obs-title"><label for="motivo" class="label-obrigatorio">MOTIVO DA REBAIXA
+                <span class="tooltip2">Campo Obrigatório</span>
+            </label>
+        </div>
+            <textarea id="observation" placeholder="Escreva o motivo da rebaixa" required></textarea>
+        </div>
         <div class="section">
-            <div class="section-title">DADOS PEDIDO</div>
+            <div class="section-title">DADOS DA REBAIXA</div>
             <div class="no-print">
              <button type="button" id="adicionarLinha" class="btn-mobile">Adicionar Linha</button>  
                 <button type="button"   id="excluirLinha" hidden>Remover Linha</button>
@@ -233,15 +265,18 @@
                 <table id="dadosPedido" border="1" class="table">
                     <thead>
                         <tr>
+                            <th class="nfOrigem">NF ORIGEM</th>
                             <th class="cod">CÓD</th>
-                            <th class="qtd">QTD</th>
-                            <th class="uv" >UV</th>
-                            <th class="pack">Excluir</th>
                             <th class="descricao">DESCRIÇÃO</th>
-                            <th class="ipi">IPI</th>
-                            <th class="unit">R$ UNIT.</th>
-                            <th class="vipi">R$ C/ IPI</th>
+                            <th class="lote">Lote</th>
+                            <th class="unit">R$ Unitário com impostos</th>
+                            <th class="">R$ Rebaixa</th>
+                            <th class="">R$ Atual</th>
+                            <th class="qtd">QTD (UN)</th>
                             <th class="total" >TOTAL R$</th>
+                            <th class="pack">EXCLUIR</th>
+
+ 
                             <th class="itemId" id="esconder">Item ID</th>
                         </tr>
                     </thead>
@@ -262,44 +297,14 @@
                 <label for="total">TOTAL PRODUTOS:</label> 
                 <input type="text" id="total" readonly>
 
-                <label for="totalComIpi">TOTAL C/IPI:</label> 
-                <input type="text" id="totalComIpi" readonly>
             </center>
 
         </div>
 
-        <!-- Seção de Observações -->
-        <div class="observations">
-            <div class="obs-title">OBSERVAÇÕES</div>
-            <textarea id="observation" placeholder="Escreva alguma observação"></textarea>
-        </div>
 
         <div id="helpContainer">
             <div id="helpIcon" class="help-icon">
-                <img src="/images/whatsapp.png" alt="WhatsApp">
-                <span>Precisa de ajuda?</span>
-            </div>
-            <div id="overlay" class="overlay"></div> <!-- Overlay para desfoque -->
-            <div id="helpModal" class="help-modal">
-                <div class="help-modal-content">
-                    <h2>Precisa de Ajuda?</h2>
-                    <p id="tutorialLink">Ir para o <a href="/video" target="_blank">Tutorial do site</a></p>
-                    <ul id="whatsappList">
-                        <li>
-                            <a href="https://wa.me/5511933379433?text=Olá%20estou%20usando%20o%20site%20de%20pedidos%20de%20venda%20e%20estou%20com%20uma%20dúvida,%20poderia%20me%20ajudar?" 
-                                target="_blank">
-                                Falar com o T.I.
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://wa.me/5511932974527?text=Olá%20estou%20usando%20o%20site%20de%20pedidos%20de%20venda%20e%20estou%20com%20uma%20dúvida,%20poderia%20me%20ajudar?" 
-                                target="_blank">
-                                Falar com o Comercial.
-                            </a>
-                        </li> 
-                    </ul>
-                    <button id="closeModal" class="close-modal">Fechar</button>
-                </div>
+                <a href="/rebaixaPanel"><button class="button-group">Painel de Rebaixas</button></a>
             </div>
         </div>
         
@@ -307,10 +312,10 @@
         
     </div>
 
-
     
-    <script src="/script.js?v=1778777229759"></script>
-    <script src="/theme-toggle.js?v=1778777229759"></script>
+    <script src="/scriptReb.js?v=1778777229733"></script>
+    <!-- <script  src="/pdf.js?v=1742259354185"></script> -->
+    <script src="/theme-toggle.js?v=1778777229733"></script>
 
     <script>
          // Função para limpar dados do usuário e redirecionar para a página de login
@@ -331,6 +336,17 @@
             window.location.href = '/login2';
         });
     </script>
+
+<div id="tutorialOverlay"></div>
+
+<div id="tutorialBox">
+    <p id="tutorialText"></p>
+    <div class="tutorial-buttons">
+        <button onclick="prevStep()">Voltar</button>
+        <button onclick="nextStep()">Próximo</button>
+        <button onclick="endTutorial()">Finalizar</button>
+    </div>
+</div>
 
 </body>
 </html>
