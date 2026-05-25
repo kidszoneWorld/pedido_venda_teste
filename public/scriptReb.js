@@ -787,7 +787,7 @@ showStep();
 
 
 //consts email
-    const emailModal = document.getElementById('emailModalDevolucao');
+    const emailModal = document.getElementById('emailModalRebaixa');
     const buttonPdf = document.getElementById('button_pdf');
     const emailCloseButton = document.querySelector('.email-close-button');
     const sendEmailButton = document.getElementById('sendEmailButton');
