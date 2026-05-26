@@ -64,7 +64,7 @@ router.get('/devolucaoPanel',authMiddleware, (req, res) => {
 });
 
 router.get('/rebaixaPanel',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'devolucaoPanel.html'));
+    res.sendFile(path.join(__dirname, '..', 'views', 'rebaixaPanel.html'));
 });
 
 // Rota para a página de detalhes do produto (Detalhes_Produtos.html)
@@ -163,7 +163,7 @@ router.post('/api/rebaixa', rebController.salvarRebaixa);
 router.get('/api/rebaixa/:id', rebController.buscarRebaixaPorId);
 
 // Rebaixa
-router.get('/api/rebaixa', rebController.listarRebaixas);
+router.get('/api/rebaixas', rebController.listarRebaixas);
 router.put('/rebaixa/:id', rebController.atualizarRebaixa);
 
 
@@ -204,6 +204,8 @@ router.post('/generate-upload-url', clientePdfController.generateUploadUrl);
 router.post('/send-client-pdf', clientePdfController.sendClientPdf);
 router.post('/generate-upload-url-dev', devController.generateUploadUrlDev);
 router.post('/send-client-pdf-dev', devController.sendClientPdfDev);
+router.post('/generate-upload-url-reb', rebController.generateUploadUrlReb);
+router.post('/send-client-pdf-reb', rebController.sendClientPdfReb);
 
 
 // Rota para autenticação
@@ -249,6 +251,10 @@ router.delete('/api/sellOut/remover', sellOutController.removerLinhaSellOut);
 router.post('/api/devolucoes', devController.salvarDevolucao);
 router.get('/api/devolucoes/:id', devController.buscarDevolucaoPorId);
 router.put('/api/devolucoes/:id', devController.atualizarDevolucao);
+
+router.post('/api/rebaixas', rebController.salvarRebaixa);
+router.get('/api/rebaixas/:id', rebController.buscarRebaixaPorId);
+router.put('/api/rebaixas/:id', rebController.atualizarRebaixa);
 
 
 module.exports = router;

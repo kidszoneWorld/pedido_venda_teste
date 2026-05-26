@@ -602,8 +602,7 @@ if (i === 1) {
 
         // 🔄 FEEDBACK VISUAL
         cells[2].value = 'Carregando item, por favor aguarde...';
-        //this.readOnly = true;
-
+        
 
         try {
             const response = await fetch(

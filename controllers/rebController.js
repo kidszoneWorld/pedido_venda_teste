@@ -45,7 +45,7 @@ exports.buscarRebaixaPorId = async (req, res) => {
   try {
     const reb = await Rebaixa.findById(req.params.id);
 
-    if (!Rebaixa) {
+    if (!reb) {
       return res.status(404).json({ error: 'Rebaixa não encontrada' });
     }
 
@@ -200,7 +200,7 @@ const putCommand = new PutObjectCommand({
         console.log("📧 Tentando enviar e-mail...");
     const info = await transporter.sendMail({
       from: "Rebaixas KIDS ZONE <kidzonkidszonemail@gmail.com>",
-      to: "devolucao.kz@kidszoneworld.com.br", //trocar depois
+      to: "comercial.kz@kidszoneworld.com.br", //trocar depois
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `

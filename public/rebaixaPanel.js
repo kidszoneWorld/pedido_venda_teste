@@ -48,56 +48,56 @@ function exportarExcel() {
     const cliente = document.getElementById('filtroCliente').value.toLowerCase();
     const representante = document.getElementById('filtroRepresentante').value.toLowerCase();
     const nfOrigem = document.getElementById('filtroNfOrigem').value;
-    const devolucao = document.getElementById('filtroDevolucao').value.toLowerCase();
+    const rebaixa = document.getElementById('filtroRebaixa').value.toLowerCase();
     const status = document.getElementById('filtroStatus').value;
     const finalizado = document.getElementById('filtroFinalizado').value;
     const nfVinculada = document.getElementById('filtroNfVinculada').value;
 
-    const filtrados = listaOriginal.filter(dev => {
+    const filtrados = listaOriginal.filter(reb => {
 
         const matchCliente =
-            dev.razaosocial?.toLowerCase().includes(cliente) ||
-            dev.cnpj?.includes(cliente);
+            reb.razaosocial?.toLowerCase().includes(cliente) ||
+            reb.cnpj?.includes(cliente);
 
         const matchRepresentante =
-            !representante || extrairNumeroDoRepresentante(dev.representante) === representante;
+            !representante || extrairNumeroDoRepresentante(reb.representante) === representante;
 
         const matchNfOrigem =
             !nfOrigem ||
-            dev.produtos?.some(p =>
+            reb.produtos?.some(p =>
                 p.nforigem?.toLowerCase().includes(nfOrigem)
             );
 
-        const matchDevolucao =
-            !devolucao || dev.pedidoId?.toString().includes(devolucao);
+        const matchRebaixa =
+            !rebaixa || reb.pedidoId?.toString().includes(rebaixa);
 
         const matchStatus =
-            !status || dev.status === status;
+            !status || reb.status === status;
 
         const matchFinalizado =
             !finalizado ||
-            (finalizado === "1" && dev.finalizado === 1) ||
-            (finalizado === "0" && dev.finalizado !== 1);
+            (finalizado === "1" && reb.finalizado === 1) ||
+            (finalizado === "0" && reb.finalizado !== 1);
 
         const matchNfVinculada = 
-            !nfVinculada || dev.nfVinculada?.includes(nfVinculada);
+            !nfVinculada || reb.nfVinculada?.includes(nfVinculada);
 
-        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado && matchNfVinculada && matchNfOrigem;
+        return matchCliente && matchRepresentante && matchRebaixa && matchStatus && matchFinalizado && matchNfVinculada && matchNfOrigem;
     });
 
     // transforma dados para excel
-    const dadosExcel = filtrados.map(dev => {
-        const totalItens = dev.produtos.reduce((acc, p) => acc + p.total, 0);
+    const dadosExcel = filtrados.map(reb => {
+        const totalItens = reb.produtos.reduce((acc, p) => acc + p.total, 0);
 
         return {
-            Pedido: dev.pedidoId,
-            Cliente: dev.razaosocial,
-            CNPJ: formatarCNPJ(dev.cnpj),
-            Representante: dev.representante,
-            Data: formatarData(dev.data),
-            Status: dev.status,
-            Finalizado: dev.finalizado ? 'Sim' : 'Não',
-            "NF Vinculada": dev.nfVinculada || '',
+            Pedido: reb.pedidoId,
+            Cliente: reb.razaosocial,
+            CNPJ: formatarCNPJ(reb.cnpj),
+            Representante: reb.representante,
+            Data: formatarData(reb.data),
+            Status: reb.status,
+            Finalizado: reb.finalizado ? 'Sim' : 'Não',
+            "NF Vinculada": reb.nfVinculada || '',
             Total: totalItens
         };
     });
@@ -106,26 +106,26 @@ function exportarExcel() {
     const ws = XLSX.utils.json_to_sheet(dadosExcel);
     const wb = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(wb, ws, "Devoluções");
+    XLSX.utils.book_append_sheet(wb, ws, "Rebaixas");
 
     // download
-    XLSX.writeFile(wb, "devolucoes.xlsx");
+    XLSX.writeFile(wb, "rebaixas.xlsx");
 }
 
 
-async function carregarDevolucoes() {
+async function carregarRebaixas() {
     try {
 
-        const res = await fetch('/api/devolucoes');
+        const res = await fetch('/api/rebaixas');
 
-        console.log("STATUS:", res.status);
+        console.log("STATUS:", res);
 
         const text = await res.text();
         console.log("RESPOSTA BRUTA: deu bom");
 
         const json = JSON.parse(text);
          setTimeout(() => {
-  console.log("This runs after 2 seconds.");
+  console.log("This runs after 0.5 seconds.");
 
         if (!json.success || !Array.isArray(json.data)) {
             throw new Error("Resposta inválida da API");
@@ -135,7 +135,7 @@ async function carregarDevolucoes() {
         aplicarFiltros();
 }, 500);
     } catch (err) {
-        console.error("Erro ao carregar devoluções:", err);
+        console.error("Erro ao carregar rebaixas:", err);
         listaOriginal = [];
     }
 }
@@ -153,15 +153,15 @@ function formatarMoeda(valor) {
 function renderizarTabela(lista) {
     const isRep = window.isRepresentante;
 
-    const tbody = document.querySelector('#tabelaDevolucoes tbody');
+    const tbody = document.querySelector('#tabelaRebaixas tbody');
     tbody.innerHTML = '';
     
-    lista.forEach(dev => {
+    lista.forEach(reb => {
         const tr = document.createElement('tr');
 
-        const status = (dev.status || '').toLowerCase();
+        const status = (reb.status || '').toLowerCase();
 
-        let finalizado = dev.finalizado === 1;
+        let finalizado = reb.finalizado === 1;
         if (status === 'pendente') {
             tr.style.backgroundColor = '#fff3cd'; // amarelo claro
         }
@@ -178,7 +178,7 @@ function renderizarTabela(lista) {
             tr.style.backgroundColor = '#f8d7da'; // vermelho claro
         }
 
-        const totalItens = dev.produtos.reduce((acc, p) => acc + p.total, 0);
+        const totalItens = reb.produtos.reduce((acc, p) => acc + p.total, 0);
 
         const isPendente = status === 'pendente';
         const isReprovado = status === 'reprovado';
@@ -195,35 +195,35 @@ function renderizarTabela(lista) {
         
 
 tr.innerHTML = `
-    <td>${dev.pedidoId}</td>
-    <td><font size="-5">${dev.razaosocial}</font></td>
-    <td>${dev.status}</td>
-    <td>${formatarCNPJ(dev.cnpj)}</td>
-    <td>${dev.representante}</td>
-    <td>${dev.data}</td>
+    <td>${reb.pedidoId}</td>
+    <td><font size="-5">${reb.razaosocial}</font></td>
+    <td>${reb.status}</td>
+    <td>${formatarCNPJ(reb.cnpj)}</td>
+    <td>${reb.representante}</td>
+    <td>${reb.data}</td>
     <td>${formatarMoeda(totalItens)}</td>
     <td>
     <center>
-        <button target="_blank" onclick="verDetalhes('${dev._id}')">Ver</button>
+        <button target="_blank" onclick="verDetalhes('${reb._id}')">Ver</button>
     </center>
     </td>
     <td>
-        <input type="radio" name="status-${dev._id}" value="Pendente"
+        <input type="radio" name="status-${reb._id}" value="Pendente"
         ${status === 'pendente' ? 'checked' : '' }
-        onchange="controlarFinalizado('${dev._id}', this)" ${isRep ? 'disabled' : ''}>
+        onchange="controlarFinalizado('${reb._id}', this)" ${isRep ? 'disabled' : ''}>
         Pendente<br>
-        <input type="radio" name="status-${dev._id}" value="Aprovado" ${status === 'aprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Aprovado<br>
+        <input type="radio" name="status-${reb._id}" value="Aprovado" ${status === 'aprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Aprovado<br>
 
-        <input type="radio" name="status-${dev._id}" value="Reprovado" ${status === 'reprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Reprovado
+        <input type="radio" name="status-${reb._id}" value="Reprovado" ${status === 'reprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Reprovado
     </td>
     <td><center>
     <input type="checkbox" 
     ${finalizado ? 'checked' : ''} 
     ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
-    <input type="number" name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
+    <input type="number" name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${reb.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
-        <button onclick="salvar('${dev._id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
+        <button onclick="salvar('${reb._id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
     </td>
 `;
 
@@ -231,7 +231,7 @@ tr.innerHTML = `
     });
 }
 
-document.getElementById('filtroDevolucao').addEventListener('input', aplicarFiltros);
+document.getElementById('filtroRebaixa').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroCliente').addEventListener('input', aplicarFiltros);
 document.getElementById('filtroRepresentante').addEventListener('input', aplicarFiltros);
 
@@ -285,42 +285,42 @@ function aplicarFiltros() {
     const cliente = document.getElementById('filtroCliente').value.toLowerCase();
     const representante = document.getElementById('filtroRepresentante').value.toLowerCase();
     const nfOrigem = document.getElementById('filtroNfOrigem').value;
-    const devolucao = document.getElementById('filtroDevolucao').value.toLowerCase();
+    const rebaixa = document.getElementById('filtroRebaixa').value.toLowerCase();
     const status = document.getElementById('filtroStatus').value;
     const finalizado = document.getElementById('filtroFinalizado').value;
     const nfVinculada = document.getElementById('filtroNfVinculada').value;
 
-    const filtrados = listaOriginal.filter(dev => {
+    const filtrados = listaOriginal.filter(reb => {
 
         const matchCliente =
-            dev.razaosocial?.toLowerCase().includes(cliente) ||
-            dev.cnpj?.includes(cliente);
+            reb.razaosocial?.toLowerCase().includes(cliente) ||
+            Rebaixa.cnpj?.includes(cliente);
 
         const matchRepresentante =
-            !representante || extrairNumeroDoRepresentante(dev.representante) === representante;
+            !representante || extrairNumeroDoRepresentante(reb.representante) === representante;
 
         const matchNfOrigem =
             !nfOrigem ||
-            dev.produtos?.some(p =>
+            reb.produtos?.some(p =>
                 p.nforigem?.toLowerCase().includes(nfOrigem)
             );
 
-        const matchDevolucao =
-            !devolucao || dev.pedidoId?.toString().includes(devolucao);
+        const matchRebaixa =
+            !rebaixa || reb.pedidoId?.toString().includes(rebaixa);
 
         const matchStatus =
-            !status || dev.status === status;
+            !status || reb.status === status;
 
         const matchFinalizado =
             !finalizado ||
-            (finalizado === "1" && dev.finalizado === 1) ||
-            (finalizado === "0" && dev.finalizado !== 1);
+            (finalizado === "1" && reb.finalizado === 1) ||
+            (finalizado === "0" && reb.finalizado !== 1);
 
         const matchNfVinculada = 
-            !nfVinculada || dev.nfVinculada?.includes(nfVinculada);
+            !nfVinculada || reb.nfVinculada?.includes(nfVinculada);
 
 
-        return matchCliente && matchRepresentante && matchDevolucao && matchStatus && matchFinalizado && matchNfVinculada && matchNfOrigem;
+        return matchCliente && matchRepresentante && matchRebaixa && matchStatus && matchFinalizado && matchNfVinculada && matchNfOrigem;
     });
 
     renderizarTabela(filtrados);
@@ -341,7 +341,7 @@ function salvar(id, btn) {
         return;
     }
     //envia pro backend
-    fetch(`/devolucao/${id}`, {
+    fetch(`/rebaixa/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -355,7 +355,7 @@ function salvar(id, btn) {
     .then(res => res.json())
     .then(() => {
         alert("Salvo com sucesso!");
-        carregarDevolucoes(); // recarrega tabela
+        carregarRebaixas(); // recarrega tabela
     })
     .catch(err => {
         console.error(err);
@@ -365,7 +365,7 @@ function salvar(id, btn) {
 
 // 🔎 botão detalhes
 function verDetalhes(id) {
-    window.open( `/devolucaoDetalhe.html?id=${id}`, '_blank');
+    window.open( `/rebaixaDetalhe.html?id=${id}`, '_blank');
 }
 
-carregarDevolucoes();
+carregarRebaixas();

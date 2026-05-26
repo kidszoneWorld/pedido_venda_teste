@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Rebaixas</title>
+  <link rel="stylesheet" href="/css/stylesDevPanel.css?v=1778777229738">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <footer>
+                <div class="link_sites">
+
+            <!-- Toggle switch -->
+            <label class="theme-switch" id="seletor">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label> 
+           <button id="logoutButton2">Sair</button>
+           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
+           <a href="/">Pedido de Venda</a>
+           <a href="/devolucao">Pedido de Devolução</a>
+           <a href="/rebaixa">Solicitação de Rebaixa</a>
+           <a href="/comercial">Área Comercial</a>
+           <a href="/logistica03">Área logística</a>
+           <a href="/detalhesProdutos">Detalhes do Produto</a>
+           <a href="/cadastroCliente">Cadastrar Cliente</a>
+           <a href="/investComercial">Investimento</a>
+           </div>
+      </footer>
+<h2>Painel de Rebaixas</h2>
+<button class="no-print" onclick="exportarExcel()">Exportar Excel</button>
+<input type="text" id="filtroRebaixa" placeholder="Nº Rebaixa">
+<input type="text" id="filtroCliente" placeholder="Cliente ou CNPJ">
+<input type="text" id="filtroRepresentante" placeholder="Representante">
+<input type="text" id="filtroNfVinculada" placeholder="Nº NF Vinculada">
+<input type="text" id="filtroNfOrigem" placeholder="Nº NF de Origem">
+
+<select id="filtroStatus">
+  <option value="">Todos Status</option>
+  <option value="pendente">Pendente</option>
+  <option value="aprovado">Aprovado</option>
+  <option value="reprovado">Reprovado</option>
+</select>
+
+<select id="filtroFinalizado">
+  <option value="">Todos</option>
+  <option value="1">Finalizado</option>
+  <option value="0">Não Finalizado</option>
+</select>
+<div class="table-container">
+<table class="table" border="1" width="100%" id="tabelaRebaixas">
+  <thead>
+    <tr>
+      <th>N°</th>
+      <th>Cliente</th>
+      <th>Status</th>
+      <th>CNPJ</th>
+      <th>Representante</th>
+      <th>Data</th>
+      <th>Total Itens</th>
+      <th>Detalhes</th>
+      <th>Status</th>
+      <th>Finalizado</th>
+      <th>Salvar</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</div>
+<script src="/theme-toggle.js?v=1778777229738"></script>
+<script src="/rebaixaPanel.js?v=1778777229738"></script>
+<script>
+         // Função para limpar dados do usuário e redirecionar para a página de login
+        document.getElementById('logoutButton2').addEventListener('click', async () => {
+            // Limpa os dados locais
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Faz a requisição ao servidor para destruir a sessão
+            await fetch('/logout', { method: 'POST' });
+
+            // Limpa cookies manualmente (como precaução)
+            document.cookie.split(";").forEach(cookie => {
+                document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+            });
+
+            // Redireciona para a página de login
+            window.location.href = '/login2';
+        });
+    </script>
+    </div>
+</body>
+</html>
