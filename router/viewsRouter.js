@@ -73,13 +73,14 @@ router.get('/devolucaoDetalhe.html',authMiddleware, (req, res) => {
 });
 
 router.get('/rebaixaDetalhe.html',authMiddleware, (req, res) => {
-  res.sendFile(require('path').join(__dirname, '../views/devolucaoDetalhe.html'));
+  res.sendFile(require('path').join(__dirname, '../views/rebaixaDetalhe.html'));
 });
 
 //Rota para a pagina de detalhes de devoulção
 router.get('/detalhesProdutos',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.html'));
 });
+
 
 // Rota para a página de eficiencia cliente (eficiencia.html)
 router.get('/eficiencia',authMiddleware,(req, res) => {
