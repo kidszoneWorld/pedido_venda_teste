@@ -712,7 +712,14 @@ function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
 
 
 
+
+
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
+
+
+
+
+
 
 const btSistema = document.getElementById('button_sistema');
 const feedbackDiv = document.getElementById('feedback1');
@@ -722,6 +729,163 @@ const confirmButton = document.getElementById('confirmButton');
 const cancelButton = document.getElementById('cancelButton');
 const cnpjInput = document.getElementById('cnpj');
 const btPdfGeneration = document.getElementById('button_pdf');
+
+document.getElementById('baixarJson').addEventListener('click', () => {
+
+        // Captura as linhas da tabela
+        const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
+
+        // Cria o array dinâmico para ItensPedidoVenda
+        const itensPedidoVenda = Array.from(tableRows)
+            .map(row => {
+                const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
+
+                // Verifica se a linha tem dados válidos antes de adicioná-la
+                const itemId = row.dataset.itemId || 0;
+                const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
+
+                // Só adiciona a linha se tiver um ItemId e Quantidade válidos
+                if (itemId > 0 && quantidade > 0) {
+                    return {
+                        ItemValorDesconto: 0,
+                        ItemPercentualDesconto: 0,
+                        EntregasItemPedidoVenda: [
+                            {
+                                Data: new Date().toISOString(), 
+                                DataPrevista: new Date().toISOString(),
+                                Quantidade: quantidade,
+                            }
+                        ],
+                        ItemId: itemId,
+                        Quantidade: quantidade,
+                    };
+                }
+
+                return null; // Retorna null para linhas inválidas
+            })
+            .filter(item => item !== null); // Remove itens nulos do array
+
+        // Cria o corpo da requisição com base nos inputs
+        const requestBody = {
+            ListaPrecoId: Number(document.getElementById('codgroup').value),
+            CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
+            FormaPagamentoId: Number(document.getElementById('formPagId').value),
+            ValorDesconto: 0,
+            PercentualDesconto: 0,
+            ItensPedidoVenda: itensPedidoVenda,
+            RepresentantesPedidoVendas: [
+                {
+                    RepresentanteId: Number(document.getElementById('representanteId').value),
+                    RepresentantePrincipal: true,
+                    PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
+                    PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
+                }
+            ],
+            ClienteId: Number(document.getElementById('cod_cliente').value),
+            ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
+            NumeroReferencia: document.getElementById('referencia').value,
+            Observacao: document.getElementById('observation').value,
+        };
+
+    // Converte objeto para JSON formatado
+    const jsonString = JSON.stringify(requestBody, null, 2);
+
+    // Cria blob
+    const blob = new Blob([jsonString], {
+        type: 'application/json'
+    });
+
+    // Cria URL temporária
+    const url = URL.createObjectURL(blob);
+
+    // Cria link invisível
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'requestBody.json';
+
+    // Dispara download
+    a.click();
+
+    // Limpeza
+    URL.revokeObjectURL(url);
+});
+
+
+
+//input via json
+
+const inputJsonButton = document.getElementById('inputJson');
+const jsonFileInput = document.getElementById('jsonFileInput');
+
+// Ao clicar no botão abre seletor de arquivo
+inputJsonButton.addEventListener('click', () => {
+    jsonFileInput.click();
+});
+
+// Quando selecionar o arquivo
+jsonFileInput.addEventListener('change', async (event) => {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    try {
+
+        // Lê o conteúdo do arquivo
+        const fileContent = await file.text();
+
+        // Converte JSON texto para objeto
+        const requestBody = JSON.parse(fileContent);
+
+        console.log("JSON importado:", requestBody);
+
+        feedbackDiv.textContent = 'Estamos enviando o pedido, aguarde...';
+        feedbackDiv.style.display = "block";
+
+        // Envia para API
+        const response = await fetch('/api/pedidos/input', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && (!result.ErrorMessages || result.ErrorMessages.length === 0)) {
+
+            alert("Pedido importado e enviado com sucesso!");
+
+            console.log("Resposta da API:", result);
+
+            location.reload();
+
+        } else {
+
+            alert(`Erro ao enviar pedido: ${
+                result.ErrorMessages?.join(", ") || "Erro desconhecido"
+            }`);
+
+            console.error("Erro da API:", result);
+        }
+
+    } catch (error) {
+
+        console.error("Erro ao importar/enviar JSON:", error);
+
+        alert("Erro ao processar o arquivo JSON.");
+    } finally {
+
+        feedbackDiv.style.display = "none";
+
+        // limpa input para permitir selecionar o mesmo arquivo novamente
+        jsonFileInput.value = '';
+    }
+});
+
+
+
 
 // Função para abrir o modal
 btSistema.addEventListener("click", () => {
@@ -813,7 +977,7 @@ confirmButton.addEventListener("click", async () => {
         };
 
         // Loga o JSON no console
-        console.log("JSON enviado para a API:", requestBody);
+        console.log("JSON enviado para a API:", requestBody); ////// BAIXAR ESTE ARQUIVO E IMPUTAR ESSE ARQUIVO
         console.log('ClienteId:', document.getElementById('cod_cliente').value);
 console.log('Itens:', itensPedidoVenda);
 

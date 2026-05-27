@@ -14,7 +14,7 @@ const pcrLink = process.env.PCR_LINK
 async function OrdersInput(data) {
   
     const apiUrl = '/v1/PedidoVenda/Incluir'; 
-
+    
     try {
         // Realiza a requisição POST para a API
         const response = await fetch(`${pcrLink}${apiUrl}`, {
@@ -26,7 +26,7 @@ async function OrdersInput(data) {
             },
             body: JSON.stringify(data),
         });
-
+        console.log(JSON.stringify(data))
         // Verifica o status da resposta
         if (!response.ok) {
             const errorResponse = await response.json();
@@ -35,6 +35,7 @@ async function OrdersInput(data) {
 
         // Retorna a resposta da API
         const result = await response.json();
+        console.log(result)
         return result;
     } catch (error) {
         console.error("Erro ao enviar dados para a API externa:", error.message);
