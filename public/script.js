@@ -801,7 +801,7 @@ document.getElementById('baixarJson').addEventListener('click', () => {
     // Cria link invisível
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'requestBody.json';
+    a.download = document.getElementById('razao_social').value+ ' ' + document.getElementById('totalComIpi').value  +'.json';
 
     // Dispara download
     a.click();
