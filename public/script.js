@@ -43,15 +43,17 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
 async function carregarListaPrecos(listaId) {
     const response = await fetch(`/api/lista-preco/${listaId}`);
     listaPrecosData = await response.json();
-    console.log('LISTA DE PREÇOS CARREGADA:', Array.isArray(listaPrecosData) ? listaPrecosData.length : listaPrecosData);
+
+    console.log('LISTA ID CARREGADA:', listaId);
+    console.log('QTD ITENS DA LISTA:', listaPrecosData.length);
+    console.log('DADOS DA LISTA:', listaPrecosData);
 }
 
 console.log('script.js carregado');
 
 // limpar tudo ao atualizar page (run once)
-
-// limparCamposCliente();
-// atualizarTotais();
+ limparCamposCliente();
+ atualizarTotais();
 
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
@@ -221,7 +223,8 @@ cnpjInput1.addEventListener('blur', async function () {
             alert('Cliente inativo ou suspenso.');
             return limparCamposCliente();
         }
-
+        console.log('LISTA:', clienteApi["LISTA"]);
+        console.log('LISTA NOME1:', clienteApi["LISTA NOME1"]);
         clientesData = [null, [
             null,
             clienteApi["CNPJ"], clienteApi["INSC. ESTADUAL"], clienteApi["RAZÃO SOCIAL"],
@@ -257,7 +260,9 @@ cnpjInput1.addEventListener('blur', async function () {
         el('pay').value = c[14];
         el('group').value = c[19];
         el('transp').value = c[20];
+        console.log('c[18]:', c[18]);
         el('codgroup').value = c[18];
+        console.log('codgroup preenchido:', el('codgroup').value);
         el('representanteId').value = c[15];
         el('formPagId').value = c[25];
         el('condPagId').value = c[27];
@@ -567,11 +572,13 @@ function adicionarNovaLinha() {
        // =========================
 
 if (i === 0) {
+
     input.addEventListener('blur', async function () {
+
         const cod = this.value.trim().toUpperCase();
+
         if (!cod) return;
 
-        // VERIFICA DUPLICIDADE
         if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
             alert('Este item já foi adicionado ao pedido.');
             this.value = '';
@@ -580,79 +587,136 @@ if (i === 0) {
         }
 
         const listaId = document.getElementById('codgroup').value;
+
         const cells = tr.querySelectorAll('td input');
 
-        // 🔄 FEEDBACK VISUAL
-        cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
+
+        // quantidade
         cells[1].readOnly = true;
         cells[1].value = '';
+
+        // UV
         cells[2].value = '';
+
+        // descrição
+        cells[3].value = 'Carregando item...';
+
+        // IPI
         cells[4].value = '';
+
+        // unitário
         cells[5].value = '';
+
+        // c/ ipi
         cells[6].value = '';
+
+        // total
         cells[7].value = '';
 
         try {
+
             const response = await fetch(
                 `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
             );
 
             if (!response.ok) {
+
                 const erro = await response.json();
-                throw new Error(erro.message || 'Item não disponível');
+
+                throw new Error(
+                    erro.message || 'Item não disponível'
+                );
             }
 
             const data = await response.json();
+
+            console.log('RETORNO ITEM:', data);
+            console.log('É ARRAY?', Array.isArray(data));
+
             if (!data.length) {
                 throw new Error('Item não encontrado');
             }
 
             const item = data[0];
+
             const preco = Number(item.PrecoVenda);
 
-            // ✅ IPI DINÂMICO
             const ipi = buscarIpiDoItem(cod);
+
             const ipiMult = 1 + ipi;
 
+            // UV
             cells[2].value = 'CX';
+
+            // descrição
             cells[3].value = item.ItemDescricao;
-            cells[4].value = (ipi * 100).toFixed(2) + '%';
+
+            // IPI
+            cells[4].value =
+                (ipi * 100).toFixed(2) + '%';
 
             const precoComIpi = preco * ipiMult;
 
-            cells[5].value = preco.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-
-            cells[6].value = precoComIpi.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-
-            cells[1].readOnly = false;
-            cells[1].focus();
-
-            cells[1].addEventListener('input', () => {
-                const qtd = parseFloat(cells[1].value.replace(',', '.')) || 0;
-                const totalLinha = qtd * preco;
-                const totalComIpi = totalLinha * ipiMult;
-
-                cells[7].value = totalComIpi.toLocaleString('pt-BR', {
+            // unitário
+            cells[5].value = preco.toLocaleString(
+                'pt-BR',
+                {
                     style: 'currency',
                     currency: 'BRL'
-                });
+                }
+            );
+
+            // c/ ipi
+            cells[6].value = precoComIpi.toLocaleString(
+                'pt-BR',
+                {
+                    style: 'currency',
+                    currency: 'BRL'
+                }
+            );
+
+            cells[1].readOnly = false;
+
+            cells[1].focus();
+
+            cells[1].oninput = () => {
+
+                const qtd =
+                    parseFloat(
+                        cells[1].value.replace(',', '.')
+                    ) || 0;
+
+                const totalLinha = qtd * preco;
+
+                const totalComIpi =
+                    totalLinha * ipiMult;
+
+                // TOTAL
+                cells[7].value =
+                    totalComIpi.toLocaleString(
+                        'pt-BR',
+                        {
+                            style: 'currency',
+                            currency: 'BRL'
+                        }
+                    );
 
                 tr.dataset.itemId = item.ItemId;
+
                 atualizarTotais();
-            });
+            };
 
         } catch (error) {
+
             alert(error.message);
+
             this.value = '';
+
             this.focus();
+
         } finally {
+
             this.readOnly = false;
         }
     });
@@ -749,14 +813,19 @@ document.getElementById('baixarJson').addEventListener('click', () => {
                     return {
                         ItemValorDesconto: 0,
                         ItemPercentualDesconto: 0,
+
                         EntregasItemPedidoVenda: [
                             {
-                                Data: new Date().toISOString(), 
+                                Data: new Date().toISOString(),
                                 DataPrevista: new Date().toISOString(),
                                 Quantidade: quantidade,
                             }
                         ],
+
                         ItemId: itemId,
+
+                        Codigo: cells[0]?.value || '',
+
                         Quantidade: quantidade,
                     };
                 }
@@ -767,25 +836,58 @@ document.getElementById('baixarJson').addEventListener('click', () => {
 
         // Cria o corpo da requisição com base nos inputs
         const requestBody = {
-            ListaPrecoId: Number(document.getElementById('codgroup').value),
-            CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
-            FormaPagamentoId: Number(document.getElementById('formPagId').value),
-            ValorDesconto: 0,
-            PercentualDesconto: 0,
-            ItensPedidoVenda: itensPedidoVenda,
-            RepresentantesPedidoVendas: [
-                {
-                    RepresentanteId: Number(document.getElementById('representanteId').value),
-                    RepresentantePrincipal: true,
-                    PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
-                    PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
-                }
-            ],
-            ClienteId: Number(document.getElementById('cod_cliente').value),
-            ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
-            NumeroReferencia: document.getElementById('referencia').value,
-            Observacao: document.getElementById('observation').value,
-        };
+
+    // =========================
+    // CLIENTE
+    // =========================
+    cnpj: document.getElementById('cnpj').value,
+    ie: document.getElementById('ie').value,
+    representante: document.getElementById('representante').value,
+    tipoPedido: document.getElementById('tipo_pedido').value,
+    razaoSocial: document.getElementById('razao_social').value,
+    codClienteTexto: document.getElementById('cod_cliente').value,
+    endereco: document.getElementById('endereco').value,
+    bairro: document.getElementById('bairro').value,
+    cidade: document.getElementById('cidade').value,
+    uf: document.getElementById('uf').value,
+    cep: document.getElementById('cep').value,
+    telefone: document.getElementById('telefone').value,
+    email: document.getElementById('email').value,
+    emailFiscal: document.getElementById('email_fiscal').value,
+    condicaoPagamentoTexto: document.getElementById('pay').value,
+    transporte: document.getElementById('transp').value,
+    tabelaTexto: document.getElementById('group').value,
+    formaPagamentoTexto: document.getElementById('formPagDescricao').value,
+
+    // =========================
+    // IDs SISTEMA
+    // =========================
+    ListaPrecoId: Number(document.getElementById('codgroup').value),
+    CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
+    FormaPagamentoId: Number(document.getElementById('formPagId').value),
+
+    ValorDesconto: 0,
+    PercentualDesconto: 0,
+
+    ItensPedidoVenda: itensPedidoVenda,
+
+    RepresentantesPedidoVendas: [
+        {
+            RepresentanteId: Number(document.getElementById('representanteId').value),
+            RepresentantePrincipal: true,
+            PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
+            PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
+        }
+    ],
+
+    ClienteId: Number(document.getElementById('cod_cliente').value),
+
+    ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
+
+    NumeroReferencia: document.getElementById('referencia').value,
+
+    Observacao: document.getElementById('observation').value,
+};
 
     // Converte objeto para JSON formatado
     const jsonString = JSON.stringify(requestBody, null, 2);
@@ -817,12 +919,12 @@ document.getElementById('baixarJson').addEventListener('click', () => {
 const inputJsonButton = document.getElementById('inputJson');
 const jsonFileInput = document.getElementById('jsonFileInput');
 
-// Ao clicar no botão abre seletor de arquivo
+// abre seletor de arquivo ao clicar no botão
 inputJsonButton.addEventListener('click', () => {
     jsonFileInput.click();
 });
 
-// Quando selecionar o arquivo
+// Ao clicar no botão abre seletor de arquivo
 jsonFileInput.addEventListener('change', async (event) => {
 
     const file = event.target.files[0];
@@ -831,55 +933,159 @@ jsonFileInput.addEventListener('change', async (event) => {
 
     try {
 
-        // Lê o conteúdo do arquivo
         const fileContent = await file.text();
 
-        // Converte JSON texto para objeto
-        const requestBody = JSON.parse(fileContent);
+        // remove BOM UTF-8 invisível
+        const jsonLimpo = fileContent.replace(/^\uFEFF/, '');
+
+        const requestBody = JSON.parse(jsonLimpo);
 
         console.log("JSON importado:", requestBody);
 
-        feedbackDiv.textContent = 'Estamos enviando o pedido, aguarde...';
-        feedbackDiv.style.display = "block";
+        // =========================
+        // PREENCHE CLIENTE
+        // =========================
 
-        // Envia para API
-        const response = await fetch('/api/pedidos/input', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        });
+        document.getElementById('cnpj').value =
+            requestBody.cnpj || '';
 
-        const result = await response.json();
+        document.getElementById('ie').value =
+            requestBody.ie || '';
 
-        if (response.ok && (!result.ErrorMessages || result.ErrorMessages.length === 0)) {
+        document.getElementById('representante').value =
+            requestBody.representante || '';
 
-            alert("Pedido importado e enviado com sucesso!");
+        document.getElementById('tipo_pedido').value =
+            requestBody.tipoPedido || 'Venda';
 
-            console.log("Resposta da API:", result);
+        document.getElementById('razao_social').value =
+            requestBody.razaoSocial || '';
 
-            location.reload();
+        document.getElementById('cod_cliente').value =
+            requestBody.codClienteTexto || '';
 
-        } else {
+        document.getElementById('endereco').value =
+            requestBody.endereco || '';
 
-            alert(`Erro ao enviar pedido: ${
-                result.ErrorMessages?.join(", ") || "Erro desconhecido"
-            }`);
+        document.getElementById('bairro').value =
+            requestBody.bairro || '';
 
-            console.error("Erro da API:", result);
+        document.getElementById('cidade').value =
+            requestBody.cidade || '';
+
+        document.getElementById('uf').value =
+            requestBody.uf || '';
+
+        document.getElementById('cep').value =
+            requestBody.cep || '';
+
+        document.getElementById('telefone').value =
+            requestBody.telefone || '';
+
+        document.getElementById('email').value =
+            requestBody.email || '';
+
+        document.getElementById('email_fiscal').value =
+            requestBody.emailFiscal || '';
+
+        document.getElementById('pay').value =
+            requestBody.condicaoPagamentoTexto || '';
+
+        document.getElementById('transp').value =
+            requestBody.transporte || '';
+
+        document.getElementById('group').value =
+            requestBody.tabelaTexto || '';
+
+        document.getElementById('codgroup').value =
+            requestBody.ListaPrecoId || '';
+
+        document.getElementById('formPagDescricao').value =
+            requestBody.formaPagamentoTexto || '';
+        
+        document.getElementById('referencia').value =
+            requestBody.NumeroReferencia || '';
+
+        document.getElementById('observation').value =
+            requestBody.Observacao || '';
+
+        // representante
+        if (requestBody.RepresentantesPedidoVendas?.length) {
+
+            const rep = requestBody.RepresentantesPedidoVendas[0];
+
+            document.getElementById('representanteId').value =
+                rep.RepresentanteId || '';
+
+            document.getElementById('PercentualComissaoItem').value =
+                rep.PercentualComissaoItem || '';
+
+            document.getElementById('PercentualComissaoServico').value =
+                rep.PercentualComissaoServico || '';
         }
+
+        // =========================
+        // LIMPA TABELA
+        // =========================
+
+        const tbody = document.querySelector('#dadosPedido tbody');
+        tbody.innerHTML = '';
+
+        // =========================
+        // PREENCHE ITENS
+        // =========================
+
+        for (const item of requestBody.ItensPedidoVenda) {
+
+            adicionarNovaLinha();
+
+            const tr = tbody.lastElementChild;
+            const cells = tr.querySelectorAll('td input');
+
+            // ItemId
+            tr.dataset.itemId = item.ItemId;
+
+           // Código do item
+                cells[0].value = item.Codigo;
+
+                // dispara blur primeiro
+                cells[0].dispatchEvent(new Event('blur'));
+
+                // espera carregar o item
+                await new Promise(resolve => {
+
+                    const verificar = setInterval(() => {
+
+                        // preço carregado e quantidade liberada
+                        if (cells[5]?.value && !cells[1].readOnly) {
+
+                            clearInterval(verificar);
+
+                            // AGORA define a quantidade
+                            cells[1].value = item.Quantidade;
+
+                            // dispara cálculo
+                            cells[1].dispatchEvent(new Event('input'));
+
+                            resolve();
+                        }
+
+                    }, 100);
+
+                });
+        }
+
+        atualizarTotais();
+
+        alert("JSON carregado na tela com sucesso!");
 
     } catch (error) {
 
-        console.error("Erro ao importar/enviar JSON:", error);
+        console.error("Erro ao importar JSON:", error);
 
         alert("Erro ao processar o arquivo JSON.");
     } finally {
 
-        feedbackDiv.style.display = "none";
-
-        // limpa input para permitir selecionar o mesmo arquivo novamente
         jsonFileInput.value = '';
     }
 });
@@ -946,6 +1152,7 @@ confirmButton.addEventListener("click", async () => {
                             }
                         ],
                         ItemId: itemId,
+                        Codigo: cells[0]?.value || '',
                         Quantidade: quantidade,
                     };
                 }
