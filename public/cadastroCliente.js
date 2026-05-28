@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 'cep',
                 'telefone',
                 'email',
-                'email_fiscal',
+                'email_comprador',
                 'contat',
                 'formPagDescricao',
                 'nFan'
