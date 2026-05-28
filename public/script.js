@@ -448,7 +448,41 @@ function buscarIpiDoItem(codigoItem) {
 }
 
 
+function getIpi(classificacao){
 
+      const classificacaoFiscal = [
+                [17041000 , 0.0325],
+                [17049020 , 0.0325],
+                [17049090 , 0.0325],
+                [18069000 , 0.0325],
+                [20079923 , 0],
+                [20079990 , 0],
+                [21069050 , 0],
+                [39201099 , 0],
+                [49019900 , 0],
+                [49111090 , 0],
+                [61091000 , 0],
+                [84729059 , 0],
+                [85061010 , 0],
+                [87120010 , 0],
+                [94033000 , 0],
+                [94037000 , 0],
+                [95030022 , 0.065],
+                [95030031 , 0],
+                [95030039 , 0.065],
+                [95030070 , 0.065],
+                [95030098 , 0.065],
+                [95030099 , 0.065],
+                [95049090 , 0],
+            ];
+            
+            const ipi = classificacaoFiscal.find(
+                row => row[0] == classificacao
+            )
+
+            return ipi ? ipi[1] : 0;
+            
+}
 
 
 
@@ -643,128 +677,12 @@ if (i === 0) {
             const preco = Number(item.PrecoVenda);
 
             //Verificação automática de IPI
-
-            if (item.classificacaoFiscal === '17041000'){
-                
-                ipi = 0.0325;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '17049020'){
-                
-                ipi = 0.0325;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '17049090'){
-                
-                ipi = 0.0325;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '18069000'){
-                
-                ipi = 0.0325;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '20079923'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '20079990'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '21069050'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '39201099'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '49019900'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '49111090'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '61091000'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '84729059'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '85061010'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '87120010'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '94033000'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '94037000'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95030022'){
-                
-                ipi = 0.065;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95030031'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95030039'){
-                
-                ipi = 0.065;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95030070'){
-                
-                ipi = 0.065;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95030098'){
-                
-                ipi = 0.065;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95030099'){
-                
-                ipi = 0.065;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else if (item.classificacaoFiscal === '95049090'){
-                
-                ipi = 0;
-                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
-            }
-            else{
+            console.log('Origem '+item.origem)
+            
+            if(item.origem == 2)
+                ipi = getIpi(item.classificacaoFiscal)
+            else
                 ipi = 0
-                console.log('sem classificação identificada, ipi = 0')
-            }
-
-
             const ipiMult = 1 + ipi;
 
             // UV

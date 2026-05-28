@@ -67,11 +67,13 @@ async function verificarStatusItem(itemEmpresaId) {
 
     const data = JSON.parse(text);
 
+
     return {
         ativo: data.ativo,
         suspenso: data.suspenso,
         foraLinha: data.foraLinha,
-        classificacaoFiscal: data.classificacaoFiscal
+        classificacaoFiscal: data.classificacaoFiscal,
+        origem: data.origem
     };
 }
 
@@ -141,8 +143,8 @@ async function getListaPreco(req, res) {
 
     itens = itens.map(itens => ({
         ...itens, // Mantém as propriedades originais do item
-        classificacaoFiscal: status.classificacaoFiscal // Substitua pelo campo real do seu dado
-        
+        classificacaoFiscal: status.classificacaoFiscal, // Substitua pelo campo real do seu dado
+        origem: status.origem
     }));
 
     }
