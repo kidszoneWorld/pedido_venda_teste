@@ -29,6 +29,7 @@ Estrutura do projeto:
 |   |-pdf_invest_comercialController.js
 |   |-pdf_invest_promotorController.js
 |   |-pdfController.js
+|   |-rebController.js
 |   |-productController.js
 |   |-redesController.js
 |   |-sellOutController.js
@@ -45,6 +46,7 @@ Estrutura do projeto:
 |   |-Investimentos.js
 |   |-Mercado.js
 |   |-Positicacao,js
+|   |-Rebaixa.js
 |   |-Sellin.js
 |   |-sellOut.js
 |-/public
@@ -117,6 +119,9 @@ Estrutura do projeto:
 |   |-logistica.js
 |   |-logistica02.js
 |   |-logistica03.js
+|   |-rebaixa.js
+|   |-rebaixaDetalhe.js
+|   |-rebaixaPanel.js
 |   |-pdf_invest_comercial.js
 |   |-pdf_invest_promotor.js
 |   |-pdf.js
@@ -162,6 +167,9 @@ Estrutura do projeto:
 |   |-logistica.html
 |   |-logisticaFernando.html
 |   |-logisticaJoao.html
+|   |-rebaixa.html
+|   |-rebaixaDetalhe.hmtl
+|   |-rebaixaPanel.html
 |   |-redes.html
 |   |-sellOut.html
 |   |-test.html

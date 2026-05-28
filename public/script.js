@@ -639,10 +639,131 @@ if (i === 0) {
             }
 
             const item = data[0];
-
+            let ipi = 0;
             const preco = Number(item.PrecoVenda);
 
-            const ipi = buscarIpiDoItem(cod);
+            //Verificação automática de IPI
+
+            if (item.classificacaoFiscal === '17041000'){
+                
+                ipi = 0.0325;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '17049020'){
+                
+                ipi = 0.0325;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '17049090'){
+                
+                ipi = 0.0325;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '18069000'){
+                
+                ipi = 0.0325;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '20079923'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '20079990'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '21069050'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '39201099'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '49019900'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '49111090'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '61091000'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '84729059'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '85061010'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '87120010'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '94033000'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '94037000'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95030022'){
+                
+                ipi = 0.065;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95030031'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95030039'){
+                
+                ipi = 0.065;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95030070'){
+                
+                ipi = 0.065;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95030098'){
+                
+                ipi = 0.065;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95030099'){
+                
+                ipi = 0.065;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else if (item.classificacaoFiscal === '95049090'){
+                
+                ipi = 0;
+                console.log('class '+ item.classificacaoFiscal + ' IPI '+ ipi)
+            }
+            else{
+                ipi = 0
+                console.log('sem classificação identificada, ipi = 0')
+            }
+
 
             const ipiMult = 1 + ipi;
 
