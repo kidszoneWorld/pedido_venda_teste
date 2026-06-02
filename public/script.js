@@ -496,7 +496,7 @@ function adicionarNovaLinha() {
     for (let i = 0; i < 10; i++) {
         const td = document.createElement('td');
 
-        // 🔴 coluna oculta (ItemId)
+        // coluna oculta (ItemId)
         if (i === 9) {
             td.style.display = 'none';
         }

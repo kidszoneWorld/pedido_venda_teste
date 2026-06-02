@@ -59,6 +59,16 @@ function treatClientData(clientData) {
     const ufNumber = clientData.enderecos?.[0]?.cidade?.uf || 0;
     const ufSigla = ufMap[ufNumber] || "Nenhum"; // Caso o número não exista no mapeamento, retorna "Nenhum"
     debugger;
+    //console.log('representantes dados: '+ JSON.stringify(clientData.representantes?.dados));
+    const comissaoItem = clientData.representantes?.dados[0]?.clientes?.find(
+        cliente => cliente.clienteCodigo === clientData.codigo
+    )?.comissaoItem;
+    const comissaoServico = clientData.representantes?.dados[0]?.clientes?.find(
+        cliente => cliente.clienteCodigo === clientData.codigo
+    )?.comissaoServico;
+
+    console.log ('comissão do cliente Item '+ comissaoItem);
+    console.log ('comissão do cliente Servico '+ comissaoServico);
     // Mapeamento dos campos
     const treatedData = {
         "COD CLIENTE": clientData.codigo || 0 ,
@@ -84,8 +94,8 @@ function treatClientData(clientData) {
         "TRANSPORTADORA": clientData.transportadora?.nomeAbreviado || "",
         "CliDataHoraIncl": clientData.dataCriacao || "",
         "REPRESENTANTE E-MAIL": getRepresentativeEmail(clientData.representantes?.dados[0]?.codigo) || "",
-        "REP COMISSAO ITEM": clientData.representantes?.dados[0]?.clientes[0]?.comissaoItem || 0 ,
-        "REP COMISSAO SERVICO": clientData.representantes?.dados[0]?.clientes[0]?.comissaoServico || 0 ,
+        "REP COMISSAO ITEM": comissaoItem || 0 ,
+        "REP COMISSAO SERVICO": comissaoServico || 0 ,
         "FORMA DE PAGAMENTO ID": clientData.formaPagamento?.dados?.[0]?.codigo || 0 ,
         "FORMA DE PAGAMENTO DESCRICAO": clientData.formaPagamento?.dados?.[0]?.descricao || "",
         "ID COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Id || 0 ,
