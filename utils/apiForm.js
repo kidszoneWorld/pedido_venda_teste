@@ -47,7 +47,7 @@ async function checkToken() {
   }
 }
 
-async function fetchClientDetails(cnpj) {
+async function fetchClientDetails(api, cnpj) {
 
       await checkToken();
     
@@ -55,9 +55,9 @@ async function fetchClientDetails(cnpj) {
         console.error('Erro: Token não obtido.');
         return;
       }
-    
+      console.log(api, cnpj)
       try {
-        const response = await fetch(`${ngLink}/pessoa-service/cliente/documento/${cnpj}`, {
+        const response = await fetch(`${ngLink}/pessoa-service/cliente/${api}/${cnpj}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`,
@@ -82,7 +82,7 @@ async function fetchClientDetails(cnpj) {
 
 
 // Função para buscar representantes para cada cliente
-async function fetchClientsWithRepresentatives(cnpj) {
+async function fetchClientsWithRepresentatives(api, cnpj) {
     await checkToken();
   
     if (!authToken) {
@@ -92,7 +92,7 @@ async function fetchClientsWithRepresentatives(cnpj) {
   
     try {
       // 1. Buscar os dados do cliente
-      const clientData = await fetchClientDetails(cnpj);
+      const clientData = await fetchClientDetails(api, cnpj);
   
       if (!clientData || !clientData.codigo) {
         console.error('Cliente não encontrado ou dados inválidos');
@@ -132,7 +132,7 @@ async function fetchClientsWithRepresentatives(cnpj) {
     }
   }
 
-async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
+async function fetchClientsWithdetailsAndRepresentativesWithTransport(api, cnpj) {
     await checkToken();
   
     if (!authToken) {
@@ -141,7 +141,7 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
     }
   
     try {
-       const clientRepresentative = await fetchClientsWithRepresentatives(cnpj)
+       const clientRepresentative = await fetchClientsWithRepresentatives(api, cnpj)
   
        const transportId = clientRepresentative.transportadoraId
   
@@ -183,12 +183,12 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
   }
   
 
-  async function fetchAllClientapiAntiga(cnpj) {
+  async function fetchAllClientapiAntiga(api, cnpj) {
     
 
     try {
 
-      const clientRepresentativeWithTransport = await fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj);
+      const clientRepresentativeWithTransport = await fetchClientsWithdetailsAndRepresentativesWithTransport(api, cnpj);
   
       const cnpjID= clientRepresentativeWithTransport.documento.numeroTexto;
   
@@ -229,13 +229,12 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
   
 
 
-  async function fetchAllClientsWithPriceList(cnpj) {
+  async function fetchAllClientsWithPriceList(api, cnpj) {
     
 
     try {
 
-      const clientOld = await fetchAllClientapiAntiga(cnpj);
-  
+      const clientOld = await fetchAllClientapiAntiga(api, cnpj)
       const codClientId = clientOld.codigo;
   
       const priceListtEndpoint = `/vendas-service/lista-preco?ClienteCodigo=${codClientId}`;
@@ -274,11 +273,11 @@ async function fetchClientsWithdetailsAndRepresentativesWithTransport(cnpj) {
   }
   
 
-async function fetchPaymentCondition(cnpj) {
+async function fetchPaymentCondition(api, cnpj) {
 
  
     try {
-       const clientWithPriceList = await fetchAllClientsWithPriceList(cnpj)
+       const clientWithPriceList = await fetchAllClientsWithPriceList(api, cnpj)
   
        const paytId = clientWithPriceList.condicaoPagamentoId
   
@@ -319,7 +318,7 @@ async function fetchPaymentCondition(cnpj) {
   }
 
 
-  async function fetchPaymentMethod(cnpj) {
+  async function fetchPaymentMethod(api, cnpj) {
     await checkToken();
   
     if (!authToken) {
@@ -328,7 +327,7 @@ async function fetchPaymentCondition(cnpj) {
     }
   
     try {
-       const clientWithPaymentCondition = await fetchPaymentCondition(cnpj)
+       const clientWithPaymentCondition = await fetchPaymentCondition(api, cnpj)
   
        const payMethodtId = clientWithPaymentCondition.codigo
   
@@ -337,7 +336,7 @@ async function fetchPaymentCondition(cnpj) {
       let payMethodData = [];
   
       try {
-         const payMethodResponse = await (`${ngLink}${payMethodEndpoint}`, {
+         const payMethodResponse = await fetch(`${ngLink}${payMethodEndpoint}`, {
                 method: 'GET',
                   headers: {
                   'Authorization': `Bearer ${authToken}`,
@@ -369,7 +368,7 @@ async function fetchPaymentCondition(cnpj) {
   }
 
 
-  async function fetchcontat(cnpj) {
+  async function fetchcontat(api, cnpj) {
     await checkToken();
   
     if (!authToken) {
@@ -378,7 +377,7 @@ async function fetchPaymentCondition(cnpj) {
     }
   
     try {
-       const clientWithPaymentMethod = await fetchPaymentMethod(cnpj)
+       const clientWithPaymentMethod = await fetchPaymentMethod(api, cnpj)
   
        const clientId = clientWithPaymentMethod.codigo
   
@@ -450,8 +449,8 @@ async function fetchPriceListItems(codigoLista) {
 
 
 //função composta para pegar o lista de preço
-async function fetchClientWithPriceListItems(cnpj) {
-  const client = await fetchcontat(cnpj);
+async function fetchClientWithPriceListItems(api, cnpj) {
+  const client = await fetchcontat(api, cnpj);
 
   if (!client?.listaPreco?.[0]?.codigo) {
     return client;

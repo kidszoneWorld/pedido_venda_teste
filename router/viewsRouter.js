@@ -141,7 +141,7 @@ router.get('/investPromotor',authMiddleware, (req, res) => {
 // Rotas da API de pedidos
 router.get('/api/pedidos', orderController.getOrderDetails); // Pedidos com representantes
 router.get('/api/pedidos1/:codPedido', orderController.getClientDetailsEndpoint); // Detalhes do pedido por codPedido
-router.get('/api/cliente/:cnpj', clientController.getClientDetails); // Detalhes do cliente por cnpj
+router.get('/api/cliente/:api/:cnpj', clientController.getClientDetails); // Detalhes do cliente por cnpj
 router.get('/api/cliente1/:cnpj', clientController.getClientDetailsTest); // Detalhes do cliente por cnpj full
 
 
