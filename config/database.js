@@ -5,7 +5,10 @@ const pool = new Pool({
     host: process.env.POST_URL,
     database: process.env.POST_DB,
     password: process.env.POST_SENHA,
-    port: process.env.POST_PORT || 5432,
+    port: Number(process.env.POST_PORT),
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 module.exports = pool;
