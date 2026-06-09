@@ -1,4 +1,4 @@
-const REPRESENTANTES = require('../public/data/representantes.json');
+const pool = require('../config/database');
 
 function authMiddleware(req, res, next) {
     if (req.session && req.session.isAuthenticated) {
@@ -8,34 +8,58 @@ function authMiddleware(req, res, next) {
     res.redirect('/login2');
 }
 
-function authenticateUser(req, res) {
-    const { email, senha } = req.body;
+async function authenticateUser(req, res) {
+    try {
+        const { email, senha } = req.body;
 
-    const user = REPRESENTANTES[email];
+        // Busca usuário no PostgreSQL
+        const result = await pool.query(
+            `SELECT * 
+             FROM "TbUsuarios" 
+             WHERE "UsuEmail" = $1`,
+            [email]
+        );
 
-    if (!user) {
-        console.warn('Usuário não encontrado');
-        return res.redirect('/error-404');
+        // Verifica se encontrou usuário
+        if (result.rows.length === 0) {
+            console.warn('Usuário não encontrado');
+            return res.redirect('/error-404');
+        }
+
+        const user = result.rows[0];
+
+        // Verifica senha
+        if (senha !== user.UsuSenha) {
+            console.warn('Senha incorreta');
+            return res.redirect('/error-401');
+        }
+
+        // Cria sessão
+        req.session.isAuthenticated = true;
+
+        req.session.user = {
+            id: user.UsuId,
+            email: user.UsuEmail,
+            nome: user.UsuNome,
+            numero: user.UsuNumero || null
+        };
+
+        // Caso queira manter essa lógica
+        if (email.startsWith('rep')) {
+            req.session.userNumero = user.UsuNumero;
+        }
+
+        console.log(`Usuário autenticado: ${email}`);
+
+        res.redirect('/');
+
+    } catch (error) {
+        console.error('Erro ao autenticar usuário:', error);
+        res.status(500).send('Erro interno do servidor');
     }
-
-    if (senha !== user.senha) {
-        console.warn('Senha incorreta');
-        return res.redirect('/error-401');
-    }
-
-    req.session.isAuthenticated = true;
-    req.session.user = {
-        email,
-        nome: user.nome,
-        numero: user.numero || null
-    };
-
-    if (email.startsWith('rep')) {
-        req.session.userNumero = user.numero;
-    }
-
-    console.log(`Usuário autenticado: ${email}`);
-    res.redirect('/');
 }
 
-module.exports = { authMiddleware, authenticateUser };
+module.exports = {
+    authMiddleware,
+    authenticateUser
+};

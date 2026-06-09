@@ -1,0 +1,11 @@
+const { Pool } = require('pg');
+
+const pool = new Pool({
+    user: process.env.POST_USER,
+    host: process.env.POST_URL,
+    database: process.env.POST_DB,
+    password: process.env.POST_SENHA,
+    port: process.env.POST_PORT || 5432,
+});
+
+module.exports = pool;
