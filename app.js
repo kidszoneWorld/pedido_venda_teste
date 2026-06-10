@@ -50,18 +50,18 @@ const redisClient = new Redis({
 app.use(cookieParser());
 
 // Configuração da sessão
-// app.use(session({
-//     store: new RedisStore({ client: redisClient }),
-//     secret: 'minha-chave-secreta', // Altere para uma chave forte
-//     resave: true,
-//     saveUninitialized: false,
-//     cookie: {
-//         secure: process.env.NODE_ENV === 'production', // Garante HTTPS
-//         httpOnly: true,
-//         sameSite: 'strict', // None para cross-origin em produção
-//         maxAge: 1000 * 60 * 60 // 1 hora
-//     }
-// }));
+app.use(session({
+    store: new RedisStore({ client: redisClient }),
+    secret: 'minha-chave-secreta', // Altere para uma chave forte
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Garante HTTPS
+        httpOnly: true,
+        sameSite: 'strict', // None para cross-origin em produção
+        maxAge: 1000 * 60 * 60 // 1 hora
+    }
+}));
 
 // Usar o router para as views
 app.use('/', viewsRouter);
@@ -71,13 +71,13 @@ app.get('/teste', (req, res) => {
 });
 
 
-//app.use((req, res, next) => {
-// res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-// res.setHeader('Pragma', 'no-cache');
-// res.setHeader('Expires', '0');
-// res.setHeader('Surrogate-Control', 'no-store');
-// next();
-//});
+app.use((req, res, next) => {
+res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+res.setHeader('Pragma', 'no-cache');
+res.setHeader('Expires', '0');
+res.setHeader('Surrogate-Control', 'no-store');
+next();
+});
 
 
 /////banco de dados mogondb atlas
