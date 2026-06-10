@@ -29,7 +29,11 @@ async function authenticateUser(req, res) {
         const user = result.rows[0];
 
         // Verifica senha
-        if (senha !== user.UsuSenha) {
+        const user = result.rows[0];
+
+        console.log('USER:', user);
+
+        if (senha !== user.ususenha) {
             console.warn('Senha incorreta');
             return res.redirect('/error-401');
         }
@@ -38,10 +42,10 @@ async function authenticateUser(req, res) {
         req.session.isAuthenticated = true;
 
         req.session.user = {
-            id: user.UsuId,
-            email: user.UsuEmail,
-            nome: user.UsuNome,
-            numero: user.UsuNumero || null
+            id: user.usuid,
+            email: user.usuemail,
+            nome: user.usunome,
+            numero: user.usunumero || null
         };
 
         // Caso queira manter essa lógica
