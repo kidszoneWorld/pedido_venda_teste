@@ -10,7 +10,5 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
-pool.connect()
-    .then(() => console.log('Banco conectado'))
-    .catch(err => console.error(err));
+
 module.exports = pool;

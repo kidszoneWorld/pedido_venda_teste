@@ -11,9 +11,6 @@ const cookieParser = require('cookie-parser');
 const viewsRouter = require('./router/viewsRouter');
 const clientePdfController = require('./controllers/clientePdfController');
 
-
-
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
