@@ -10,14 +10,64 @@ function authMiddleware(req, res, next) {
 
 async function authenticateUser(req, res) {
 
-    console.log('ROTA CHAMADA');
+    try {
 
-    console.log('BODY:', req.body);
+        console.log('BODY:', req.body);
 
-    return res.json({
-        ok: true,
-        body: req.body
-    });
+        const email = req.body?.email;
+        const senha = req.body?.senha;
+
+        if (!email || !senha) {
+            return res.status(400).json({
+                error: 'Email ou senha ausentes'
+            });
+        }
+
+        const result = await pool.query(
+            `SELECT *
+             FROM "TbUsuarios"
+             WHERE "UsuEmail" = $1`,
+            [email]
+        );
+
+        console.log(result.rows);
+
+        if (result.rows.length === 0) {
+            return res.status(401).send('Usuário não encontrado');
+        }
+
+        const user = result.rows[0];
+
+        console.log('USER:', user);
+
+        // IMPORTANTE:
+        // PostgreSQL geralmente retorna lowercase
+        const senhaBanco = user.UsuSenha || user.ususenha;
+
+        if (senha !== senhaBanco) {
+            return res.status(401).send('Senha incorreta');
+        }
+
+        req.session.isAuthenticated = true;
+
+        req.session.user = {
+            id: user.UsuId || user.usuid,
+            email: user.UsuEmail || user.usuemail,
+            nome: user.UsuNome || user.usunome,
+            numero: user.UsuNumero || user.usunumero
+        };
+
+        return res.redirect('/');
+
+    } catch (error) {
+
+        console.error('ERRO AUTH:', error);
+
+        return res.status(500).json({
+            message: error.message,
+            stack: error.stack
+        });
+    }
 }
 
 module.exports = {
