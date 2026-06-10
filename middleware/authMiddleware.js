@@ -10,37 +10,14 @@ function authMiddleware(req, res, next) {
 
 async function authenticateUser(req, res) {
 
-    console.log('AUTH INICIOU');
+    console.log('ROTA CHAMADA');
 
-    try {
+    console.log('BODY:', req.body);
 
-        console.log('BODY:', req.body);
-
-        const { email, senha } = req.body;
-
-        console.log('EMAIL:', email);
-
-        const result = await pool.query('SELECT NOW()');
-
-        console.log('DB OK:', result.rows);
-
-        return res.json({
-            ok: true,
-            body: req.body,
-            db: result.rows
-        });
-
-    } catch (error) {
-
-        console.error('ERRO REAL:', error);
-
-        return res.status(500).json({
-            ok: false,
-            message: error.message,
-            stack: error.stack,
-            code: error.code
-        });
-    }
+    return res.json({
+        ok: true,
+        body: req.body
+    });
 }
 
 module.exports = {
