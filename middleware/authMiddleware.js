@@ -12,24 +12,29 @@ async function authenticateUser(req, res) {
 
     try {
 
-        console.log('BODY:', req.body);
-
         const email = req.body?.email;
-        const senha = req.body?.senha;
+
+        console.log('EMAIL:', email);
+
+        const result = await pool.query(
+            'SELECT NOW()'
+        );
+
+        console.log(result.rows);
 
         return res.json({
             ok: true,
-            email,
-            senha
+            db: result.rows
         });
 
     } catch (error) {
 
-        console.error('ERRO REAL:', error);
+        console.error('ERRO DB:', error);
 
         return res.status(500).json({
             message: error.message,
-            stack: error.stack
+            stack: error.stack,
+            code: error.code
         });
     }
 }
