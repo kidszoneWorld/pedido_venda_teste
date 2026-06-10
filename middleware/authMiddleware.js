@@ -14,10 +14,6 @@ async function authenticateUser(req, res) {
         const email = req.body?.email;
         const senha = req.body?.senha;
 
-        if (!email || !senha) {
-            return res.status(400).send('Dados inválidos');
-        }
-
         const result = await pool.query(
             `SELECT *
              FROM "TbUsuarios"
@@ -31,9 +27,6 @@ async function authenticateUser(req, res) {
 
         const user = result.rows[0];
 
-        console.log('USER:', user);
-
-        // PostgreSQL pode retornar lowercase
         const senhaBanco =
             user.UsuSenha ||
             user.ususenha;
@@ -42,21 +35,26 @@ async function authenticateUser(req, res) {
             return res.status(401).send('Senha incorreta');
         }
 
-        // TESTE SEM SESSION PRIMEIRO
-        return res.send('LOGIN OK');
+        // AQUI DENTRO
+        req.session.isAuthenticated = true;
+
+        req.session.user = {
+            id: user.UsuId || user.usuid,
+            email: user.UsuEmail || user.usuemail
+        };
+
+        return res.redirect('/');
 
     } catch (error) {
 
-        console.error('ERRO AUTH:', error);
+        console.error(error);
 
         return res.status(500).json({
-            message: error.message,
-            stack: error.stack
+            message: error.message
         });
     }
 }
 
-req.session.isAuthenticated = true;
 
 module.exports = {
     authMiddleware,

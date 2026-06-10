@@ -1,100 +1,141 @@
 // app.js
 
-const connectDB = require('./config/db');
 require('dotenv').config();
+
 const express = require('express');
 const session = require('express-session');
 const RedisStore = require('connect-redis').default;
 const Redis = require('ioredis');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+
+const connectDB = require('./config/db');
+
 const viewsRouter = require('./router/viewsRouter');
 const clientePdfController = require('./controllers/clientePdfController');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 
-// Configurar o tamanho máximo do corpo da requisição
-app.use(express.json({ limit: '500mb' }));
-app.use(express.urlencoded({ limit: '500mb', extended: true }));
+// ===============================
+// CONEXÃO MONGO
+// ===============================
 
-// Middleware para parsing de JSON
+connectDB();
+
+
+// ===============================
+// CONFIG EXPRESS
+// ===============================
+
+app.set('trust proxy', 1);
+
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Configurar a pasta 'public' para arquivos estáticos (CSS, JS, etc.)
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (err) {
-        console.error("Erro ao conectar Mongo:", err);
-        res.status(500).json({ error: "Erro ao conectar com banco" });
-    }
-});
-// Adicionar esta linha para configurar o proxy
-app.set('trust proxy', 1); // Necessário para cookies seguros em proxies (como Vercel)
-
-// Configuração do Redis
-const redisClient = new Redis({
-    host: 'decent-bulldog-44204.upstash.io', // Substitua pelo host fornecido pelo Upstash
-    port: 6379, // Porta padrão do Redis
-    password: 'AaysAAIjcDE5NzM3NTkyYzFiYzc0ZDZiYmRhNTJkNjIzMzNhMTk4MXAxMA', // Substitua pela senha fornecida pelo Upstash
-    tls: {} // Necessário para conexões seguras
-});
+app.use(express.urlencoded({
+    limit: '50mb',
+    extended: true
+}));
 
 app.use(cookieParser());
 
-// Configuração da sessão
+app.use(express.static(
+    path.join(__dirname, 'public')
+));
+
+
+// ===============================
+// REDIS
+// ===============================
+
+const redisClient = new Redis({
+    host: 'decent-bulldog-44204.upstash.io',
+    port: 6379,
+    password: 'AaysAAIjcDE5NzM3NTkyYzFiYzc0ZDZiYmRhNTJkNjIzMzNhMTk4MXAxMA',
+    tls: {}
+});
+
+
+// ===============================
+// SESSION
+// ===============================
+
 app.use(session({
-    store: new RedisStore({ client: redisClient }),
-    secret: 'minha-chave-secreta', // Altere para uma chave forte
-    resave: true,
+
+    store: new RedisStore({
+        client: redisClient
+    }),
+
+    secret: 'minha-chave-secreta',
+
+    resave: false,
+
     saveUninitialized: false,
+
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Garante HTTPS
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        sameSite: 'strict', // None para cross-origin em produção
-        maxAge: 1000 * 60 * 60 // 1 hora
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60
     }
+
 }));
 
-// Usar o router para as views
+
+// ===============================
+// HEADERS
+// ===============================
+
+app.use((req, res, next) => {
+
+    res.setHeader(
+        'Access-Control-Allow-Origin',
+        'https://pedido-de-venda-producao.vercel.app'
+    );
+
+    res.setHeader(
+        'Access-Control-Allow-Credentials',
+        'true'
+    );
+
+    res.setHeader(
+        'Cache-Control',
+        'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+
+    res.setHeader('Pragma', 'no-cache');
+
+    res.setHeader('Expires', '0');
+
+    res.setHeader('Surrogate-Control', 'no-store');
+
+    next();
+});
+
+
+// ===============================
+// ROTAS
+// ===============================
+
 app.use('/', viewsRouter);
 
 app.get('/teste', (req, res) => {
     res.send('Rota de teste funcionando!');
 });
 
+app.post(
+    '/generate-upload-url',
+    clientePdfController.generateUploadUrl
+);
 
-app.use((req, res, next) => {
-res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-res.setHeader('Pragma', 'no-cache');
-res.setHeader('Expires', '0');
-res.setHeader('Surrogate-Control', 'no-store');
-next();
-});
-
-
-/////banco de dados mogondb atlas
+app.post(
+    '/send-client-pdf',
+    clientePdfController.sendClientPdf
+);
 
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://pedido-de-venda-producao.vercel.app'); // Substitua pela URL do seu site
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    next();
-});
-app.post('/generate-upload-url', clientePdfController.generateUploadUrl);
-app.post('/send-client-pdf', clientePdfController.sendClientPdf);
+// ===============================
+// EXPORT VERCEL
+// ===============================
 
-
-
-// Iniciar o servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
 module.exports = app;
