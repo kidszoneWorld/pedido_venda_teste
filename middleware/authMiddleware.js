@@ -29,11 +29,7 @@ async function authenticateUser(req, res) {
         const user = result.rows[0];
 
         // Verifica senha
-        const user = result.rows[0];
-
-        console.log('USER:', user);
-
-        if (senha !== user.ususenha) {
+        if (senha !== user.UsuSenha) {
             console.warn('Senha incorreta');
             return res.redirect('/error-401');
         }
@@ -41,12 +37,14 @@ async function authenticateUser(req, res) {
         // Cria sessão
         req.session.isAuthenticated = true;
 
-        req.session.user = {
-            id: user.usuid,
-            email: user.usuemail,
-            nome: user.usunome,
-            numero: user.usunumero || null
-        };
+        return res.send('LOGIN OK');
+
+        // req.session.user = {
+        //     id: user.UsuId,
+        //     email: user.UsuEmail,
+        //     nome: user.UsuNome,
+        //     numero: user.UsuNumero || null
+        // };
 
         // Caso queira manter essa lógica
         if (email.startsWith('rep')) {
