@@ -50,18 +50,18 @@ const redisClient = new Redis({
 app.use(cookieParser());
 
 // Configuração da sessão
-app.use(session({
-    store: new RedisStore({ client: redisClient }),
-    secret: 'minha-chave-secreta', // Altere para uma chave forte
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Garante HTTPS
-        httpOnly: true,
-        sameSite: 'strict', // None para cross-origin em produção
-        maxAge: 1000 * 60 * 60 // 1 hora
-    }
-}));
+// app.use(session({
+//     store: new RedisStore({ client: redisClient }),
+//     secret: 'minha-chave-secreta', // Altere para uma chave forte
+//     resave: true,
+//     saveUninitialized: false,
+//     cookie: {
+//         secure: process.env.NODE_ENV === 'production', // Garante HTTPS
+//         httpOnly: true,
+//         sameSite: 'strict', // None para cross-origin em produção
+//         maxAge: 1000 * 60 * 60 // 1 hora
+//     }
+// }));
 
 // Usar o router para as views
 app.use('/', viewsRouter);

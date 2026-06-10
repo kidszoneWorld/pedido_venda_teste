@@ -48,15 +48,15 @@ async function authenticateUser(req, res) {
             return res.status(401).send('Senha incorreta');
         }
 
-        req.session.isAuthenticated = true;
+        // req.session.isAuthenticated = true;
 
-        req.session.user = {
-            id: user.UsuId || user.usuid,
-            email: user.UsuEmail || user.usuemail,
-            nome: user.UsuNome || user.usunome,
-            numero: user.UsuNumero || user.usunumero
-        };
-
+        // req.session.user = {
+        //     id: user.UsuId || user.usuid,
+        //     email: user.UsuEmail || user.usuemail,
+        //     nome: user.UsuNome || user.usunome,
+        //     numero: user.UsuNumero || user.usunumero
+        // };
+        return res.send('login ok')
         return res.redirect('/');
 
     } catch (error) {
