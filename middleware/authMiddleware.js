@@ -7,37 +7,56 @@ function authMiddleware(req, res, next) {
 
     res.redirect('/login2');
 }
-
 async function authenticateUser(req, res) {
 
     try {
 
         const email = req.body?.email;
+        const senha = req.body?.senha;
 
-        console.log('EMAIL:', email);
+        if (!email || !senha) {
+            return res.status(400).send('Dados inválidos');
+        }
 
         const result = await pool.query(
-            'SELECT NOW()'
+            `SELECT *
+             FROM "TbUsuarios"
+             WHERE "UsuEmail" = $1`,
+            [email]
         );
 
-        console.log(result.rows);
+        if (result.rows.length === 0) {
+            return res.status(401).send('Usuário não encontrado');
+        }
 
-        return res.json({
-            ok: true,
-            db: result.rows
-        });
+        const user = result.rows[0];
+
+        console.log('USER:', user);
+
+        // PostgreSQL pode retornar lowercase
+        const senhaBanco =
+            user.UsuSenha ||
+            user.ususenha;
+
+        if (senha !== senhaBanco) {
+            return res.status(401).send('Senha incorreta');
+        }
+
+        // TESTE SEM SESSION PRIMEIRO
+        return res.send('LOGIN OK');
 
     } catch (error) {
 
-        console.error('ERRO DB:', error);
+        console.error('ERRO AUTH:', error);
 
         return res.status(500).json({
             message: error.message,
-            stack: error.stack,
-            code: error.code
+            stack: error.stack
         });
     }
 }
+
+req.session.isAuthenticated = true;
 
 module.exports = {
     authMiddleware,
