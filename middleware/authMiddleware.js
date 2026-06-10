@@ -39,12 +39,31 @@ async function authenticateUser(req, res) {
         req.session.isAuthenticated = true;
 
         req.session.user = {
-            id: user.UsuId || user.usuid,
-            email: user.UsuEmail || user.usuemail
+             id:
+                user.UsuId ||
+                user.usuid,
+
+            email:
+                user.UsuEmail ||
+                user.usuemail,
+
+            nome:
+                user.UsuNome ||
+                user.usunome,
+
+            numero:
+                user.UsuNumero ||
+                user.usunumero
+        
         };
 
-        return res.redirect('/');
+        
+        req.session.userNumero =
+            user.UsuNumero ||
+            user.usunumero;
 
+        return res.redirect('/');
+        
     } catch (error) {
 
         console.error(error);

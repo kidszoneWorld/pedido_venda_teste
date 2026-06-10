@@ -1,5 +1,3 @@
-// app.js
-
 require('dotenv').config();
 
 const express = require('express');
@@ -17,16 +15,10 @@ const clientePdfController = require('./controllers/clientePdfController');
 const app = express();
 
 
-// ===============================
-// CONEXÃO MONGO
-// ===============================
 
 connectDB();
 
-
-// ===============================
-// CONFIG EXPRESS
-// ===============================
+const PORT = process.env.PORT || 3000;
 
 app.set('trust proxy', 1);
 
@@ -44,10 +36,6 @@ app.use(express.static(
 ));
 
 
-// ===============================
-// REDIS
-// ===============================
-
 const redisClient = new Redis({
     host: 'decent-bulldog-44204.upstash.io',
     port: 6379,
@@ -56,9 +44,6 @@ const redisClient = new Redis({
 });
 
 
-// ===============================
-// SESSION
-// ===============================
 
 app.use(session({
 
@@ -82,9 +67,6 @@ app.use(session({
 }));
 
 
-// ===============================
-// HEADERS
-// ===============================
 
 app.use((req, res, next) => {
 
@@ -113,9 +95,6 @@ app.use((req, res, next) => {
 });
 
 
-// ===============================
-// ROTAS
-// ===============================
 
 app.use('/', viewsRouter);
 
@@ -134,8 +113,8 @@ app.post(
 );
 
 
-// ===============================
-// EXPORT VERCEL
-// ===============================
 
 module.exports = app;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
