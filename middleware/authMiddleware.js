@@ -9,55 +9,37 @@ function authMiddleware(req, res, next) {
 }
 
 async function authenticateUser(req, res) {
+
+    console.log('AUTH INICIOU');
+
     try {
+
+        console.log('BODY:', req.body);
+
         const { email, senha } = req.body;
 
-        // Busca usuário no PostgreSQL
-        const result = await pool.query(
-            `SELECT * 
-             FROM "TbUsuarios" 
-             WHERE "UsuEmail" = $1`,
-            [email]
-        );
+        console.log('EMAIL:', email);
 
-        // Verifica se encontrou usuário
-        if (result.rows.length === 0) {
-            console.warn('Usuário não encontrado');
-            return res.redirect('/error-404');
-        }
+        const result = await pool.query('SELECT NOW()');
 
-        const user = result.rows[0];
+        console.log('DB OK:', result.rows);
 
-        // Verifica senha
-        if (senha !== user.UsuSenha) {
-            console.warn('Senha incorreta');
-            return res.redirect('/error-401');
-        }
-
-        // Cria sessão
-        req.session.isAuthenticated = true;
-
-        return res.send('LOGIN OK');
-
-        // req.session.user = {
-        //     id: user.UsuId,
-        //     email: user.UsuEmail,
-        //     nome: user.UsuNome,
-        //     numero: user.UsuNumero || null
-        // };
-
-        // Caso queira manter essa lógica
-        if (email.startsWith('rep')) {
-            req.session.userNumero = user.UsuNumero;
-        }
-
-        console.log(`Usuário autenticado: ${email}`);
-
-        res.redirect('/');
+        return res.json({
+            ok: true,
+            body: req.body,
+            db: result.rows
+        });
 
     } catch (error) {
-        console.error('Erro ao autenticar usuário:', error);
-        res.status(500).send('Erro interno do servidor');
+
+        console.error('ERRO REAL:', error);
+
+        return res.status(500).json({
+            ok: false,
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
     }
 }
 
