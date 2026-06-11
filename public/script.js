@@ -1393,7 +1393,9 @@ document.addEventListener("DOMContentLoaded", () => {
             filename: filename,
             html2canvas: { scale: 2 },
             jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
-            pagebreak: { mode: 'avoid-all' }
+            pagebreak: {
+                mode: ['css', 'legacy']
+            }
         };
 
         try {
