@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cnpjInput = document.getElementById('cnpj');
     const responsavelInput = document.getElementById('responsavel');
     const valor = document.getElementById('valor');
+    const representante = document.getElementById('representante');
 
     // Criar modal dinamicamente
     const modal = document.createElement('div');
@@ -43,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log('Botão de PDF clicado');
 
        // Validação básica
-        if (!clienteInput.value || !cnpjInput.value || !responsavelInput.value) {
-            alert('Por favor, preencha os campos Cliente, CNPJ,Responsável e Valor .');
+        if (!clienteInput.value || !cnpjInput.value || !responsavelInput.value || !representante.value) {
+            alert('Por favor, preencha os campos Cliente, CNPJ,Responsável, Representante Responsável e Valor .');
           return;
         }
 
@@ -67,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cnpj = cnpjInput.value;
         const responsavel = responsavelInput.value;
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const rep = representante.value
         const filename = `Solicitacao_Investimento_comercial_${cliente}_${cnpj}_${responsavel}_${timestamp}.pdf`;
 
         const options = {
@@ -127,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             pdfBase64,
                             razaoSocial: cliente,
                             codCliente: cnpj,
+                            rep: rep,
                         })
                     });
 
