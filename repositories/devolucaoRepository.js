@@ -35,8 +35,8 @@ class DevolucaoRepository {
 
   try {
 
-    console.log('DEV ID:', devId);
-    console.log('DADOS:', dados);
+    // console.log('DEV ID:', devId);
+    // console.log('DADOS:', dados);
 
      const { rows } = await pool.query(`
       UPDATE public."TbDevolucoes"
@@ -49,7 +49,7 @@ class DevolucaoRepository {
     `,
     [
       dados.status,
-        dados.finalizado ? 1 : 0,
+      dados.finalizado ? 1 : 0,
       dados.nfVinculada,
       devId
     ]);
