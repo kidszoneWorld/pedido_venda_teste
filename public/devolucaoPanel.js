@@ -229,7 +229,7 @@ tr.innerHTML = `
     <input type="number" name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
-        <button onclick="salvar('${dev._id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
+        <button onclick="salvar('${dev.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
     </td>
 `;
 

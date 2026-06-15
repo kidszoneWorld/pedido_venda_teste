@@ -103,6 +103,7 @@ const hideFeedback = () => { el('feedback1').style.display = 'none'; el('feedbac
 
 // Modal bloqueio CNPJ
 const cnpjInput1 = el('cnpj');
+const codInput1 = el('cod_cliente');
 const blockModal = el('blockModal');
 
 cnpjInput1.addEventListener('focus', () => {
@@ -126,11 +127,11 @@ cnpjInput1.addEventListener('blur', async function () {
 
     showFeedback('Carregando cliente...');
     this.readOnly = true;
-
+    let api = "documento"
     let clienteApi;
 
     try {
-        const res = await fetch(`/api/cliente/${cnpj}`);
+        const res = await fetch(`/api/cliente/${api}/${cnpj}`);
         if (!res.ok) throw new Error();
         clienteApi = await res.json();
 
@@ -139,7 +140,7 @@ cnpjInput1.addEventListener('blur', async function () {
             return limparCamposCliente();
         }
 
-   clientesData = [null, [
+        clientesData = [null, [
             null,
             clienteApi["CNPJ"], clienteApi["INSC. ESTADUAL"], clienteApi["RAZÃO SOCIAL"],
             clienteApi["TELEFONE"], clienteApi["LISTA NOME"], clienteApi["EMAIL COMERCIAL"],
@@ -158,30 +159,7 @@ cnpjInput1.addEventListener('blur', async function () {
         const c = buscarCliente(cnpj);
         if (!c) return alert('Cliente não encontrado.');
 
-        el('razao_social').value = c[3];
-        el('ie').value = c[2];
-        el('representante').value = `${c[15]} - ${c[16]}`;
-        el('endereco').value = c[8];
-        el('bairro').value = c[9];
-        el('cidade').value = c[10];
-        el('uf').value = c[11];
-        el('cep').value = formatarCEP(c[12].toString());
-        el('telefone').value = c[4];
-        el('email').value = c[6];
-        el('email_fiscal').value = c[7];
-        el('cod_cliente').value = c[17];
-        el('pay').value = c[14];
-        el('group').value = c[19];
-        el('transp').value = c[20];
-        el('codgroup').value = c[18];
-        el('representanteId').value = c[15];
-        el('formPagId').value = c[25];
-        el('condPagId').value = c[27];
-        el('PercentualComissaoItem').value = c[23];
-        el('PercentualComissaoServico').value = c[24];
-        el('ContatoClienteId').value = c[28];
-        el('formPagDescricao').value = c[26];
-        el('email_rep').value = c[22];
+        preencherCliente(clientesData[1]);
 
         if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
 
@@ -193,6 +171,92 @@ cnpjInput1.addEventListener('blur', async function () {
         garantirLinhaInicial();
     }
 });
+
+
+
+codInput1.addEventListener('blur', async function () {
+    let cnpj = this.value
+
+
+
+    showFeedback('Carregando cliente...');
+    this.readOnly = true;
+    let api = "codigo"
+    let clienteApi;
+
+    try {
+        const res = await fetch(`/api/cliente/${api}/${cnpj}`);
+        if (!res.ok) throw new Error();
+        clienteApi = await res.json();
+
+        if (!clienteApi.ATIVO || clienteApi.SUSPENSO) {
+            alert('Cliente inativo ou suspenso.');
+            return limparCamposCliente();
+        }
+        console.log('LISTA:', clienteApi["LISTA"]);
+        console.log('LISTA NOME1:', clienteApi["LISTA NOME1"]);
+        clientesData = [null, [
+            null,
+            clienteApi["CNPJ"], clienteApi["INSC. ESTADUAL"], clienteApi["RAZÃO SOCIAL"],
+            clienteApi["TELEFONE"], clienteApi["LISTA NOME"], clienteApi["EMAIL COMERCIAL"],
+            clienteApi["EMAIL FISCAL"], clienteApi["ENDEREÇO"], clienteApi["BAIRRO"],
+            clienteApi["CIDADE"], clienteApi["UF"], clienteApi["CEP"],
+            clienteApi["NOME CONTATO"], clienteApi["COND. DE PAGTO"],
+            clienteApi["REPRESENTANTE"], clienteApi["REPRESENTANTE NOME"],
+            clienteApi["COD CLIENTE 2"], clienteApi["LISTA"], clienteApi["LISTA NOME1"],
+            clienteApi["TRANSPORTADORA"], clienteApi["CliDataHoraIncl"],
+            clienteApi["REPRESENTANTE E-MAIL"], clienteApi["REP COMISSAO ITEM"],
+            clienteApi["REP COMISSAO SERVICO"], clienteApi["FORMA DE PAGAMENTO ID"],
+            clienteApi["FORMA DE PAGAMENTO DESCRICAO"], clienteApi["ID COND. DE PAGTO"],
+            clienteApi["ID NOME CONTATO"], clienteApi["NOME GRUPO CLIENTE"],
+            clienteApi["GRUPO CLIENTE"], clienteApi["ATIVO"], clienteApi["SUSPENSO"]
+        ]];
+
+        const c = clientesData[1];
+
+        if (!c) {
+            return alert('Cliente não encontrado.');
+        }
+        preencherCliente(clientesData[1]);
+        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+
+    } catch {
+        alert("Cliente não encontrado, verificar com o financeiro.");
+    } finally {
+        hideFeedback();
+        this.readOnly = false;
+        garantirLinhaInicial();
+    }
+});
+
+function preencherCliente(c) {
+    el('cnpj').value = formatarCNPJ(c[1].toString());
+    el('razao_social').value = c[3];
+    el('ie').value = c[2];
+    el('representante').value = `${c[15]} - ${c[16]}`;
+    el('endereco').value = c[8];
+    el('bairro').value = c[9];
+    el('cidade').value = c[10];
+    el('uf').value = c[11];
+    el('cep').value = formatarCEP(c[12].toString());
+    el('telefone').value = c[4];
+    el('email').value = c[6];
+    el('email_fiscal').value = c[7];
+    el('cod_cliente').value = c[17];
+    el('pay').value = c[14];
+    el('group').value = c[19];
+    el('transp').value = c[20];
+    el('codgroup').value = c[18];
+    el('representanteId').value = c[15];
+    el('formPagId').value = c[25];
+    el('condPagId').value = c[27];
+    el('PercentualComissaoItem').value = c[23];
+    el('PercentualComissaoServico').value = c[24];
+    el('ContatoClienteId').value = c[28];
+    el('formPagDescricao').value = c[26];
+    el('email_rep').value = c[22];
+}
+
 
 // ======================================================================
 // 📦 PEDIDO / TABELA
@@ -210,6 +274,7 @@ function garantirLinhaInicial() {
     tbody.querySelectorAll('tr').forEach(tr => !tr.querySelector('input') && tr.remove());
     if (!tbody.querySelector('tr')) adicionarNovaLinha();
 }
+
 
 // ======================================================================
 // 🚀 ENVIO DO PEDIDO
@@ -804,8 +869,9 @@ showStep();
 
     
     // E-mail fixo que não pode ser removido
-    const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`;
+    // const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`;
     let generatedPdfFile = null;
+    const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br`;
     let additionalFiles = [];
 
 
@@ -1019,7 +1085,7 @@ const { uploadUrlDev, key } = await response.json();
     emailBodyInput.value = fixedMessage;
     emailBodyInput.setAttribute('data-fixed', fixedMessage);
 
-    // 👇 AQUI É O QUE FALTAVA
+
     if (emailRep) {
         document.getElementById('emailCc').value = emailRep;
     }

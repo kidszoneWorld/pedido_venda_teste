@@ -30,9 +30,15 @@ class DevolucaoRepository {
     return devolucoes[0] || null;
   }
 
+
   async atualizar(devId, dados) {
 
-    const { rows } = await pool.query(`
+  try {
+
+    console.log('DEV ID:', devId);
+    console.log('DADOS:', dados);
+
+     const { rows } = await pool.query(`
       UPDATE public."TbDevolucoes"
       SET
         "Status" = $1,
@@ -43,31 +49,31 @@ class DevolucaoRepository {
     `,
     [
       dados.status,
-      dados.finalizado,
+        dados.finalizado ? 1 : 0,
       dados.nfVinculada,
       devId
     ]);
 
+
     return rows[0];
+
+  } catch (err) {
+
+    console.error(err);
+    throw err;
+
   }
-
-  async gerarPedidoId() {
-
-    const { rows } = await pool.query(`
-      SELECT nextval('seq_pedido_devolucao')
-    `);
-
-    return rows[0].nextval;
-  }
+}
 
   async inserirDevolucao(dados) {
+    
 
-    const pedidoId = await this.gerarPedidoId();
+
+      // console.log(dados)
 
     const { rows } = await pool.query(`
       INSERT INTO public."TbDevolucoes"
       (
-        "PedidoId",
         "Cnpj",
         "RazaoSocial",
         "Endereco",
@@ -89,17 +95,16 @@ class DevolucaoRepository {
       VALUES
       (
         $1,$2,$3,$4,$5,$6,$7,$8,$9,
-        $10,$11,$12,$13,$14,$15,$16,$17,$18
+        $10,$11,$12,$13,$14,$15,$16,$17
       )
       RETURNING *
     `,
     [
-      pedidoId,
       dados.cnpj,
-      dados.razaoSocial,
+      dados.razaosocial,
       dados.endereco,
       dados.cidade,
-      dados.cep,
+      dados.Cep,
       dados.email,
       dados.representante,
       dados.codCliente,
@@ -118,12 +123,13 @@ class DevolucaoRepository {
   }
 
   async inserirProduto(devId, produto) {
-
+// console.log(produto)
     await pool.query(`
       INSERT INTO public."TbDevolucaoProdutos"
       (
         "DevId",
         "NfOrigem",
+        "Data",
         "CodigoItem",
         "Lote",
         "Quantidade",
@@ -134,18 +140,19 @@ class DevolucaoRepository {
       )
       VALUES
       (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
       )
     `,
     [
       devId,
-      produto.nfOrigem,
+      produto.nforigem,
+      produto.data,
       produto.codigoItem,
       produto.lote,
       produto.quantidade,
       produto.uv,
       produto.descricao,
-      produto.precoUnitario,
+      produto.precounitario,
       produto.total
     ]);
   }
@@ -160,7 +167,6 @@ class DevolucaoRepository {
 
         mapa[row.DevId] = {
           id: row.DevId,
-          pedidoId: row.PedidoId,
           cnpj: row.Cnpj,
           razaoSocial: row.RazaoSocial,
           endereco: row.Endereco,
@@ -185,7 +191,6 @@ class DevolucaoRepository {
       mapa[row.DevId].produtos.push({
         devProdId: row.DevProdId,
         nfOrigem: row.NfOrigem,
-        data: row.Data,
         codigoItem: row.CodigoItem,
         lote: row.Lote,
         quantidade: row.Quantidade,

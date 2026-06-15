@@ -75,14 +75,6 @@ exports.atualizarDevolucao = async (req, res) => {
 
     const statusLower = status?.toLowerCase();
 
-    if (statusLower === 'pendente') {
-      finalizado = 0;
-    }
-
-    if (statusLower === 'reprovado') {
-      finalizado = 1;
-    }
-
     const dev = await devolucaoRepository.atualizar(
       req.params.id,
       {
