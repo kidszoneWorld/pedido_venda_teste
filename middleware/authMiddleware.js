@@ -74,7 +74,6 @@ async function authenticateUser(req, res) {
     }
 }
 
-
 module.exports = {
     authMiddleware,
     authenticateUser

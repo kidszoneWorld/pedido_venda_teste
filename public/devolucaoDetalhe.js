@@ -19,7 +19,7 @@ async function carregarDetalhe() {
         const res = await fetch(`/api/devolucao/${id}`);
         const dev = await res.json();
 
-        devolucaoAtual = dev; // 👈 salva global
+        devolucaoAtual = dev; 
 
         renderizarDados(dev);
         renderizarProdutos(dev.produtos);
@@ -43,8 +43,8 @@ function exportarDetalheExcel() {
 
     // ===== DADOS GERAIS =====
     csv.push(["DEVOLUÇÃO"]);
-    csv.push(["Pedido", dev.pedidoId]);
-    csv.push(["Cliente", dev.razaosocial]);
+    csv.push(["Devolução", dev.id]);
+    csv.push(["Cliente", dev.razaoSocial]);
     csv.push(["CNPJ", formatarCNPJ(dev.cnpj)]);
     csv.push(["Cidade", dev.cidade]);
     csv.push(["UF", dev.uf]);
@@ -69,14 +69,14 @@ function exportarDetalheExcel() {
 
     dev.produtos.forEach(p => {
         csv.push([
-            p.nforigem,
+            p.nfOrigem,
             formatarData(p.data),
             p.codigoItem,
             p.lote,
             p.quantidade,
             p.uv,
             p.descricao,
-            p.precounitario,
+            p.precoUnitario,
             p.total
         ]);
     });
@@ -100,7 +100,7 @@ function exportarDetalheExcel() {
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `devolucao_${dev.pedidoId}.csv`;
+    link.download = `devolucao_${dev.id}.csv`;
 
     link.click();
 }
@@ -137,13 +137,13 @@ function renderizarDados(dev) {
     const container = document.getElementById('dadosPedido');
     const isFinalizado = dev.finalizado === 1;
     container.innerHTML = `
-        <div><b>Devolução:</b> ${dev.pedidoId}</div>
-        <div><b>Cliente:</b> ${dev.razaosocial}</div>
+        <div><b>Devolução:</b> ${dev.id}</div>
+        <div><b>Cliente:</b> ${dev.razaoSocial}</div>
         <div><b>CNPJ:</b> ${formatarCNPJ(dev.cnpj)}</div>
         <div><b>Endereço:</b> ${dev.endereco}</div>
         <div><b>Cidade:</b> ${dev.cidade}</div>
         <div><b>UF:</b> ${dev.uf}</div>
-        <div><b>CEP:</b> ${dev.Cep}</div>
+        <div><b>CEP:</b> ${dev.cep}</div>
         <div><b>Bairro:</b> ${dev.bairro}</div>
         <div><b>Telefone:</b> ${dev.telefone}</div>
         <div><b>Email:</b> ${dev.email}</div>
@@ -163,15 +163,15 @@ function renderizarProdutos(produtos) {
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
-            <td>${p.nforigem}</td>
+            <td>${p.nfOrigem}</td>
             <td>${formatarData(p.data)}</td>
             <td>${p.codigoItem}</td>
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
             <td>${p.uv}</td>
             <td>${p.descricao}</td>
-            <td>${formatarMoeda(p.precounitario)}</td>
-            <td>${formatarMoeda(p.total)}</td>
+            <td>R$${formatarMoeda(p.precoUnitario)}</td>
+            <td>R$${formatarMoeda(p.total)}</td>
         `;
 
         tbody.appendChild(tr);

@@ -1,9 +1,7 @@
 const nodemailer = require('nodemailer');
 const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const Devolucao = require('../models/Devolucao');
-const Counter = require('../models/Counter');
-const connectDB = require('../config/db');
+const devolucaoRepository = require('../repositories/devolucaoRepository');
 
 const crypto = require("crypto");
 
@@ -22,8 +20,11 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 // lista as devolucoes
 exports.listarDevolucoes = async (req, res) => {
+
   try {
-    const devolucoes = await Devolucao.find().sort({ data: -1 });
+
+    const devolucoes =
+      await devolucaoRepository.listar();
 
     res.json({
       success: true,
@@ -31,42 +32,49 @@ exports.listarDevolucoes = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Erro listarDevolucoes:", err);
 
     res.status(500).json({
       success: false,
-      data: [],
       error: err.message
     });
+
   }
+
 };
 
 exports.buscarDevolucaoPorId = async (req, res) => {
+
   try {
-    const dev = await Devolucao.findById(req.params.id);
+
+    const dev =
+      await devolucaoRepository.buscarPorId(req.params.id);
 
     if (!dev) {
-      return res.status(404).json({ error: 'Devolução não encontrada' });
+      return res.status(404).json({
+        error: 'Devolução não encontrada'
+      });
     }
 
     res.json(dev);
 
   } catch (err) {
+
     res.status(500).json({
-  success: false,
-  data: [],
-  error: err.message
-});
+      error: err.message
+    });
+
   }
+
 };
 
 exports.atualizarDevolucao = async (req, res) => {
+
   try {
+
     let { status, finalizado, nfVinculada } = req.body;
 
     const statusLower = status?.toLowerCase();
 
-    // REGRAS DE NEGÓCIO
     if (statusLower === 'pendente') {
       finalizado = 0;
     }
@@ -75,60 +83,80 @@ exports.atualizarDevolucao = async (req, res) => {
       finalizado = 1;
     }
 
-    const dev = await Devolucao.findByIdAndUpdate(
+    const dev = await devolucaoRepository.atualizar(
       req.params.id,
-      { status: statusLower, finalizado, nfVinculada},
-      { new: true }
+      {
+        status: statusLower,
+        finalizado,
+        nfVinculada
+      }
     );
 
     res.json(dev);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 };
 
 // Salvar devolução
 exports.salvarDevolucao = async (req, res) => {
+
   try {
 
-    // gera número sequencial
-    const contador = await Counter.findOneAndUpdate(
-      { name: 'devolucao' },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }
-    );
+    const devolucao =
+      await devolucaoRepository.inserirDevolucao(req.body);
 
-    const novoNumero = contador.seq;
+    const devId = devolucao.DevId;
 
-    const novaDevolucao = new Devolucao({
-      ...req.body,
-      pedidoId: novoNumero
+    for (const produto of req.body.produtos) {
+
+      await devolucaoRepository.inserirProduto(
+        devId,
+        produto
+      );
+
+    }
+
+    res.json({
+      success: true,
+      data: devolucao
     });
 
-    await novaDevolucao.save();
-
-    res.json(novaDevolucao);
-
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 };
 
 // Buscar devoluções
 exports.listarDevolucoes = async (req, res) => {
-  try {
-    const devolucoes = await Devolucao.find();
+ try {
+
+    const devolucoes =
+      await devolucaoRepository.listar();
+
     res.json({
-  success: true,
-  data: devolucoes
-});
+      success: true,
+      data: devolucoes
+    });
+
   } catch (err) {
+
     res.status(500).json({
-  success: false,
-  data: [],
-  error: err.message
-});
+      success: false,
+      error: err.message
+    });
+
   }
 };
 
@@ -224,7 +252,6 @@ ${downloadLinks}
   }
   finally {
     //setTimeout(() => emailsRecentes.delete(emailKey), 10000);
-
   }
 };
  

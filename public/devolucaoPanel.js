@@ -56,7 +56,7 @@ function exportarExcel() {
     const filtrados = listaOriginal.filter(dev => {
 
         const matchCliente =
-            dev.razaosocial?.toLowerCase().includes(cliente) ||
+            dev.razaoSocial?.toLowerCase().includes(cliente) ||
             dev.cnpj?.includes(cliente);
 
         const matchRepresentante =
@@ -69,7 +69,7 @@ function exportarExcel() {
             );
 
         const matchDevolucao =
-            !devolucao || dev.pedidoId?.toString().includes(devolucao);
+            !devolucao || dev.id?.toString().includes(devolucao);
 
         const matchStatus =
             !status || dev.status === status;
@@ -90,11 +90,11 @@ function exportarExcel() {
         const totalItens = dev.produtos.reduce((acc, p) => acc + p.total, 0);
 
         return {
-            Pedido: dev.pedidoId,
-            Cliente: dev.razaosocial,
+            Pedido: dev.id,
+            Cliente: dev.razaoSocial,
             CNPJ: formatarCNPJ(dev.cnpj),
             Representante: dev.representante,
-            Data: formatarData(dev.data),
+            Data: dev.data,
             Status: dev.status,
             Finalizado: dev.finalizado ? 'Sim' : 'Não',
             "NF Vinculada": dev.nfVinculada || '',
@@ -140,6 +140,12 @@ async function carregarDevolucoes() {
     }
 }
 
+function formatarData(dataStr){
+    if (!data) return '-';
+    const d = new Date(data);
+    return isNaN(d) ? '-' : d.toLocaleDateString('pt-BR');
+}
+
 function extrairNumeroRep(email) {
     const match = email.match(/^rep(\d+)@/i);
     return match ? match[1] : null;
@@ -178,8 +184,8 @@ function renderizarTabela(lista) {
             tr.style.backgroundColor = '#f8d7da'; // vermelho claro
         }
 
-        const totalItens = dev.produtos.reduce((acc, p) => acc + p.total, 0);
-
+        const totalItens = dev.produtos.reduce((acc, p) => acc + parseFloat(p.total), 0);
+        // console.log("total de itens "+ parseFloat(totalItens))
         const isPendente = status === 'pendente';
         const isReprovado = status === 'reprovado';
 
@@ -192,11 +198,11 @@ function renderizarTabela(lista) {
         if (isReprovado) {
             finalizado = true;
 }
-        
-
+dev.data =   formatarData(dev.data)
+// console.log("dev "+JSON.stringify(dev))
 tr.innerHTML = `
-    <td>${dev.pedidoId}</td>
-    <td><font size="-5">${dev.razaosocial}</font></td>
+    <td>${dev.id}</td>
+    <td><font size="-5">${dev.razaoSocial}</font></td>
     <td>${dev.status}</td>
     <td>${formatarCNPJ(dev.cnpj)}</td>
     <td>${dev.representante}</td>
@@ -204,17 +210,17 @@ tr.innerHTML = `
     <td>${formatarMoeda(totalItens)}</td>
     <td>
     <center>
-        <button target="_blank" onclick="verDetalhes('${dev._id}')">Ver</button>
+        <button target="_blank" onclick="verDetalhes('${dev.id}')">Ver</button>
     </center>
     </td>
     <td>
-        <input type="radio" name="status-${dev._id}" value="Pendente"
+        <input type="radio" name="status-${dev.id}" value="Pendente"
         ${status === 'pendente' ? 'checked' : '' }
-        onchange="controlarFinalizado('${dev._id}', this)" ${isRep ? 'disabled' : ''}>
+        onchange="controlarFinalizado('${dev.id}', this)" ${isRep ? 'disabled' : ''}>
         Pendente<br>
-        <input type="radio" name="status-${dev._id}" value="Aprovado" ${status === 'aprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Aprovado<br>
+        <input type="radio" name="status-${dev.id}" value="Aprovado" ${status === 'aprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Aprovado<br>
 
-        <input type="radio" name="status-${dev._id}" value="Reprovado" ${status === 'reprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Reprovado
+        <input type="radio" name="status-${dev.id}" value="Reprovado" ${status === 'reprovado' ? 'checked' : ''} ${isRep ? 'disabled' : ''}> Reprovado
     </td>
     <td><center>
     <input type="checkbox" 
@@ -293,7 +299,7 @@ function aplicarFiltros() {
     const filtrados = listaOriginal.filter(dev => {
 
         const matchCliente =
-            dev.razaosocial?.toLowerCase().includes(cliente) ||
+            dev.razaoSocial?.toLowerCase().includes(cliente) ||
             dev.cnpj?.includes(cliente);
 
         const matchRepresentante =
@@ -306,7 +312,7 @@ function aplicarFiltros() {
             );
 
         const matchDevolucao =
-            !devolucao || dev.pedidoId?.toString().includes(devolucao);
+            !devolucao || dev.id?.toString().includes(devolucao);
 
         const matchStatus =
             !status || dev.status === status;
