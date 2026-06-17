@@ -992,27 +992,119 @@ document.getElementById('baixarJson').addEventListener('click', () => {
     Observacao: document.getElementById('observation').value,
 };
 
-    // Converte objeto para JSON formatado
-    const jsonString = JSON.stringify(requestBody, null, 2);
+   const workbook = XLSX.utils.book_new();
 
-    // Cria blob
-    const blob = new Blob([jsonString], {
-        type: 'application/json'
-    });
+// ======================
+// ABA PEDIDO
+// ======================
 
-    // Cria URL temporária
-    const url = URL.createObjectURL(blob);
+const pedidoSheet = XLSX.utils.json_to_sheet([{
+    cnpj: requestBody.cnpj,
+    ie: requestBody.ie,
+    representante: requestBody.representante,
+    tipoPedido: requestBody.tipoPedido,
+    razaoSocial: requestBody.razaoSocial,
+    codClienteTexto: requestBody.codClienteTexto,
+    endereco: requestBody.endereco,
+    bairro: requestBody.bairro,
+    cidade: requestBody.cidade,
+    uf: requestBody.uf,
+    cep: requestBody.cep,
+    telefone: requestBody.telefone,
+    email: requestBody.email,
+    emailFiscal: requestBody.emailFiscal,
+    condicaoPagamentoTexto: requestBody.condicaoPagamentoTexto,
+    transporte: requestBody.transporte,
+    tabelaTexto: requestBody.tabelaTexto,
+    formaPagamentoTexto: requestBody.formaPagamentoTexto,
+    ListaPrecoId: requestBody.ListaPrecoId,
+    CondicaoPagamentoId: requestBody.CondicaoPagamentoId,
+    FormaPagamentoId: requestBody.FormaPagamentoId,
+    ClienteId: requestBody.ClienteId,
+    ContatoClienteId: requestBody.ContatoClienteId,
+    NumeroReferencia: requestBody.NumeroReferencia,
+    Observacao: requestBody.Observacao
+}]);
 
-    // Cria link invisível
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = document.getElementById('razao_social').value+ ' ' + document.getElementById('totalComIpi').value  +'.json';
+XLSX.utils.book_append_sheet(
+    workbook,
+    pedidoSheet,
+    "Pedido"
+);
+// ======================
+// ABA ITENS
+// ======================
 
-    // Dispara download
-    a.click();
+const itensExcel = Array.from(tableRows)
+    .map(row => {
 
-    // Limpeza
-    URL.revokeObjectURL(url);
+        const cells = row.querySelectorAll('td input');
+
+        const quantidade =
+            Number(cells[1]?.value || 0);
+
+        const itemId =
+            row.dataset.itemId || 0;
+
+        if (itemId > 0 && quantidade > 0) {
+
+            return {
+                Codigo: cells[0]?.value || '',
+                Quantidade: quantidade,
+                Unidade: cells[2]?.value || '',
+                Descricao: cells[3]?.value || '',
+                IPI: cells[4]?.value || '',
+                PrecoUnitario: cells[5]?.value || '',
+                PrecoComIPI: cells[6]?.value || '',
+                Total: cells[7]?.value || ''
+            };
+        }
+
+        return null;
+
+    })
+    .filter(Boolean);
+
+const itensSheet =
+    XLSX.utils.json_to_sheet(itensExcel);
+
+XLSX.utils.book_append_sheet(
+    workbook,
+    itensSheet,
+    "Itens"
+);
+
+// DOWNLOAD
+
+const agora = new Date();
+
+const dataExportacao =
+    agora.toLocaleDateString('pt-BR') +
+    ' ' +
+    agora.toLocaleTimeString('pt-BR');
+const resumoSheet =
+    XLSX.utils.json_to_sheet([
+        {
+            DataExportacao: dataExportacao,
+            Cliente: requestBody.razaoSocial,
+            CodigoCliente: requestBody.codClienteTexto,
+            Representante: requestBody.representante,
+            TipoPedido: requestBody.tipoPedido,
+            Volumes: document.getElementById('volume').value,
+            TotalProdutos: document.getElementById('total').value,
+            TotalComIPI: document.getElementById('totalComIpi').value
+        }
+    ]);
+
+XLSX.utils.book_append_sheet(
+    workbook,
+    resumoSheet,
+    'Resumo'
+);
+XLSX.writeFile(
+    workbook,
+    `${requestBody.razaoSocial} ${document.getElementById('totalComIpi').value}.xlsx`
+);
 });
 
 
@@ -1036,96 +1128,66 @@ jsonFileInput.addEventListener('change', async (event) => {
 
     try {
 
-        const fileContent = await file.text();
+        const data =
+    await file.arrayBuffer();
 
-        // remove BOM UTF-8 invisível
-        const jsonLimpo = fileContent.replace(/^\uFEFF/, '');
+const workbook =
+    XLSX.read(data, {
+        type: 'array'
+    });
 
-        const requestBody = JSON.parse(jsonLimpo);
+const pedido =
+    XLSX.utils.sheet_to_json(
+        workbook.Sheets['Pedido']
+    )[0];
 
-        console.log("JSON importado:", requestBody);
+const itens =
+    XLSX.utils.sheet_to_json(
+        workbook.Sheets['Itens']
+    );
 
+const requestBody = {
+    ...pedido,
+    ItensPedidoVenda: itens
+};
         // =========================
-        // PREENCHE CLIENTE
+        // CARREGA CLIENTE APENAS PELO CNPJ
         // =========================
 
-        document.getElementById('cnpj').value =
+        const cnpjInput =
+            document.getElementById('cnpj');
+
+        cnpjInput.value =
             requestBody.cnpj || '';
 
-        document.getElementById('ie').value =
-            requestBody.ie || '';
+        // dispara o mesmo evento que ocorre
+        // quando o usuário informa o CNPJ manualmente
 
-        document.getElementById('representante').value =
-            requestBody.representante || '';
+        cnpjInput.dispatchEvent(
+            new Event('blur')
+        );
+        await new Promise(resolve => {
 
-        document.getElementById('tipo_pedido').value =
-            requestBody.tipoPedido || 'Venda';
+            const verificar = setInterval(() => {
 
-        document.getElementById('razao_social').value =
-            requestBody.razaoSocial || '';
+                const clienteId =
+                    document.getElementById('cod_cliente').value;
 
-        document.getElementById('cod_cliente').value =
-            requestBody.codClienteTexto || '';
+                if (clienteId) {
 
-        document.getElementById('endereco').value =
-            requestBody.endereco || '';
+                    clearInterval(verificar);
+                    resolve();
 
-        document.getElementById('bairro').value =
-            requestBody.bairro || '';
+                }
 
-        document.getElementById('cidade').value =
-            requestBody.cidade || '';
+            }, 100);
 
-        document.getElementById('uf').value =
-            requestBody.uf || '';
-
-        document.getElementById('cep').value =
-            requestBody.cep || '';
-
-        document.getElementById('telefone').value =
-            requestBody.telefone || '';
-
-        document.getElementById('email').value =
-            requestBody.email || '';
-
-        document.getElementById('email_fiscal').value =
-            requestBody.emailFiscal || '';
-
-        document.getElementById('pay').value =
-            requestBody.condicaoPagamentoTexto || '';
-
-        document.getElementById('transp').value =
-            requestBody.transporte || '';
-
-        document.getElementById('group').value =
-            requestBody.tabelaTexto || '';
-
-        document.getElementById('codgroup').value =
-            requestBody.ListaPrecoId || '';
-
-        document.getElementById('formPagDescricao').value =
-            requestBody.formaPagamentoTexto || '';
-        
+        });
         document.getElementById('referencia').value =
             requestBody.NumeroReferencia || '';
 
         document.getElementById('observation').value =
             requestBody.Observacao || '';
-
-        // representante
-        if (requestBody.RepresentantesPedidoVendas?.length) {
-
-            const rep = requestBody.RepresentantesPedidoVendas[0];
-
-            document.getElementById('representanteId').value =
-                rep.RepresentanteId || '';
-
-            document.getElementById('PercentualComissaoItem').value =
-                rep.PercentualComissaoItem || '';
-
-            document.getElementById('PercentualComissaoServico').value =
-                rep.PercentualComissaoServico || '';
-        }
 
         // =========================
         // LIMPA TABELA
@@ -1138,7 +1200,7 @@ jsonFileInput.addEventListener('change', async (event) => {
         // PREENCHE ITENS
         // =========================
 
-        for (const item of requestBody.ItensPedidoVenda) {
+        for (const item of itens) {
 
             adicionarNovaLinha();
 
@@ -1146,7 +1208,7 @@ jsonFileInput.addEventListener('change', async (event) => {
             const cells = tr.querySelectorAll('td input');
 
             // ItemId
-            tr.dataset.itemId = item.ItemId;
+            // tr.dataset.itemId = item.ItemId;
 
            // Código do item
                 cells[0].value = item.Codigo;

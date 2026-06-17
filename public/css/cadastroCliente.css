@@ -561,6 +561,7 @@ label[for="endereco"]::after,
 label[for="cidade"]::after,
 label[for="bairro"]::after,
 label[for="cep"]::after,
+label[for="ie"]::after,
 label[for="email"]::after,
 label[for="email_fiscal"]::after,
 label[for="formPagDescricao"]::after,
@@ -574,6 +575,8 @@ label[for="paletizada"]::after,
 label[for="horario_entrega"]::after,
 label[for="numero_nf"]::after,
 label[for="obs-title"]::after,
+label[for="telefone"]::after,
+label[for="email_comprador"]::after,
 label[for="cod_cliente"]::after {
   content: " *";
   color: rgba(225, 0, 152);
