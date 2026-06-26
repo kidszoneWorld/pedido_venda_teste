@@ -226,7 +226,7 @@ tr.innerHTML = `
     <input type="checkbox" 
     ${finalizado ? 'checked' : ''} 
     ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
-    <input type="number" name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
+    <input name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
         <button onclick="salvar('${dev.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
@@ -338,7 +338,7 @@ function salvar(id, btn) {
 
     const finalizado = tr.querySelector('input[type="checkbox"]').checked;
 
-    const nfVinculada = tr.querySelector('input[type="number"]')?.value;
+    const nfVinculada = tr.querySelector('input[name="nfVinculada"')?.value;
 
     console.log({ id, statusSelecionado, finalizado, nfVinculada });
 

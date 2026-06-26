@@ -3,7 +3,7 @@ const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const Rebaixa = require('../models/Rebaixa');
 const Counter = require('../models/Counter');
-const connectDB = require('../config/db');
+const connectDB = require('../config/database');
 
 const crypto = require("crypto");
 
@@ -22,97 +22,270 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 // lista as Rebaixas
 exports.listarRebaixas = async (req, res) => {
-  try {
-    const Rebaixas = await Rebaixa.find().sort({ data: -1 });
+    try {
 
-    res.json({
-      success: true,
-      data: rebaixas
-    });
+        const result = await pool.query(`
+            SELECT *
+            FROM "TbRebaixas"
+            ORDER BY "RebId" DESC
+        `);
 
-  } catch (err) {
-    console.error("Erro listarRebaixas:", err);
+        res.json({
+            success: true,
+            data: result.rows
+        });
 
-    res.status(500).json({
-      success: false,
-      data: [],
-      error: err.message
-    });
-  }
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false,
+            data: [],
+            error: err.message
+        });
+
+    }
 };
 
 exports.buscarRebaixaPorId = async (req, res) => {
-  try {
-    const reb = await Rebaixa.findById(req.params.id);
 
-    if (!reb) {
-      return res.status(404).json({ error: 'Rebaixa não encontrada' });
+    try {
+
+        const id = req.params.id;
+
+        const reb = await pool.query(`
+            SELECT *
+            FROM "TbRebaixas"
+            WHERE "RebId" = $1
+        `,[id]);
+
+        if(reb.rows.length === 0){
+            return res.status(404).json({
+                error:"Rebaixa não encontrada"
+            });
+        }
+
+        const produtos = await pool.query(`
+            SELECT *
+            FROM "TbRebaixaProdutos"
+            WHERE "RebId"=$1
+            ORDER BY "RebProdId"
+        `,[id]);
+
+        const retorno = reb.rows[0];
+
+        retorno.produtos = produtos.rows;
+
+        res.json(retorno);
+
+    } catch(err){
+
+        res.status(500).json({
+            success:false,
+            error:err.message
+        });
+
     }
 
-    res.json(reb);
-
-  } catch (err) {
-    res.status(500).json({
-  success: false,
-  data: [],
-  error: err.message
-});
-  }
 };
 
-exports.atualizarRebaixa = async (req, res) => {
-  try {
-    let { status, finalizado, nfVinculada } = req.body;
+exports.atualizarRebaixa = async (req,res)=>{
 
-    const statusLower = status?.toLowerCase();
+    try{
 
-    // REGRAS DE NEGÓCIO
-    if (statusLower === 'pendente') {
-      finalizado = 0;
+        let {status, finalizado, nfVinculada} = req.body;
+
+        status = status?.toLowerCase();
+
+        if(status=="pendente")
+            finalizado=0;
+
+        if(status=="reprovado")
+            finalizado=1;
+
+        const result = await pool.query(`
+
+            UPDATE "TbRebaixas"
+
+            SET
+                "Status"=$1,
+                "Finalizado"=$2,
+                "NfVinculada"=$3
+
+            WHERE "RebId"=$4
+
+            RETURNING *
+
+        `,[
+            status,
+            finalizado,
+            nfVinculada,
+            req.params.id
+        ]);
+
+        res.json(result.rows[0]);
+
+    }
+    catch(err){
+
+        res.status(500).json({
+            error:err.message
+        });
+
     }
 
-    if (statusLower === 'reprovado') {
-      finalizado = 1;
-    }
-
-    const reb = await Rebaixa.findByIdAndUpdate(
-      req.params.id,
-      { status: statusLower, finalizado, nfVinculada},
-      { new: true }
-    );
-
-    res.json(reb);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 };
-
 // Salvar rebaixa
-exports.salvarRebaixa = async (req, res) => {
-  try {
+exports.salvarRebaixa = async (req,res)=>{
 
-    // gera número sequencial
-    const contador = await Counter.findOneAndUpdate(
-      { name: 'rebaixa' },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }
-    );
+    const client = await pool.connect();
 
-    const novoNumero = contador.seq;
+    try{
 
-    const novaRebaixa = new Rebaixa({
-      ...req.body,
-      pedidoId: novoNumero
-    });
+        await client.query("BEGIN");
 
-    await novaRebaixa.save();
+        const {
 
-    res.json(novaRebaixa);
+            produtos,
 
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+            cnpj,
+            razaosocial,
+            endereco,
+            cidade,
+            Cep,
+            email,
+            representante,
+            codCliente,
+            bairro,
+            uf,
+            telefone,
+            emailFiscal,
+            data,
+            motivo,
+            status,
+            finalizado,
+            nfVinculada
+
+        } = req.body;
+
+        const reb = await client.query(`
+
+            INSERT INTO "TbRebaixas"
+            (
+
+                "Cnpj",
+                "RazaoSocial",
+                "Endereco",
+                "Cidade",
+                "Cep",
+                "Email",
+                "Representante",
+                "CodCliente",
+                "Bairro",
+                "Uf",
+                "Telefone",
+                "EmailFiscal",
+                "Data",
+                "Motivo",
+                "Status",
+                "Finalizado",
+                "NfVinculada"
+
+            )
+
+            VALUES
+            (
+                $1,$2,$3,$4,$5,$6,$7,$8,$9,
+                $10,$11,$12,$13,$14,$15,$16,$17
+            )
+
+            RETURNING *
+
+        `,[
+
+            cnpj,
+            razaosocial,
+            endereco,
+            cidade,
+            Cep,
+            email,
+            representante,
+            codCliente,
+            bairro,
+            uf,
+            telefone,
+            emailFiscal,
+            data,
+            motivo,
+            status,
+            finalizado,
+            nfVinculada
+
+        ]);
+
+        const rebId = reb.rows[0].RebId;
+
+        for(const item of produtos){
+
+            await client.query(`
+
+                INSERT INTO "TbRebaixaProdutos"
+                (
+
+                    "RebId",
+                    "NfOrigem",
+                    "CodigoItem",
+                    "Descricao",
+                    "Lote",
+                    "PrecoUnitario",
+                    "Rebaixa",
+                    "Atual",
+                    "Quantidade",
+                    "Total"
+
+                )
+
+                VALUES
+                ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+
+            `,[
+
+                rebId,
+                item.nforigem,
+                item.codigoItem,
+                item.descricao,
+                item.lote,
+                item.precounitario,
+                item.rebaixa,
+                item.atual,
+                item.quantidade,
+                item.total
+
+            ]);
+
+        }
+
+        await client.query("COMMIT");
+
+        res.json(reb.rows[0]);
+
+    }
+    catch(err){
+
+        await client.query("ROLLBACK");
+
+        res.status(500).json({
+            error:err.message
+        });
+
+    }
+    finally{
+
+        client.release();
+
+    }
+
 };
 
 // Buscar Rebaixas
