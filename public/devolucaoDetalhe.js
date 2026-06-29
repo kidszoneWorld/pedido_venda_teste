@@ -57,7 +57,7 @@ function exportarDetalheExcel() {
     // ===== PRODUTOS =====
     csv.push([
         "NF Origem",
-        "Data",
+        "ProdData",
         "Código",
         "Lote",
         "Quantidade",
@@ -70,7 +70,7 @@ function exportarDetalheExcel() {
     dev.produtos.forEach(p => {
         csv.push([
             p.nfOrigem,
-            formatarData(p.data),
+            p.data,
             p.codigoItem,
             p.lote,
             p.quantidade,
@@ -164,7 +164,7 @@ function renderizarProdutos(produtos) {
 
         tr.innerHTML = `
             <td>${p.nfOrigem}</td>
-            <td>${formatarData(p.data)}</td>
+            <td>${p.data}</td>
             <td>${p.codigoItem}</td>
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
@@ -176,10 +176,11 @@ function renderizarProdutos(produtos) {
 
         tbody.appendChild(tr);
     });
+        console.log(produtos)
 }
 
 // helpers
-function formatarData(data) {
+function formatarProdData(data) {
     if (!data) return '-';
     const d = new Date(data);
     return isNaN(d) ? '-' : d.toLocaleDateString('pt-BR');

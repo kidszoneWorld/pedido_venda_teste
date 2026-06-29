@@ -22,7 +22,7 @@ const DevolucaoSchema = new mongoose.Schema({
   produtos: [
     {
       nforigem: String,
-      data: Date,
+      ProdData: Date,
       codigoItem: String,
       lote: String,
       quantidade: Number,

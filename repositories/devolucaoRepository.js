@@ -9,9 +9,9 @@ class DevolucaoRepository {
       FROM public."TbDevolucoes" A
       INNER JOIN public."TbDevolucaoProdutos" B
         ON A."DevId" = B."DevId"
-      ORDER BY A."DevId" DESC
+      ORDER BY A."DevId" ASC
     `);
-
+console.log(this.agruparDevolucoes(rows))
     return this.agruparDevolucoes(rows);
   }
 
@@ -26,7 +26,7 @@ class DevolucaoRepository {
     `, [devId]);
 
     const devolucoes = this.agruparDevolucoes(rows);
-
+        console.log(devolucoes[0])
     return devolucoes[0] || null;
   }
 
@@ -129,7 +129,7 @@ class DevolucaoRepository {
       (
         "DevId",
         "NfOrigem",
-        "Data",
+        "ProdData",
         "CodigoItem",
         "Lote",
         "Quantidade",

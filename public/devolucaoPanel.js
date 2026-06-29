@@ -198,9 +198,9 @@ function renderizarTabela(lista) {
         if (isReprovado) {
             finalizado = true;
 }
-dev.data =   formatarData(dev.data)
+// dev.data =   formatarData(dev.data)
 console.log("dev: "+dev.data);
-// console.log("dev "+JSON.stringify(dev))
+console.log("dev "+JSON.stringify(dev))
 tr.innerHTML = `
     <td>${dev.id}</td>
     <td><font size="-5">${dev.razaoSocial}</font></td>

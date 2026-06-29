@@ -767,12 +767,6 @@ if (i === 1) {
             });
 
 
-
-
-
-            
-
-            
         } catch (error) {
             alert(error.message);
             this.value = '';

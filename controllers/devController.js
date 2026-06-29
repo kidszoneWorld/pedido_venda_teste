@@ -26,10 +26,14 @@ exports.listarDevolucoes = async (req, res) => {
     const devolucoes =
       await devolucaoRepository.listar();
 
+
+
     res.json({
       success: true,
       data: devolucoes
     });
+    
+
 
   } catch (err) {
 
