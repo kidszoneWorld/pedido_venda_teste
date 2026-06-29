@@ -191,6 +191,7 @@ console.log(this.agruparDevolucoes(rows))
       mapa[row.DevId].produtos.push({
         devProdId: row.DevProdId,
         nfOrigem: row.NfOrigem,
+        ProdData: row.ProdData,
         codigoItem: row.CodigoItem,
         lote: row.Lote,
         quantidade: row.Quantidade,

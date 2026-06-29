@@ -200,14 +200,14 @@ const putCommand = new PutObjectCommand({
       try {
         const { files, razaoSocial, emailTo, emailCc, subject, message } = req.body;
     
-        console.log("sendClientPdf FOI CHAMADO");
-        console.log("BODY RECEBIDO:", req.body);
+        // console.log("sendClientPdf FOI CHAMADO");
+        // console.log("BODY RECEBIDO:", req.body);
     
         if (!files || !files.length || !emailTo || !subject || !message) {
           return res.status(400).send("Dados incompletos.");
         }
     
-        console.log("📎 Arquivos recebidos:", files);
+        // console.log("📎 Arquivos recebidos:", files);
     
         const transporter = nodemailer.createTransport({
           service: "gmail",

@@ -118,14 +118,14 @@ async function carregarDevolucoes() {
 
         const res = await fetch('/api/devolucoes');
 
-        console.log("STATUS:", res.status);
+        // console.log("STATUS:", res.status);
 
         const text = await res.text();
-        console.log("RESPOSTA BRUTA: deu bom");
+        // console.log("RESPOSTA BRUTA: deu bom");
 
         const json = JSON.parse(text);
          setTimeout(() => {
-  console.log("This runs after 2 seconds.");
+//   console.log("This runs after 2 seconds.");
 
         if (!json.success || !Array.isArray(json.data)) {
             throw new Error("Resposta inválida da API");
@@ -199,8 +199,8 @@ function renderizarTabela(lista) {
             finalizado = true;
 }
 // dev.data =   formatarData(dev.data)
-console.log("dev: "+dev.data);
-console.log("dev "+JSON.stringify(dev))
+// console.log("dev: "+dev.data);
+// console.log("dev "+JSON.stringify(dev))
 tr.innerHTML = `
     <td>${dev.id}</td>
     <td><font size="-5">${dev.razaoSocial}</font></td>
@@ -341,7 +341,7 @@ function salvar(id, btn) {
 
     const nfVinculada = tr.querySelector('input[name="nfVinculada"')?.value;
 
-    console.log({ id, statusSelecionado, finalizado, nfVinculada });
+    // console.log({ id, statusSelecionado, finalizado, nfVinculada });
 
     if (!statusSelecionado) {
         alert("Selecione um status!");

@@ -164,7 +164,7 @@ function renderizarProdutos(produtos) {
 
         tr.innerHTML = `
             <td>${p.nfOrigem}</td>
-            <td>${p.data}</td>
+            <td>${formatarProdData(p.ProdData)}</td>
             <td>${p.codigoItem}</td>
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
@@ -176,7 +176,7 @@ function renderizarProdutos(produtos) {
 
         tbody.appendChild(tr);
     });
-        console.log(produtos)
+        // console.log(produtos)
 }
 
 // helpers
