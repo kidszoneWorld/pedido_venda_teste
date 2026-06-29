@@ -872,7 +872,7 @@ showStep();
     // const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`;
     
     let generatedPdfFile = null;
-    const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br`;
+    const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br; erick.almeida@kidszoneworld.com.br`;
     let additionalFiles = [];
 
 

@@ -199,6 +199,7 @@ function renderizarTabela(lista) {
             finalizado = true;
 }
 dev.data =   formatarData(dev.data)
+console.log("dev: "+dev.data);
 // console.log("dev "+JSON.stringify(dev))
 tr.innerHTML = `
     <td>${dev.id}</td>
