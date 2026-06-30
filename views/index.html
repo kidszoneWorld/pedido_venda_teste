@@ -11,6 +11,8 @@
     <link rel="manifest" href="/images/site.webmanifest">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <link rel="stylesheet" href="/css/styles2.css?v=1778777229759">
 
@@ -77,7 +79,7 @@
               <button id="okButton">OK</button>
             </div>
           </div>
-            <button id="baixarJson">EXPORTAR PEDIDO EM EXCEL</button>
+            <button class="esconder">EXPORTAR PEDIDO EM EXCEL</button>
             <button id="inputJson">IMPORTAR EXCEL DO PEDIDO</button>
             <input
                 type="file"
@@ -121,7 +123,7 @@
 
         </div>
         <div class="button-group">
-            <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL </button>
+            <button id="button_pdf" >SALVAR EM PDF E ENVIAR E-MAIL </button>
             <button id="button_sistema">ENVIAR PARA O SISTEMA</button>
 
         </div>
