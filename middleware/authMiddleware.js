@@ -22,7 +22,7 @@ async function authenticateUser(req, res) {
         );
 
         if (result.rows.length === 0) {
-            return res.status(401).send('Usuário não encontrado');
+            return res.redirect('/error-404');
         }
 
         const user = result.rows[0];
@@ -32,7 +32,7 @@ async function authenticateUser(req, res) {
             user.ususenha;
 
         if (senha !== senhaBanco) {
-            return res.status(401).send('Senha incorreta');
+            return res.redirect('/error-404');
         }
 
         // AQUI DENTRO
