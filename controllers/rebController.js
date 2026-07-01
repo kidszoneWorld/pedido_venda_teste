@@ -1,8 +1,6 @@
 const nodemailer = require('nodemailer');
 const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const Rebaixa = require('../models/Rebaixa');
-const Counter = require('../models/Counter');
 const pool = require('../config/database');
 
 const crypto = require("crypto");
@@ -22,17 +20,62 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 // lista as Rebaixas
 exports.listarRebaixas = async (req, res) => {
-        const { rows } = await pool.query(`
-    SELECT *
-      FROM public."TbRebaixas" A
-      INNER JOIN public."TbRebaixaProdutos" B
-        ON A."RebId" = B."RebId"
-      ORDER BY A."RebId" ASC
-    `);
-console.log(rows)
-    return rows;
-};
+    try {
 
+        const { rows } = await pool.query(`
+            SELECT
+              A."RebId"          AS "RebId",
+              A."Cnpj"           AS "Cnpj",
+              A."RazaoSocial"    AS "RazaoSocial",
+              A."Endereco"       AS "Endereco",
+              A."Cidade"         AS "Cidade",
+              A."Cep"            AS "Cep",
+              A."Email"          AS "Email",
+              A."Representante"  AS "Representante",
+              A."CodCliente"     AS "CodCliente",
+              A."Bairro"         AS "Bairro",
+              A."Uf"             AS "Uf",
+              A."Telefone"       AS "Telefone",
+              A."EmailFiscal"    AS "EmailFiscal",
+              A."Data"           AS "Data",
+              A."Motivo"         AS "Motivo",
+              A."Status"         AS "Status",
+              A."Finalizado"     AS "Finalizado",
+              A."NfVinculada"    AS "NfVinculada",
+              B."RebProdId"      AS "RebProdId",
+              B."RebId"          AS "RebProdutoRebId",
+              B."NfOrigem"       AS "NfOrigem",
+              B."CodigoItem"     AS "CodigoItem",
+              B."Descricao"      AS "Descricao",
+              B."Lote"           AS "Lote",
+              B."PrecoUnitario"  AS "PrecoUnitario",
+              B."Rebaixa"        AS "Rebaixa",
+              B."Atual"          AS "Atual",
+              B."Quantidade"     AS "Quantidade",
+              B."Total"          AS "Total"
+
+          FROM "TbRebaixas" A
+          INNER JOIN "TbRebaixaProdutos" B
+              ON A."RebId" = B."RebId"
+          ORDER BY A."RebId";
+        `);
+
+        const rebaixas = await agruparrebaixas(rows);
+
+        res.json({
+            success: true,
+            data: rebaixas
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+
+    }
+};
 async function agruparrebaixas(rows) {
 
     const mapa = {};
@@ -47,7 +90,7 @@ async function agruparrebaixas(rows) {
           razaoSocial: row.RazaoSocial,
           endereco: row.Endereco,
           cidade: row.Cidade,
-          cep: row.Cep,
+          Cep: row.Cep,
           email: row.Email,
           representante: row.Representante,
           codCliente: row.CodCliente,
@@ -78,7 +121,7 @@ async function agruparrebaixas(rows) {
       });
 
     });
-
+    console.log(rows[0]);
     return Object.values(mapa);
   }
 
@@ -125,10 +168,13 @@ exports.buscarRebaixaPorId = async (req, res) => {
 };
 
 exports.atualizarRebaixa = async (req,res)=>{
-
+console.log(req.body);  
     try{
 
         let {status, finalizado, nfVinculada} = req.body;
+
+        finalizado = finalizado ? 1 : 0;
+
 
         status = status?.toLowerCase();
 
@@ -157,7 +203,11 @@ exports.atualizarRebaixa = async (req,res)=>{
             nfVinculada,
             req.params.id
         ]);
-
+        console.log({
+            status: statusSelecionado.toLowerCase(),
+            finalizado,
+            nfVinculada
+        });
         res.json(result.rows[0]);
 
     }
@@ -185,7 +235,7 @@ exports.salvarRebaixa = async (req,res)=>{
             razaosocial,
             endereco,
             cidade,
-            cep,
+            Cep,
             email,
             representante,
             codCliente,
@@ -387,7 +437,8 @@ const putCommand = new PutObjectCommand({
         console.log("📧 Tentando enviar e-mail...");
     const info = await transporter.sendMail({
       from: "Rebaixas KIDS ZONE <kidzonkidszonemail@gmail.com>",
-      to: "comercial.kz@kidszoneworld.com.br", //trocar depois
+      // to: "comercial.kz@kidszoneworld.com.br", //trocar depois
+      to: "luis.henrique@kidszoneworld.com.br", //trocar depois
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `
