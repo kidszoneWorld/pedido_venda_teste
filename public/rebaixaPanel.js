@@ -117,8 +117,8 @@ async function carregarRebaixas() {
     try {
 
         const res = await fetch('/api/rebaixas');
-
-        console.log("STATUS:", res);
+        // console.log("res"+JSON.parse(res))
+        // console.log("STATUS:", res);
 
         const text = await res.text();
         console.log("RESPOSTA BRUTA: deu bom");

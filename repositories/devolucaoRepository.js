@@ -68,9 +68,6 @@ console.log(this.agruparDevolucoes(rows))
   async inserirDevolucao(dados) {
     
 
-
-      // console.log(dados)
-
     const { rows } = await pool.query(`
       INSERT INTO public."TbDevolucoes"
       (

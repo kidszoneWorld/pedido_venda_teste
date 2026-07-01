@@ -79,8 +79,8 @@
               <button id="okButton">OK</button>
             </div>
           </div>
-            <button class="esconder">EXPORTAR PEDIDO EM EXCEL</button>
-            <button id="inputJson">IMPORTAR EXCEL DO PEDIDO</button>
+            <button id="baixarJson">EXPORTAR PEDIDO</button>
+            <button id="inputJson">IMPORTAR PEDIDO</button>
             <input
                 type="file"
                 id="jsonFileInput"
@@ -283,9 +283,11 @@
 
         <!-- Seção de Observações -->
         <div class="observations">
-            <div class="obs-title">OBSERVAÇÕES</div>
-            <textarea id="observation" placeholder="Escreva alguma observação"></textarea>
-        </div>
+    <div class="obs-title">OBSERVAÇÕES</div>
+
+    <textarea id="observation" placeholder="Escreva alguma observação"></textarea>
+
+    <div id="observationPdf" class="observation-pdf"></div>
 
         <div id="helpContainer">
             <div id="helpIcon" class="help-icon">

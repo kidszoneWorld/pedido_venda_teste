@@ -897,302 +897,9 @@ const cancelButton = document.getElementById('cancelButton');
 const cnpjInput = document.getElementById('cnpj');
 const btPdfGeneration = document.getElementById('button_pdf');
 
-
-
-
-
-
-
-
-//input via json
-
-const inputJsonButton = document.getElementById('inputJson');
-const jsonFileInput = document.getElementById('jsonFileInput');
-
-// abre seletor de arquivo ao clicar no botão
-inputJsonButton.addEventListener('click', () => {
-    jsonFileInput.click();
-});
-
-// Ao clicar no botão abre seletor de arquivo
-jsonFileInput.addEventListener('change', async (event) => {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    try {
-
-        const data =
-    await file.arrayBuffer();
-
-const workbook =
-    XLSX.read(data, {
-        type: 'array'
-    });
-
-const pedido =
-    XLSX.utils.sheet_to_json(
-        workbook.Sheets['Pedido']
-    )[0];
-
-const itens =
-    XLSX.utils.sheet_to_json(
-        workbook.Sheets['Itens']
-    );
-
-const requestBody = {
-    ...pedido,
-    ItensPedidoVenda: itens
-};
-        // =========================
-        // CARREGA CLIENTE APENAS PELO CNPJ
-        // =========================
-
-        const cnpjInput =
-            document.getElementById('cnpj');
-
-        cnpjInput.value =
-            requestBody.cnpj || '';
-
-        // dispara o mesmo evento que ocorre
-        // quando o usuário informa o CNPJ manualmente
-
-        cnpjInput.dispatchEvent(
-            new Event('blur')
-        );
-        await new Promise(resolve => {
-
-            const verificar = setInterval(() => {
-
-                const clienteId =
-                    document.getElementById('cod_cliente').value;
-
-                if (clienteId) {
-
-                    clearInterval(verificar);
-                    resolve();
-
-                }
-
-            }, 100);
-
-        });
-        document.getElementById('referencia').value =
-            requestBody.NumeroReferencia || '';
-
-        document.getElementById('observation').value =
-            requestBody.Observacao || '';
-
-        // =========================
-        // LIMPA TABELA
-        // =========================
-
-        const tbody = document.querySelector('#dadosPedido tbody');
-        tbody.innerHTML = '';
-
-        // =========================
-        // PREENCHE ITENS
-        // =========================
-
-        for (const item of itens) {
-
-            adicionarNovaLinha();
-
-            const tr = tbody.lastElementChild;
-            const cells = tr.querySelectorAll('td input');
-
-            // ItemId
-            // tr.dataset.itemId = item.ItemId;
-
-           // Código do item
-                cells[0].value = item.Codigo;
-
-                // dispara blur primeiro
-                cells[0].dispatchEvent(new Event('blur'));
-
-                // espera carregar o item
-                await new Promise(resolve => {
-
-                    const verificar = setInterval(() => {
-
-                        // preço carregado e quantidade liberada
-                        if (cells[5]?.value && !cells[1].readOnly) {
-
-                            clearInterval(verificar);
-
-                            // AGORA define a quantidade
-                            cells[1].value = item.Quantidade;
-
-                            // dispara cálculo
-                            cells[1].dispatchEvent(new Event('input'));
-
-                            resolve();
-                        }
-
-                    }, 100);
-
-                });
-        }
-
-        atualizarTotais();
-
-        alert("Excel carregado na tela com sucesso!");
-
-    } catch (error) {
-
-        console.error("Erro ao importar JSON:", error);
-
-        alert("Erro ao processar o arquivo JSON.");
-    } finally {
-
-        jsonFileInput.value = '';
-    }
-});
-
-
-
-
-// Função para abrir o modal
-btSistema.addEventListener("click", () => {
-    if(!validarTabelaPedido())
-        return;
-    if(document.getElementById('tipo_pedido').value == "Venda")
-        if(!validarPedidoMinimo())                          
-            return;
-    modal.style.display = "block"; // Exibe o modal
-});
-
-// Fecha o modal ao clicar no botão "Não" ou no botão de fechar
-closeButton.addEventListener("click", () => {
-    modal.style.display = "none";
-});
-
-cancelButton.addEventListener("click", () => {
-    modal.style.display = "none";
-    console.log('Envio cancelado.');
-});
-
-// Executa a lógica de envio ao clicar no botão "Sim"
-confirmButton.addEventListener("click", async () => {
-    modal.style.display = "none"; // Fecha o modal
-
-
-    // Exibe a mensagem de feedback
-    feedbackDiv.textContent = 'Estamos enviando o pedido, aguarde...';
-    feedbackDiv.style.display = "block";
-    cnpjInput.readOnly = false; // Habilita o campo CNPJ
-
-    
-
-    try {
+document.getElementById('baixarJson').addEventListener('click', () => {
 
         // Captura as linhas da tabela
-        const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
-
-        // Cria o array dinâmico para ItensPedidoVenda
-        const itensPedidoVenda = Array.from(tableRows)
-            .map(row => {
-                const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
-
-                // Verifica se a linha tem dados válidos antes de adicioná-la
-                const itemId = row.dataset.itemId || 0;
-                const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
-
-                // Só adiciona a linha se tiver um ItemId e Quantidade válidos
-                if (itemId > 0 && quantidade > 0) {
-                    return {
-                        ItemValorDesconto: 0,
-                        ItemPercentualDesconto: 0,
-                        EntregasItemPedidoVenda: [
-                            {
-                                Data: new Date().toISOString(), 
-                                DataPrevista: new Date().toISOString(),
-                                Quantidade: quantidade,
-                            }
-                        ],
-                        ItemId: itemId,
-                        Codigo: cells[0]?.value || '',
-                        Quantidade: quantidade,
-                    };
-                }
-
-                return null; // Retorna null para linhas inválidas
-            })
-            .filter(item => item !== null); // Remove itens nulos do array
-
-        // Cria o corpo da requisição com base nos inputs
-        const requestBody = {
-            ListaPrecoId: Number(document.getElementById('codgroup').value),
-            CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
-            FormaPagamentoId: Number(document.getElementById('formPagId').value),
-            ValorDesconto: 0,
-            PercentualDesconto: 0,
-            ItensPedidoVenda: itensPedidoVenda,
-            RepresentantesPedidoVendas: [
-                {
-                    RepresentanteId: Number(document.getElementById('representanteId').value),
-                    RepresentantePrincipal: true,
-                    PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
-                    PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
-                }
-            ],
-            ClienteId: Number(document.getElementById('cod_cliente').value),
-            ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
-            NumeroReferencia: document.getElementById('referencia').value,
-            Observacao: document.getElementById('observation').value,
-        };
-
-        // Loga o JSON no console
-        console.log("JSON enviado para a API:", requestBody); ////// BAIXAR ESTE ARQUIVO E IMPUTAR ESSE ARQUIVO
-        console.log('ClienteId:', document.getElementById('cod_cliente').value);
-console.log('Itens:', itensPedidoVenda);
-
-        // Envia os dados para a API
-        const response = await fetch('/api/pedidos/input', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        });
-
-        const result = await response.json();
-
-        if (response.ok && (!result.ErrorMessages || result.ErrorMessages.length === 0)) {
-            alert("Pedido enviado com sucesso!");
-            console.log("Resposta da API:", result);
-            location.reload();
-        } else {
-            alert(`Erro ao enviar pedido: ${result.ErrorMessages?.join(", ") || "Erro desconhecido"}`);
-            console.error("Erro da API:", result);
-        }
-    } catch (error) {
-        console.error("Erro de conexão:", error);
-        alert("Erro ao conectar com o servidor.");
-    } finally {
-  //  limparCamposCliente();
-    //zerarCamposPedido();   // ← ISSO É FUNDAMENTAL
-    feedbackDiv.style.display = "none";
-}
-});
-
-//--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
-
-document.addEventListener("DOMContentLoaded", () => {
-    //Botão PDF
-     const btPdfGeneration = document.getElementById('button_pdf');
-    const modal1 = document.getElementById('customModal1');
-    const closeButton1 = document.querySelector('.close-button1');
-    const confirmButton1 = document.getElementById('confirmButton1');
-    const cancelButton1 = document.getElementById('cancelButton1');
-    const helpWhats = document.getElementById('helpContainer');
-    const feedbackDiv = document.getElementById('feedback1');
-    const cnpjInput = document.getElementById('cnpj');
-
-
-    async function baixarExcel(){
-                // Captura as linhas da tabela
         const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
 
         // Cria o array dinâmico para ItensPedidoVenda
@@ -1394,19 +1101,299 @@ XLSX.utils.book_append_sheet(
     resumoSheet,
     'Resumo'
 );
-const excelBlob = XLSX.write(workbook, {
-    type: "array",
-    bookType: "xlsx"
+XLSX.writeFile(
+    workbook,
+    `${requestBody.razaoSocial} ${document.getElementById('totalComIpi').value}.xlsx`
+);
 });
 
-return {
-    blob: new Blob([excelBlob], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    }),
-    filename: `${requestBody.razaoSocial} ${document.getElementById('totalComIpi').value}.xlsx`
-};
-    }
 
+
+//input via json
+
+const inputJsonButton = document.getElementById('inputJson');
+const jsonFileInput = document.getElementById('jsonFileInput');
+
+// abre seletor de arquivo ao clicar no botão
+inputJsonButton.addEventListener('click', () => {
+    jsonFileInput.click();
+});
+
+// Ao clicar no botão abre seletor de arquivo
+jsonFileInput.addEventListener('change', async (event) => {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    try {
+
+        const data =
+    await file.arrayBuffer();
+
+const workbook =
+    XLSX.read(data, {
+        type: 'array'
+    });
+
+const pedido =
+    XLSX.utils.sheet_to_json(
+        workbook.Sheets['Pedido']
+    )[0];
+
+const itens =
+    XLSX.utils.sheet_to_json(
+        workbook.Sheets['Itens']
+    );
+
+const requestBody = {
+    ...pedido,
+    ItensPedidoVenda: itens
+};
+        // =========================
+        // CARREGA CLIENTE APENAS PELO CNPJ
+        // =========================
+
+        const cnpjInput =
+            document.getElementById('cnpj');
+
+        cnpjInput.value =
+            requestBody.cnpj || '';
+
+        // dispara o mesmo evento que ocorre
+        // quando o usuário informa o CNPJ manualmente
+
+        cnpjInput.dispatchEvent(
+            new Event('blur')
+        );
+        await new Promise(resolve => {
+
+            const verificar = setInterval(() => {
+
+                const clienteId =
+                    document.getElementById('cod_cliente').value;
+
+                if (clienteId) {
+
+                    clearInterval(verificar);
+                    resolve();
+
+                }
+
+            }, 100);
+
+        });
+        document.getElementById('referencia').value =
+            requestBody.NumeroReferencia || '';
+
+        document.getElementById('observation').value =
+            requestBody.Observacao || '';
+
+        // =========================
+        // LIMPA TABELA
+        // =========================
+
+        const tbody = document.querySelector('#dadosPedido tbody');
+        tbody.innerHTML = '';
+
+        // =========================
+        // PREENCHE ITENS
+        // =========================
+
+        for (const item of itens) {
+
+            adicionarNovaLinha();
+
+            const tr = tbody.lastElementChild;
+            const cells = tr.querySelectorAll('td input');
+
+            // ItemId
+            // tr.dataset.itemId = item.ItemId;
+
+           // Código do item
+                cells[0].value = item.Codigo;
+
+                // dispara blur primeiro
+                cells[0].dispatchEvent(new Event('blur'));
+
+                // espera carregar o item
+                await new Promise(resolve => {
+
+                    const verificar = setInterval(() => {
+
+                        // preço carregado e quantidade liberada
+                        if (cells[5]?.value && !cells[1].readOnly) {
+
+                            clearInterval(verificar);
+
+                            // AGORA define a quantidade
+                            cells[1].value = item.Quantidade;
+
+                            // dispara cálculo
+                            cells[1].dispatchEvent(new Event('input'));
+
+                            resolve();
+                        }
+
+                    }, 100);
+
+                });
+        }
+
+        atualizarTotais();
+
+        alert("JSON carregado na tela com sucesso!");
+
+    } catch (error) {
+
+        console.error("Erro ao importar JSON:", error);
+
+        alert("Erro ao processar o arquivo JSON.");
+    } finally {
+
+        jsonFileInput.value = '';
+    }
+});
+
+
+
+
+// Função para abrir o modal
+btSistema.addEventListener("click", () => {
+    if(!validarTabelaPedido())
+        return;
+    if(document.getElementById('tipo_pedido').value == "Venda")
+        if(!validarPedidoMinimo())                          
+            return;
+    modal.style.display = "block"; // Exibe o modal
+});
+
+// Fecha o modal ao clicar no botão "Não" ou no botão de fechar
+closeButton.addEventListener("click", () => {
+    modal.style.display = "none";
+});
+
+cancelButton.addEventListener("click", () => {
+    modal.style.display = "none";
+    console.log('Envio cancelado.');
+});
+
+// Executa a lógica de envio ao clicar no botão "Sim"
+confirmButton.addEventListener("click", async () => {
+    modal.style.display = "none"; // Fecha o modal
+
+
+    // Exibe a mensagem de feedback
+    feedbackDiv.textContent = 'Estamos enviando o pedido, aguarde...';
+    feedbackDiv.style.display = "block";
+    cnpjInput.readOnly = false; // Habilita o campo CNPJ
+
+    
+
+    try {
+
+        // Captura as linhas da tabela
+        const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
+
+        // Cria o array dinâmico para ItensPedidoVenda
+        const itensPedidoVenda = Array.from(tableRows)
+            .map(row => {
+                const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
+
+                // Verifica se a linha tem dados válidos antes de adicioná-la
+                const itemId = row.dataset.itemId || 0;
+                const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
+
+                // Só adiciona a linha se tiver um ItemId e Quantidade válidos
+                if (itemId > 0 && quantidade > 0) {
+                    return {
+                        ItemValorDesconto: 0,
+                        ItemPercentualDesconto: 0,
+                        EntregasItemPedidoVenda: [
+                            {
+                                Data: new Date().toISOString(), 
+                                DataPrevista: new Date().toISOString(),
+                                Quantidade: quantidade,
+                            }
+                        ],
+                        ItemId: itemId,
+                        Codigo: cells[0]?.value || '',
+                        Quantidade: quantidade,
+                    };
+                }
+
+                return null; // Retorna null para linhas inválidas
+            })
+            .filter(item => item !== null); // Remove itens nulos do array
+
+        // Cria o corpo da requisição com base nos inputs
+        const requestBody = {
+            ListaPrecoId: Number(document.getElementById('codgroup').value),
+            CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
+            FormaPagamentoId: Number(document.getElementById('formPagId').value),
+            ValorDesconto: 0,
+            PercentualDesconto: 0,
+            ItensPedidoVenda: itensPedidoVenda,
+            RepresentantesPedidoVendas: [
+                {
+                    RepresentanteId: Number(document.getElementById('representanteId').value),
+                    RepresentantePrincipal: true,
+                    PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
+                    PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
+                }
+            ],
+            ClienteId: Number(document.getElementById('cod_cliente').value),
+            ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
+            NumeroReferencia: document.getElementById('referencia').value,
+            Observacao: document.getElementById('observation').value,
+        };
+
+        // Loga o JSON no console
+        console.log("JSON enviado para a API:", requestBody); ////// BAIXAR ESTE ARQUIVO E IMPUTAR ESSE ARQUIVO
+        console.log('ClienteId:', document.getElementById('cod_cliente').value);
+console.log('Itens:', itensPedidoVenda);
+
+        // Envia os dados para a API
+        const response = await fetch('/api/pedidos/input', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && (!result.ErrorMessages || result.ErrorMessages.length === 0)) {
+            alert("Pedido enviado com sucesso!");
+            console.log("Resposta da API:", result);
+            location.reload();
+        } else {
+            alert(`Erro ao enviar pedido: ${result.ErrorMessages?.join(", ") || "Erro desconhecido"}`);
+            console.error("Erro da API:", result);
+        }
+    } catch (error) {
+        console.error("Erro de conexão:", error);
+        alert("Erro ao conectar com o servidor.");
+    } finally {
+  //  limparCamposCliente();
+    //zerarCamposPedido();   // ← ISSO É FUNDAMENTAL
+    feedbackDiv.style.display = "none";
+}
+});
+
+//--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
+
+document.addEventListener("DOMContentLoaded", () => {
+    //Botão PDF
+     const btPdfGeneration = document.getElementById('button_pdf');
+    const modal1 = document.getElementById('customModal1');
+    const closeButton1 = document.querySelector('.close-button1');
+    const confirmButton1 = document.getElementById('confirmButton1');
+    const cancelButton1 = document.getElementById('cancelButton1');
+    const helpWhats = document.getElementById('helpContainer');
+    const feedbackDiv = document.getElementById('feedback1');
+    const cnpjInput = document.getElementById('cnpj');
 
     async function gerarEEnviarPDF() {
         console.log('Botão de PDF clicado');
@@ -1455,6 +1442,13 @@ return {
         elementsToHide1.forEach(el1 => el1.style.display = 'none');
         helpWhats.style.display = 'none';
 
+        const textareaObs = document.getElementById('observation');
+        const observationPdf = document.getElementById('observationPdf');
+
+        observationPdf.textContent = textareaObs.value;
+        observationPdf.style.display = 'block';
+        textareaObs.style.display = 'none';
+
         const content = document.querySelector('.container');
         const razaoSocial = document.getElementById('razao_social').value;
         const codCliente = document.getElementById('cod_cliente').value;
@@ -1476,8 +1470,17 @@ return {
         try {
             btPdfGeneration.disabled = true;
             console.log('Iniciando geração do PDF...');
-            
+
             const pdfBlob = await html2pdf().set(options).from(content).output('blob');
+            const pdfURL = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = pdfURL;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            console.log('PDF baixado com sucesso.');
+            alert('PDF criado e salvo nos downloads.');
 
             if (!modal1) {
                 throw new Error('Modal1 não encontrado no DOM.');
@@ -1513,8 +1516,6 @@ return {
                     // Reexibe os elementos antes de gerar o PDF para envio
                     elementsToHide1.forEach(el1 => el1.style.display = 'none');
 
-                    
-                    
                     const pdfBase64 = await html2pdf().set(options).from(content).outputPdf('datauristring');
                     console.log('PDF gerado para envio, iniciando requisição...');
 
@@ -1527,12 +1528,10 @@ return {
                     const result = await response.text();
                     console.log('Resposta do servidor:', result);
                     alert(result);
-                    
                 } catch (error) {
                     console.error('Erro ao enviar o e-mail:', error);
                     alert('Erro ao enviar o e-mail.');
                 } finally {
-
                     // Agora restauramos a visibilidade de todos os elementos, incluindo elementsToHide1 e feedbackDiv
                     feedbackDiv.style.display = 'none';
                     elementsToHide.forEach(el => el.style.display = 'block');
@@ -1540,13 +1539,6 @@ return {
                     helpWhats.style.display = 'block';
                 }
             };
-            alert('PDF/EXCEL criado e salvo nos downloads.');
-            return {
-                        blob: pdfBlob,
-                        filename
-                    };
-                    
-
         } catch (error) {
             console.error('Erro ao salvar ou enviar o PDF:', error);
             alert('Erro no processo: ' + error.message);
@@ -1555,40 +1547,9 @@ return {
             elementsToHide.forEach(el => el.style.display = 'block');
             elementsToHide1.forEach(el1 => el1.style.display = 'flex');
             helpWhats.style.display = 'block';
-                        
-
         }
-            
-            
-
-           
     }
 
-    async function baixarZip() {
-
-    const zip = new JSZip();
-
-    // gera excel
-    const excel = await baixarExcel();
-
-    // gera pdf (sem envio)
-    const pdf = await gerarEEnviarPDF(false);
-
-    zip.file(excel.filename, excel.blob);
-    zip.file(pdf.filename, pdf.blob);
-
-    const zipBlob = await zip.generateAsync({
-        type: "blob"
-    });
-
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(zipBlob);
-    link.download = "Pedido.zip";
-    link.click();
-
-    URL.revokeObjectURL(link.href);
-}
-    
     function resetForm(excludeCnpj = false) {
         if (cnpjInput.readOnly) {
             return; // Sai da função se o campo estiver readonly
@@ -1637,10 +1598,8 @@ return {
         if(document.getElementById('tipo_pedido').value == "Venda")
             if(!validarPedidoMinimo())
                 return;
-        const zip = new JSZip();
 
-        
-        baixarZip();
+        gerarEEnviarPDF();
     
 });
 

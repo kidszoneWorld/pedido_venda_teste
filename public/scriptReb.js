@@ -359,7 +359,7 @@ function montarObjetoRebaixa() {
         razaosocial: document.getElementById('razao_social').value,
         endereco: document.getElementById('endereco').value,
         cidade: document.getElementById('cidade').value,
-        Cep: document.getElementById('cep').value,
+        cep: document.getElementById('cep').value,
         email: document.getElementById('email').value,
         representante: document.getElementById('representante').value,
         codCliente: Number(document.getElementById('cod_cliente').value),
@@ -889,7 +889,9 @@ showStep();
 
     
     // E-mail fixo que não pode ser removido
-    const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`; // Trocar depois
+    // const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`; // Trocar depois
+    
+    const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br`; // Trocar depois
     let generatedPdfFile = null;
     let additionalFiles = [];
 

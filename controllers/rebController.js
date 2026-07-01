@@ -3,7 +3,7 @@ const { S3Client} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const Rebaixa = require('../models/Rebaixa');
 const Counter = require('../models/Counter');
-const connectDB = require('../config/database');
+const pool = require('../config/database');
 
 const crypto = require("crypto");
 
@@ -22,31 +22,65 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 // lista as Rebaixas
 exports.listarRebaixas = async (req, res) => {
-    try {
-
-        const result = await pool.query(`
-            SELECT *
-            FROM "TbRebaixas"
-            ORDER BY "RebId" DESC
-        `);
-
-        res.json({
-            success: true,
-            data: result.rows
-        });
-
-    } catch (err) {
-
-        console.error(err);
-
-        res.status(500).json({
-            success: false,
-            data: [],
-            error: err.message
-        });
-
-    }
+        const { rows } = await pool.query(`
+    SELECT *
+      FROM public."TbRebaixas" A
+      INNER JOIN public."TbRebaixaProdutos" B
+        ON A."RebId" = B."RebId"
+      ORDER BY A."RebId" ASC
+    `);
+console.log(rows)
+    return rows;
 };
+
+async function agruparrebaixas(rows) {
+
+    const mapa = {};
+
+    rows.forEach(row => {
+
+      if (!mapa[row.RebId]) {
+
+        mapa[row.RebId] = {
+          id: row.RebId,
+          cnpj: row.Cnpj,
+          razaoSocial: row.RazaoSocial,
+          endereco: row.Endereco,
+          cidade: row.Cidade,
+          cep: row.Cep,
+          email: row.Email,
+          representante: row.Representante,
+          codCliente: row.CodCliente,
+          bairro: row.Bairro,
+          uf: row.Uf,
+          telefone: row.Telefone,
+          emailFiscal: row.EmailFiscal,
+          data: row.Data,
+          motivo: row.Motivo,
+          status: row.Status,
+          finalizado: row.Finalizado,
+          nfVinculada: row.NfVinculada,
+          produtos: []
+        };
+      }
+
+      mapa[row.RebId].produtos.push({
+        RebProdId: row.RebProdId,
+        nfOrigem: row.NfOrigem,
+        ProdData: row.ProdData,
+        codigoItem: row.CodigoItem,
+        lote: row.Lote,
+        quantidade: row.Quantidade,
+        uv: row.Uv,
+        descricao: row.Descricao,
+        precoUnitario: row.PrecoUnitario,
+        total: row.Total
+      });
+
+    });
+
+    return Object.values(mapa);
+  }
 
 exports.buscarRebaixaPorId = async (req, res) => {
 
@@ -76,7 +110,7 @@ exports.buscarRebaixaPorId = async (req, res) => {
         const retorno = reb.rows[0];
 
         retorno.produtos = produtos.rows;
-
+        console.log(retorno)
         res.json(retorno);
 
     } catch(err){
@@ -138,11 +172,9 @@ exports.atualizarRebaixa = async (req,res)=>{
 };
 // Salvar rebaixa
 exports.salvarRebaixa = async (req,res)=>{
-
-    const client = await pool.connect();
-
+    let client;
     try{
-
+        client = await pool.connect();
         await client.query("BEGIN");
 
         const {
@@ -153,7 +185,7 @@ exports.salvarRebaixa = async (req,res)=>{
             razaosocial,
             endereco,
             cidade,
-            Cep,
+            cep,
             email,
             representante,
             codCliente,
@@ -168,7 +200,7 @@ exports.salvarRebaixa = async (req,res)=>{
             nfVinculada
 
         } = req.body;
-
+        console.log("REQ "+req.body)
         const reb = await client.query(`
 
             INSERT INTO "TbRebaixas"
@@ -287,24 +319,6 @@ exports.salvarRebaixa = async (req,res)=>{
     }
 
 };
-
-// Buscar Rebaixas
-exports.listarRebaixas = async (req, res) => {
-  try {
-    const rebaixas = await Rebaixa.find();
-    res.json({
-  success: true,
-  data: rebaixas
-});
-  } catch (err) {
-    res.status(500).json({
-  success: false,
-  data: [],
-  error: err.message
-});
-  }
-};
-
 
 exports.generateUploadUrlReb = async (req, res) => {
   try {
