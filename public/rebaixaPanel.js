@@ -325,7 +325,7 @@ function salvar(id, btn) {
 
     const finalizado = tr.querySelector('input[type="checkbox"]').checked;
 
-    const nfVinculada = tr.querySelector('name="nfVinculada"')?.value;
+    const nfVinculada = tr.querySelector('input[name="nfVinculada"')?.value;
 
     console.log({ id, statusSelecionado, finalizado, nfVinculada });
 
