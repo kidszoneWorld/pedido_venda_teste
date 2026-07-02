@@ -17,7 +17,8 @@ async function carregarDetalhe() {
         const res = await fetch(`/api/rebaixa/${id}`);
         const reb = await res.json();
 
-        rebaixaAtual = reb; // 👈 salva global
+        console.log("Reb"+reb);
+        rebaixaAtual = reb;
 
         renderizarDados(reb);
         renderizarProdutos(reb.produtos);
@@ -41,7 +42,7 @@ function exportarDetalheExcel() {
 
     // ===== DADOS GERAIS =====
     csv.push(["REBAIXA"]);
-    csv.push(["Pedido", reb.pedidoId]);
+    csv.push(["Pedido", reb.id]);
     csv.push(["Cliente", reb.razaosocial]);
     csv.push(["CNPJ", formatarCNPJ(reb.cnpj)]);
     csv.push(["Cidade", reb.cidade]);
@@ -98,7 +99,7 @@ function exportarDetalheExcel() {
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `rebaixa_${reb.pedidoId}.csv`;
+    link.download = `rebaixa_${reb.id}.csv`;
 
     link.click();
 }
@@ -135,7 +136,7 @@ function renderizarDados(reb) {
     const container = document.getElementById('dadosPedido');
     const isFinalizado = reb.finalizado === 1;
     container.innerHTML = `
-        <div><b>Rebaixa:</b> ${reb.pedidoId}</div>
+        <div><b>Rebaixa:</b> ${reb.id}</div>
         <div><b>Cliente:</b> ${reb.razaosocial}</div>
         <div><b>CNPJ:</b> ${formatarCNPJ(reb.cnpj)}</div>
         <div><b>Endereço:</b> ${reb.endereco}</div>

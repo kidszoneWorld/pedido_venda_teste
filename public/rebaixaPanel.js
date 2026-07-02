@@ -176,7 +176,7 @@ function renderizarTabela(lista) {
             tr.style.backgroundColor = '#f8d7da'; // vermelho claro
         }
 
-        const totalItens = reb.produtos.reduce((acc, p) => acc + p.total, 0);
+        const totalItens = reb.produtos.reduce((acc, p) => acc + Number(p.total), 0);
 
         const isPendente = status === 'pendente';
         const isReprovado = status === 'reprovado';

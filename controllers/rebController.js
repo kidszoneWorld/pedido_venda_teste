@@ -121,7 +121,7 @@ async function agruparrebaixas(rows) {
       });
 
     });
-    console.log(rows[0]);
+    console.log('rows: '+rows[0]);
     return Object.values(mapa);
   }
 
@@ -130,13 +130,13 @@ exports.buscarRebaixaPorId = async (req, res) => {
     try {
 
         const id = req.params.id;
-
+        console.log("id: "+id)
         const reb = await pool.query(`
             SELECT *
             FROM "TbRebaixas"
             WHERE "RebId" = $1
         `,[id]);
-
+          // console.log("reb"+JSON.stringify(reb));
         if(reb.rows.length === 0){
             return res.status(404).json({
                 error:"Rebaixa não encontrada"
@@ -150,11 +150,42 @@ exports.buscarRebaixaPorId = async (req, res) => {
             ORDER BY "RebProdId"
         `,[id]);
 
-        const retorno = reb.rows[0];
+        const retorno = {
+          id: reb.rows[0].RebId,
+          cnpj: reb.rows[0].Cnpj,
+          razaosocial: reb.rows[0].RazaoSocial,
+          endereco: reb.rows[0].Endereco,
+          cidade: reb.rows[0].Cidade,
+          Cep: reb.rows[0].Cep,
+          email: reb.rows[0].Email,
+          representante: reb.rows[0].Representante,
+          codCliente: reb.rows[0].CodCliente,
+          bairro: reb.rows[0].Bairro,
+          uf: reb.rows[0].Uf,
+          telefone: reb.rows[0].Telefone,
+          emailFiscal: reb.rows[0].EmailFiscal,
+          data: reb.rows[0].Data,
+          motivo: reb.rows[0].Motivo,
+          status: reb.rows[0].Status,
+          finalizado: reb.rows[0].Finalizado,
+          nfVinculada: reb.rows[0].NfVinculada,
+          produtos: produtos.rows.map(p => ({
+              RebProdId: p.RebProdId,
+              nforigem: p.NfOrigem,
+              codigoItem: p.CodigoItem,
+              descricao: p.Descricao,
+              lote: p.Lote,
+              precounitario: Number(p.PrecoUnitario),
+              rebaixa: Number(p.Rebaixa),
+              atual: Number(p.Atual),
+              quantidade: Number(p.Quantidade),
+              total: Number(p.Total)
+          }))
+      };
 
-        retorno.produtos = produtos.rows;
-        console.log(retorno)
-        res.json(retorno);
+      res.json(retorno);
+
+
 
     } catch(err){
 
@@ -168,7 +199,7 @@ exports.buscarRebaixaPorId = async (req, res) => {
 };
 
 exports.atualizarRebaixa = async (req,res)=>{
-console.log(req.body);  
+
     try{
 
         let {status, finalizado, nfVinculada} = req.body;
@@ -203,11 +234,7 @@ console.log(req.body);
             nfVinculada,
             req.params.id
         ]);
-        console.log({
-            status: statusSelecionado.toLowerCase(),
-            finalizado,
-            nfVinculada
-        });
+       
         res.json(result.rows[0]);
 
     }
@@ -228,9 +255,7 @@ exports.salvarRebaixa = async (req,res)=>{
         await client.query("BEGIN");
 
         const {
-
             produtos,
-
             cnpj,
             razaosocial,
             endereco,
@@ -248,14 +273,12 @@ exports.salvarRebaixa = async (req,res)=>{
             status,
             finalizado,
             nfVinculada
-
         } = req.body;
-        console.log("REQ "+req.body)
+
         const reb = await client.query(`
 
             INSERT INTO "TbRebaixas"
             (
-
                 "Cnpj",
                 "RazaoSocial",
                 "Endereco",
@@ -273,19 +296,14 @@ exports.salvarRebaixa = async (req,res)=>{
                 "Status",
                 "Finalizado",
                 "NfVinculada"
-
             )
-
             VALUES
             (
                 $1,$2,$3,$4,$5,$6,$7,$8,$9,
                 $10,$11,$12,$13,$14,$15,$16,$17
             )
-
             RETURNING *
-
         `,[
-
             cnpj,
             razaosocial,
             endereco,
@@ -303,7 +321,6 @@ exports.salvarRebaixa = async (req,res)=>{
             status,
             finalizado,
             nfVinculada
-
         ]);
 
         const rebId = reb.rows[0].RebId;
@@ -413,14 +430,9 @@ const putCommand = new PutObjectCommand({
       try {
         const { files, razaoSocial, emailTo, emailCc, subject, message } = req.body;
     
-        console.log("sendClientPdf FOI CHAMADO");
-        console.log("BODY RECEBIDO:", req.body);
-    
         if (!files || !files.length || !emailTo || !subject || !message) {
           return res.status(400).send("Dados incompletos.");
         }
-    
-        console.log("📎 Arquivos recebidos:", files);
     
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -433,8 +445,7 @@ const putCommand = new PutObjectCommand({
         const downloadLinks = files.map(file => {
           return `- ${file.name}\n${process.env.DOWNLOAD_BASE_URL}/baixar/${file.key}\n`;
         }).join("\n");
-    
-        console.log("📧 Tentando enviar e-mail...");
+
     const info = await transporter.sendMail({
       from: "Rebaixas KIDS ZONE <kidzonkidszonemail@gmail.com>",
       // to: "comercial.kz@kidszoneworld.com.br", //trocar depois
@@ -453,7 +464,6 @@ ${downloadLinks}
       `
     });
 
-    console.log("✅ E-mail enviado:", info.response);
     return res.status(200).send("E-mail enviado com sucesso!");
     
   } catch (error) {
