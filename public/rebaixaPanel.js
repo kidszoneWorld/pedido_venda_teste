@@ -218,7 +218,7 @@ tr.innerHTML = `
     <input type="checkbox" 
     ${finalizado ? 'checked' : ''} 
     ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
-    <input type="text" name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${reb.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
+    <input name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${reb.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
         <button onclick="salvar('${reb.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
