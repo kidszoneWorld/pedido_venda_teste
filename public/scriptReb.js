@@ -359,7 +359,7 @@ function montarObjetoRebaixa() {
         razaosocial: document.getElementById('razao_social').value,
         endereco: document.getElementById('endereco').value,
         cidade: document.getElementById('cidade').value,
-        cep: document.getElementById('cep').value,
+        Cep: document.getElementById('cep').value,
         email: document.getElementById('email').value,
         representante: document.getElementById('representante').value,
         codCliente: Number(document.getElementById('cod_cliente').value),

@@ -194,7 +194,7 @@ function renderizarTabela(lista) {
 
 tr.innerHTML = `
     <td>${reb.id}</td>
-    <td><font size="-5">${reb.razaosocial}</font></td>
+    <td><font size="-5">${reb.razaoSocial}</font></td>
     <td>${reb.status}</td>
     <td>${formatarCNPJ(reb.cnpj)}</td>
     <td>${reb.representante}</td>
@@ -224,7 +224,6 @@ tr.innerHTML = `
         <button onclick="salvar('${reb.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
     </td>
 `;
-
         tbody.appendChild(tr);
     });
 }
