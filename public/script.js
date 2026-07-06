@@ -1242,7 +1242,7 @@ const requestBody = {
 
         atualizarTotais();
 
-        alert("JSON carregado na tela com sucesso!");
+        alert("Pedido carregado na tela com sucesso!");
 
     } catch (error) {
 

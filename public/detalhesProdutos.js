@@ -20,11 +20,12 @@ function carregarDados() {
         });
 }
 
-// Função para carregar os JSONs 
-fetch(`/data/detalhesProdutos.json?cacheBust=${timestamp1}`)
+
+// Função para carregar os JSONs de item ativos
+fetch(`/data/detalhesProdutosAtivos.json?cacheBust=${timestamp1}`)
     .then(response => response.json())
     .then(data => {
-        itemData = data;
+        itemDataAtivo = data;
     });
 
 
@@ -34,7 +35,7 @@ function buscarProduto(codigo) {
 
     let produtoDetalhes = null;
     let produtoImagem = null;
-
+    codigo = codigo.toUpperCase();
     // Buscar detalhes do produto
     for (let i = 1; i < detalhesProdutosData.length; i++) {
         if (detalhesProdutosData[i][0].toString() === codigo) {
@@ -460,7 +461,7 @@ function exportToExcel(data) {
 
 // Evento para exportar para Excel
 document.getElementById('exportExcel1').addEventListener('click', async () => {
-    if (!itemData || itemData.length === 0) {
+    if (!itemDataAtivo || itemDataAtivo.length === 0) {
         const feedbackDiv = document.getElementById('feedback1');
         feedbackDiv.textContent = 'Nenhum dado disponível para exportar.';
         feedbackDiv.style.display = 'block';
@@ -470,6 +471,6 @@ document.getElementById('exportExcel1').addEventListener('click', async () => {
         return;
     }
 
-    exportToExcel(itemData);
+    exportToExcel(itemDataAtivo);
 });
 
