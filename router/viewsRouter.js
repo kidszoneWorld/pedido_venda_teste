@@ -87,9 +87,14 @@ router.get('/eficiencia',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'eficiencia.html'));
 });
 
-// Rota para a página de eficiencia cliente (sellOut.html)
-router.get('/sellOut',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'sellOut.html'));
+// Rota para a página de eficiencia cliente (sellOutMenu.html)
+router.get('/sellOutMenu',authMiddleware,(req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'sellOutMenu.html'));
+});
+
+// Rota para a página de cadastro de sellOut cliente (sellOutCadastro.html)
+router.get('/sellOutCadastro',authMiddleware,(req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'sellOutCadastro.html'));
 });
 
 // Rota para a página de eficiencia cliente (display.html)

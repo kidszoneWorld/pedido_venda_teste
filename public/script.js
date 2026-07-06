@@ -187,13 +187,13 @@ const hideFeedback = () => { el('feedback1').style.display = 'none'; el('feedbac
 // Modal bloqueio CNPJ
 const cnpjInput1 = el('cnpj');
 const codInput1 = el('cod_cliente');
-const blockModal = el('blockModal');
-el('okButton').onclick = () => blockModal.style.display = "none";
-blockModal.querySelector('.close-button').onclick = () => blockModal.style.display = "none";
+// const blockModal = el('blockModal');
+// el('okButton').onclick = () => blockModal.style.display = "none";
+// blockModal.querySelector('.close-button').onclick = () => blockModal.style.display = "none";
 
 cnpjInput1.addEventListener('focus', () => {
     if (cnpjInput1.readOnly) {
-        blockModal.style.display = "block";
+        // blockModal.style.display = "block";
         el('timestamp').textContent = new Date().toLocaleString('pt-BR');
         return;
     }
@@ -204,6 +204,7 @@ cnpjInput1.addEventListener('focus', () => {
 // 🔄 BLUR CNPJ → API CLIENTE
 // ======================================================================
 cnpjInput1.addEventListener('blur', async function () {
+    limparProdutos();
     let cnpj = this.value.replace(/\D/g, '');
     if (!cnpj || cnpjInvalido(cnpj)) return alert("CNPJ inválido.");
 
@@ -249,20 +250,22 @@ cnpjInput1.addEventListener('blur', async function () {
         preencherCliente(clientesData[1]);
 
         if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
-
-    } catch {
-        alert("Cliente não encontrado, verificar com o financeiro.");
-    } finally {
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
         setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
+    } catch {
+        alert("Cliente não encontrado, verificar com o financeiro.");
+        hideFeedback();
+    } finally {
+
     }
 });
 
 
 
 codInput1.addEventListener('blur', async function () {
+    limparProdutos();
     let cnpj = this.value
 
 
@@ -307,18 +310,26 @@ codInput1.addEventListener('blur', async function () {
         }
         preencherCliente(clientesData[1]);
         if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
-
-    } catch {
-        alert("Cliente não encontrado, verificar com o financeiro.");
-    } finally {
-        hideFeedback();
+                hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
         setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
+    } catch {
+        alert("Cliente não encontrado, verificar com o financeiro.");
+        hideFeedback();
+        return;
+    } finally {
+
     }
 });
 
 
+
+function limparProdutos(){
+        const tbody = document.querySelector('#dadosPedido tbody');
+        tbody.innerHTML = '';
+        atualizarTotais();
+}
 
 function preencherCliente(c) {
     el('cnpj').value = formatarCNPJ(c[1].toString());
@@ -366,14 +377,6 @@ function garantirLinhaInicial() {
     if (!tbody.querySelector('tr')) adicionarNovaLinha();
 }
 
-// (demais funções de tabela permanecem exatamente como estão)
-
-// ======================================================================
-// 🚀 ENVIO DO PEDIDO
-// ======================================================================
-// (mantido igual, apenas usando atualizarTotais() onde aplicável)
-
-
 
 // Função para zerar os campos da tabela "DADOS PEDIDO"
 function zerarCamposPedido() {
@@ -388,7 +391,7 @@ function zerarCamposPedido() {
 
     garantirLinhaInicial();
 
-    // 🔥 foco automático no código do item
+
     setTimeout(() => {
         const primeiraLinha = document.querySelector('#dadosPedido tbody tr');
         primeiraLinha?.cells[0]?.querySelector('input')?.focus();
@@ -1246,9 +1249,9 @@ const requestBody = {
 
     } catch (error) {
 
-        console.error("Erro ao importar JSON:", error);
+        console.error("Erro ao importar Pedido:", error);
 
-        alert("Erro ao processar o arquivo JSON.");
+        alert("Erro ao processar o arquivo Pedido.");
     } finally {
 
         jsonFileInput.value = '';
@@ -1441,13 +1444,6 @@ document.addEventListener("DOMContentLoaded", () => {
         elementsToHide.forEach(el => el.style.display = 'none');
         elementsToHide1.forEach(el1 => el1.style.display = 'none');
         helpWhats.style.display = 'none';
-
-        const textareaObs = document.getElementById('observation');
-        const observationPdf = document.getElementById('observationPdf');
-
-        observationPdf.textContent = textareaObs.value;
-        observationPdf.style.display = 'block';
-        textareaObs.style.display = 'none';
 
         const content = document.querySelector('.container');
         const razaoSocial = document.getElementById('razao_social').value;

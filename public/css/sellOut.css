@@ -54,7 +54,20 @@ body {
     flex-direction: row;
     gap: 10px;
 }
+.btn-sellOutCadastro {
+    padding: 8px 18px;
+    background-color: transparent; /* mesma cor do fundo */
+    color: #fff;
+    border: 2px solid #c4007a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+}
 
+.btn-sellOutCadastro:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
 .client-info label {
     font-weight: bold;
     margin-bottom: 5px;
