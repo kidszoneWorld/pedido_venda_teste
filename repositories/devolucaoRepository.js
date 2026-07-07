@@ -11,7 +11,7 @@ class DevolucaoRepository {
         ON A."DevId" = B."DevId"
       ORDER BY A."DevId" ASC
     `);
-console.log(this.agruparDevolucoes(rows))
+// console.log(this.agruparDevolucoes(rows))
     return this.agruparDevolucoes(rows);
   }
 
@@ -26,7 +26,7 @@ console.log(this.agruparDevolucoes(rows))
     `, [devId]);
 
     const devolucoes = this.agruparDevolucoes(rows);
-        console.log(devolucoes[0])
+        // console.log(devolucoes[0])
     return devolucoes[0] || null;
   }
 
@@ -36,7 +36,7 @@ console.log(this.agruparDevolucoes(rows))
   try {
 
     // console.log('DEV ID:', devId);
-     console.log('DADOS:', dados);
+    //  console.log('DADOS:', dados);
 
      const { rows } = await pool.query(`
       UPDATE public."TbDevolucoes"

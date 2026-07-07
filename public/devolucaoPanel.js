@@ -65,7 +65,7 @@ function exportarExcel() {
         const matchNfOrigem =
             !nfOrigem ||
             dev.produtos?.some(p =>
-                p.nforigem?.toLowerCase().includes(nfOrigem)
+                p.nfOrigem?.toLowerCase().includes(nfOrigem)
             );
 
         const matchDevolucao =
@@ -125,7 +125,7 @@ async function carregarDevolucoes() {
 
         const json = JSON.parse(text);
          setTimeout(() => {
-//   console.log("This runs after 2 seconds.");
+//   console.log(json);
 
         if (!json.success || !Array.isArray(json.data)) {
             throw new Error("Resposta inválida da API");
@@ -309,7 +309,7 @@ function aplicarFiltros() {
         const matchNfOrigem =
             !nfOrigem ||
             dev.produtos?.some(p =>
-                p.nforigem?.toLowerCase().includes(nfOrigem)
+                p.nfOrigem?.toLowerCase().includes(nfOrigem)
             );
 
         const matchDevolucao =

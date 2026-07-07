@@ -128,7 +128,7 @@ async function carregarRebaixas() {
         if (!json.success || !Array.isArray(json.data)) {
             throw new Error("Resposta inválida da API");
         }
-        console.log(json)
+        // console.log(json)
         listaOriginal = json.data;
         aplicarFiltros();
 }, 500);
