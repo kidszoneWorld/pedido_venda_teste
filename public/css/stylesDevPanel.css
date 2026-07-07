@@ -63,18 +63,28 @@ body.light-theme .table td {
     background-color: var(--table-bg-light);
 } */
 
-body.light-theme .button-group button,
-body.light-theme .no-print button,
+body.light-theme .button{
+    background-color: var(--background-color-dark); /* mesma cor do fundo */
+    color: var(--background-color-light);
+    border: 2px solid #c4007a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+
+}
+
+body.light-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
+
+
+
 body.light-theme footer {
     background-color: var(--button-bg-light);
     color: var(--button-text-light);
 }
 
-body.light-theme .button-group button:hover,
-body.light-theme .no-print button:hover {
-    background: var(--button-hover-bg-light);
-    color: var(--button-hover-text-light);
-}
 
 /* Tema escuro */
 body.dark-theme {
@@ -85,8 +95,28 @@ body.dark-theme {
     --tr-bg-cor-pen: #3d2e00; 
 }
 
+body.dark-theme .button{
+    background-color: var(--button-bg-light); /* mesma cor do fundo */
+    color: #fff;
+    border: 2px solid #a50066;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+/*     
+    white-space: nowrap;
+    font-size: clamp(9px, 1vw, 16px); */
+}
+
+body.dark-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
 body.dark-theme .container {
-    background-color: var(--container-bg-dark);
+    background-color: var(--button-bg-light);
+}
+
+body.dark-theme .h2{
+    color: var(--button-hover-text-light);
 }
 
 body.dark-theme .table {
@@ -95,7 +125,7 @@ body.dark-theme .table {
 }
 
 body.dark-theme .header {
-    background-color: var(--header-bg-dark);
+    background-color: var(--background-color-dark);
     color: var(--text-color-dark);
 }
 
@@ -115,18 +145,11 @@ body.dark-theme .table td {
     background-color: var(--table-bg-dark);
 } */
 
-body.dark-theme .button-group button,
-body.dark-theme .no-print button,
 body.dark-theme footer {
-    background-color: var(--button-bg-dark);
+    background-color: var(--background-color-dark);
     color: var(--button-text-dark);
 }
 
-body.dark-theme .button-group button:hover,
-body.dark-theme .no-print button:hover {
-    background: var(--button-hover-bg-dark);
-    color: var(--button-hover-text-dark);
-}
 
 body.dark-theme .date{
     color: var(--table-text-color-dark);
@@ -240,31 +263,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 .header .version {
     font-size: 12px;
     color: #333;
-}
-.button-group {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px 0;
-}
-.button-group button {
-    padding: 10px;
-    background-color: #333;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    flex: 1;
-    min-width: 150px;
-    font-size: 95%;
-}
-
-#button_pdf:hover , #button_sistema:hover {
-    background: linear-gradient(90deg,rgba(225,0,152) 0%,#f18fc7 100%);
-    color:#fafcfa;
-    font-weight: bold;
-    
 }
 
 .btn-mobile {
@@ -452,8 +450,11 @@ footer {
     width: 100%;
     padding-top: 20px;
     padding-bottom: 30px;
-   /* padding: 15px;*/
+    flex-wrap: nowrap;
+    gap: 15px;
+   
 }
+
 
 .link_sites a {
     display: flex;
@@ -462,8 +463,10 @@ footer {
     text-align: center;
     padding-left: 20px;
     text-decoration: none;
-    font-size: 100%;
-
+    white-space: nowrap;
+    font-size: clamp(9px, 1vw, 16px);
+    
+    transition: all .3s ease;
 }
 
 .link_sites label {
@@ -476,18 +479,9 @@ footer {
 
 .link_sites a:hover {
     color:rgba(225,0,152);
-    font-size: 140%;
-    
+    font-size: 110%;
+}
 
-}
-#logoutButton2:hover{
-    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
-    color: rgb(250, 242, 247);
-    font-size: 140%;
-    
-    border:none;
-     
-}
 
 input:focus , textarea:focus{
     border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
@@ -597,18 +591,9 @@ label[for="referencia"]::after {
 }
 
 
-.no-print button{
-    border-radius: 8px;
-    border: 1px solid #3d3c3c;
-    padding: 5px;
-    font-weight: 600;
-}
 
-.no-print button:hover{
-    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
-    color: rgb(250, 242, 247); /* Mantém a cor do texto */
-    border:none;
-}
+
+
 
 /* Estilo para a label */
 .label-referencia {
@@ -646,27 +631,10 @@ label[for="referencia"]::after {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
   }
   
-  .close-button , .close-button1 {
-    color: red;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .close-button:hover , .close-button1:hover{
-    color: darkred;
-  }
+ 
 
-  #confirmButton:hover , 
-  #cancelButton:hover ,
-  #confirmButton1:hover ,
-  #cancelButton1:hover {
-    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
-    color: rgb(250, 242, 247); /* Mantém a cor do texto */
-    border:none;
-    cursor: pointer;
-  }
+
+
 
 /* Botão de ajuda fixado */
 #helpContainer {
@@ -844,23 +812,7 @@ label[for="referencia"]::after {
     max-width: 400px;
 }
 
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
 
-#okButton:hover{  
-    background-color: rgba(225, 0, 152);
-}
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
 /* Estilo para o modal de e-mail */
 .email-modal-content {
     width: 90%;
@@ -913,55 +865,6 @@ label[for="referencia"]::after {
 .email-field input[type="file"] {
     padding: 5px 0;
 }
-
-.email-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.email-buttons button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-#sendEmailButton {
-    background-color: rgba(225,0,152);
-    color: #fff;
-    cursor: pointer;
-}
-
-#sendEmailButton:hover {
-    background-color: rgb(185, 11, 130);
-    cursor: pointer;
-}
-
-#cancelEmailButton {
-    background-color: #ccc;
-    color: #333;
-}
-
-#cancelEmailButton:hover {
-    background-color: #b3b3b3;
-}
-
-.email-close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.email-close-button:hover,
-.email-close-button:focus {
-    color: #000;
-}
-
 
 
 /* Animação para o modal */
@@ -1023,12 +926,6 @@ label[for="referencia"]::after {
        
     }
 
-    .link_sites button#logoutButton2 {
-        width: 10%; /* Mantém a largura relativa em telas menores */
-        margin-top: 20px;
-        text-align: center;
-        margin-bottom: 15px; /* Espaçamento abaixo do botão */
-    }
 
     .link_sites a {
         margin: 5px ;
@@ -1042,10 +939,6 @@ label[for="referencia"]::after {
     /* Ajuste geral para tablets */
     .container {
         padding: 10px;
-    }
-    .button-group button {
-        padding: 8px;
-        font-size: 14px;
     }
 
     
@@ -1145,9 +1038,6 @@ label[for="referencia"]::after {
         font-size: 90%;
     }
 
-    .button-group button {
-        font-size: 100%;
-    }
 
     .header img {
         width: 160px;
@@ -1161,32 +1051,6 @@ label[for="referencia"]::after {
         width: 80px;
     }
 
-    .button-group {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    #button_pdf::after{
-        content: "SALVAR EM PDF";
-        color: #fafcfa;
-        font-size: 107%;
-        position: absolute; /* Garante que o ::after não interfira no layout */
-        top: 50%; /* Centraliza verticalmente */
-        left: 50%; /* Centraliza horizontalmente */
-        transform: translate(-50%, -50%); /* Alinha corretamente o texto */
-        text-align: center;
-        display: flex; /* Alternativa para alinhamento */
-        align-items: center; /* Alinha verticalmente */
-        justify-content: center; /* Alinha horizontalmente */
-        
-    
-    }
-    
-    #button_pdf {
-        position: relative; /* Necessário para que o ::after seja posicionado corretamente */
-        color: transparent; /* Oculta o texto original */
-        overflow: hidden; /* Evita que o ::after interfira no tamanho do botão */
-    }
 
     .form-group {
         grid-template-columns: 1fr;
@@ -1328,19 +1192,7 @@ label[for="referencia"]::after {
 
 }
 
-/* Botão remover linha (tabela) */
-.btn-remover-linha {
-    width: 100%;
-    height: 100%;
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #3d3c3c;
-    background-color: var(--button-bg-light);
-    color: var(--button-text-light);
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
+
 
 /* Hover – igual aos outros botões */
 .btn-remover-linha:hover {
@@ -1403,4 +1255,56 @@ body.dark-theme .btn-remover-linha:hover {
 
     z-index: 9999; /*MUITO IMPORTANTE */
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Estilo do toggle switch */
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f393db;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: rgba(225, 0, 152)
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
 }

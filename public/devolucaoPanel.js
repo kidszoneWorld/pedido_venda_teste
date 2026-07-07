@@ -211,7 +211,7 @@ tr.innerHTML = `
     <td>${formatarMoeda(totalItens)}</td>
     <td>
     <center>
-        <button target="_blank" onclick="verDetalhes('${dev.id}')">Ver</button>
+        <button class="button" target="_blank" onclick="verDetalhes('${dev.id}')">Ver</button>
     </center>
     </td>
     <td>
@@ -230,7 +230,7 @@ tr.innerHTML = `
     <input name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${dev.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
-        <button onclick="salvar('${dev.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
+        <button class="button" onclick="salvar('${dev.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
     </td>
 `;
 

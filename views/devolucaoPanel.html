@@ -9,14 +9,13 @@
 <body>
   <div class="container">
     <footer>
-                <div class="link_sites">
-
+            <div class="link_sites">
             <!-- Toggle switch -->
             <label class="theme-switch" id="seletor">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
             </label> 
-           <button id="logoutButton2">Sair</button>
+           <button class="button" id="logoutButton2">Sair</button>
            <!--<a target="_blank" href="/admin">Área T.I.</a>-->
            <a href="/">Pedido de Venda</a>
            <a href="/devolucao">Pedido de Devolução</a>
@@ -28,8 +27,8 @@
            <a href="/investComercial">Investimento</a>
            </div>
       </footer>
-<h2>Painel de Devoluções</h2>
-<button class="no-print" onclick="exportarExcel()">Exportar Excel</button>
+<h2 class="h2">Painel de Devoluções</h2>
+<button class="button" onclick="exportarExcel()">Exportar Excel</button>
 <input type="text" id="filtroDevolucao" placeholder="Nº Devolução">
 <input type="text" id="filtroCliente" placeholder="Cliente ou CNPJ">
 <input type="text" id="filtroRepresentante" placeholder="Representante">
