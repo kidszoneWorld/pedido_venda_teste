@@ -15,7 +15,7 @@
     --background-color-dark: #1a1a1a;
     --container-bg-dark: #2a2a2a;
     --header-bg-dark: #2a2a2a;
-    --text-color-dark: #bbb5b5;
+    --text-color-dark: #f1eeee;
     --table-bg-dark: #333;
     --table-header-bg-dark: #1e1e1e;
     --table-text-color-dark: #e0e0e0;
@@ -24,7 +24,14 @@
     --button-hover-bg-dark: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
     --button-hover-text-dark: #fafcfa;
     --input-bg-dark:#141414;
+    --tr-bg-cor-apr: #c0e9ca;
+    --tr-bg-cor-fin: #98ecad;
+    --tr-bg-cor-rep: #f8d7da;
+    --tr-bg-cor-pen: #fff3cd;
 }
+
+
+
 
 /* Tema claro (padrão) */
 body.light-theme {
@@ -72,10 +79,19 @@ body.light-theme .no-print button:hover {
 /* Tema escuro */
 body.dark-theme {
     background-color: var(--background-color-dark);
+    --tr-bg-cor-apr: #136939; 
+    --tr-bg-cor-fin: #136939; 
+    --tr-bg-cor-rep: #430c11; 
+    --tr-bg-cor-pen: #3d2e00; 
 }
 
 body.dark-theme .container {
     background-color: var(--container-bg-dark);
+}
+
+body.dark-theme .table {
+    background-color: var(--header-bg-dark);
+    color: var(--text-color-dark);
 }
 
 body.dark-theme .header {

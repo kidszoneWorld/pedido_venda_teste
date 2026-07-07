@@ -169,19 +169,19 @@ function renderizarTabela(lista) {
 
         let finalizado = dev.finalizado === 1;
         if (status === 'pendente') {
-            tr.style.backgroundColor = '#fff3cd'; // amarelo claro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-pen)'); // amarelo
         }
 
         if (status === 'aprovado' && finalizado) {
-            tr.style.backgroundColor = '#98ecad'; // verde escuro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-fin)'); // verde
         }
 
         if (status === 'aprovado' && !finalizado) {
-            tr.style.backgroundColor = '#c0e9ca'; //  verde claro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-apr)' , 'important');   // verde claro
         }
 
         if (status === 'reprovado') {
-            tr.style.backgroundColor = '#f8d7da'; // vermelho claro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-rep)'); // vermelho
         }
 
         const totalItens = dev.produtos.reduce((acc, p) => acc + parseFloat(p.total), 0);
