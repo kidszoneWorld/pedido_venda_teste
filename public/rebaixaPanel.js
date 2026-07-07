@@ -120,7 +120,7 @@ async function carregarRebaixas() {
 
         const text = await res.text();
         console.log("RESPOSTA BRUTA: deu bom");
-
+        
         const json = JSON.parse(text);
          setTimeout(() => {
   console.log("This runs after 0.5 seconds.");
@@ -128,7 +128,7 @@ async function carregarRebaixas() {
         if (!json.success || !Array.isArray(json.data)) {
             throw new Error("Resposta inválida da API");
         }
-
+        console.log(json)
         listaOriginal = json.data;
         aplicarFiltros();
 }, 500);
@@ -225,7 +225,9 @@ tr.innerHTML = `
     </td>
 `;
         tbody.appendChild(tr);
+        
     });
+    
 }
 
 document.getElementById('filtroRebaixa').addEventListener('input', aplicarFiltros);
@@ -294,7 +296,7 @@ function aplicarFiltros() {
         const matchNfOrigem =
             !nfOrigem ||
             reb.produtos?.some(p =>
-                p.nforigem?.toLowerCase().includes(nfOrigem)
+                p.nfOrigem?.toLowerCase().includes(nfOrigem)
             );
 
         const matchRebaixa =
