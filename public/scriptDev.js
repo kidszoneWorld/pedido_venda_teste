@@ -486,10 +486,10 @@ function validarTabelaPedido() {
         }
 
         // 🚫 BLOQUEIO DE 6 MESES
-        if (dataMaiorQue6Meses(data)) {
-            alert(`A data da linha ${i + 1} é superior a 6 meses. Não é permitido.`);
-            inputs[1]?.focus();
-            return false;
+       // if (dataMaiorQue6Meses(data)) {
+         //   alert(`A data da linha ${i + 1} é superior a 6 meses. Não é permitido.`);
+           // inputs[1]?.focus();
+            //return false;
 }
         const codigo = inputs[2]?.value.trim();
         const lote = inputs[3]?.value.trim();
