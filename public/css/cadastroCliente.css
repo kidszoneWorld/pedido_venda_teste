@@ -489,9 +489,9 @@ footer {
     width: 100%;
     padding-top: 20px;
     padding-bottom: 30px;
-   /* padding: 15px;*/
- 
- 
+    flex-wrap: nowrap;
+    gap: 15px;
+   
 }
 
 
@@ -502,8 +502,10 @@ footer {
     text-align: center;
     padding-left: 20px;
     text-decoration: none;
-    font-size: 100%;
-
+    white-space: nowrap;
+    font-size: clamp(9px, 1vw, 16px);
+    
+    transition: all .3s ease;
 }
 
 .link_sites label {
@@ -516,10 +518,33 @@ footer {
 
 .link_sites a:hover {
     color:rgba(225,0,152);
-    font-size: 140%;
-    
-
+    font-size: 110%;
 }
+
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+
 #logoutButton2:hover{
     background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
     color: rgb(250, 242, 247);

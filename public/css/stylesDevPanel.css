@@ -102,9 +102,6 @@ body.dark-theme .button{
     border-radius: 6px;
     cursor: pointer;
     transition: all .3s ease;
-/*     
-    white-space: nowrap;
-    font-size: clamp(9px, 1vw, 16px); */
 }
 
 body.dark-theme .button:hover {

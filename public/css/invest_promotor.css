@@ -332,33 +332,50 @@ footer {
 
 .link_sites {
     display: flex;
-    justify-content: center;
+    justify-content:center;
     width: 100%;
     padding-top: 20px;
     padding-bottom: 30px;
+    flex-wrap: nowrap;
+    gap: 15px;
+   
 }
+
 
 .link_sites a {
     display: flex;
-    justify-content: center;
-    color: #ffffff;
+    justify-content:center;
+    color:#ffffff ;
     text-align: center;
     padding-left: 20px;
     text-decoration: none;
-    font-size: 100%;
+    white-space: nowrap;
+    font-size: clamp(9px, 1vw, 16px);
+    
+    transition: all .3s ease;
 }
 
 .link_sites label {
     display: flex;
-    justify-content: center;
+    justify-content:center;
     margin-right: 15px;
+
 }
 
+
 .link_sites a:hover {
-    color: rgba(225, 0, 152);
-    font-size: 140%;
-    
+    color:rgba(225,0,152);
+    font-size: 110%;
 }
+
+
+input:focus , textarea:focus{
+    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
+    outline: none; /* Remove o contorno padrão do navegador */
+    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
+}
+
+
 
 #logoutButton2:hover {
     background-color: rgba(225, 0, 152);

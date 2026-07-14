@@ -2,7 +2,7 @@
  /* Definindo variáveis de cor para os temas claro e escuro */
 :root {
     --background-color-light: #caccc6;
-    --container-bg-light: #ffffff;
+    --container-bg-light: #e7c8df;
     --header-bg-light: #ffffff;
     --text-color-light: #333;
     --table-bg-light: #ffffff;
@@ -12,11 +12,10 @@
     --button-text-light: #ffffff;
     --button-hover-bg-light: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
     --button-hover-text-light: #fafcfa;
- 
     --background-color-dark: #1a1a1a;
     --container-bg-dark: #2a2a2a;
     --header-bg-dark: #2a2a2a;
-    --text-color-dark: #bbb5b5;
+    --text-color-dark: #f1eeee;
     --table-bg-dark: #333;
     --table-header-bg-dark: #1e1e1e;
     --table-text-color-dark: #e0e0e0;
@@ -25,7 +24,14 @@
     --button-hover-bg-dark: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
     --button-hover-text-dark: #fafcfa;
     --input-bg-dark:#141414;
+    --tr-bg-cor-apr: #c0e9ca;
+    --tr-bg-cor-fin: #98ecad;
+    --tr-bg-cor-rep: #f8d7da;
+    --tr-bg-cor-pen: #fff3cd;
 }
+
+
+
 
 /* Tema claro (padrão) */
 body.light-theme {
@@ -51,39 +57,80 @@ body.light-theme .payment-conditions label {
 body.light-theme .table th {
     background-color: var(--table-header-bg-light);
     color: var(--table-text-color-light);
-}
+} 
 
 body.light-theme .table td {
     background-color: var(--table-bg-light);
 }
 
-body.light-theme .button-group button,
-body.light-theme .no-print button,
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    
+
+body.light-theme .button{
+    background-color: var(--background-color-dark); /* mesma cor do fundo */
+    color: var(--background-color-light);
+    border: 2px solid #c4007a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+
+}
+
+body.light-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
+
+
+
+
 body.light-theme footer {
     background-color: var(--button-bg-light);
     color: var(--button-text-light);
 }
 
-body.light-theme .button-group button:hover,
-body.light-theme .no-print button:hover {
-    background: var(--button-hover-bg-light);
-    color: var(--button-hover-text-light);
-}
-
-
-
 
 /* Tema escuro */
 body.dark-theme {
     background-color: var(--background-color-dark);
+    --tr-bg-cor-apr: #136939; 
+    --tr-bg-cor-fin: #136939; 
+    --tr-bg-cor-rep: #430c11; 
+    --tr-bg-cor-pen: #3d2e00; 
 }
 
+body.dark-theme .button{
+    background-color: var(--button-bg-light); /* mesma cor do fundo */
+    color: #fff;
+    border: 2px solid #a50066;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+
+body.dark-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
 body.dark-theme .container {
-    background-color: var(--container-bg-dark);
+    background-color: var(--button-bg-light);
+}
+
+body.dark-theme .h2{
+    color: var(--button-hover-text-light);
+}
+
+body.dark-theme .table {
+    background-color: var(--header-bg-dark);
+    color: var(--text-color-dark);
 }
 
 body.dark-theme .header {
-    background-color: var(--header-bg-dark);
+    background-color: var(--background-color-dark);
     color: var(--text-color-dark);
 }
 
@@ -98,23 +145,16 @@ body.dark-theme .table th {
     background-color: var(--table-header-bg-dark);
     color: var(--table-text-color-dark);
 }
-
+ 
 body.dark-theme .table td {
     background-color: var(--table-bg-dark);
 }
 
-body.dark-theme .button-group button,
-body.dark-theme .no-print button,
 body.dark-theme footer {
-    background-color: var(--button-bg-dark);
+    background-color: var(--background-color-dark);
     color: var(--button-text-dark);
 }
 
-body.dark-theme .button-group button:hover,
-body.dark-theme .no-print button:hover {
-    background: var(--button-hover-bg-dark);
-    color: var(--button-hover-text-dark);
-}
 
 body.dark-theme .date{
     color: var(--table-text-color-dark);
@@ -126,7 +166,7 @@ body.dark-theme input{
 }
 
 body.dark-theme ::placeholder{
-    color:#3d3d3d;
+    color:#d8d8d8;
 }
 
 body.dark-theme .form-group label{
@@ -153,8 +193,49 @@ body.dark-theme #dadosPedido tbody tr td input{
     color: var(--button-hover-text-dark);
     border:none;
 }
+body.light-theme .header-container {
+    background-color: var(--header-bg-light);
+    color: var(--text-color-light);
+}
+
+body.light-theme .header-title,
+body.light-theme .header-right h4,
+body.light-theme .link-label {
+    color: var(--text-color-light);
+}
+
+body.dark-theme .header-container {
+    background-color: var(--header-bg-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-theme .header-title,
+body.dark-theme .header-right h4,
+body.dark-theme .link-label {
+    color: var(--text-color-dark);
+}
 
 
+.header {
+    width: 100%;
+    max-width: 1600px; /* Mantém a largura máxima */
+    margin: 0 auto; /* Centraliza o header dentro do .container */
+    box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: #ffffff; /* Define a cor padrão para o texto dentro do header */
+    padding: 15px;
+    border-radius: 5px;
+    justify-content: space-between; /* Alinha .header-left à esquerda e .header-right à direita */
+    width: 100%;
+    flex-wrap: wrap; /* Permite que os elementos quebrem para a próxima linha em telas menores */
+    box-sizing: border-box;
+    margin-top: 10px;
+}
 
  /* Definição da animação */
  @keyframes animationButtonSend {
@@ -189,7 +270,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     }
 }
  
-
  /* Estilo Geral */
  body {
     font-family: Arial, sans-serif;
@@ -202,7 +282,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 }
 .container {
     width: 95%;
-    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     background-color: #ffffff;
@@ -212,7 +291,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     border-radius: 12px;
     overflow: visible;
 }
-
 
 .header {
     text-align: center;
@@ -233,31 +311,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 .header .version {
     font-size: 12px;
     color: #333;
-}
-.button-group {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px 0;
-}
-.button-group button {
-    padding: 10px;
-    background-color: #333;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    flex: 1;
-    min-width: 150px;
-    font-size: 95%;
-}
-
-#button_pdf:hover , #button_sistema:hover {
-    background: linear-gradient(90deg,rgba(225,0,152) 0%,#f18fc7 100%);
-    color:#fafcfa;
-    font-weight: bold;
-    
 }
 
 .btn-mobile {
@@ -297,7 +350,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 .label-espaco-esquerda {
     margin-left: 20px; /* Ajuste o valor conforme o espaçamento desejado */
 }  
- 
 
 .form-group input {
     padding: 8px;
@@ -321,18 +373,16 @@ body.dark-theme #dadosPedido tbody tr td input{
      overflow-x: auto;
 }
 .table {
-    width: 1000px;
     border-collapse: collapse;
     margin-top: 10px;
     min-width: 800px;
 }
-.table, .table th, .table td {
+/* .table, .table th, .table td {
     border: 1px solid #ddd;
-}
+} */
 
 
 .table th, .table td {
-    padding: 10px;
     text-align: center;
 }
 .table th {
@@ -374,6 +424,8 @@ body.dark-theme #dadosPedido tbody tr td input{
 }
 
 
+
+
 /* Seção Condição de Pagamento e Observações */
 .payment-conditions {
     margin-top: 20px;
@@ -405,10 +457,8 @@ body.dark-theme #dadosPedido tbody tr td input{
     padding: 5px;
     font-weight: bold;
     text-align: center;
-
-
-    
 }
+
 .observations textarea {
     width: 99.5%;
     height: 100px;
@@ -419,7 +469,6 @@ body.dark-theme #dadosPedido tbody tr td input{
     border: 1px solid #3d3c3c;
 }
 
- 
 /* classe criada para ocultar botoes na hora da impressão */
     .no-print {
         display: flex;
@@ -434,9 +483,7 @@ body.dark-theme #dadosPedido tbody tr td input{
        
     }
 
-
 footer {
-
     display: flex;
     justify-content:space-between;
     flex-wrap: wrap;
@@ -444,12 +491,8 @@ footer {
     padding-top: 20px;
     background-color: #333;
     width: 100%;
- 
     margin: 0 auto;
-   
-
 }
-
 
 .link_sites {
     display: flex;
@@ -489,21 +532,6 @@ footer {
     font-size: 110%;
 }
 
-
-input:focus , textarea:focus{
-    border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
-    outline: none; /* Remove o contorno padrão do navegador */
-    box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
-
-}
-#logoutButton2:hover{
-    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
-    color: rgb(250, 242, 247);
-    font-size: 140%;
-    
-    border:none;
-     
-}
 
 input:focus , textarea:focus{
     border-color: rgba(225,0,152); /* Cor da borda quando o input estiver ativo */
@@ -613,18 +641,9 @@ label[for="referencia"]::after {
 }
 
 
-.no-print button{
-    border-radius: 8px;
-    border: 1px solid #3d3c3c;
-    padding: 5px;
-    font-weight: 600;
-}
 
-.no-print button:hover{
-    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
-    color: rgb(250, 242, 247); /* Mantém a cor do texto */
-    border:none;
-}
+
+
 
 /* Estilo para a label */
 .label-referencia {
@@ -662,27 +681,10 @@ label[for="referencia"]::after {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
   }
   
-  .close-button , .close-button1 {
-    color: red;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .close-button:hover , .close-button1:hover{
-    color: darkred;
-  }
+ 
 
-  #confirmButton:hover , 
-  #cancelButton:hover ,
-  #confirmButton1:hover ,
-  #cancelButton1:hover {
-    background-color: rgba(225, 0, 152);/* Cor de fundo ao passar o mouse */
-    color: rgb(250, 242, 247); /* Mantém a cor do texto */
-    border:none;
-    cursor: pointer;
-  }
+
+
 
 /* Botão de ajuda fixado */
 #helpContainer {
@@ -860,23 +862,7 @@ label[for="referencia"]::after {
     max-width: 400px;
 }
 
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
 
-#okButton:hover{  
-    background-color: rgba(225, 0, 152);
-}
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
 /* Estilo para o modal de e-mail */
 .email-modal-content {
     width: 90%;
@@ -929,55 +915,6 @@ label[for="referencia"]::after {
 .email-field input[type="file"] {
     padding: 5px 0;
 }
-
-.email-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.email-buttons button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-#sendEmailButton {
-    background-color: rgba(225,0,152);
-    color: #fff;
-    cursor: pointer;
-}
-
-#sendEmailButton:hover {
-    background-color: rgb(185, 11, 130);
-    cursor: pointer;
-}
-
-#cancelEmailButton {
-    background-color: #ccc;
-    color: #333;
-}
-
-#cancelEmailButton:hover {
-    background-color: #b3b3b3;
-}
-
-.email-close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.email-close-button:hover,
-.email-close-button:focus {
-    color: #000;
-}
-
 
 
 /* Animação para o modal */
@@ -1039,12 +976,6 @@ label[for="referencia"]::after {
        
     }
 
-    .link_sites button#logoutButton2 {
-        width: 10%; /* Mantém a largura relativa em telas menores */
-        margin-top: 20px;
-        text-align: center;
-        margin-bottom: 15px; /* Espaçamento abaixo do botão */
-    }
 
     .link_sites a {
         margin: 5px ;
@@ -1058,10 +989,6 @@ label[for="referencia"]::after {
     /* Ajuste geral para tablets */
     .container {
         padding: 10px;
-    }
-    .button-group button {
-        padding: 8px;
-        font-size: 14px;
     }
 
     
@@ -1161,9 +1088,6 @@ label[for="referencia"]::after {
         font-size: 90%;
     }
 
-    .button-group button {
-        font-size: 100%;
-    }
 
     .header img {
         width: 160px;
@@ -1177,32 +1101,6 @@ label[for="referencia"]::after {
         width: 80px;
     }
 
-    .button-group {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    #button_pdf::after{
-        content: "SALVAR EM PDF";
-        color: #fafcfa;
-        font-size: 107%;
-        position: absolute; /* Garante que o ::after não interfira no layout */
-        top: 50%; /* Centraliza verticalmente */
-        left: 50%; /* Centraliza horizontalmente */
-        transform: translate(-50%, -50%); /* Alinha corretamente o texto */
-        text-align: center;
-        display: flex; /* Alternativa para alinhamento */
-        align-items: center; /* Alinha verticalmente */
-        justify-content: center; /* Alinha horizontalmente */
-        
-    
-    }
-    
-    #button_pdf {
-        position: relative; /* Necessário para que o ::after seja posicionado corretamente */
-        color: transparent; /* Oculta o texto original */
-        overflow: hidden; /* Evita que o ::after interfira no tamanho do botão */
-    }
 
     .form-group {
         grid-template-columns: 1fr;
@@ -1344,19 +1242,7 @@ label[for="referencia"]::after {
 
 }
 
-/* Botão remover linha (tabela) */
-.btn-remover-linha {
-    width: 100%;
-    height: 100%;
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #3d3c3c;
-    background-color: var(--button-bg-light);
-    color: var(--button-text-light);
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
+
 
 /* Hover – igual aos outros botões */
 .btn-remover-linha:hover {
@@ -1419,4 +1305,56 @@ body.dark-theme .btn-remover-linha:hover {
 
     z-index: 9999; /*MUITO IMPORTANTE */
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Estilo do toggle switch */
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f393db;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: rgba(225, 0, 152)
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
 }

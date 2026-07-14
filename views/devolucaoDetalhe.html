@@ -3,29 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Detalhes da Devolução</title>
-  <link rel="stylesheet" href="/css/styles2.css?v=1778777229736">
+  <link rel="stylesheet" href="/css/stylesDevDetalhes?v=1778777229736">
 
   <style>
-    body { padding: 20px; font-family: Arial; }
-    .card {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
+    body {  font-family: Arial; }
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+
     }
-    h2 { margin-bottom: 10px; }
     table { width: 100%; border-collapse: collapse; }
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid #1d1d1d;
       padding: 8px;
       text-align: center;
     }
-    th { background: #f4f4f4; }
   </style>
 </head>
 <body>
@@ -43,15 +35,15 @@
            <a href="/investComercial">Investimento</a>
            </div>
         </footer> -->
-<h1>Detalhes da Devolução</h1>
+<header class="header"><h1 class="header-container">Detalhes da Devolução</h1></header>
 
-<div class="card">
-  <h2>Dados da devolução</h2>
+<div class="container">
+  <h2 class="h2">Dados da devolução</h2>
   <div class="grid" id="dadosPedido"></div>
-</div>
+
 <button onclick="exportarDetalheExcel()">Exportar para Excel</button>
-<div class="card">
-  <h2>Produtos</h2>
+<div class="table">
+  <h2 class="h2">Produtos</h2>
   <table>
     <thead>
       <tr>
@@ -68,7 +60,7 @@
     </thead>
     <tbody id="tabelaProdutos"></tbody>
   </table>
-  <div class="card">
+  <div class="container">
   <h2>Resumo</h2>
   <div id="resumoTotais"></div>
 </div>
