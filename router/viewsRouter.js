@@ -17,7 +17,9 @@ const clientePdfController = require('../controllers/clientePdfController');
 const pdfInvestComercialController = require('../controllers/pdf_invest_comercialController');
 const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorController');
 const productController = require('../controllers/productController');
+const distribuidorController = require('../controllers/distribuidorController');
 const router = express.Router();
+
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -80,7 +82,21 @@ router.get('/rebaixaDetalhe.html',authMiddleware, (req, res) => {
 router.get('/detalhesProdutos',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.html'));
 });
-
+//rota distribuidores, sell pagina inicial
+router.get(
+    '/distribuidores',
+    authMiddleware,
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'distribuidores.html'
+            )
+        );
+    }
+);
 
 // Rota para a página de eficiencia cliente (eficiencia.html)
 router.get('/eficiencia',authMiddleware,(req, res) => {
@@ -193,7 +209,12 @@ router.get('/session-data', authMiddleware, (req, res) => {
         user: req.session.user || null,
     });
 });
-
+//rota listar distribuidores
+router.get(
+    '/api/distribuidores',
+    authMiddleware,
+    distribuidorController.listarDistribuidores
+);
 
 router.get('/session-test', (req, res) => {
     res.json({
@@ -213,6 +234,12 @@ router.post('/send-client-pdf-dev', devController.sendClientPdfDev);
 router.post('/generate-upload-url-reb', rebController.generateUploadUrlReb);
 router.post('/send-client-pdf-reb', rebController.sendClientPdfReb);
 
+//salvar distribuidor
+router.post(
+    '/api/distribuidores',
+    authMiddleware,
+    distribuidorController.salvarDistribuidor
+);
 
 // Rota para autenticação
 router.post('/auth', authenticateUser);

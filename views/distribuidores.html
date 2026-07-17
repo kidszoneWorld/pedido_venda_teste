@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE-PEDIDOS</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link rel="stylesheet" href="/css/distribuidores.css?v=1783967913321">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1783967913321">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+
+</head>
+
+<body id="corpo">
+        <header>
+                <div class="link_sites">
+
+            <!-- Toggle switch -->
+            <label class="theme-switch" id="seletor">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+           <button id="logoutButton2">Sair</button>
+           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
+           <a href="/">Pedido de Venda</a>
+           <a href="/devolucao">Pedido de Devolução</a>           
+           <a href="/rebaixa">Solicitação de Rebaixa</a>
+           <a href="/comercial">Área Comercial</a>
+           <a href="/logistica03">Área logística</a>
+           <a href="/detalhesProdutos">Detalhes do Produto</a>
+           <a href="/cadastroCliente">Cadastrar Cliente</a>
+           <a href="/investComercial">Investimento</a>
+           <a href="/distribuidores">Modulo Sell</a>
+           </div>
+        </header>
+
+        <div class="container">
+
+    <div class="section-title">
+        DISTRIBUIDORES
+    </div>
+
+    <div class="form-group">
+
+        <input
+            type="text"
+            id="filtroCnpj"
+            placeholder="CNPJ"
+        >
+
+        <input
+            type="text"
+            id="filtroRazao"
+            placeholder="Razão Social"
+        >
+
+        <input
+            type="text"
+            id="filtroRepresentante"
+            placeholder="Representante"
+        >
+
+    </div>
+
+    <div class="button-group">
+
+        <button id="novoDistribuidor">
+            Novo Distribuidor
+        </button>
+
+        <button id="novoItem">
+            Novo Item
+        </button>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+                    <th>CNPJ</th>
+                    <th>Razão Social</th>
+                    <th>Representante</th>
+                    <th>Ações</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="listaDistribuidores">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div
+    id="modalDistribuidor"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <span
+            id="fecharModal"
+            class="close-button"
+        >
+            ×
+        </span>
+
+        <h2>
+            Novo Distribuidor
+        </h2>
+
+        <input
+            type="text"
+            id="razaoSocial"
+            placeholder="Razão Social"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            id="cnpj"
+            placeholder="CNPJ"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            id="cidade"
+            placeholder="Cidade"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            id="uf"
+            placeholder="UF"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            id="representante"
+            placeholder="Número Representante"
+        >
+
+        <br><br>
+
+        <button id="salvarDistribuidor">
+            Salvar
+        </button>
+
+    </div>
+
+</div>
+<script src="/distribuidores.js"></script>
+</body>
+</html>
