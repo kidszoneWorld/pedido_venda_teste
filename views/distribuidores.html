@@ -28,15 +28,15 @@
 </head>
 
 <body id="corpo">
-        <header>
+    <div class="container">
+        <header class="header">
                 <div class="link_sites">
-
             <!-- Toggle switch -->
             <label class="theme-switch" id="seletor">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
             </label>
-           <button id="logoutButton2">Sair</button>
+           <button class="button" id="logoutButton2">Sair</button>
            <!--<a target="_blank" href="/admin">Área T.I.</a>-->
            <a href="/">Pedido de Venda</a>
            <a href="/devolucao">Pedido de Devolução</a>           
@@ -50,13 +50,8 @@
            </div>
         </header>
 
-        <div class="container">
+    <h2 class="h2">DISTRIBUIDORES</h2>
 
-    <div class="section-title">
-        DISTRIBUIDORES
-    </div>
-
-    <div class="form-group">
 
         <input
             type="text"
@@ -76,15 +71,15 @@
             placeholder="Representante"
         >
 
-    </div>
+
 
     <div class="button-group">
-
-        <button id="novoDistribuidor">
+<br>
+        <button class="button" id="novoDistribuidor">
             Novo Distribuidor
         </button>
 
-        <button id="novoItem">
+        <button class="button" id="novoItem">
             Novo Item
         </button>
 
@@ -92,7 +87,7 @@
 
     <div class="table-container">
 
-        <table class="table">
+        <table class="table" border="1" width="100%">
 
             <thead>
 
@@ -123,12 +118,12 @@
 
     <div class="modal-content">
 
-        <span
+        <Button
             id="fecharModal"
-            class="close-button"
+            class="button"
         >
             ×
-        </span>
+        </Button>
 
         <h2>
             Novo Distribuidor
@@ -138,6 +133,7 @@
             type="text"
             id="razaoSocial"
             placeholder="Razão Social"
+            required
         >
 
         <br><br>
@@ -146,6 +142,7 @@
             type="text"
             id="cnpj"
             placeholder="CNPJ"
+            required
         >
 
         <br><br>
@@ -154,6 +151,7 @@
             type="text"
             id="cidade"
             placeholder="Cidade"
+            required
         >
 
         <br><br>
@@ -162,6 +160,7 @@
             type="text"
             id="uf"
             placeholder="UF"
+            required
         >
 
         <br><br>
@@ -170,11 +169,12 @@
             type="text"
             id="representante"
             placeholder="Número Representante"
+            required
         >
 
         <br><br>
 
-        <button id="salvarDistribuidor">
+        <button class="button" id="salvarDistribuidor">
             Salvar
         </button>
 
@@ -182,5 +182,25 @@
 
 </div>
 <script src="/distribuidores.js"></script>
+<script src="/theme-toggle.js?v=1783967913316"></script>
+<script>
+         // Função para limpar dados do usuário e redirecionar para a página de login
+        document.getElementById('logoutButton2').addEventListener('click', async () => {
+            // Limpa os dados locais
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Faz a requisição ao servidor para destruir a sessão
+            await fetch('/logout', { method: 'POST' });
+
+            // Limpa cookies manualmente (como precaução)
+            document.cookie.split(";").forEach(cookie => {
+                document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+            });
+
+            // Redireciona para a página de login
+            window.location.href = '/login2';
+        });
+    </script>
 </body>
 </html>

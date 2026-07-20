@@ -68,35 +68,35 @@ async function carregarDistribuidores(){
                 <td>${d.Representante}</td>
 
                 <td>
-                    <button onclick="abrirSellIn(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirSellIn(${d.CodigoDistribuidor})">
                         SellIn
                     </button>
 
-                    <button onclick="abrirSellOut(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirSellOut(${d.CodigoDistribuidor})">
                         SellOut
                     </button>
 
-                    <button onclick="abrirDisplay(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirDisplay(${d.CodigoDistribuidor})">
                         Display
                     </button>
 
-                    <button onclick="abrirRedes(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirRedes(${d.CodigoDistribuidor})">
                         Redes
                     </button>
 
-                    <button onclick="abrirPositivacao(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirPositivacao(${d.CodigoDistribuidor})">
                         Positivação
                     </button>
 
-                    <button onclick="abrirInfo(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirInfo(${d.CodigoDistribuidor})">
                         Info
                     </button>
 
-                    <button onclick="abrirEstoque(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirEstoque(${d.CodigoDistribuidor})">
                         Estoque
                     </button>
 
-                    <button onclick="abrirInvestimentos(${d.CodigoDistribuidor})">
+                    <button class="button" onclick="abrirInvestimentos(${d.CodigoDistribuidor})">
                         Investimentos
                     </button>
                 </td>
@@ -194,6 +194,10 @@ document
 
         };
 
+        
+
+        if (dados.RazaoSocial=="" || dados.CNPJ == "" || dados.UF=="" || dados.Cidade=="" || dados.Representante == "" )
+{
         const resposta =
             await fetch(
                 '/api/distribuidores',
@@ -216,18 +220,19 @@ document
             alert(
                 'Distribuidor cadastrado'
             );
-
-            modal.style.display = 'none';
+                        modal.style.display = 'none';
 
             carregarDistribuidores();
-
-        }else{
-
-            alert(
-                'Erro ao cadastrar'
+}
+else{
+    alert(
+                'preencha todos os campos'
             );
+}
+
 
         }
+
 
     }
 );
