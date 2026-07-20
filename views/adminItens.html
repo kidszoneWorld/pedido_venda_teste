@@ -49,144 +49,19 @@
            <a href="/distribuidores">Modulo Sell</a>
            </div>
         </header>
+    <a href="/distribuidores"><button class="button"><--</button></a>   
+    <h2 class="h2">Administrar Itens</h2>
 
-    <h2 class="h2">DISTRIBUIDORES</h2>
-
-
-        <input
-            type="text"
-            id="filtroCnpj"
-            placeholder="CNPJ"
-        >
-
-        <input
-            type="text"
-            id="filtroRazao"
-            placeholder="Razão Social"
-        >
-
-        <input
-            type="text"
-            id="filtroRepresentante"
-            placeholder="Representante"
-        >
-
-
-
-    <div class="button-group">
+<div class="button-group">
 <br>
-        <button class="button" id="novoDistribuidor">
-            Novo Distribuidor
-        </button>
-
         <button class="button" id="novoItem">
             Novo Item
         </button>
 
-        <button class="button" id="administrarItens">
-            Administrar Itens
-        </button>
 
     </div>
 
-    <div class="table-container">
-
-        <table class="table" border="1" width="100%">
-
-            <thead>
-
-                <tr>
-                    <th>CNPJ</th>
-                    <th>Razão Social</th>
-                    <th>Representante</th>
-                    <th>Ações</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="listaDistribuidores">
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-
-<div
-    id="modalDistribuidor"
-    class="modal"
->
-
-    <div class="modal-content">
-
-        <Button
-            id="fecharModal"
-            class="button"
-        >
-            ×
-        </Button>
-
-        <h2>
-            Novo Distribuidor
-        </h2>
-
-        <input
-            type="text"
-            id="razaoSocial"
-            placeholder="Razão Social"
-            required
-        >
-
-        <br><br>
-
-        <input
-            type="text"
-            id="cnpj"
-            placeholder="CNPJ"
-            required
-        >
-
-        <br><br>
-
-        <input
-            type="text"
-            id="cidade"
-            placeholder="Cidade"
-            required
-        >
-
-        <br><br>
-
-        <input
-            type="text"
-            id="uf"
-            placeholder="UF"
-            required
-        >
-
-        <br><br>
-
-        <input
-            type="text"
-            id="representante"
-            placeholder="Número Representante"
-            required
-        >
-
-        <br><br>
-
-        <button class="button" id="salvarDistribuidor">
-            Salvar
-        </button>
-
-    </div>
-
-</div>
-
-<div id="modalItem" class="modal">
+    <div id="modalItem" class="modal">
 
     <div class="modal-content">
 
@@ -253,8 +128,38 @@
 
 </div>
 
+    <div class="table-container">
 
-<script src="/distribuidores.js"></script>
+        <table class="table" border="1" width="100%">
+
+            <thead>
+
+                <tr>
+
+                    <th>Código</th>
+
+                    <th>Descrição</th>
+
+                    <!-- <th>Ativo</th> -->
+
+                    <th>Display</th>
+
+                    <th>Ações</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="listaItens">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<script src="/adminItens.js"></script>
 <script src="/theme-toggle.js?v=1783967913316"></script>
 <script>
          // Função para limpar dados do usuário e redirecionar para a página de login

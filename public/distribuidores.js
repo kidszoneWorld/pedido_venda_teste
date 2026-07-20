@@ -42,6 +42,18 @@ async function verificarPermissao() {
     if (btnNovoItem) {
         btnNovoItem.style.display = 'none';
     }
+
+    const btnAdministrarItens =
+            document.getElementById(
+                'administrarItens'
+            );
+
+        if(btnAdministrarItens){
+
+            btnAdministrarItens.style.display =
+                'none';
+
+        }
 }
 
 async function carregarDistribuidores(){
@@ -104,25 +116,7 @@ async function carregarDistribuidores(){
 
 }
 
-async function controlarPermissoes(){
 
-    const response =
-        await fetch('/session-data');
-
-    const session =
-        await response.json();
-
-    if(session.userNumero){
-
-        document
-            .getElementById('novoDistribuidor')
-            .style.display = 'none';
-
-        document
-            .getElementById('novoItem')
-            .style.display = 'none';
-    }
-}
 
 const modalItem =
     document.getElementById('modalItem');
@@ -261,6 +255,19 @@ else{
 );
 
 function configurarEventos() {
+document
+.getElementById('administrarItens')
+.addEventListener(
+    'click',
+    () => {
+
+        window.location.href =
+            '/adminItens';
+
+    }
+);
+
+
 
 document
 .getElementById('salvarItem')

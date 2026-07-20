@@ -4,18 +4,21 @@ exports.listarItens = async (req, res) => {
 
     try {
 
-        const resultado = await pool.query(`
-            SELECT *
-            FROM "TbItem"
-            ORDER BY "Descricao"
-        `);
+        const resultado =
+            await pool.query(`
+
+                SELECT *
+                FROM "TbItem"
+                ORDER BY "ItemDescricao"
+
+            `);
 
         res.json(resultado.rows);
 
-    } catch (erro) {
+    }
+    catch(erro){
 
         res.status(500).json({
-            sucesso: false,
             erro: erro.message
         });
 
@@ -23,6 +26,51 @@ exports.listarItens = async (req, res) => {
 
 };
 
+exports.atualizarItem = async (req, res) => {
+
+    try {
+
+        const {
+            ItemDescricao,
+            Ativo,
+            Display
+        } = req.body;
+
+        const resultado =
+            await pool.query(`
+
+                UPDATE "TbItem"
+
+                SET
+
+                    "ItemDescricao" = $1,
+                    "Ativo" = $2,
+                    "Display" = $3
+
+                WHERE "CodigoItem" = $4
+
+                RETURNING *
+
+            `,
+            [
+                ItemDescricao,
+                Ativo,
+                Display,
+                req.params.codigo
+            ]);
+
+        res.json(resultado.rows[0]);
+
+    }
+    catch(erro){
+
+        res.status(500).json({
+            erro: erro.message
+        });
+
+    }
+
+};
 
 exports.salvarItem = async (req, res) => {
 

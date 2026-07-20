@@ -98,6 +98,23 @@ router.get(
     }
 );
 
+router.get(
+    '/adminItens',
+    authMiddleware,
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'adminItens.html'
+            )
+        );
+
+    }
+);
+
 // Rota para a página de eficiencia cliente (eficiencia.html)
 router.get('/eficiencia',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'eficiencia.html'));
@@ -189,6 +206,18 @@ router.post(
     '/api/itens',
     authMiddleware,
     itemController.salvarItem
+);
+
+router.get(
+    '/api/itens',
+    authMiddleware,
+    itemController.listarItens
+);
+
+router.put(
+    '/api/itens/:codigo',
+    authMiddleware,
+    itemController.atualizarItem
 );
 
 // salvar Rebaixa
