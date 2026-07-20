@@ -215,6 +215,12 @@ document
 
         if (!dados.RazaoSocial|| !dados.CNPJ|| !dados.UF || !dados.Cidade ||!dados.Representante)
 {
+    alert(
+                'preencha todos os campos'
+            );
+}
+else{
+    
         const resposta =
             await fetch(
                 '/api/distribuidores',
@@ -240,11 +246,6 @@ document
                         modal.style.display = 'none';
 
             carregarDistribuidores();
-}
-else{
-    alert(
-                'preencha todos os campos'
-            );
 }
 
 
