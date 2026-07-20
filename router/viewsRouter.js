@@ -19,7 +19,7 @@ const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorC
 const productController = require('../controllers/productController');
 const distribuidorController = require('../controllers/distribuidorController');
 const router = express.Router();
-
+const itemController = require('../controllers/itemController');
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -179,6 +179,17 @@ router.get('/api/devolucao/:id', devController.buscarDevolucaoPorId);
 router.get('/api/devolucoes', devController.listarDevolucoes);
 router.put('/devolucao/:id', devController.atualizarDevolucao);
 
+router.get(
+    '/api/itens',
+    authMiddleware,
+    itemController.listarItens
+);
+
+router.post(
+    '/api/itens',
+    authMiddleware,
+    itemController.salvarItem
+);
 
 // salvar Rebaixa
 router.post('/api/rebaixa', rebController.salvarRebaixa);

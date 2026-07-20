@@ -1,5 +1,3 @@
-console.log('Distribuidores.js carregado');
-
 document.addEventListener(
     'DOMContentLoaded',
     async () => {
@@ -126,6 +124,31 @@ async function controlarPermissoes(){
     }
 }
 
+const modalItem =
+    document.getElementById('modalItem');
+
+document
+.getElementById('novoItem')
+.addEventListener(
+    'click',
+    () => {
+
+        modalItem.style.display = 'block';
+
+    }
+);
+
+document
+.getElementById('fecharModalItem')
+.addEventListener(
+    'click',
+    () => {
+
+        modalItem.style.display = 'none';
+
+    }
+);
+
 const modal =
     document.getElementById(
         'modalDistribuidor'
@@ -196,7 +219,7 @@ document
 
         
 
-        if (dados.RazaoSocial=="" || dados.CNPJ == "" || dados.UF=="" || dados.Cidade=="" || dados.Representante == "" )
+        if (!dados.RazaoSocial|| !dados.CNPJ|| !dados.UF || !dados.Cidade ||!dados.Representante)
 {
         const resposta =
             await fetch(
@@ -238,6 +261,89 @@ else{
 );
 
 function configurarEventos() {
+
+document
+.getElementById('salvarItem')
+.addEventListener(
+    'click',
+    async () => {
+
+        const dados = {
+
+            CodigoItem:
+                document.getElementById(
+                    'codigoItem'
+                ).value.trim(),
+
+            ItemDescricao:
+                document.getElementById(
+                    'itemDescricao'
+                ).value.trim(),
+
+            Ativo:
+                document.getElementById(
+                    'ativo'
+                ).checked,
+
+            Display:
+                document.getElementById(
+                    'display'
+                ).checked
+
+        };
+
+        if (!dados.CodigoItem) {
+
+            alert('Informe o código do item');
+
+            return;
+        }
+
+        if (!dados.ItemDescricao) {
+
+            alert('Informe a descrição do item');
+
+            return;
+        }
+        
+        const resposta =
+            await fetch('/api/itens', {
+
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                    'application/json'
+                },
+
+                body: JSON.stringify(dados)
+
+            });
+
+        const resultado =
+            await resposta.json();
+
+        if (resultado.sucesso) {
+
+            alert(
+                'Item cadastrado com sucesso'
+            );
+
+            document.getElementById(
+                'modalItem'
+            ).style.display = 'none';
+
+        } else {
+
+            alert(
+                resultado.erro ||
+                resultado.mensagem
+            );
+
+        }
+
+    }
+);
 
     const btnNovoDistribuidor =
         document.getElementById('novoDistribuidor');
