@@ -155,7 +155,7 @@ async function salvarItem(codigo){
         alert(
             'Item atualizado'
         );
-
+    location.reload()
     }
 }
 
