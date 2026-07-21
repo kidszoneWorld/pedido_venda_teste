@@ -20,6 +20,7 @@ async function editarContato(codigoContato){
         `/api/contatos/${codigoContato}`
     );
 
+
     const contato =
         await response.json();
 
@@ -66,9 +67,7 @@ document
 .addEventListener(
     'click',
     ()=>{
-
-        contatoEditando = null;
-
+        
         document.getElementById('NomeContato').value = '';
         document.getElementById('FuncaoContato').value = '';
         document.getElementById('DataNascimentoContato').value = '';
@@ -175,6 +174,7 @@ document
 
         }
 
+
         const response =
         await fetch(
             url,
@@ -280,20 +280,6 @@ document
     }
 );
 
-document
-.getElementById('novoContato')
-.addEventListener(
-    'click',
-    ()=>{
-
-        document
-        .getElementById(
-            'modalContato'
-        )
-        .style.display='block';
-
-    }
-);
 
 const codigoDistribuidor =
 window.location.pathname
@@ -342,7 +328,6 @@ async function carregarContatos(){
     await fetch(
         `/api/distribuidor/${codigoDistribuidor}/contatos`
     );
-
     const contatos =
     await response.json();
 
