@@ -255,6 +255,14 @@ else{
     }
 );
 
+function abrirInfo(codigoDistribuidor){
+
+    window.location.href =
+        `/infoDistribuidor/${codigoDistribuidor}`;
+
+}
+
+
 function configurarEventos() {
 document
 .getElementById('administrarItens')

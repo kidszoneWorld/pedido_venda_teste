@@ -1,5 +1,69 @@
 const pool = require('../config/database');
 
+exports.atualizarDistribuidor = async (req,res)=>{
+
+    try{
+
+        if(req.session.userNumero){
+
+            return res.status(403).json({
+                sucesso:false,
+                mensagem:'Sem permissão'
+            });
+
+        }
+
+        const {
+            RazaoSocial,
+            CNPJ,
+            Cidade,
+            UF,
+            Representante
+        } = req.body;
+
+        const resultado =
+        await pool.query(`
+
+            UPDATE "TbDistribuidor"
+
+            SET
+                "RazaoSocial"=$1,
+                "CNPJ"=$2,
+                "Cidade"=$3,
+                "UF"=$4,
+                "Representante"=$5
+
+            WHERE
+                "CodigoDistribuidor"=$6
+
+            RETURNING *
+
+        `,
+        [
+            RazaoSocial,
+            CNPJ,
+            Cidade,
+            UF,
+            Representante,
+            req.params.codigo
+        ]);
+
+        res.json({
+            sucesso:true,
+            dados:resultado.rows[0]
+        });
+
+    }catch(err){
+
+        res.status(500).json({
+            sucesso:false,
+            erro:err.message
+        });
+
+    }
+
+};
+
 exports.listarDistribuidores = async (req, res) => {
 
     try {
@@ -122,3 +186,31 @@ console.log(req.body);
 }
 
 };
+
+exports.buscarDistribuidor = async (req,res)=>{
+
+    try{
+
+        const resultado =
+        await pool.query(`
+
+            SELECT *
+            FROM "TbDistribuidor"
+            WHERE "CodigoDistribuidor"=$1
+
+        `,[req.params.codigo]);
+
+        res.json(
+            resultado.rows[0]
+        );
+
+    }
+    catch(err){
+
+        res.status(500).json({
+            erro:err.message
+        });
+
+    }
+
+}

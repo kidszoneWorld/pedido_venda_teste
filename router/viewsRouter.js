@@ -18,6 +18,7 @@ const pdfInvestComercialController = require('../controllers/pdf_invest_comercia
 const pdfInvestPromotorController = require('../controllers/pdf_invest_promotorController');
 const productController = require('../controllers/productController');
 const distribuidorController = require('../controllers/distribuidorController');
+const contatoController = require('../controllers/contatoDistribuidorController');
 const router = express.Router();
 const itemController = require('../controllers/itemController');
 
@@ -220,6 +221,37 @@ router.put(
     itemController.atualizarItem
 );
 
+router.get(
+    '/infoDistribuidor/:codigo',
+    authMiddleware,
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'infoDistribuidor.html'
+            )
+        );
+
+    }
+);
+
+router.get(
+    '/api/contatos/:codigoContato',
+    authMiddleware,
+    contatoController.buscarContato
+);
+
+router.put(
+    '/api/contatos/:codigoContato',
+    authMiddleware,
+    contatoController.atualizarContato
+);
+
+
+
 // salvar Rebaixa
 router.post('/api/rebaixa', rebController.salvarRebaixa);
 router.get('/api/rebaixa/:id', rebController.buscarRebaixaPorId);
@@ -227,6 +259,8 @@ router.get('/api/rebaixa/:id', rebController.buscarRebaixaPorId);
 // Rebaixa
 router.get('/api/rebaixas', rebController.listarRebaixas);
 router.put('/rebaixa/:id', rebController.atualizarRebaixa);
+
+
 
 
 
@@ -279,6 +313,36 @@ router.post(
     '/api/distribuidores',
     authMiddleware,
     distribuidorController.salvarDistribuidor
+);
+
+router.get(
+    '/api/distribuidor/:codigo',
+    authMiddleware,
+    distribuidorController.buscarDistribuidor
+);
+
+router.get(
+    '/api/distribuidor/:codigo/contatos',
+    authMiddleware,
+    contatoController.listarContatos
+);
+
+router.put(
+    '/api/distribuidor/:codigo',
+    authMiddleware,
+    distribuidorController.atualizarDistribuidor
+);
+
+router.post(
+    '/api/distribuidor/:codigo/contatos',
+    authMiddleware,
+    contatoController.salvarContato
+);
+
+router.delete(
+    '/api/contatos/:codigoContato',
+    authMiddleware,
+    contatoController.excluirContato
 );
 
 // Rota para autenticação
