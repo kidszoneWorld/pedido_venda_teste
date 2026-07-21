@@ -9,7 +9,7 @@ exports.listarItens = async (req, res) => {
 
                 SELECT *
                 FROM "TbItem"
-                ORDER BY "ItemDescricao"
+                ORDER BY "CodigoItem"
 
             `);
 
