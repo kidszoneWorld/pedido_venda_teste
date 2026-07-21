@@ -48,8 +48,8 @@
            <a href="/investComercial">Investimento</a>
            <a href="/distribuidores">Modulo Sell</a>
            </div>
-        </header>
-
+        </header><br>
+<a href="/distribuidores"><button class="button"><--</button></a>   
     <h2 class="h2">
         DADOS DO DISTRIBUIDOR
     </h2>
@@ -105,7 +105,7 @@
         <h2>
             Novo Contato
         </h2>
-
+        <Label>Nome</Label><br>
         <input
             type="text"
             id="NomeContato"
@@ -114,7 +114,7 @@
         >
 
         <br><br>
-
+        <Label>Função de Contato</Label><br>
         <input
             type="text"
             id="FuncaoContato"
@@ -123,7 +123,7 @@
         >
 
         <br><br>
-
+        <Label>Data de Nascimento</Label><br>
         <input
             type="date"
             id="DataNascimentoContato"
@@ -132,7 +132,7 @@
         >
 
         <br><br>
-
+        <Label>Hobby</Label><br>
         <input
             type="text"
             id="HobbyContato"
@@ -141,7 +141,7 @@
         >
 
         <br><br>
-
+        <Label>Email</Label><br>
         <input
             type="email"
             id="EmailContato"
@@ -149,13 +149,38 @@
             required
         >       
         <br><br>
-
+        <Label>Telefone</Label><br>
         <input
             type="tel"
             id="TelefoneContato"
             placeholder="Telefone do Contato"
             required
         >
+        <script>
+  const telefoneInput = document.getElementById('TelefoneContato');
+
+  telefoneInput.addEventListener('input', (e) => {
+    let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+    if (valor.length > 11) valor = valor.slice(0, 11); // Limita a 11 dígitos
+
+    // Aplica a máscara dependendo do tamanho do número
+    if (valor.length > 10) {
+      // Celular com 9 dígitos: (00) 00000-0000
+      valor = valor.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (valor.length > 5) {
+      // Fixo ou em digitação: (00) 0000-0000
+      valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if (valor.length > 2) {
+      // Apenas DDD: (00
+      valor = valor.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+    } else if (valor.length > 0) {
+      // Iniciando: (0
+      valor = valor.replace(/^(\d*)/, '($1');
+    }
+
+    e.target.value = valor;
+  });
+</script>
 
         <br><br>
 

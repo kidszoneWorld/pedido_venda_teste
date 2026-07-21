@@ -339,7 +339,7 @@ async function carregarContatos(){
     tbody.innerHTML='';
 
     contatos.forEach(c=>{
-
+        
         tbody.innerHTML += `
 
         <tr>
@@ -351,13 +351,18 @@ async function carregarContatos(){
             <td>
                 ${c.FuncaoContato}
             </td>
-
+            <td>
+                ${formatarData(c.DataNascimentoContato)}
+            </td>
+            <td>
+                ${c.HobbyContato}
+            </td>
             <td>
                 ${c.EmailContato}
             </td>
 
             <td>
-                ${c.TelefoneContato}
+                ${formatarTelefone(c.TelefoneContato)}
             </td>
 
             <td>
@@ -385,6 +390,27 @@ async function carregarContatos(){
 
     });
 
+}
+
+function formatarData(dataSemFormatar){
+    let data = new Date(dataSemFormatar);
+    let formatadoBr = data.toLocaleDateString("pt-BR");
+    return formatadoBr;
+}
+
+function formatarTelefone(numero) {
+  // Remove tudo que não for número
+  const limpo = ('' + numero).replace(/\D/g, '');
+  
+  // Verifica se é celular (11 dígitos) ou fixo (10 dígitos)
+  if (limpo.length === 11) {
+    return limpo.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+  } else if (limpo.length === 10) {
+    return limpo.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+  }
+  
+  // Retorna o número original se não tiver 10 ou 11 dígitos
+  return numero;
 }
 
 async function excluirContato(codigoContato){
