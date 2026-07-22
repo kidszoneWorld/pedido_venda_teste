@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE-PEDIDOS</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon"  type="image/png" sizes="32x32" href="/images/favicon-32x32.png" >
+    <link rel="icon"  type="image/png" sizes="16x16" href="/images/favicon-16x16.png" >
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link rel="stylesheet" href="/css/distribuidores.css?v=1783967913321">
+
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1783967913321">
+    <!-- Script inline para aplicar o tema imediatamente -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+
+</head>
+
+<body id="corpo">
+
+
+<div class="container">
+        <header class="header">
+                <div class="link_sites">
+            <!-- Toggle switch -->
+            <label class="theme-switch" id="seletor">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+           <button class="button" id="logoutButton2">Sair</button>
+           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
+           <a href="/">Pedido de Venda</a>
+           <a href="/devolucao">Pedido de Devolução</a>           
+           <a href="/rebaixa">Solicitação de Rebaixa</a>
+           <a href="/comercial">Área Comercial</a>
+           <a href="/logistica03">Área logística</a>
+           <a href="/detalhesProdutos">Detalhes do Produto</a>
+           <a href="/cadastroCliente">Cadastrar Cliente</a>
+           <a href="/investComercial">Investimento</a>
+           <a href="/distribuidores">Modulo Sell</a>
+           </div>
+        </header><br>
+<a href="/distribuidores"><button class="button"><--</button></a>   
+    <h2 class="h2">
+        Positivação do Distribuidor
+    </h2>
+
+
+<div class="no-print">
+
+    <button
+        class="button"
+        id="novaRede"
+    >
+        Nova Rede
+    </button>
+
+    <button
+        class="button"
+        id="salvarRedes"
+    >
+        Salvar
+    </button>
+
+</div>
+
+<div class="table-container">
+
+    <table class="table" border="1" width="100%">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Razão Social
+                </th>
+
+                <th>
+                    Fantasia
+                </th>
+
+                <th>
+                    Lojas
+                </th>
+
+                <th>
+                    UF
+                </th>
+
+                <th>
+                    SKU
+                </th>
+
+                <th>
+                    1ª Compra
+                </th>
+
+                <th>
+                    Mês/Ano
+                </th>
+
+                <th>
+                    Ações
+                </th>
+
+            </tr>
+
+        </thead>
+
+        <tbody
+            id="corpoRedes"
+        >
+
+        </tbody>
+
+    </table>
+
+
+
+
+</div>
+
+<div
+    class="modal"
+    id="modalRede"
+>
+
+    <div
+        class="modal-content"
+    >
+        <label>Razão Social</label>
+        <input
+            id="redeRazaoSocial"
+            placeholder="Razão Social"
+        >
+        <label>Nome Fantasia</label>
+        <input
+            id="nomeFantasia"
+            placeholder="Fantasia"
+        >
+        <label>Quantidade de lojas</label>
+        <input
+            id="lojaQuantidade"
+            type="number"
+        >
+        <label>uf</label>
+        <input
+            id="uf"
+            maxlength="2"
+        >
+        <label>Quantidade de SKU</label>
+        <input
+            id="skuQuantidade"
+            type="number"
+        >
+        <label>Valor da Primeira Compra</label>
+        <input
+            id="valorPrimeiraCompra"
+            type="number"
+        >
+        <label>Mês / ano da rede</label>
+        <input
+            id="redeMesAno"
+            placeholder="07/2026"
+        >
+
+        <button
+            id="adicionarRede"
+            class="button"
+        >
+            Adicionar
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script src="/redesDistribuidor.js"></script>
+<script src="/theme-toggle.js?v=1783967913316"></script>
+<script>
+         // Função para limpar dados do usuário e redirecionar para a página de login
+        document.getElementById('logoutButton2').addEventListener('click', async () => {
+            // Limpa os dados locais
+            sessionStorage.clear();
+            localStorage.clear();
+
+            // Faz a requisição ao servidor para destruir a sessão
+            await fetch('/logout', { method: 'POST' });
+
+            // Limpa cookies manualmente (como precaução)
+            document.cookie.split(";").forEach(cookie => {
+                document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+            });
+
+            // Redireciona para a página de login
+            window.location.href = '/login2';
+        });
+    </script>
+    </body>
+    </html>

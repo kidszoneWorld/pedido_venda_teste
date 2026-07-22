@@ -79,6 +79,15 @@ function abrirPositivacao(
 
 }
 
+function abrirRedes(
+    codigoDistribuidor
+){
+
+    window.location.href =
+    `/redesDistribuidor/${codigoDistribuidor}`;
+
+}
+
 async function carregarDistribuidores(){
 
     const resposta =

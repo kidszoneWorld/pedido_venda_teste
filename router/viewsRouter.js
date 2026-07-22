@@ -24,7 +24,7 @@ const itemController = require('../controllers/itemController');
 const estoqueDistribuidorController = require('../controllers/estoqueDistribuidorController');
 const investimentoDistribuidorController = require('../controllers/investimentoDistribuidorController');
 const positivacaoDistribuidorController = require('../controllers/positivacaoDistribuidorController')
-
+const redesDistribuidorController = require('../controllers/redesDistribuidorController');
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
     console.log('Rota / acessada');
@@ -203,6 +203,23 @@ router.get(
                 '..',
                 'views',
                 'estoqueDistribuidor.html'
+            )
+        );
+
+    }
+);
+
+router.get(
+    '/redesDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req,res)=>{
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'redesDistribuidor.html'
             )
         );
 
@@ -443,6 +460,50 @@ router.delete(
     '/api/contatos/:codigoContato',
     authMiddleware,
     contatoController.excluirContato
+);
+
+router.get(
+
+    '/api/redesDistribuidor/:codigoDistribuidor',
+
+    authMiddleware,
+
+    redesDistribuidorController
+    .listarRedes
+
+);
+
+router.post(
+
+    '/api/redesDistribuidor/:codigoDistribuidor',
+
+    authMiddleware,
+
+    redesDistribuidorController
+    .inserirRede
+
+);
+
+router.put(
+
+    '/api/redesDistribuidor',
+
+    authMiddleware,
+
+    redesDistribuidorController
+    .atualizarRede
+
+);
+
+router.delete(
+
+    '/api/redesDistribuidor/:codigoRede',
+
+    authMiddleware,
+
+    redesDistribuidorController
+    .excluirRede
+
 );
 
 // Rota para autenticação
