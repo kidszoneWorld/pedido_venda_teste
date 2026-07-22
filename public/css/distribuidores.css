@@ -454,7 +454,7 @@ body.dark-theme #dadosPedido tbody tr td input{
     padding-top: 20px;
     padding-bottom: 30px;
     flex-wrap: nowrap;
-    gap: 15px;
+    gap: 7px;
    
 }
 
@@ -464,7 +464,7 @@ body.dark-theme #dadosPedido tbody tr td input{
     justify-content:center;
     color:#ffffff ;
     text-align: center;
-    padding-left: 20px;
+    padding-left: 10px;
     text-decoration: none;
     white-space: nowrap;
     font-size: clamp(9px, 1vw, 16px);
@@ -475,7 +475,7 @@ body.dark-theme #dadosPedido tbody tr td input{
 .link_sites label {
     display: flex;
     justify-content:center;
-    margin-right: 15px;
+    margin-right: 7px;
 
 }
 
@@ -1101,7 +1101,7 @@ label[for="referencia"]::after {
     }
 
     .link_sites {
-        padding-left: 15px;
+        padding-left: 7px;
          
       
       }
@@ -1147,7 +1147,7 @@ label[for="referencia"]::after {
    
     .link_sites a{
       font-size: 80%;
-      padding-left: 15px;
+      padding-left: 7px;
        
     
     }
@@ -1308,6 +1308,23 @@ body.dark-theme .btn-remover-linha:hover {
     background-color: white;
     transition: 0.4s;
     border-radius: 50%;
+}
+
+.campo-moeda{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+}
+
+.campo-moeda span{
+    font-size:12px;
+    font-weight:bold;
+    color:#555;
+}
+
+body.dark-theme .campo-moeda span{
+    color:#fff;
 }
 
 input:checked + .slider {

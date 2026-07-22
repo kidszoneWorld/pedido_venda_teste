@@ -22,6 +22,8 @@ const contatoController = require('../controllers/contatoDistribuidorController'
 const router = express.Router();
 const itemController = require('../controllers/itemController');
 const estoqueDistribuidorController = require('../controllers/estoqueDistribuidorController');
+const investimentoDistribuidorController = require('../controllers/investimentoDistribuidorController');
+const positivacaoDistribuidorController = require('../controllers/positivacaoDistribuidorController')
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -99,6 +101,20 @@ router.get(
         );
     }
 );
+router.get(
+    '/investimentoDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'investimentoDistribuidor.html'
+            )
+        );
+    }
+);
 
 router.get(
     '/adminItens',
@@ -111,6 +127,23 @@ router.get(
                 '..',
                 'views',
                 'adminItens.html'
+            )
+        );
+
+    }
+);
+
+router.get(
+    '/positivacaoDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req,res)=>{
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'positivacaoDistribuidor.html'
             )
         );
 
@@ -266,6 +299,24 @@ router.get(
 );
 
 router.get(
+    '/api/positivacaoDistribuidor/:codigoDistribuidor',
+
+    authMiddleware,
+
+    positivacaoDistribuidorController
+    .listarPositivacoes
+);
+router.post(
+    '/api/positivacaoDistribuidor/:codigoDistribuidor',
+
+    authMiddleware,
+
+    positivacaoDistribuidorController
+    .salvarPositivacao
+);
+
+
+router.get(
     '/api/contatos/:codigoContato',
     authMiddleware,
     contatoController.buscarContato
@@ -374,6 +425,18 @@ router.post(
     '/api/distribuidor/:codigo/contatos',
     authMiddleware,
     contatoController.salvarContato
+);
+
+router.get(
+    '/api/investimentoDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    investimentoDistribuidorController.listarInvestimento
+);
+
+router.post(
+    '/api/investimentoDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    investimentoDistribuidorController.salvarInvestimentos
 );
 
 router.delete(

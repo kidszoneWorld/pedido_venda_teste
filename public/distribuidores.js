@@ -63,6 +63,22 @@ function abrirEstoque(codigoDistribuidor){
 
 }
 
+function abrirInvestimentos(codigoDistribuidor){
+
+    window.location.href =
+        `/investimentoDistribuidor/${codigoDistribuidor}`;
+
+}
+
+function abrirPositivacao(
+    codigoDistribuidor
+){
+
+    window.location.href =
+    `/positivacaoDistribuidor/${codigoDistribuidor}`;
+
+}
+
 async function carregarDistribuidores(){
 
     const resposta =
