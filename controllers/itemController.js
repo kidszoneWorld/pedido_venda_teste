@@ -17,7 +17,7 @@ async(req,res)=>{
             "Ativo" = true
 
         ORDER BY
-            "ItemDescricao"
+            "CodigoItem"
 
     `);
 
