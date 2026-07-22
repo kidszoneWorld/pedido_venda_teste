@@ -286,16 +286,17 @@ window.location.pathname
 .split('/')
 .pop();
 console.log(codigoDistribuidor);
+
 async function carregarDistribuidor(){
 
     const response =
     await fetch(
         `/api/distribuidor/${codigoDistribuidor}`
     );
-
+    console.log(response)
     const d =
     await response.json();
-
+    console.log(d)
     document.getElementById(
         'razaoSocial'
     ).value =

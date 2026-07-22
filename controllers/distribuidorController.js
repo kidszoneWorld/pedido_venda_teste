@@ -197,7 +197,7 @@ exports.buscarDistribuidor = async (req,res)=>{
             SELECT *
             FROM "TbDistribuidor"
             WHERE "CodigoDistribuidor"=$1
-            ORDER BY CodigoDistribuidor
+            ORDER BY "CodigoDistribuidor"
 
         `,[req.params.codigo]);
 

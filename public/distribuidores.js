@@ -56,6 +56,13 @@ async function verificarPermissao() {
         }
 }
 
+function abrirEstoque(codigoDistribuidor){
+
+    window.location.href =
+        `/estoqueDistribuidor/${codigoDistribuidor}`;
+
+}
+
 async function carregarDistribuidores(){
 
     const resposta =

@@ -1,5 +1,32 @@
 const pool = require('../config/database');
 
+
+exports.listarItensAtivos =
+async(req,res)=>{
+
+    const resultado =
+    await pool.query(`
+    
+        SELECT
+            "CodigoItem",
+            "ItemDescricao"
+
+        FROM "TbItem"
+
+        WHERE
+            "Ativo" = true
+
+        ORDER BY
+            "ItemDescricao"
+
+    `);
+
+    res.json(
+        resultado.rows
+    );
+
+};
+
 exports.listarItens = async (req, res) => {
 
     try {

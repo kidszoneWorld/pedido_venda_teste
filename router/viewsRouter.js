@@ -21,6 +21,7 @@ const distribuidorController = require('../controllers/distribuidorController');
 const contatoController = require('../controllers/contatoDistribuidorController');
 const router = express.Router();
 const itemController = require('../controllers/itemController');
+const estoqueDistribuidorController = require('../controllers/estoqueDistribuidorController');
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -126,6 +127,8 @@ router.get('/sellOutMenu',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'sellOutMenu.html'));
 });
 
+
+
 // Rota para a página de cadastro de sellOut cliente (sellOutCadastro.html)
 router.get('/sellOutCadastro',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'sellOutCadastro.html'));
@@ -155,6 +158,23 @@ router.get('/logistica02', authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'logisticaJoao.html'));
 });
 
+
+router.get(
+    '/estoqueDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req,res)=>{
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'estoqueDistribuidor.html'
+            )
+        );
+
+    }
+);
 
 // Rota para a página (video.html)
 router.get('/video',authMiddleware, (req, res) => {
@@ -221,6 +241,13 @@ router.put(
     itemController.atualizarItem
 );
 
+router.post(
+    '/api/estoqueDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    estoqueDistribuidorController.salvarEstoque
+);
+
+
 router.get(
     '/infoDistribuidor/:codigo',
     authMiddleware,
@@ -250,7 +277,17 @@ router.put(
     contatoController.atualizarContato
 );
 
+router.get(
+    '/api/itens-ativos',
+    authMiddleware,
+    itemController.listarItensAtivos
+);
 
+router.get(
+    '/api/estoqueDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    estoqueDistribuidorController.listarEstoqueDistribuidor
+);
 
 // salvar Rebaixa
 router.post('/api/rebaixa', rebController.salvarRebaixa);

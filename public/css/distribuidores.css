@@ -42,7 +42,23 @@ body.light-theme .container {
     background-color: var(--container-bg-light);
 }
 
+body.light-theme .estoque {
 
+    background-color: #ffffff;
+    color: #333;
+
+    border: 1px solid #cfcfcf;
+
+}
+
+body.dark-theme .estoque {
+
+    background-color: var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+
+    border: 1px solid #555;
+
+}
 
 body.light-theme .section-title,
 body.light-theme .obs-title,
@@ -236,7 +252,21 @@ body.dark-theme #dadosPedido tbody tr td input{
 }
 
 
+/* Tela Estoque Distribuidor */
 
+.estoque {
+    width: 55px;
+    height: 24px;
+    padding: 2px 4px;
+    text-align: center;
+
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+
+    font-size: 12px;
+
+    transition: all 0.2s ease;
+}
 
 .btn-mobile {
     display: none;
@@ -1189,6 +1219,23 @@ body.dark-theme .btn-remover-linha:hover {
     box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
+.estoque:hover {
+
+    border-color: rgba(225,0,152);
+
+}
+
+.estoque:focus {
+
+    border-color: rgba(225,0,152);
+
+    outline: none;
+
+    box-shadow:
+        0 0 5px rgba(225,0,152,0.5);
+
+}
+
 .highlight {
     position: relative;
     z-index: 10000;
@@ -1269,4 +1316,14 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+
+.estoque::-webkit-outer-spin-button,
+.estoque::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.estoque {
+    -moz-appearance: textfield;
 }
