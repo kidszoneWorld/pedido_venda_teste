@@ -53,42 +53,54 @@
         </header><br>
         <div class="container">
 <a href="/distribuidores"><button class="button"><--</button></a>   
-    <h2 class="h2">
-        Positivação do Distribuidor
-    </h2>
 
-    <div class="no-print">
+        <h2 class="h2">
+            SellOut do Distribuidor
+        </h2>
 
-        <button
-            class="button"
-            id="salvarPositivacao"
+        <h3
+            id="nomeDistribuidorSellOut"
+            class="h2"
         >
-            Salvar
-        </button>
+        </h3>
+
+        <div class="no-print">
+
+            <button
+                class="button"
+                id="salvarSellOut"
+            >
+                Salvar
+            </button>
+
+        </div>
+
+        <div class="table-container">
+
+            <table
+                class="table"
+                border="1"
+                width="100%"
+            >
+
+                <thead
+                    id="cabecalhoSellOut"
+                >
+                </thead>
+
+                <tbody
+                    id="corpoSellOut"
+                >
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
-    <div class="table-container">
-
-        <table class="table" border="1" width="100%">
-
-            <thead
-                id="cabecalhoPositivacao"
-            >
-            </thead>
-
-            <tbody
-                id="corpoPositivacao"
-            >
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-<script src="/positivacaoDistribuidor.js"></script>
 <script src="/theme-toggle.js?v=1783967913316"></script>
+<script src="/sellOutDistribuidor.js?v=1783967913316"></script>
 <script>
          // Função para limpar dados do usuário e redirecionar para a página de login
         document.getElementById('logoutButton2').addEventListener('click', async () => {

@@ -26,6 +26,7 @@ const investimentoDistribuidorController = require('../controllers/investimentoD
 const positivacaoDistribuidorController = require('../controllers/positivacaoDistribuidorController')
 const redesDistribuidorController = require('../controllers/redesDistribuidorController');
 const displayDistribuidorController = require('../controllers/displayDistribuidorController');
+const sellOutDistribuidorController = require('../controllers/sellOutDistribuidorController');
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -145,6 +146,23 @@ router.get(
                 '..',
                 'views',
                 'adminItens.html'
+            )
+        );
+
+    }
+);
+
+router.get(
+    '/sellOutDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req,res)=>{
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'sellOutDistribuidor.html'
             )
         );
 
@@ -313,6 +331,16 @@ router.post(
     '/api/estoqueDistribuidor/:codigoDistribuidor',
     authMiddleware,
     estoqueDistribuidorController.salvarEstoque
+);
+router.get(
+    '/api/sellOutDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    sellOutDistribuidorController.listarSellOut
+);
+router.post(
+    '/api/sellOutDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    sellOutDistribuidorController.salvarSellOut
 );
 
 

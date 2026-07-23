@@ -5,9 +5,141 @@ window.location.pathname
 
 let itensDisplay = [];
 
+function apenasNumeros(valor){
+
+    return String(valor || '').replace(/\D/g, '');
+
+}
+
+function aplicarMascaraCNPJ(valor){
+
+    let cnpj = apenasNumeros(valor);
+
+    cnpj = cnpj.substring(0, 14);
+
+    cnpj = cnpj.replace(
+        /^(\d{2})(\d)/,
+        '$1.$2'
+    );
+
+    cnpj = cnpj.replace(
+        /^(\d{2})\.(\d{3})(\d)/,
+        '$1.$2.$3'
+    );
+
+    cnpj = cnpj.replace(
+        /\.(\d{3})(\d)/,
+        '.$1/$2'
+    );
+
+    cnpj = cnpj.replace(
+        /(\d{4})(\d)/,
+        '$1-$2'
+    );
+
+    return cnpj;
+
+}
+
+function validarCNPJ(cnpj){
+
+    cnpj = apenasNumeros(cnpj);
+
+    if(cnpj.length !== 14){
+        return false;
+    }
+
+    if(/^(\d)\1+$/.test(cnpj)){
+        return false;
+    }
+
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+
+    for(let i = tamanho; i >= 1; i--){
+
+        soma += Number(numeros.charAt(tamanho - i)) * pos--;
+
+        if(pos < 2){
+            pos = 9;
+        }
+
+    }
+
+    let resultado =
+        soma % 11 < 2
+        ? 0
+        : 11 - soma % 11;
+
+    if(resultado !== Number(digitos.charAt(0))){
+        return false;
+    }
+
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+
+    for(let i = tamanho; i >= 1; i--){
+
+        soma += Number(numeros.charAt(tamanho - i)) * pos--;
+
+        if(pos < 2){
+            pos = 9;
+        }
+
+    }
+
+    resultado =
+        soma % 11 < 2
+        ? 0
+        : 11 - soma % 11;
+
+    if(resultado !== Number(digitos.charAt(1))){
+        return false;
+    }
+
+    return true;
+
+}
+
+function configurarMascaraCnpjDisplay(){
+
+    const inputCnpjModal =
+        document.getElementById(
+            'cnpjDisplay'
+        );
+
+    if(inputCnpjModal){
+
+        inputCnpjModal.addEventListener(
+            'input',
+            () => {
+
+                inputCnpjModal.value =
+                    aplicarMascaraCNPJ(
+                        inputCnpjModal.value
+                    );
+
+            }
+        );
+
+    }
+
+}
+
 document.addEventListener(
     'DOMContentLoaded',
-    carregarTela
+    async () => {
+
+        configurarMascaraCnpjDisplay();
+
+        await carregarTela();
+
+    }
 );
 
 async function carregarTela(){
@@ -115,7 +247,8 @@ function montarTabela(displays){
                 <td>
                     <input
                         class="cnpjDisplay"
-                        value="${display.CnpjDisplay || ''}"
+                        maxlength="18"
+                        value="${aplicarMascaraCNPJ(display.CnpjDisplay || '')}"
                     >
                 </td>
 
@@ -154,12 +287,11 @@ function montarTabela(displays){
                         <span>R$</span>
 
                         <input
-                            type="number"
-                            class="estoque"
-                            step="0.01"
-                            class="valorDisplay"
-                            value="${display.ValorDisplay || ''}"
-                        >
+                        type="number"
+                        step="0.01"
+                        class="estoque valorDisplay"
+                        value="${display.ValorDisplay ||''}" 
+                            >
 
                     </div>
                 </td>
@@ -183,6 +315,30 @@ function montarTabela(displays){
             </tr>
 
         `;
+
+    });
+configurarMascaraCnpjTabela();
+}
+
+function configurarMascaraCnpjTabela(){
+
+    document
+    .querySelectorAll(
+        '.linhaDisplay .cnpjDisplay'
+    )
+    .forEach(input => {
+
+        input.addEventListener(
+            'input',
+            () => {
+
+                input.value =
+                    aplicarMascaraCNPJ(
+                        input.value
+                    );
+
+            }
+        );
 
     });
 
@@ -408,11 +564,42 @@ async function salvarDisplays(){
 
     const displays = [];
 
-    document
-    .querySelectorAll(
-        '.linhaDisplay'
-    )
-    .forEach(linha => {
+    const linhas =
+        document.querySelectorAll(
+            '.linhaDisplay'
+        );
+
+    for(const linha of linhas){
+
+        const cnpjInput =
+            linha.querySelector(
+                '.cnpjDisplay'
+            );
+
+        const cnpj =
+            cnpjInput
+            .value
+            .trim();
+
+        if(!cnpj){
+
+            alert('Informe o CNPJ em todas as linhas.');
+
+            cnpjInput.focus();
+
+            return;
+
+        }
+
+        if(!validarCNPJ(cnpj)){
+
+            alert('Existe um CNPJ inválido na tabela.');
+
+            cnpjInput.focus();
+
+            return;
+
+        }
 
         displays.push({
 
@@ -432,10 +619,7 @@ async function salvarDisplays(){
             ).value,
 
             CnpjDisplay:
-            linha
-            .querySelector(
-                '.cnpjDisplay'
-            ).value,
+            aplicarMascaraCNPJ(cnpj),
 
             EnderecoDisplay:
             linha
@@ -459,7 +643,9 @@ async function salvarDisplays(){
             linha
             .querySelector(
                 '.ufDisplay'
-            ).value.toUpperCase(),
+            )
+            .value
+            .toUpperCase(),
 
             ValorDisplay:
             linha
@@ -475,7 +661,7 @@ async function salvarDisplays(){
 
         });
 
-    });
+    }
 
     const response =
     await fetch(

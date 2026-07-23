@@ -93,6 +93,14 @@ function abrirDisplay(codigoDistribuidor){
         `/displayDistribuidor/${codigoDistribuidor}`;
 
 }
+function abrirSellOut(
+    codigoDistribuidor
+){
+
+    window.location.href =
+    `/sellOutDistribuidor/${codigoDistribuidor}`;
+
+}
 
 async function carregarDistribuidores(){
 
@@ -222,32 +230,62 @@ document
 
         const dados = {
 
-            RazaoSocial:
-                document.getElementById(
-                    'razaoSocial'
-                ).value,
+    RazaoSocial:
+        document.getElementById(
+            'razaoSocial'
+        ).value.trim(),
 
-            CNPJ:
-                document.getElementById(
-                    'cnpj'
-                ).value,
+    CNPJ:
+        document.getElementById(
+            'cnpj'
+        ).value.trim(),
 
-            Cidade:
-                document.getElementById(
-                    'cidade'
-                ).value,
+    Cidade:
+        document.getElementById(
+            'cidade'
+        ).value.trim(),
 
-            UF:
-                document.getElementById(
-                    'uf'
-                ).value,
+    UF:
+        document.getElementById(
+            'uf'
+        ).value.trim().toUpperCase(),
 
-            Representante:
-                document.getElementById(
-                    'representante'
-                ).value
+    Representante:
+        document.getElementById(
+            'representante'
+        ).value.trim()
 
-        };
+};
+
+if (
+    !dados.RazaoSocial ||
+    !dados.CNPJ ||
+    !dados.UF ||
+    !dados.Cidade ||
+    !dados.Representante
+){
+
+    alert(
+        'Preencha todos os campos'
+    );
+
+    return;
+
+}
+
+if(!validarCNPJ(dados.CNPJ)){
+
+    alert(
+        'CNPJ inválido. Verifique o número informado.'
+    );
+
+    document
+        .getElementById('cnpj')
+        .focus();
+
+    return;
+
+}
 
         
 
@@ -302,6 +340,25 @@ function abrirInfo(codigoDistribuidor){
 
 
 function configurarEventos() {
+const inputCnpj =
+    document.getElementById('cnpj');
+
+if(inputCnpj){
+
+    inputCnpj.addEventListener(
+        'input',
+        () => {
+
+            inputCnpj.value =
+                aplicarMascaraCNPJ(
+                    inputCnpj.value
+                );
+
+        }
+    );
+
+}
+
 document
 .getElementById('administrarItens')
 .addEventListener(
@@ -433,4 +490,102 @@ document
         );
 
     }
+}
+function apenasNumeros(valor){
+
+    return valor.replace(/\D/g, '');
+
+}
+
+function aplicarMascaraCNPJ(valor){
+
+    let cnpj = apenasNumeros(valor);
+
+    cnpj = cnpj.substring(0, 14);
+
+    cnpj = cnpj.replace(
+        /^(\d{2})(\d)/,
+        '$1.$2'
+    );
+
+    cnpj = cnpj.replace(
+        /^(\d{2})\.(\d{3})(\d)/,
+        '$1.$2.$3'
+    );
+
+    cnpj = cnpj.replace(
+        /\.(\d{3})(\d)/,
+        '.$1/$2'
+    );
+
+    cnpj = cnpj.replace(
+        /(\d{4})(\d)/,
+        '$1-$2'
+    );
+
+    return cnpj;
+
+}
+
+function validarCNPJ(cnpj){
+
+    cnpj = apenasNumeros(cnpj);
+
+    if(cnpj.length !== 14){
+        return false;
+    }
+
+    if(/^(\d)\1+$/.test(cnpj)){
+        return false;
+    }
+
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+
+    for(let i = tamanho; i >= 1; i--){
+
+        soma += Number(numeros.charAt(tamanho - i)) * pos--;
+
+        if(pos < 2){
+            pos = 9;
+        }
+
+    }
+
+    let resultado = soma % 11 < 2
+        ? 0
+        : 11 - soma % 11;
+
+    if(resultado !== Number(digitos.charAt(0))){
+        return false;
+    }
+
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+
+    for(let i = tamanho; i >= 1; i--){
+
+        soma += Number(numeros.charAt(tamanho - i)) * pos--;
+
+        if(pos < 2){
+            pos = 9;
+        }
+
+    }
+
+    resultado = soma % 11 < 2
+        ? 0
+        : 11 - soma % 11;
+
+    if(resultado !== Number(digitos.charAt(1))){
+        return false;
+    }
+
+    return true;
+
 }
