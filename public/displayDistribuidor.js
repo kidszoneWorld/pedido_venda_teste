@@ -591,15 +591,15 @@ async function salvarDisplays(){
 
         }
 
-        if(!validarCNPJ(cnpj)){
+        // if(!validarCNPJ(cnpj)){
 
-            alert('Existe um CNPJ inválido na tabela.');
+        //     alert('Existe um CNPJ inválido na tabela.');
 
-            cnpjInput.focus();
+        //     cnpjInput.focus();
 
-            return;
+        //     return;
 
-        }
+        // }
 
         displays.push({
 

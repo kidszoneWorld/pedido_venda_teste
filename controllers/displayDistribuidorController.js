@@ -8,7 +8,7 @@ function apenasNumeros(valor){
 
 function validarCNPJ(cnpj){
 
-    cnpj = apenasNumeros(cnpj);
+    //cnpj = apenasNumeros(cnpj);
 
     if(cnpj.length !== 14){
         return false;
@@ -120,14 +120,14 @@ exports.inserirDisplay = async (req, res) => {
 
             }
 
-            if(!validarCNPJ(display.CnpjDisplay)){
+            // if(!validarCNPJ(display.CnpjDisplay)){
 
-                return res.status(400).json({
-                    sucesso:false,
-                    erro:'CNPJ inválido.'
-                });
+            //     return res.status(400).json({
+            //         sucesso:false,
+            //         erro:'CNPJ inválido.'
+            //     });
 
-            }
+            // }
         await pool.query(
             `
             INSERT INTO "TbDisplay"
@@ -195,14 +195,14 @@ exports.atualizarDisplays = async (req, res) => {
 
             }
 
-            if(!validarCNPJ(display.CnpjDisplay)){
+            // if(!validarCNPJ(display.CnpjDisplay)){
 
-                return res.status(400).json({
-                    sucesso:false,
-                    erro:'CNPJ inválido.'
-                });
+            //     return res.status(400).json({
+            //         sucesso:false,
+            //         erro:'CNPJ inválido.'
+            //     });
 
-            }
+            // }
             await pool.query(
                 `
                 UPDATE "TbDisplay"
