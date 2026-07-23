@@ -780,34 +780,34 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
                     adicionarNovaLinha(); 
     });
 
-// Função para verificar duplicatas de código na tabela
-function verificarCodigoDuplicado(codigo) {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
-    let contador = 0;
+// // Função para verificar duplicatas de código na tabela
+// function verificarCodigoDuplicado(codigo) {
+//     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+//     let contador = 0;
 
-    linhas.forEach(tr => {
-        const inputCodigo = tr.cells[2]?.querySelector('input');
-        if (inputCodigo && inputCodigo.value === codigo) {
-            contador++;
-        }
-    });
+//     linhas.forEach(tr => {
+//         const inputCodigo = tr.cells[2]?.querySelector('input');
+//         if (inputCodigo && inputCodigo.value === codigo) {
+//             contador++;
+//         }
+//     });
 
-    return contador > 1;
-}
+//     return contador > 1;
+// }
 
-function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+// function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
+//     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
-    for (const tr of linhas) {
-        if (tr === linhaAtual) continue; // ignora a própria linha
+//     for (const tr of linhas) {
+//         if (tr === linhaAtual) continue; // ignora a própria linha
 
-        const inputCodigo = tr.cells[2]?.querySelector('input');
-        if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
-            return true;
-        }
-    }
-    return false;
-}
+//         const inputCodigo = tr.cells[2]?.querySelector('input');
+//         if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 
 function verificarItensSemPreenchimento(codigo, linhaAtual) {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
