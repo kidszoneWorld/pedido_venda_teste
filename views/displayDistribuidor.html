@@ -49,45 +49,168 @@
            <a href="/distribuidores">Modulo Sell</a>
            </div>
         </header>
-        <br><a href="/distribuidores"><button class="button"><--</button></a>   
-    <h2 class="h2">ESTOQUE DO DISTRIBUIDOR</h2>
-    
-<h3 id="nomeDistribuidorEstoque" class="h2"></h3>
+        <br><a href="/distribuidores"><button class="button"><--</button></a> 
 
+        <h2 class="h2">
+            Displays do Distribuidor
+        </h2>
 
-    <button
-        id="salvarEstoque"
-        class="button"
-    >
-        Salvar
-    </button>
-
-    <div
-        style="overflow-x:auto"
-    >
-
-        <table
-            class="table"
-             border="1" width="100%"
+        <h3
+            id="nomeDistribuidorDisplay"
+            class="h2"
         >
+        </h3>
 
-            <thead
-                id="cabecalhoEstoque"
+        <div class="no-print">
+
+            <button
+                class="button"
+                id="novoDisplay"
             >
-            </thead>
+                Nova Venda de Display
+            </button>
 
-            <tbody
-                id="corpoEstoque"
+            <button
+                class="button"
+                id="salvarDisplays"
             >
-            </tbody>
+                Salvar
+            </button>
 
-        </table>
+        </div>
+
+        <div class="table-container">
+
+            <table
+                class="table"
+                border="1"
+                width="100%"
+            >
+
+                <thead>
+
+                    <tr>
+                        <th>Display</th>
+                        <th>Razão Social</th>
+                        <th>CNPJ</th>
+                        <th>Endereço</th>
+                        <th>Bairro</th>
+                        <th>Cidade</th>
+                        <th>UF</th>
+                        <th>Valor</th>
+                        <th>Mês/Ano</th>
+                        <th>Ações</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="corpoDisplays">
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
-</div>
+    <div
+        class="modal"
+        id="modalDisplay"
+    >
 
-<script src ="/estoqueDistribuidor.js"></script>
+        <div class="modal-content">
+
+            <button
+                id="fecharModalDisplay"
+                class="button"
+            >
+                ×
+            </button>
+
+            <h3>
+                Nova Venda de Display
+            </h3>
+
+            <select id="codigoItemDisplay">
+                <option value="">
+                    Selecione o Display
+                </option>
+            </select>
+
+            <br><br>
+
+            <input
+                id="razaoSocialDisplay"
+                placeholder="Razão Social"
+            >
+
+            <br><br>
+
+            <input
+                id="cnpjDisplay"
+                placeholder="CNPJ"
+            >
+
+            <br><br>
+
+            <input
+                id="enderecoDisplay"
+                placeholder="Endereço"
+            >
+
+            <br><br>
+
+            <input
+                id="bairroDisplay"
+                placeholder="Bairro"
+            >
+
+            <br><br>
+
+            <input
+                id="cidadeDisplay"
+                placeholder="Cidade"
+            >
+
+            <br><br>
+
+            <input
+                id="ufDisplay"
+                maxlength="2"
+                placeholder="UF"
+            >
+
+            <br><br>
+
+            <input
+                id="valorDisplay"
+                type="number"
+                step="0.01"
+                placeholder="Valor Display"
+            >
+
+            <br><br>
+
+            <input
+                id="mesAnoDisplay"
+                placeholder="07/2026"
+            >
+
+            <br><br>
+
+            <button
+                id="adicionarDisplay"
+                class="button"
+            >
+                Adicionar
+            </button>
+
+        </div>
+
+    </div>
+
+<script src ="/displayDistribuidor.js"></script>
 <script src="/theme-toggle.js?v=1783967913316"></script>
 <script>
          // Função para limpar dados do usuário e redirecionar para a página de login

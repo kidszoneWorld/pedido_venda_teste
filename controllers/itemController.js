@@ -168,3 +168,34 @@ exports.salvarItem = async (req, res) => {
 
 
 };
+exports.listarItensDisplay = async (req, res) => {
+
+    try {
+
+        const resultado = await pool.query(
+            `
+            SELECT
+                "CodigoItem",
+                "ItemDescricao"
+            FROM "TbItem"
+            WHERE
+                "Ativo" = true
+                AND "Display" = true
+            ORDER BY "ItemDescricao"
+            `
+        );
+
+        res.json(resultado.rows);
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        res.status(500).json({
+            sucesso: false,
+            erro: erro.message
+        });
+
+    }
+
+};

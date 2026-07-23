@@ -25,6 +25,8 @@ const estoqueDistribuidorController = require('../controllers/estoqueDistribuido
 const investimentoDistribuidorController = require('../controllers/investimentoDistribuidorController');
 const positivacaoDistribuidorController = require('../controllers/positivacaoDistribuidorController')
 const redesDistribuidorController = require('../controllers/redesDistribuidorController');
+const displayDistribuidorController = require('../controllers/displayDistribuidorController');
+
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
     console.log('Rota / acessada');
@@ -99,6 +101,22 @@ router.get(
                 'distribuidores.html'
             )
         );
+    }
+);
+router.get(
+    '/displayDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'displayDistribuidor.html'
+            )
+        );
+
     }
 );
 router.get(
@@ -313,6 +331,31 @@ router.get(
         );
 
     }
+);
+router.get(
+    '/api/displayDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    displayDistribuidorController.listarDisplays
+);
+router.post(
+    '/api/displayDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    displayDistribuidorController.inserirDisplay
+);
+router.put(
+    '/api/displayDistribuidor',
+    authMiddleware,
+    displayDistribuidorController.atualizarDisplays
+);
+router.delete(
+    '/api/displayDistribuidor/:codigoDisplay',
+    authMiddleware,
+    displayDistribuidorController.excluirDisplay
+);
+router.get(
+    '/api/itens-display',
+    authMiddleware,
+    itemController.listarItensDisplay
 );
 
 router.get(

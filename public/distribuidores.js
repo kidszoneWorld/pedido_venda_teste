@@ -87,6 +87,12 @@ function abrirRedes(
     `/redesDistribuidor/${codigoDistribuidor}`;
 
 }
+function abrirDisplay(codigoDistribuidor){
+
+    window.location.href =
+        `/displayDistribuidor/${codigoDistribuidor}`;
+
+}
 
 async function carregarDistribuidores(){
 

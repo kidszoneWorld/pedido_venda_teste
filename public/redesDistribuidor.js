@@ -10,6 +10,26 @@ document.addEventListener(
 
 async function carregarTela(){
 
+    const responseDistribuidor =
+    await fetch(
+        `/api/distribuidor/${codigoDistribuidor}`
+    );
+
+    const distribuidor =
+    await responseDistribuidor.json();
+
+    const nomeDistribuidor =
+        distribuidor.RazaoSocial ||
+        distribuidor[0]?.RazaoSocial ||
+        '';
+
+    document
+    .getElementById(
+        'nomeDistribuidorRedes'
+    )
+    .textContent =
+        nomeDistribuidor;
+
     const response =
     await fetch(
         `/api/redesDistribuidor/${codigoDistribuidor}`
@@ -23,7 +43,6 @@ async function carregarTela(){
     );
 
 }
-
 
 function montarTabela(
     redes

@@ -52,6 +52,23 @@ async function carregarTela(){
     const meses =
         gerarMeses();
 
+    const distribuidorResponse =
+    await fetch(
+        `/api/distribuidor/${codigoDistribuidor}`
+    );
+
+    const distribuidor =
+    await distribuidorResponse.json();
+
+    document
+    .getElementById(
+        'nomeDistribuidorEstoque'
+    )
+    .textContent =
+        distribuidor.RazaoSocial
+        ? distribuidor.RazaoSocial
+        : '';
+
     const itensResponse =
     await fetch(
         '/api/itens-ativos'
