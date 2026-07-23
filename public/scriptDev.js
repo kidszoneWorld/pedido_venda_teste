@@ -652,12 +652,12 @@ if (i === 2) {
         if (!cod) return;
 
         // VERIFICA DUPLICIDADE
-        if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
-            alert('Este item já foi adicionado ao pedido.');
-            this.value = '';
-            this.focus();
-            return;
-        }
+        // if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
+        //     alert('Este item já foi adicionado ao pedido.');
+        //     this.value = '';
+        //     this.focus();
+        //     return;
+        // }
 
         const listaId = document.getElementById('codgroup').value;
         const cells = tr.querySelectorAll('td input');
