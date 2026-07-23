@@ -29,8 +29,6 @@
 
 <body id="corpo">
 
-
-
         <header class="header">
                 <div class="link_sites">
             <!-- Toggle switch -->
@@ -50,151 +48,56 @@
            <a href="/investComercial">Investimento</a>
            <a href="/distribuidores">Modulo Sell</a>
            </div>
-        </header><br>
+        </header>
         <div class="container">
-        <a href="/distribuidores"><button class="button"><--</button></a>   
-    <h2 class="h2">
-        Redes do Distribuidor
-    </h2>
-    <h3
-        id="nomeDistribuidorRedes"
-        class="h2"
-    >
-    </h3>
+            <a href="/distribuidores"><button class="button"><--</button></a>   
+        <h2 class="h2">
+            SellIn do Distribuidor
+        </h2>
 
-<div class="no-print">
-
-    <button
-        class="button"
-        id="novaRede"
-    >
-        Nova Rede
-    </button>
-
-    <button
-        class="button"
-        id="salvarRedes"
-    >
-        Salvar
-    </button>
-
-</div>
-
-<div class="table-container">
-
-    <table class="table" border="1" width="100%">
-
-        <thead>
-
-            <tr>
-
-                <th>
-                    Razão Social
-                </th>
-
-                <th>
-                    Fantasia
-                </th>
-
-                <th>
-                    Lojas
-                </th>
-
-                <th>
-                    UF
-                </th>
-
-                <th>
-                    SKU
-                </th>
-
-                <th>
-                    1ª Compra
-                </th>
-
-                <th>
-                    Mês/Ano
-                </th>
-
-                <th>
-                    Ações
-                </th>
-
-            </tr>
-
-        </thead>
-
-        <tbody
-            id="corpoRedes"
+        <h3
+            id="nomeDistribuidorSellIn"
+            class="h2"
         >
+        </h3>
 
-        </tbody>
+        <div class="no-print">
 
-    </table>
+            <button
+                class="button"
+                id="salvarSellIn"
+            >
+                Salvar
+            </button>
 
+        </div>
 
+        <div class="table-container">
 
+            <table
+                class="table"
+                border="1"
+                width="100%"
+            >
 
-</div>
+                <thead
+                    id="cabecalhoSellIn"
+                >
+                </thead>
 
-<div
-    class="modal"
-    id="modalRede"
->
+                <tbody
+                    id="corpoSellIn"
+                >
+                </tbody>
 
-    <div
-        class="modal-content"
-    >
-        <label>Razão Social</label>
-        <input
-            id="redeRazaoSocial"
-            placeholder="Razão Social"
-        >
-        <label>Nome Fantasia</label>
-        <input
-            id="nomeFantasia"
-            placeholder="Fantasia"
-        >
-        <label>Quantidade de lojas</label>
-        <input
-            id="lojaQuantidade"
-            type="number"
-        >
-        <label>uf</label>
-        <input
-            id="uf"
-            maxlength="2"
-        >
-        <label>Quantidade de SKU</label>
-        <input
-            id="skuQuantidade"
-            type="number"
-        >
-        <label>Valor da Primeira Compra</label>
-        <input
-            id="valorPrimeiraCompra"
-            type="number"
-        >
-        <label>Mês / ano da rede</label>
-        <input
-            id="redeMesAno"
-            placeholder="07/2026"
-        >
+            </table>
 
-        <button
-            id="adicionarRede"
-            class="button"
-        >
-            Adicionar
-        </button>
+        </div>
 
     </div>
 
-</div>
 
-
-
-<script src="/redesDistribuidor.js"></script>
+<script src="/sellInDistribuidor.js"></script>
 <script src="/theme-toggle.js?v=1783967913316"></script>
 <script>
          // Função para limpar dados do usuário e redirecionar para a página de login
@@ -215,5 +118,5 @@
             window.location.href = '/login2';
         });
     </script>
-    </body>
-    </html>
+</body>
+</html>

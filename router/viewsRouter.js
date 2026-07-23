@@ -27,6 +27,8 @@ const positivacaoDistribuidorController = require('../controllers/positivacaoDis
 const redesDistribuidorController = require('../controllers/redesDistribuidorController');
 const displayDistribuidorController = require('../controllers/displayDistribuidorController');
 const sellOutDistribuidorController = require('../controllers/sellOutDistribuidorController');
+const sellInDistribuidorController = require('../controllers/sellInDistribuidorController');
+
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -180,6 +182,22 @@ router.get(
                 '..',
                 'views',
                 'positivacaoDistribuidor.html'
+            )
+        );
+
+    }
+);
+router.get(
+    '/sellInDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'sellInDistribuidor.html'
             )
         );
 
@@ -342,7 +360,16 @@ router.post(
     authMiddleware,
     sellOutDistribuidorController.salvarSellOut
 );
-
+router.get(
+    '/api/sellInDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    sellInDistribuidorController.listarSellIn
+);
+router.post(
+    '/api/sellInDistribuidor/:codigoDistribuidor',
+    authMiddleware,
+    sellInDistribuidorController.salvarSellIn
+);
 
 router.get(
     '/infoDistribuidor/:codigo',

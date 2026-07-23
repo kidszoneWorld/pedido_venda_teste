@@ -337,6 +337,12 @@ function abrirInfo(codigoDistribuidor){
         `/infoDistribuidor/${codigoDistribuidor}`;
 
 }
+function abrirSellIn(codigoDistribuidor){
+
+    window.location.href =
+        `/sellInDistribuidor/${codigoDistribuidor}`;
+
+}
 
 
 function configurarEventos() {
