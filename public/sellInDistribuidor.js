@@ -205,38 +205,49 @@ function montarTabela(
             colunaIndex
         ) => {
 
-            const registroSellIn =
-            sellIn.find(
-                s =>
-                s.MesAnoSellIn === mes
-            );
+           const registroSellIn =
+sellIn.find(
+    s =>
+    s.MesAnoSellIn === mes
+);
 
-            linhaSellIn += `
-                <td>
+const sellInJaExiste =
+    registroSellIn
+    ? true
+    : false;
 
-                    <div class="campo-moeda">
+linhaSellIn += `
+    <td>
 
-                        <span>R$</span>
+        <div class="campo-moeda">
 
-                        <input
-                            type="number"
-                            step="0.01"
-                            class="estoque valorSellIn"
-                            data-coluna="${colunaIndex}"
-                            data-mes="${mes}"
-                            value="${
-                                registroSellIn
-                                ?
-                                registroSellIn.ValorSellIn
-                                :
-                                ''
-                            }"
-                        >
+            <span>R$</span>
 
-                    </div>
+            <input
+                type="number"
+                step="0.01"
+                class="estoque valorSellIn"
+                data-coluna="${colunaIndex}"
+                data-mes="${mes}"
+                data-existe="${sellInJaExiste ? '1' : '0'}"
+                value="${
+                    registroSellIn
+                    ?
+                    registroSellIn.ValorSellIn
+                    :
+                    ''
+                }"
+                ${
+                    !isOperador && sellInJaExiste
+                    ? 'readonly title="Representantes não podem editar SellIn já cadastrado"'
+                    : ''
+                }
+            >
 
-                </td>
-            `;
+        </div>
+
+    </td>
+`;
 
         }
     );
@@ -383,28 +394,44 @@ async function salvarSellIn(){
     if(isOperador){
 
         document
-        .querySelectorAll(
-            '.metaSellIn'
-        )
-        .forEach(input => {
+.querySelectorAll(
+    '.valorSellIn'
+)
+.forEach(input => {
 
-            if(input.value !== ''){
+    const registroJaExiste =
+        input.dataset.existe === '1';
 
-                metas.push({
+    /*
+        Representante só pode inserir.
+        Se o registro já existe, não envia para o backend.
+    */
+    if(
+        !isOperador &&
+        registroJaExiste
+    ){
 
-                    MesAnoMetaSellIn:
-                        input.dataset.mes,
+        return;
 
-                    MetaSellIn:
-                        Number(
-                            input.value
-                        )
+    }
 
-                });
+    if(input.value !== ''){
 
-            }
+        sellIn.push({
+
+            MesAnoSellIn:
+                input.dataset.mes,
+
+            ValorSellIn:
+                Number(
+                    input.value
+                )
 
         });
+
+    }
+
+});
 
     }
 

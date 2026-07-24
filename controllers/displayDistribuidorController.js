@@ -215,7 +215,7 @@ exports.atualizarDisplays = async (req, res) => {
                     "BairroDisplay" = $5,
                     "CidadeDisplay" = $6,
                     "UF" = $7,
-                    "ValorDisplay" = $8,
+                    "QuantidadeDisplay" = $8,
                     "MesAnoDisplay" = $9
 
                 WHERE
