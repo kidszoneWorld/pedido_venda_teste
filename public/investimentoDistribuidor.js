@@ -153,6 +153,9 @@ document
 .innerHTML =
 linha;
 
+configurarCalculoTotalInvestimento();
+calcularTotalInvestimento();
+
 }
 
 document
@@ -163,6 +166,74 @@ document
     'click',
     salvarInvestimentos
 );
+
+function formatarMoeda(valor){
+
+    return valor.toLocaleString(
+        'pt-BR',
+        {
+            style: 'currency',
+            currency: 'BRL'
+        }
+    );
+
+}
+
+function configurarCalculoTotalInvestimento(){
+
+    document
+    .querySelectorAll(
+        '.estoque'
+    )
+    .forEach(input => {
+
+        input.addEventListener(
+            'input',
+            calcularTotalInvestimento
+        );
+
+    });
+
+}
+
+function calcularTotalInvestimento(){
+
+    let total = 0;
+
+    document
+    .querySelectorAll(
+        '.estoque'
+    )
+    .forEach(input => {
+
+        const valor =
+            Number(
+                input.value
+            );
+
+        if(!isNaN(valor)){
+
+            total += valor;
+
+        }
+
+    });
+
+    const campoTotal =
+        document.getElementById(
+            'totalInvestimento'
+        );
+
+    if(campoTotal){
+
+        campoTotal.value =
+            formatarMoeda(
+                total
+            );
+
+    }
+
+}
 
 async function salvarInvestimentos(){
 
