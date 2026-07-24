@@ -1345,3 +1345,130 @@ input:checked + .slider:before {
     -moz-appearance: textfield;
 }
 
+
+/* ===============================
+   Estilo geral para inputs text e selects
+================================ */
+
+input[type="text"],
+select {
+    width: 20%;
+    min-height: 34px;
+    padding: 6px 8px;
+
+    border: 1px solid #fb29d1;
+    border-radius: 6px;
+
+    background-color: #ffffff;
+    color: #333;
+
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+
+    text-align: center;
+
+    box-sizing: border-box;
+
+    transition: all 0.25s ease-in-out;
+}
+
+/* Hover */
+input[type="text"]:hover,
+select:hover {
+    border-color: #e10098;
+}
+
+/* Focus */
+input[type="text"]:focus,
+select:focus {
+    border-color: rgba(225, 0, 152);
+    outline: none;
+    box-shadow: 0 0 5px rgba(225, 0, 152, 0.6);
+}
+
+/* Placeholder */
+input[type="text"]::placeholder {
+    color: #999;
+    font-size: 13px;
+}
+
+/* ===============================
+   Tema escuro - inputs e selects
+================================ */
+
+body.dark-theme input[type="text"],
+body.dark-theme select {
+    background-color: var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+
+   border: 1px solid #a50066;
+}
+
+body.dark-theme input[type="text"]::placeholder {
+    color: #d8d8d8;
+}
+
+body.dark-theme input[type="text"]:focus,
+body.dark-theme select:focus {
+    border-color: #e10098;
+    box-shadow: 0 0 5px rgba(225, 0, 152, 0.7);
+}
+
+/* ===============================
+   Inputs e selects dentro de tabelas
+================================ */
+
+.table input[type="text"],
+.table select {
+    width: 95%;
+    min-width: 90px;
+    height: 10px;
+
+    padding: 4px 6px;
+
+    border: 1px solid #d28fd2;
+    border-radius: 5px;
+
+    font-size: 13px;
+    text-align: center;
+
+    box-sizing: border-box;
+}
+
+/* Tema escuro em tabela */
+body.dark-theme .table input[type="text"],
+body.dark-theme .table select {
+    background-color: var(--input-bg-dark);
+    color: var(--button-hover-text-dark);
+    border: 1px solid #777;
+}
+
+select {
+    cursor: pointer;
+    appearance: auto;
+}
+
+select option {
+    background-color: #ffffff;
+    color: #333;
+}
+
+body.dark-theme select option {
+    background-color: var(--input-bg-dark);
+    color: #ffffff;
+}
+
+select {
+    cursor: pointer;
+    appearance: auto;
+}
+
+select option {
+    background-color: #ffffff;
+    color: #333;
+}
+
+body.dark-theme select option {
+    background-color: var(--input-bg-dark);
+    color: #ffffff;
+}

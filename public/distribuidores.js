@@ -1,3 +1,5 @@
+let listaDistribuidoresCompleta = [];
+
 document.addEventListener(
     'DOMContentLoaded',
     async () => {
@@ -6,7 +8,7 @@ document.addEventListener(
 
         configurarEventos();
 
-        carregarDistribuidores();
+        await carregarDistribuidores();
 
     }
 );
@@ -56,6 +58,62 @@ async function verificarPermissao() {
         }
 }
 
+
+function montarTabelaDistribuidores(distribuidores){
+
+    const tbody =
+        document.getElementById('listaDistribuidores');
+
+    tbody.innerHTML = '';
+
+    distribuidores.forEach(d => {
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${d.CNPJ || ''}</td>
+                <td>${d.RazaoSocial || ''}</td>
+                <td>${d.Representante || ''}</td>
+
+                <td>
+                    <button class="button" onclick="abrirSellIn(${d.CodigoDistribuidor})">
+                        SellIn
+                    </button>
+
+                    <button class="button" onclick="abrirSellOut(${d.CodigoDistribuidor})">
+                        SellOut
+                    </button>
+
+                    <button class="button" onclick="abrirDisplay(${d.CodigoDistribuidor})">
+                        Display
+                    </button>
+
+                    <button class="button" onclick="abrirRedes(${d.CodigoDistribuidor})">
+                        Redes
+                    </button>
+
+                    <button class="button" onclick="abrirPositivacao(${d.CodigoDistribuidor})">
+                        Positivação
+                    </button>
+
+                    <button class="button" onclick="abrirInfo(${d.CodigoDistribuidor})">
+                        Info
+                    </button>
+
+                    <button class="button" onclick="abrirEstoque(${d.CodigoDistribuidor})">
+                        Estoque
+                    </button>
+
+                    <button class="button" onclick="abrirInvestimentos(${d.CodigoDistribuidor})">
+                        Investimentos
+                    </button>
+                </td>
+            </tr>
+        `;
+
+    });
+
+}
+
 function abrirEstoque(codigoDistribuidor){
 
     window.location.href =
@@ -102,6 +160,16 @@ function abrirSellOut(
 
 }
 
+function normalizarTexto(valor){
+
+    return String(valor || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+
+}
+
 async function carregarDistribuidores(){
 
     const resposta =
@@ -110,59 +178,14 @@ async function carregarDistribuidores(){
     const distribuidores =
         await resposta.json();
 
-    const tbody =
-        document.getElementById('listaDistribuidores');
+    listaDistribuidoresCompleta =
+        distribuidores;
 
-    tbody.innerHTML = '';
-
-    distribuidores.forEach(d => {
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${d.CNPJ}</td>
-                <td>${d.RazaoSocial}</td>
-                <td>${d.Representante}</td>
-
-                <td>
-                    <button class="button" onclick="abrirSellIn(${d.CodigoDistribuidor})">
-                        SellIn
-                    </button>
-
-                    <button class="button" onclick="abrirSellOut(${d.CodigoDistribuidor})">
-                        SellOut
-                    </button>
-
-                    <button class="button" onclick="abrirDisplay(${d.CodigoDistribuidor})">
-                        Display
-                    </button>
-
-                    <button class="button" onclick="abrirRedes(${d.CodigoDistribuidor})">
-                        Redes
-                    </button>
-
-                    <button class="button" onclick="abrirPositivacao(${d.CodigoDistribuidor})">
-                        Positivação
-                    </button>
-
-                    <button class="button" onclick="abrirInfo(${d.CodigoDistribuidor})">
-                        Info
-                    </button>
-
-                    <button class="button" onclick="abrirEstoque(${d.CodigoDistribuidor})">
-                        Estoque
-                    </button>
-
-                    <button class="button" onclick="abrirInvestimentos(${d.CodigoDistribuidor})">
-                        Investimentos
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
+    montarTabelaDistribuidores(
+        listaDistribuidoresCompleta
+    );
 
 }
-
-
 
 const modalItem =
     document.getElementById('modalItem');
@@ -346,6 +369,52 @@ function abrirSellIn(codigoDistribuidor){
 
 
 function configurarEventos() {
+
+const filtroCnpj =
+    document.getElementById('filtroCnpj');
+
+const filtroRazao =
+    document.getElementById('filtroRazao');
+
+const filtroRepresentante =
+    document.getElementById('filtroRepresentante');
+
+if(filtroCnpj){
+
+    filtroCnpj.addEventListener(
+        'input',
+        () => {
+
+            filtroCnpj.value =
+                aplicarMascaraCNPJ(
+                    filtroCnpj.value
+                );
+
+            aplicarFiltrosDistribuidores();
+
+        }
+    );
+
+}
+
+if(filtroRazao){
+
+    filtroRazao.addEventListener(
+        'input',
+        aplicarFiltrosDistribuidores
+    );
+
+}
+
+if(filtroRepresentante){
+
+    filtroRepresentante.addEventListener(
+        'input',
+        aplicarFiltrosDistribuidores
+    );
+
+}
+
 const inputCnpj =
     document.getElementById('cnpj');
 
@@ -499,7 +568,62 @@ document
 }
 function apenasNumeros(valor){
 
-    return valor.replace(/\D/g, '');
+    return String(valor || '').replace(/\D/g, '');
+
+}
+
+function aplicarFiltrosDistribuidores(){
+
+    const filtroCnpj =
+        apenasNumeros(
+            document.getElementById('filtroCnpj')?.value || ''
+        );
+
+    const filtroRazao =
+        normalizarTexto(
+            document.getElementById('filtroRazao')?.value || ''
+        );
+
+    const filtroRepresentante =
+        normalizarTexto(
+            document.getElementById('filtroRepresentante')?.value || ''
+        );
+
+    const filtrados =
+        listaDistribuidoresCompleta.filter(d => {
+
+            const cnpjDistribuidor =
+                apenasNumeros(d.CNPJ || '');
+
+            const razaoDistribuidor =
+                normalizarTexto(d.RazaoSocial || '');
+
+            const representanteDistribuidor =
+                normalizarTexto(d.Representante || '');
+
+            const passaCnpj =
+                !filtroCnpj ||
+                cnpjDistribuidor.includes(filtroCnpj);
+
+            const passaRazao =
+                !filtroRazao ||
+                razaoDistribuidor.includes(filtroRazao);
+
+            const passaRepresentante =
+                !filtroRepresentante ||
+                representanteDistribuidor.includes(filtroRepresentante);
+
+            return (
+                passaCnpj &&
+                passaRazao &&
+                passaRepresentante
+            );
+
+        });
+
+    montarTabelaDistribuidores(
+        filtrados
+    );
 
 }
 

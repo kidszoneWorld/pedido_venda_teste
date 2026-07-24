@@ -8,6 +8,9 @@ document.addEventListener(
     carregarTela
 );
 
+
+
+
 async function carregarTela(){
 
     const responseDistribuidor =
@@ -276,6 +279,17 @@ document
         )
         .style.display =
         'block';
+    }
+);
+
+document
+.getElementById('fecharModalRede')
+.addEventListener(
+    'click',
+    () => {
+
+        modalRede.style.display = 'none';
+
     }
 );
 

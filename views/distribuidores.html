@@ -52,19 +52,21 @@
     <div class="container">
     <h2 class="h2">DISTRIBUIDORES</h2>
 
+    <h3 class="h2">Filtros:</h3>
 
+        <Label>CNPJ:</Label>
         <input
             type="text"
             id="filtroCnpj"
             placeholder="CNPJ"
         >
-
+        <Label>Razão Social:</Label>
         <input
             type="text"
             id="filtroRazao"
             placeholder="Razão Social"
         >
-
+        <Label>Representante:</Label>
         <input
             type="text"
             id="filtroRepresentante"
@@ -132,7 +134,7 @@
         <h2>
             Novo Distribuidor
         </h2>
-
+        <label>Razão Social</label><br>
         <input
             type="text"
             id="razaoSocial"
@@ -142,6 +144,7 @@
 
         <br><br>
 
+        <label>CNPJ</label><br>
         <input
             type="text"
             id="cnpj"
@@ -150,7 +153,8 @@
         >
 
         <br><br>
-
+        
+        <label>Cidade</label><br>
         <input
             type="text"
             id="cidade"
@@ -159,6 +163,7 @@
         >
 
         <br><br>
+        <label>UF</label><br>
 
         <input
             type="text"
@@ -168,7 +173,7 @@
         >
 
         <br><br>
-
+        <label>Numero de Representante</label><br>
         <input
             type="text"
             id="representante"
@@ -190,15 +195,14 @@
 
     <div class="modal-content">
 
-        <span
+        <Button
             id="fecharModalItem"
-            class="close-button"
+            class="button"
         >
             ×
-        </span>
-
+        </Button>
         <h2>Novo Item</h2>
-
+        <label>Código do item</label><br>
         <input
             type="text"
             id="codigoItem"
@@ -207,7 +211,7 @@
         >
 
         <br><br>
-
+        <label>Descrição</label><br>
         <input
             type="text"
             id="itemDescricao"
@@ -217,20 +221,7 @@
 
         <br><br>
 
-        <label>
 
-            <input
-                type="checkbox"
-                id="ativo"
-                checked
-                class="esconder"
-            >
-
-            Ativo
-
-        </label>
-
-        <br><br>
 
         <label>
 
@@ -243,7 +234,16 @@
 
         </label>
 
-        <br><br>
+
+            <input
+                type="checkbox"
+                id="ativo"
+                checked
+                class="esconder"
+            >
+
+            
+<br><br>
 
         <button id="salvarItem">
             Salvar
