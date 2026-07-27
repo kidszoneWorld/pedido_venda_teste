@@ -394,44 +394,28 @@ async function salvarSellIn(){
     if(isOperador){
 
         document
-.querySelectorAll(
-    '.valorSellIn'
-)
-.forEach(input => {
+        .querySelectorAll(
+            '.metaSellIn'
+        )
+        .forEach(input => {
 
-    const registroJaExiste =
-        input.dataset.existe === '1';
+            if(input.value !== ''){
 
-    /*
-        Representante só pode inserir.
-        Se o registro já existe, não envia para o backend.
-    */
-    if(
-        !isOperador &&
-        registroJaExiste
-    ){
+                metas.push({
 
-        return;
+                    MesAnoMetaSellIn:
+                        input.dataset.mes,
 
-    }
+                    MetaSellIn:
+                        Number(
+                            input.value
+                        )
 
-    if(input.value !== ''){
+                });
 
-        sellIn.push({
-
-            MesAnoSellIn:
-                input.dataset.mes,
-
-            ValorSellIn:
-                Number(
-                    input.value
-                )
+            }
 
         });
-
-    }
-
-});
 
     }
 
@@ -440,6 +424,18 @@ async function salvarSellIn(){
         '.valorSellIn'
     )
     .forEach(input => {
+
+        const registroJaExiste =
+            input.dataset.existe === '1';
+
+        if(
+            !isOperador &&
+            registroJaExiste
+        ){
+
+            return;
+
+        }
 
         if(input.value !== ''){
 
@@ -459,6 +455,21 @@ async function salvarSellIn(){
 
     });
 
+    console.log(
+        'isOperador:',
+        isOperador
+    );
+
+    console.log(
+        'metas enviadas:',
+        metas
+    );
+
+    console.log(
+        'sellIn enviado:',
+        sellIn
+    );
+
     const response =
     await fetch(
         `/api/sellInDistribuidor/${codigoDistribuidor}`,
@@ -466,19 +477,20 @@ async function salvarSellIn(){
             method: 'POST',
 
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type':
+                    'application/json'
             },
 
             body:
-            JSON.stringify({
-                metas,
-                sellIn
-            })
+                JSON.stringify({
+                    metas,
+                    sellIn
+                })
         }
     );
 
     const resultado =
-    await response.json();
+        await response.json();
 
     if(resultado.sucesso){
 
@@ -497,7 +509,9 @@ async function salvarSellIn(){
 
     }
 
-}
+}     
+    
+
 
 function configurarNavegacao(){
 

@@ -3,13 +3,50 @@ window.location.pathname
 .split('/')
 .pop();
 
+let isOperador = false;
+
+
 document.addEventListener(
     'DOMContentLoaded',
-    carregarTela
+    async () => {
+
+        await verificarPermissao();
+
+        await carregarTela();
+
+    }
 );
 
+async function verificarPermissao(){
 
+    const response =
+    await fetch('/session-data');
 
+    const sessionData =
+    await response.json();
+
+    const userNumero =
+        sessionData?.userNumero || null;
+
+    isOperador =
+        !userNumero;
+
+    const btnSalvarRedes =
+        document.getElementById(
+            'salvarRedes'
+        );
+
+    if(
+        btnSalvarRedes &&
+        !isOperador
+    ){
+
+        btnSalvarRedes.style.display =
+            'none';
+
+    }
+
+}
 
 async function carregarTela(){
 
@@ -47,9 +84,7 @@ async function carregarTela(){
 
 }
 
-function montarTabela(
-    redes
-){
+function montarTabela(redes){
 
     const tbody =
     document.getElementById(
@@ -58,7 +93,7 @@ function montarTabela(
 
     tbody.innerHTML = '';
 
-    redes.forEach(rede=>{
+    redes.forEach(rede => {
 
         tbody.innerHTML += `
 
@@ -68,84 +103,93 @@ function montarTabela(
         >
 
             <td>
-
                 <input
-                    value="${rede.RedeRazaoSocial}"
+                    value="${rede.RedeRazaoSocial || ''}"
                     class="razao"
+                    ${isOperador ? '' : 'readonly'}
                 >
-
             </td>
 
             <td>
-
                 <input
-                    value="${rede.NomeFantasia}"
+                    value="${rede.NomeFantasia || ''}"
                     class="fantasia"
+                    ${isOperador ? '' : 'readonly'}
                 >
-
             </td>
 
             <td>
-
                 <input
-                    value="${rede.LojaQuantidade}"
+                    type="number"
+                    value="${rede.LojaQuantidade || ''}"
                     class="lojas"
+                    ${isOperador ? '' : 'readonly'}
                 >
-
             </td>
 
             <td>
-
                 <input
-                    value="${rede.UF}"
+                    value="${rede.UF || ''}"
                     class="uf"
+                    maxlength="2"
+                    ${isOperador ? '' : 'readonly'}
                 >
-
             </td>
 
             <td>
-
                 <input
-                    value="${rede.SkuQuantidade}"
+                    type="number"
+                    value="${rede.SkuQuantidade || ''}"
                     class="sku"
+                    ${isOperador ? '' : 'readonly'}
                 >
-
             </td>
 
             <td>
+                <div class="campo-moeda">
 
-                <input
-                    value="${rede.ValorPrimeiraCompra}"
-                    class="valor"
-                >
+                    <span>R$</span>
 
+                    <input
+                        type="number"
+                        step="0.01"
+                        value="${rede.ValorPrimeiraCompra || ''}"
+                        class="valor"
+                        ${isOperador ? '' : 'readonly'}
+                    >
+
+                </div>
             </td>
 
             <td>
-
                 <input
-                    value="${rede.RedeMesAno}"
+                    value="${rede.RedeMesAno || ''}"
                     class="mes"
+                    ${isOperador ? '' : 'readonly'}
                 >
-
             </td>
 
             <td>
-
-                <button
-
-                    onclick="
-                    excluirRede(
-                    ${rede.CodigoRede}
-                    )
-                    "
-
+                <input
+                    value="${rede.ObservacaoRede || ''}"
+                    class="observacao"
+                    ${isOperador ? '' : 'readonly'}
                 >
+            </td>
 
-                    X
-
-                </button>
-
+            <td>
+                ${
+                    isOperador
+                    ? `
+                        <button
+                            class="button"
+                            onclick="excluirRede(${rede.CodigoRede})"
+                        >
+                            X
+                        </button>
+                    `
+                    : ''
+                }
             </td>
 
         </tr>
@@ -155,7 +199,6 @@ function montarTabela(
     });
 
 }
-
 
 document
 .getElementById(
@@ -168,13 +211,23 @@ document
 
 async function salvarRedes(){
 
+    if(!isOperador){
+
+        alert(
+            'Você não tem permissão para editar redes existentes.'
+        );
+
+        return;
+
+    }
+
     const redes = [];
 
     document
     .querySelectorAll(
         '.linhaRede'
     )
-    .forEach(linha=>{
+    .forEach(linha => {
 
         redes.push({
 
@@ -182,50 +235,65 @@ async function salvarRedes(){
             linha.dataset.id,
 
             RedeRazaoSocial:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.razao'
             ).value,
 
             NomeFantasia:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.fantasia'
             ).value,
 
             LojaQuantidade:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.lojas'
             ).value,
 
             UF:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.uf'
-            ).value,
+            )
+            .value
+            .toUpperCase(),
 
             SkuQuantidade:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.sku'
             ).value,
 
             ValorPrimeiraCompra:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.valor'
             ).value,
 
             RedeMesAno:
-            linha.querySelector(
+            linha
+            .querySelector(
                 '.mes'
+            ).value,
+
+            ObservacaoRede:
+            linha
+            .querySelector(
+                '.observacao'
             ).value
 
         });
 
     });
 
+    const response =
     await fetch(
 
         '/api/redesDistribuidor',
 
         {
-
             method:'PUT',
 
             headers:{
@@ -237,21 +305,56 @@ async function salvarRedes(){
             JSON.stringify(
                 redes
             )
-
         }
 
     );
 
-    alert(
-        'Redes salvas'
-    );
+    const resultado =
+    await response.json();
+
+    if(resultado.sucesso){
+
+        alert(
+            'Redes salvas'
+        );
+
+        carregarTela();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao salvar redes'
+        );
+
+    }
 
 }
 
-async function excluirRede(
-    codigoRede
-){
+async function excluirRede(codigoRede){
 
+    if(!isOperador){
+
+        alert(
+            'Você não tem permissão para excluir redes.'
+        );
+
+        return;
+
+    }
+
+    const confirmar =
+    confirm(
+        'Deseja realmente excluir esta rede?'
+    );
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+    const response =
     await fetch(
 
         `/api/redesDistribuidor/${codigoRede}`,
@@ -262,7 +365,25 @@ async function excluirRede(
 
     );
 
-    carregarTela();
+    const resultado =
+    await response.json();
+
+    if(resultado.sucesso){
+
+        alert(
+            'Rede excluída com sucesso.'
+        );
+
+        carregarTela();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao excluir rede.'
+        );
+
+    }
 
 }
 
@@ -288,7 +409,12 @@ document
     'click',
     () => {
 
-        modalRede.style.display = 'none';
+        document
+        .getElementById(
+            'modalRede'
+        )
+        .style.display =
+            'none';
 
     }
 );
@@ -350,6 +476,11 @@ document
                     RedeMesAno:
                     document.getElementById(
                         'redeMesAno'
+                    ).value,
+
+                    ObservacaoRede:
+                    document.getElementById(
+                        'observacaoRede'
                     ).value
 
                 })
@@ -357,7 +488,7 @@ document
             }
 
         );
-
+        document.getElementById('modalRede').style.display = 'none';
         carregarTela();
 
     }

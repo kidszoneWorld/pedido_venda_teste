@@ -64,13 +64,14 @@ async(req,res)=>{
                 "UF",
                 "SkuQuantidade",
                 "ValorPrimeiraCompra",
-                "RedeMesAno"
+                "RedeMesAno",
+                "ObservacaoRede"
             )
 
             VALUES
             (
                 $1,$2,$3,$4,
-                $5,$6,$7,$8
+                $5,$6,$7,$8,$9
             )
             `,
             [
@@ -89,7 +90,9 @@ async(req,res)=>{
 
                 rede.ValorPrimeiraCompra,
 
-                rede.RedeMesAno
+                rede.RedeMesAno,
+
+                rede.ObservacaoRede
 
             ]
 
@@ -115,7 +118,14 @@ async(req,res)=>{
 
 exports.atualizarRede =
 async(req,res)=>{
+    if(req.session.userNumero){
 
+        return res.status(403).json({
+            sucesso:false,
+            erro:'Representantes não podem editar redes existentes.'
+        });
+
+    }
     try{
 
         const redes =
@@ -143,11 +153,13 @@ async(req,res)=>{
 
                 "ValorPrimeiraCompra"=$6,
 
-                "RedeMesAno"=$7
+                "RedeMesAno"=$7,
+
+                "ObservacaoRede"=$8
 
                 WHERE
 
-                "CodigoRede"=$8
+                "CodigoRede"=$9
                 `,
                 [
 
@@ -164,6 +176,8 @@ async(req,res)=>{
                     rede.ValorPrimeiraCompra,
 
                     rede.RedeMesAno,
+
+                    rede.ObservacaoRede,
 
                     rede.CodigoRede
 
@@ -207,6 +221,15 @@ async(req,res)=>{
 
     try{
 
+        if(req.session.userNumero){
+
+            return res.status(403).json({
+                sucesso:false,
+                erro:'Representantes não podem excluir redes existentes.'
+            });
+
+        }
+
         await pool.query(
 
             `
@@ -234,7 +257,8 @@ async(req,res)=>{
         console.error(err);
 
         res.status(500).json({
-            sucesso:false
+            sucesso:false,
+            erro:err.message
         });
 
     }

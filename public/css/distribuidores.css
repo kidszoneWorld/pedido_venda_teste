@@ -1499,3 +1499,15 @@ body.dark-theme .linhaDisplay select:disabled {
     color: #777;
     border-color: #555;
 }
+
+.linhaRede input[readonly] {
+    background-color: #e9e9e9;
+    color: #777;
+    cursor: not-allowed;
+}
+
+body.dark-theme .linhaRede input[readonly] {
+    background-color: #222;
+    color: #777;
+    border-color: #555;
+}
