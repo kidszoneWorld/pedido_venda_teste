@@ -84,7 +84,7 @@ exports.listarDisplays = async (req, res) => {
             SELECT *
             FROM "TbDisplay"
             WHERE "CodigoDistribuidor" = $1
-            ORDER BY "MesAnoDisplay", "RazaoSocialDisplay"
+            ORDER BY "DataDisplay", "RazaoSocialDisplay"
             `,
             [
                 req.params.codigoDistribuidor
@@ -140,8 +140,8 @@ exports.inserirDisplay = async (req, res) => {
                 "BairroDisplay",
                 "CidadeDisplay",
                 "UF",
-                "ValorDisplay",
-                "MesAnoDisplay"
+                "QuantidadeDisplay",
+                "ObservacaoDisplay"
             )
             VALUES
             (
@@ -157,8 +157,8 @@ exports.inserirDisplay = async (req, res) => {
                 display.BairroDisplay,
                 display.CidadeDisplay,
                 display.UF,
-                display.ValorDisplay,
-                display.MesAnoDisplay
+                display.QuantidadeDisplay,
+                display.ObservacaoDisplay
             ]
         );
 
@@ -182,7 +182,14 @@ exports.inserirDisplay = async (req, res) => {
 exports.atualizarDisplays = async (req, res) => {
 
     try {
+        if(req.session.userNumero){
 
+            return res.status(403).json({
+                sucesso:false,
+                erro:'Representantes não podem editar vendas de display existentes.'
+            });
+
+        }
         const displays = req.body;
 
         for (const display of displays) {
@@ -216,7 +223,7 @@ exports.atualizarDisplays = async (req, res) => {
                     "CidadeDisplay" = $6,
                     "UF" = $7,
                     "QuantidadeDisplay" = $8,
-                    "MesAnoDisplay" = $9
+                    "ObservacaoDisplay" = $9
 
                 WHERE
                     "CodigoDisplay" = $10
@@ -229,8 +236,8 @@ exports.atualizarDisplays = async (req, res) => {
                     display.BairroDisplay,
                     display.CidadeDisplay,
                     display.UF,
-                    display.ValorDisplay,
-                    display.MesAnoDisplay,
+                    display.QuantidadeDisplay,
+                    display.ObservacaoDisplay,
                     display.CodigoDisplay
                 ]
             );

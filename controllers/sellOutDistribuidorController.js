@@ -47,41 +47,104 @@ async(req,res)=>{
         const registros =
         req.body;
 
+        const usuarioRepresentante =
+            req.session.userNumero;
+
+        const isOperador =
+            !usuarioRepresentante;
+
         for(const registro of registros){
 
-            await pool.query(
-                `
-                INSERT INTO "TbSellOut"
-                (
-                    "CodigoDistribuidor",
-                    "CodigoItem",
-                    "SellOutQuantidade",
-                    "MesAnoSellOut"
-                )
-                VALUES
-                (
-                    $1,$2,$3,$4
-                )
+            if(
+                registro.SellOutQuantidade === '' ||
+                registro.SellOutQuantidade === null ||
+                registro.SellOutQuantidade === undefined
+            ){
 
-                ON CONFLICT
-                (
-                    "CodigoDistribuidor",
-                    "CodigoItem",
-                    "MesAnoSellOut"
-                )
+                continue;
 
-                DO UPDATE SET
+            }
 
-                    "SellOutQuantidade" =
-                    EXCLUDED."SellOutQuantidade"
-                `,
-                [
-                    codigoDistribuidor,
-                    registro.CodigoItem,
-                    registro.SellOutQuantidade,
-                    registro.MesAnoSellOut
-                ]
-            );
+            /*
+                OPERADOR:
+                Pode inserir e atualizar.
+            */
+            if(isOperador){
+
+                await pool.query(
+                    `
+                    INSERT INTO "TbSellOut"
+                    (
+                        "CodigoDistribuidor",
+                        "CodigoItem",
+                        "SellOutQuantidade",
+                        "MesAnoSellOut"
+                    )
+                    VALUES
+                    (
+                        $1,$2,$3,$4
+                    )
+
+                    ON CONFLICT
+                    (
+                        "CodigoDistribuidor",
+                        "CodigoItem",
+                        "MesAnoSellOut"
+                    )
+
+                    DO UPDATE SET
+
+                        "SellOutQuantidade" =
+                        EXCLUDED."SellOutQuantidade"
+                    `,
+                    [
+                        codigoDistribuidor,
+                        registro.CodigoItem,
+                        registro.SellOutQuantidade,
+                        registro.MesAnoSellOut
+                    ]
+                );
+
+            }
+            /*
+                REPRESENTANTE:
+                Só pode inserir.
+                Se já existir, não atualiza.
+            */
+            else{
+
+                await pool.query(
+                    `
+                    INSERT INTO "TbSellOut"
+                    (
+                        "CodigoDistribuidor",
+                        "CodigoItem",
+                        "SellOutQuantidade",
+                        "MesAnoSellOut"
+                    )
+                    VALUES
+                    (
+                        $1,$2,$3,$4
+                    )
+
+                    ON CONFLICT
+                    (
+                        "CodigoDistribuidor",
+                        "CodigoItem",
+                        "MesAnoSellOut"
+                    )
+
+                    DO NOTHING
+                    `,
+                    [
+                        codigoDistribuidor,
+                        registro.CodigoItem,
+                        registro.SellOutQuantidade,
+                        registro.MesAnoSellOut
+                    ]
+                );
+
+            }
 
         }
 

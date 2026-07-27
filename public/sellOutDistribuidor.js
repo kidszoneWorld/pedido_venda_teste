@@ -3,6 +3,9 @@ window.location.pathname
 .split('/')
 .pop();
 
+let isOperador = false;
+
+
 document.addEventListener(
     'DOMContentLoaded',
     carregarTela
@@ -47,7 +50,14 @@ function gerarMeses(){
 }
 
 async function carregarTela(){
+    const sessionResponse =
+        await fetch('/session-data');
 
+        const sessionData =
+        await sessionResponse.json();
+
+        isOperador =
+            !sessionData.userNumero;
     const meses =
         gerarMeses();
 
@@ -168,6 +178,11 @@ function montarTabela(
                         mes
                     );
 
+                    const sellOutJaExiste =
+                        registro
+                        ? true
+                        : false;
+
                     linha += `
                         <td>
 
@@ -178,6 +193,7 @@ function montarTabela(
                                 data-coluna="${colunaIndex}"
                                 data-item="${item.CodigoItem}"
                                 data-mes="${mes}"
+                                data-existe="${sellOutJaExiste ? '1' : '0'}"
                                 value="${
                                     registro
                                     ?
@@ -185,6 +201,11 @@ function montarTabela(
                                     :
                                     ''
                                 }"
+                                ${
+                                    !isOperador && sellOutJaExiste
+                                    ? 'readonly title="Representantes não podem editar SellOut já cadastrado"'
+                                    : ''
+                                }
                             >
 
                         </td>
@@ -207,6 +228,7 @@ function montarTabela(
 
 }
 
+
 document
 .getElementById(
     'salvarSellOut'
@@ -221,33 +243,46 @@ async function salvarSellOut(){
     const registros = [];
 
     document
-    .querySelectorAll(
-        '.estoque'
-    )
-    .forEach(input => {
+        .querySelectorAll(
+            '.estoque'
+        )
+        .forEach(input => {
 
-        if(
-            input.value !== ''
-        ){
+            const registroJaExiste =
+                input.dataset.existe === '1';
 
-            registros.push({
 
-                CodigoItem:
-                    input.dataset.item,
+            if(
+                !isOperador &&
+                registroJaExiste
+            ){
 
-                MesAnoSellOut:
-                    input.dataset.mes,
+                return;
 
-                SellOutQuantidade:
-                    Number(
-                        input.value
-                    )
+            }
 
-            });
+            if(
+                input.value !== ''
+            ){
 
-        }
+                registros.push({
 
-    });
+                    CodigoItem:
+                        input.dataset.item,
+
+                    MesAnoSellOut:
+                        input.dataset.mes,
+
+                    SellOutQuantidade:
+                        Number(
+                            input.value
+                        )
+
+                });
+
+            }
+
+        });
 
     const response =
     await fetch(

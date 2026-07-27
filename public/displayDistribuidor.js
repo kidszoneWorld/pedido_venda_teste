@@ -4,6 +4,7 @@ window.location.pathname
 .pop();
 
 let itensDisplay = [];
+let isOperador = false;
 
 function apenasNumeros(valor){
 
@@ -137,10 +138,45 @@ document.addEventListener(
 
         configurarMascaraCnpjDisplay();
 
+        await verificarPermissao();
+
         await carregarTela();
 
     }
 );
+
+async function verificarPermissao(){
+
+    const response =
+    await fetch(
+        '/session-data'
+    );
+
+    const sessionData =
+    await response.json();
+
+    const userNumero =
+        sessionData?.userNumero || null;
+
+    isOperador =
+        !userNumero;
+
+    const btnSalvarDisplays =
+        document.getElementById(
+            'salvarDisplays'
+        );
+
+    if(
+        btnSalvarDisplays &&
+        !isOperador
+    ){
+
+        btnSalvarDisplays.style.display =
+            'none';
+
+    }
+
+}
 
 async function carregarTela(){
 
@@ -232,7 +268,10 @@ function montarTabela(displays){
             >
 
                 <td>
-                    <select class="codigoItem">
+                    <select
+                        class="codigoItem"
+                        ${isOperador ? '' : 'disabled'}
+                    >
                         ${gerarOptionsDisplay(display.CodigoItem)}
                     </select>
                 </td>
@@ -241,6 +280,7 @@ function montarTabela(displays){
                     <input
                         class="razaoSocialDisplay"
                         value="${display.RazaoSocialDisplay || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
                 </td>
 
@@ -249,6 +289,7 @@ function montarTabela(displays){
                         class="cnpjDisplay"
                         maxlength="18"
                         value="${aplicarMascaraCNPJ(display.CnpjDisplay || '')}"
+                        ${isOperador ? '' : 'readonly'}
                     >
                 </td>
 
@@ -256,6 +297,7 @@ function montarTabela(displays){
                     <input
                         class="enderecoDisplay"
                         value="${display.EnderecoDisplay || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
                 </td>
 
@@ -263,6 +305,7 @@ function montarTabela(displays){
                     <input
                         class="bairroDisplay"
                         value="${display.BairroDisplay || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
                 </td>
 
@@ -270,6 +313,7 @@ function montarTabela(displays){
                     <input
                         class="cidadeDisplay"
                         value="${display.CidadeDisplay || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
                 </td>
 
@@ -278,38 +322,33 @@ function montarTabela(displays){
                         class="ufDisplay"
                         maxlength="2"
                         value="${display.UF || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
-                </td>
-
-                <td>
-                    <div class="campo-moeda">
-
-                        <span>R$</span>
-
-                        <input
-                        type="number"
-                        step="0.01"
-                        class="estoque valorDisplay"
-                        value="${display.ValorDisplay ||''}" 
-                            >
-
-                    </div>
                 </td>
 
                 <td>
                     <input
-                        class="mesAnoDisplay"
-                        value="${display.MesAnoDisplay || ''}"
+                        type="number"
+                        class="estoque quantidadeDisplay"
+                        value="${display.QuantidadeDisplay || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
                 </td>
 
                 <td>
-                    <button
-                        class="button"
-                        onclick="excluirDisplay(${display.CodigoDisplay})"
+                    <input
+                        class="dataDisplay"
+                        value="${formatarData(display.DataDisplay)}"
+                        readonly
                     >
-                        X
-                    </button>
+                </td>
+
+                <td>
+                    <input
+                        class="observacaoDisplay"
+                        value="${display.ObservacaoDisplay || ''}"
+                        ${isOperador ? '' : 'readonly'}
+                    >
                 </td>
 
             </tr>
@@ -317,7 +356,11 @@ function montarTabela(displays){
         `;
 
     });
-configurarMascaraCnpjTabela();
+
+    if(isOperador){
+        configurarMascaraCnpjTabela();
+    }
+
 }
 
 function configurarMascaraCnpjTabela(){
@@ -417,8 +460,8 @@ function limparModalDisplay(){
     document.getElementById('bairroDisplay').value = '';
     document.getElementById('cidadeDisplay').value = '';
     document.getElementById('ufDisplay').value = '';
-    document.getElementById('valorDisplay').value = '';
-    document.getElementById('mesAnoDisplay').value = '';
+    document.getElementById('quantidadeDisplay').value = '';
+    document.getElementById('observacaoDisplay').value = '';
 
 }
 
@@ -477,18 +520,18 @@ async function adicionarDisplay(){
             'ufDisplay'
         ).value.toUpperCase(),
 
-        ValorDisplay:
+       QuantidadeDisplay:
         document
         .getElementById(
-            'valorDisplay'
+            'quantidadeDisplay'
         ).value,
 
-        MesAnoDisplay:
+
+        ObservacaoDisplay:
         document
         .getElementById(
-            'mesAnoDisplay'
+            'observacaoDisplay'
         ).value
-
     };
 
     if(!dados.CodigoItem){
@@ -502,11 +545,27 @@ async function adicionarDisplay(){
     if(!dados.RazaoSocialDisplay){
 
         alert('Informe a razão social.');
-
+        document
+        .getElementById(
+            'razaoSocialDisplay'
+        )
+        .focus();
         return;
 
     }
+    if(!dados.QuantidadeDisplay){
 
+    alert('Informe a quantidade do display.');
+
+    document
+    .getElementById(
+        'quantidadeDisplay'
+    )
+    .focus();
+
+    return;
+
+}
     const response =
     await fetch(
         `/api/displayDistribuidor/${codigoDistribuidor}`,
@@ -560,7 +619,38 @@ document
     salvarDisplays
 );
 
+
+function formatarData(data){
+
+    if(!data){
+        return '';
+    }
+
+    const dataObj =
+        new Date(data);
+
+    if(isNaN(dataObj)){
+        return data;
+    }
+
+    return dataObj.toLocaleDateString(
+        'pt-BR'
+    );
+
+}
+
+
 async function salvarDisplays(){
+
+    if(!isOperador){
+
+        alert(
+            'Você não tem permissão para editar vendas de display existentes.'
+        );
+
+        return;
+
+    }
 
     const displays = [];
 
@@ -590,16 +680,6 @@ async function salvarDisplays(){
             return;
 
         }
-
-        // if(!validarCNPJ(cnpj)){
-
-        //     alert('Existe um CNPJ inválido na tabela.');
-
-        //     cnpjInput.focus();
-
-        //     return;
-
-        // }
 
         displays.push({
 
@@ -647,16 +727,16 @@ async function salvarDisplays(){
             .value
             .toUpperCase(),
 
-            ValorDisplay:
+            QuantidadeDisplay:
             linha
             .querySelector(
-                '.valorDisplay'
+                '.quantidadeDisplay'
             ).value,
 
-            MesAnoDisplay:
+            ObservacaoDisplay:
             linha
             .querySelector(
-                '.mesAnoDisplay'
+                '.observacaoDisplay'
             ).value
 
         });
