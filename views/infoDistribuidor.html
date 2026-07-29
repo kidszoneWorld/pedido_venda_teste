@@ -82,11 +82,18 @@
     <div class="section-title">
         CONTATOS
     </div>
-
+    <br>
     <button class="button" id="novoContato">
 
         Novo Contato
 
+    </button>
+
+    <button
+        id="salvarContatosTabela"
+        class="button"
+    >
+        Salvar Contatos
     </button>
 
     <div
@@ -156,7 +163,14 @@
             id="TelefoneContato"
             placeholder="Telefone do Contato"
             required
+        ><br><br>
+        <Label>Observação</Label><br>
+        <input
+            type="text"
+            id="ObservacaoContato"
+            placeholder="Observação do Contato"
         >
+
         <script>
   const telefoneInput = document.getElementById('TelefoneContato');
 
@@ -200,18 +214,12 @@
             <tr>
 
                 <th>Nome</th>
-
                 <th>Função</th>
-
-                <th>Data de Nascimento</th>
-
+                <th>Nascimento</th>
                 <th>Hobby</th>
-
                 <th>Email</th>
-
                 <th>Telefone</th>
-
-                <th>Ações</th>
+                <th>Observação</th>
 
             </tr>
 

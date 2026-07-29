@@ -75,10 +75,11 @@ exports.salvarContato = async (req,res)=>{
                 "HobbyContato",
                 "EmailContato",
                 "TelefoneContato"
+                "ObservacaoContato"
             )
             VALUES
             (
-                $1,$2,$3,$4,$5,$6,$7
+                $1,$2,$3,$4,$5,$6,$7,8$
             )
             RETURNING *
             `,
@@ -89,7 +90,8 @@ exports.salvarContato = async (req,res)=>{
                 DataNascimentoContato,
                 HobbyContato,
                 EmailContato,
-                TelefoneContato
+                TelefoneContato,
+                ObservacaoContato
             ]
         );
 
@@ -149,20 +151,75 @@ exports.atualizarContato = async (req,res)=>{
 
     try{
 
+        const isRepresentante =
+            !!req.session.userNumero;
+
+        if(isRepresentante){
+
+            const {
+                ObservacaoContato
+            } = req.body;
+
+            const resultado =
+            await pool.query(
+
+                `
+                UPDATE
+                "TbContatoDistribuidor"
+
+                SET
+                    "ObservacaoContato" = $1
+
+                WHERE
+                    "CodigoContato" = $2
+
+                RETURNING *
+                `,
+                [
+                    ObservacaoContato,
+                    req.params.codigoContato
+                ]
+
+            );
+
+            return res.json({
+                sucesso:true,
+                contato:
+                    resultado.rows[0]
+            });
+
+        }
+
         const {
             NomeContato,
             FuncaoContato,
             DataNascimentoContato,
             HobbyContato,
             EmailContato,
-            TelefoneContato
+            TelefoneContato,
+            ObservacaoContato
         } = req.body;
+
+        if(
+            !NomeContato ||
+            !FuncaoContato ||
+            !EmailContato ||
+            !TelefoneContato
+        ){
+
+            return res.status(400).json({
+                sucesso:false,
+                erro:'Nome, Função, E-mail e Telefone são obrigatórios.'
+            });
+
+        }
 
         const resultado =
         await pool.query(
 
             `
-            UPDATE "TbContatoDistribuidor"
+            UPDATE
+            "TbContatoDistribuidor"
 
             SET
 
@@ -171,11 +228,12 @@ exports.atualizarContato = async (req,res)=>{
                 "DataNascimentoContato"=$3,
                 "HobbyContato"=$4,
                 "EmailContato"=$5,
-                "TelefoneContato"=$6
+                "TelefoneContato"=$6,
+                "ObservacaoContato"=$7
 
             WHERE
 
-                "CodigoContato"=$7
+                "CodigoContato"=$8
 
             RETURNING *
 
@@ -187,6 +245,7 @@ exports.atualizarContato = async (req,res)=>{
                 HobbyContato,
                 EmailContato,
                 TelefoneContato,
+                ObservacaoContato,
                 req.params.codigoContato
             ]
 
@@ -195,11 +254,13 @@ exports.atualizarContato = async (req,res)=>{
         res.json({
             sucesso:true,
             contato:
-            resultado.rows[0]
+                resultado.rows[0]
         });
 
     }
     catch(err){
+
+        console.error(err);
 
         res.status(500).json({
             sucesso:false,

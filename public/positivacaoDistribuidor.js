@@ -1,11 +1,17 @@
+
+
 const codigoDistribuidor =
 window.location.pathname
 .split('/')
 .pop();
+
+let isOperador = false;
+
 document.addEventListener(
     'DOMContentLoaded',
     carregarTela
 );
+
 
 function gerarMeses(){
 
@@ -46,33 +52,33 @@ function gerarMeses(){
 }
 
 function montarTabela(
-  positivacao,
+    positivacao,
     meses,
     distribuidor
 ){
 
-    
-console.log(
+    console.log(
         'montarTabela executada'
     );
 
-
-
+    const cabecalhoElemento =
+        document.getElementById(
+            'cabecalhoPositivacao'
+        );
 
     let cabecalho = `
-
         <tr>
-
             <th>
                 Positivação
             </th>
-
     `;
 
-    meses.forEach(mes=>{
+    meses.forEach(mes => {
 
         cabecalho += `
-            <th>${mes}</th>
+            <th>
+                ${mes}
+            </th>
         `;
 
     });
@@ -81,47 +87,40 @@ console.log(
         </tr>
     `;
 
-    document
-    .getElementById(
-        'cabecalhoPositivacao'
-    )
-    .innerHTML =
-    cabecalho;
+    cabecalhoElemento.innerHTML =
+        cabecalho;
 
     let linha = `
-            <tr>
+        <tr>
 
-                <td>
+            <td>
+                ${distribuidor.RazaoSocial}
+            </td>
+    `;
 
-                    ${distribuidor.RazaoSocial}
-
-                </td>
-        `;
-    meses.forEach(mes=>{
+    meses.forEach(mes => {
 
         const registro =
             positivacao.find(
-
                 p =>
-
                 p.MesAnoPositivada === mes
-
             );
+
+        const positivacaoJaExiste =
+            registro
+            ? true
+            : false;
 
         linha += `
             <td>
 
                 <div class="campo-moeda">
 
-
                     <input
-
                         type="number"
-
                         class="estoque"
-
                         data-mes="${mes}"
-
+                        data-existe="${positivacaoJaExiste ? '1' : '0'}"
                         value="${
                             registro
                             ?
@@ -129,25 +128,30 @@ console.log(
                             :
                             ''
                         }"
-
+                        ${
+                            !isOperador && positivacaoJaExiste
+                            ? 'readonly title="Representantes não podem editar positivação já cadastrada"'
+                            : ''
+                        }
                     >
 
                 </div>
 
             </td>
-            `;
+        `;
 
     });
 
     linha += `
         </tr>
     `;
-document
-.getElementById(
-    'corpoPositivacao'
-)
-.innerHTML =
-linha;
+
+    document
+    .getElementById(
+        'corpoPositivacao'
+    )
+    .innerHTML =
+        linha;
 
 }
 
@@ -159,19 +163,35 @@ async function salvarPositivacao(){
     .querySelectorAll(
         '.estoque'
     )
-    .forEach(input=>{
+    .forEach(input => {
+
+        const registroJaExiste =
+            input.dataset.existe === '1';
+
+        /*
+            Representante só pode inserir.
+            Se o registro já existe, não envia para o backend.
+        */
+        if(
+            !isOperador &&
+            registroJaExiste
+        ){
+
+            return;
+
+        }
 
         if(input.value !== ''){
 
             registros.push({
 
                 MesAnoPositivada:
-                input.dataset.mes,
+                    input.dataset.mes,
 
                 QuantidadePositivada:
-                Number(
-                    input.value
-                )
+                    Number(
+                        input.value
+                    )
 
             });
 
@@ -181,25 +201,20 @@ async function salvarPositivacao(){
 
     const response =
     await fetch(
-
         `/api/positivacaoDistribuidor/${codigoDistribuidor}`,
-
         {
+            method: 'POST',
 
-            method:'POST',
-
-            headers:{
+            headers: {
                 'Content-Type':
-                'application/json'
+                    'application/json'
             },
 
             body:
-            JSON.stringify(
-                registros
-            )
-
+                JSON.stringify(
+                    registros
+                )
         }
-
     );
 
     const resultado =
@@ -211,9 +226,19 @@ async function salvarPositivacao(){
             'Positivação salva com sucesso'
         );
 
+        carregarTela();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao salvar positivação'
+        );
+
     }
 
 }
+
 
 document
 .getElementById(
@@ -225,6 +250,17 @@ document
 );
 
 async function carregarTela(){
+
+    const sessionResponse =
+    await fetch(
+        '/session-data'
+    );
+
+    const sessionData =
+    await sessionResponse.json();
+
+    isOperador =
+        !sessionData.userNumero;
 
     const meses =
         gerarMeses();

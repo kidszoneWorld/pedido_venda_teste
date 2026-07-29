@@ -2,159 +2,624 @@ const codigoDistribuidor =
 window.location.pathname
 .split('/')
 .pop();
-console.log(
-    'Distribuidor:',
-    codigoDistribuidor
-);
+
+let isOperador = false;
+
+let tiposInvestimento = [];
 
 document.addEventListener(
     'DOMContentLoaded',
     carregarTela
 );
 
-function gerarMeses(){
+async function carregarTela(){
 
-    const meses = [];
+    const sessionResponse =
+    await fetch(
+        '/session-data'
+    );
 
-    const data =
-        new Date();
+    const sessionData =
+    await sessionResponse.json();
 
-    for(
-        let i = 12;
-        i >= 0;
-        i--
-    ){
+    isOperador =
+        !sessionData.userNumero;
 
-        const d =
-            new Date(
-                data.getFullYear(),
-                data.getMonth() - i,
-                1
-            );
+    aplicarPermissaoInvestimento();
 
-        const mes =
-            String(
-                d.getMonth()+1
-            ).padStart(
-                2,
-                '0'
-            );
+    const responseDistribuidor =
+    await fetch(
+        `/api/distribuidor/${codigoDistribuidor}`
+    );
 
-        meses.push(
-            `${mes}/${d.getFullYear()}`
+    const distribuidor =
+    await responseDistribuidor.json();
+
+    const nomeDistribuidor =
+        distribuidor.RazaoSocial ||
+        distribuidor[0]?.RazaoSocial ||
+        '';
+
+    const tituloDistribuidor =
+        document.getElementById(
+            'nomeDistribuidorInvestimento'
         );
+
+    if(tituloDistribuidor){
+
+        tituloDistribuidor.textContent =
+            nomeDistribuidor;
 
     }
 
-    return meses;
+    await carregarTiposInvestimento();
+
+    const responseInvestimento =
+    await fetch(
+        `/api/investimentoDistribuidor/${codigoDistribuidor}`
+    );
+
+    const investimentos =
+    await responseInvestimento.json();
+
+    montarTabela(
+        investimentos
+    );
+
+    configurarEventosInvestimento();
 
 }
 
-function montarTabela(
-  investimentos,
-    meses,
-    distribuidor
-){
+function aplicarPermissaoInvestimento(){
 
-    
-console.log(
-        'montarTabela executada'
+    const btnNovoInvestimento =
+        document.getElementById(
+            'novoInvestimento'
+        );
+
+    const btnCriarTipo =
+        document.getElementById(
+            'criarTipoInvestimento'
+        );
+
+    const btnSalvar =
+        document.getElementById(
+            'salvarInvestimento'
+        );
+
+    if(!isOperador){
+
+        if(btnNovoInvestimento){
+            btnNovoInvestimento.style.display = 'none';
+        }
+
+        if(btnCriarTipo){
+            btnCriarTipo.style.display = 'none';
+        }
+
+        if(btnSalvar){
+            btnSalvar.style.display = 'none';
+        }
+
+    }
+
+}
+
+async function carregarTiposInvestimento(){
+
+    const response =
+    await fetch(
+        '/api/tiposInvestimento'
     );
 
-console.log(meses);
-console.log(investimentos);
+    tiposInvestimento =
+    await response.json();
 
+    preencherSelectTipoInvestimento();
 
-    let cabecalho = `
+}
 
-        <tr>
+function preencherSelectTipoInvestimento(){
 
-            <th>
-                Investimento
-            </th>
+    const select =
+        document.getElementById(
+            'tipoInvestimento'
+        );
 
+    if(!select){
+        return;
+    }
+
+    select.innerHTML = `
+        <option value="">
+            Selecione
+        </option>
     `;
 
-    meses.forEach(mes=>{
+    tiposInvestimento.forEach(tipo => {
 
-        cabecalho += `
-            <th>${mes}</th>
+        select.innerHTML += `
+            <option value="${tipo.TipoInvestimento}">
+                ${tipo.TipoInvestimento}
+            </option>
         `;
 
     });
 
-    cabecalho += `
-        </tr>
+    select.innerHTML += `
+        <option value="Outros">
+            Outros
+        </option>
     `;
 
-    document
-    .getElementById(
-        'cabecalhoInvestimento'
-    )
-    .innerHTML =
-    cabecalho;
+}
 
-    let linha = `
-    <tr>
+function montarTabela(
+    investimentos
+){
 
-        <td>
-            ${distribuidor.RazaoSocial}
-        </td>
-    `;
+    const tbody =
+    document.getElementById(
+        'corpoInvestimento'
+    );
 
-    meses.forEach(mes=>{
+    tbody.innerHTML = '';
 
-        const registro =
-        investimentos.find(
+    investimentos.forEach(investimento => {
 
-            i=>
+        tbody.innerHTML += `
 
-            i.MesAnoInvestimento
-            ===
-            mes
+            <tr
+                class="linhaInvestimento"
+                data-id="${investimento.CodigoInvestimento}"
+            >
 
-        );
-
-        linha += `
-            <td>
-
-                <div class="campo-moeda">
-
-                    <span>R$</span>
-
+                <td>
                     <input
-                        type="number"
-                        class="estoque"
-                        step="0.01"
-                        data-mes="${mes}"
-                        value="${
-                            registro
-                            ?
-                            registro.ValorInvestimento
-                            :
-                            ''
-                        }"
+                        type="text"
+                        class="tipoInvestimentoTabela"
+                        value="${investimento.TipoInvestimento || ''}"
+                        ${isOperador ? '' : 'readonly'}
                     >
+                </td>
 
-                </div>
+                <td>
+                    <input
+                        type="date"
+                        class="dataInvestimentoTabela"
+                        value="${formatarDataInput(investimento.DataInvestimento)}"
+                        ${isOperador ? '' : 'readonly'}
+                    >
+                </td>
 
-            </td>
-            `;
+                <td>
+                    <div class="campo-moeda">
+
+                        <span>R$</span>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="estoque valorInvestimentoTabela"
+                            value="${investimento.ValorInvestimento || ''}"
+                            ${isOperador ? '' : 'readonly'}
+                        >
+
+                    </div>
+                </td>
+
+                <td>
+                    <input
+                        type="text"
+                        class="observacaoInvestimentoTabela"
+                        value="${investimento.ObservacaoInvestimento || ''}"
+                        ${isOperador ? '' : 'readonly'}
+                    >
+                </td>
+
+            </tr>
+
+        `;
 
     });
 
-    linha += `
-        </tr>
-    `;
-document
-.getElementById(
-    'corpoInvestimento'
-)
-.innerHTML =
-linha;
+    configurarCalculoTotalInvestimento();
 
-configurarCalculoTotalInvestimento();
-calcularTotalInvestimento();
+    calcularTotalInvestimento();
+
+}
+
+function configurarEventosInvestimento(){
+
+    const btnNovoInvestimento =
+        document.getElementById(
+            'novoInvestimento'
+        );
+
+    const btnCriarTipo =
+        document.getElementById(
+            'criarTipoInvestimento'
+        );
+
+    const btnFecharModalInvestimento =
+        document.getElementById(
+            'fecharModalInvestimento'
+        );
+
+    const btnFecharModalTipo =
+        document.getElementById(
+            'fecharModalTipoInvestimento'
+        );
+
+    const btnAdicionarInvestimento =
+        document.getElementById(
+            'adicionarInvestimento'
+        );
+
+    const btnSalvarTipo =
+        document.getElementById(
+            'salvarTipoInvestimento'
+        );
+
+    const selectTipo =
+        document.getElementById(
+            'tipoInvestimento'
+        );
+
+    if(btnNovoInvestimento){
+
+        btnNovoInvestimento.onclick =
+        () => {
+
+            limparModalInvestimento();
+
+            document
+            .getElementById(
+                'modalInvestimento'
+            )
+            .style.display =
+                'block';
+
+        };
+
+    }
+
+    if(btnCriarTipo){
+
+        btnCriarTipo.onclick =
+        () => {
+
+            document
+            .getElementById(
+                'novoTipoInvestimento'
+            )
+            .value = '';
+
+            document
+            .getElementById(
+                'modalTipoInvestimento'
+            )
+            .style.display =
+                'block';
+
+        };
+
+    }
+
+    if(btnFecharModalInvestimento){
+
+        btnFecharModalInvestimento.onclick =
+        () => {
+
+            document
+            .getElementById(
+                'modalInvestimento'
+            )
+            .style.display =
+                'none';
+
+        };
+
+    }
+
+    if(btnFecharModalTipo){
+
+        btnFecharModalTipo.onclick =
+        () => {
+
+            document
+            .getElementById(
+                'modalTipoInvestimento'
+            )
+            .style.display =
+                'none';
+
+        };
+
+    }
+
+    if(btnAdicionarInvestimento){
+
+        btnAdicionarInvestimento.onclick =
+            adicionarInvestimento;
+
+    }
+
+    if(btnSalvarTipo){
+
+        btnSalvarTipo.onclick =
+            salvarTipoInvestimento;
+
+    }
+
+    if(selectTipo){
+
+        selectTipo.onchange =
+        () => {
+
+            const containerOutro =
+                document.getElementById(
+                    'containerOutroTipoInvestimento'
+                );
+
+            if(selectTipo.value === 'Outros'){
+
+                containerOutro.style.display =
+                    'block';
+
+            }else{
+
+                containerOutro.style.display =
+                    'none';
+
+            }
+
+        };
+
+    }
+
+}
+
+function limparModalInvestimento(){
+
+    document.getElementById(
+        'tipoInvestimento'
+    ).value = '';
+
+    document.getElementById(
+        'outroTipoInvestimento'
+    ).value = '';
+
+    document.getElementById(
+        'containerOutroTipoInvestimento'
+    ).style.display = 'none';
+
+    document.getElementById(
+        'dataInvestimento'
+    ).value = '';
+
+    document.getElementById(
+        'valorInvestimento'
+    ).value = '';
+
+    document.getElementById(
+        'observacaoInvestimento'
+    ).value = '';
+
+}
+
+async function adicionarInvestimento(){
+
+    if(!isOperador){
+
+        alert(
+            'Representantes não podem cadastrar investimentos.'
+        );
+
+        return;
+
+    }
+
+    let tipoInvestimento =
+        document
+        .getElementById(
+            'tipoInvestimento'
+        )
+        .value;
+
+    if(tipoInvestimento === 'Outros'){
+
+        tipoInvestimento =
+            document
+            .getElementById(
+                'outroTipoInvestimento'
+            )
+            .value
+            .trim();
+
+    }
+
+    const dados = {
+
+        TipoInvestimento:
+            tipoInvestimento,
+
+        DataInvestimento:
+            document
+            .getElementById(
+                'dataInvestimento'
+            )
+            .value,
+
+        ValorInvestimento:
+            document
+            .getElementById(
+                'valorInvestimento'
+            )
+            .value,
+
+        ObservacaoInvestimento:
+            document
+            .getElementById(
+                'observacaoInvestimento'
+            )
+            .value
+            .trim()
+
+    };
+
+    if(!dados.TipoInvestimento){
+
+        alert(
+            'Informe o tipo de investimento.'
+        );
+
+        return;
+
+    }
+
+    if(!dados.DataInvestimento){
+
+        alert(
+            'Informe a data do investimento.'
+        );
+
+        return;
+
+    }
+
+    if(!dados.ValorInvestimento){
+
+        alert(
+            'Informe o valor do investimento.'
+        );
+
+        return;
+
+    }
+
+    const response =
+    await fetch(
+        `/api/investimentoDistribuidor/${codigoDistribuidor}`,
+        {
+            method: 'POST',
+
+            headers: {
+                'Content-Type':
+                    'application/json'
+            },
+
+            body:
+                JSON.stringify(
+                    dados
+                )
+        }
+    );
+
+    const resultado =
+    await response.json();
+
+    if(resultado.sucesso){
+
+        alert(
+            'Investimento cadastrado com sucesso.'
+        );
+
+        document
+        .getElementById(
+            'modalInvestimento'
+        )
+        .style.display =
+            'none';
+
+        carregarTela();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao cadastrar investimento.'
+        );
+
+    }
+
+}
+
+async function salvarTipoInvestimento(){
+
+    if(!isOperador){
+
+        alert(
+            'Representantes não podem criar tipos de investimento.'
+        );
+
+        return;
+
+    }
+
+    const tipoInvestimento =
+        document
+        .getElementById(
+            'novoTipoInvestimento'
+        )
+        .value
+        .trim();
+
+    if(!tipoInvestimento){
+
+        alert(
+            'Informe o tipo de investimento.'
+        );
+
+        return;
+
+    }
+
+    const response =
+    await fetch(
+        '/api/tiposInvestimento',
+        {
+            method: 'POST',
+
+            headers: {
+                'Content-Type':
+                    'application/json'
+            },
+
+            body:
+                JSON.stringify({
+                    TipoInvestimento:
+                        tipoInvestimento
+                })
+        }
+    );
+
+    const resultado =
+    await response.json();
+
+    if(resultado.sucesso){
+
+        alert(
+            'Tipo de investimento cadastrado.'
+        );
+
+        document
+        .getElementById(
+            'modalTipoInvestimento'
+        )
+        .style.display =
+            'none';
+
+        await carregarTiposInvestimento();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao cadastrar tipo de investimento.'
+        );
+
+    }
 
 }
 
@@ -167,15 +632,104 @@ document
     salvarInvestimentos
 );
 
-function formatarMoeda(valor){
+async function salvarInvestimentos(){
 
-    return valor.toLocaleString(
-        'pt-BR',
+    if(!isOperador){
+
+        alert(
+            'Representantes não podem editar investimentos.'
+        );
+
+        return;
+
+    }
+
+    const investimentos = [];
+
+    document
+    .querySelectorAll(
+        '.linhaInvestimento'
+    )
+    .forEach(linha => {
+
+        investimentos.push({
+
+            CodigoInvestimento:
+                linha.dataset.id,
+
+            TipoInvestimento:
+                linha
+                .querySelector(
+                    '.tipoInvestimentoTabela'
+                )
+                .value
+                .trim(),
+
+            DataInvestimento:
+                linha
+                .querySelector(
+                    '.dataInvestimentoTabela'
+                )
+                .value,
+
+            ValorInvestimento:
+                Number(
+                    linha
+                    .querySelector(
+                        '.valorInvestimentoTabela'
+                    )
+                    .value
+                ),
+
+            ObservacaoInvestimento:
+                linha
+                .querySelector(
+                    '.observacaoInvestimentoTabela'
+                )
+                .value
+                .trim()
+
+        });
+
+    });
+
+    const response =
+    await fetch(
+        '/api/investimentoDistribuidor',
         {
-            style: 'currency',
-            currency: 'BRL'
+            method: 'PUT',
+
+            headers: {
+                'Content-Type':
+                    'application/json'
+            },
+
+            body:
+                JSON.stringify(
+                    investimentos
+                )
         }
     );
+
+    const resultado =
+    await response.json();
+
+    if(resultado.sucesso){
+
+        alert(
+            'Investimentos salvos com sucesso.'
+        );
+
+        carregarTela();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao salvar investimentos.'
+        );
+
+    }
 
 }
 
@@ -183,7 +737,7 @@ function configurarCalculoTotalInvestimento(){
 
     document
     .querySelectorAll(
-        '.estoque'
+        '.valorInvestimentoTabela'
     )
     .forEach(input => {
 
@@ -202,7 +756,7 @@ function calcularTotalInvestimento(){
 
     document
     .querySelectorAll(
-        '.estoque'
+        '.valorInvestimentoTabela'
     )
     .forEach(input => {
 
@@ -235,95 +789,33 @@ function calcularTotalInvestimento(){
 
 }
 
-async function salvarInvestimentos(){
+function formatarMoeda(valor){
 
-    const registros = [];
-
-    document
-    .querySelectorAll(
-        '.estoque'
-    )
-    .forEach(input=>{
-
-        if(input.value !== ''){
-
-            registros.push({
-
-                MesAnoInvestimento:
-                    input.dataset.mes,
-
-                ValorInvestimento:
-                    Number(
-                        input.value
-                    )
-
-            });
-
-        }
-
-    });
-
-    const response =
-    await fetch(
-
-        `/api/investimentoDistribuidor/${codigoDistribuidor}`,
-
+    return Number(valor || 0).toLocaleString(
+        'pt-BR',
         {
-
-            method:'POST',
-
-            headers:{
-                'Content-Type':
-                'application/json'
-            },
-
-            body:
-            JSON.stringify(
-                registros
-            )
-
+            style: 'currency',
+            currency: 'BRL'
         }
-
     );
-
-    const resultado =
-    await response.json();
-
-    if(resultado.sucesso){
-
-        alert(
-            'Investimentos salvos com sucesso'
-        );
-
-    }
 
 }
 
-async function carregarTela(){
+function formatarDataInput(data){
 
-    const meses =
-        gerarMeses();
+    if(!data){
+        return '';
+    }
 
-    const responseInvestimento =
-    await fetch(
-        `/api/investimentoDistribuidor/${codigoDistribuidor}`
-    );
+    const dataObj =
+        new Date(data);
 
-    const investimentos =
-    await responseInvestimento.json();
+    if(isNaN(dataObj)){
+        return '';
+    }
 
-    const responseDistribuidor =
-    await fetch(
-        `/api/distribuidor/${codigoDistribuidor}`
-    );
-
-    const distribuidor =
-    await responseDistribuidor.json();
-
-    montarTabela(
-        investimentos,
-        meses,
-        distribuidor
-    );
+    return dataObj
+        .toISOString()
+        .split('T')[0];
 
 }

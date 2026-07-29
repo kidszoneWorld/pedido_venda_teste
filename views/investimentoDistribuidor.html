@@ -61,9 +61,23 @@
 
         <button
             class="button"
+            id="novoInvestimento"
+        >
+            Novo Investimento
+        </button>
+
+        <button
+            class="button"
+            id="criarTipoInvestimento"
+        >
+            Criar Tipo de Investimento
+        </button>
+
+        <button
+            class="button"
             id="salvarInvestimento"
         >
-            Salvar
+            Salvar Alterações
         </button>
 
     </div>
@@ -83,21 +97,153 @@
 
     </div>
 
-    <div class="table-container">
 
-        <table class="table" border="1" width="100%">
+        <div class="table-container">
 
-            <thead
-                id="cabecalhoInvestimento"
-            >
+    <table class="table" border="1" width="100%">
+
+            <thead id="cabecalhoInvestimento">
+
+                <tr>
+                    <th>Tipo Investimento</th>
+                    <th>Data Investimento</th>
+                    <th>Valor Investimento</th>
+                    <th>Observação</th>
+                </tr>
+
             </thead>
 
-            <tbody
-                id="corpoInvestimento"
-            >
+            <tbody id="corpoInvestimento">
             </tbody>
 
         </table>
+
+    </div>
+
+
+
+</div>
+
+<div
+    id="modalInvestimento"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <button
+            id="fecharModalInvestimento"
+            class="button"
+        >
+            ×
+        </button>
+
+        <h2>
+            Novo Investimento
+        </h2>
+
+        <label>Tipo de Investimento</label>
+        <br>
+
+        <select id="tipoInvestimento">
+            <option value="">
+                Selecione
+            </option>
+        </select>
+
+        <br><br>
+
+        <div id="containerOutroTipoInvestimento" style="display:none;">
+
+            <label>Informe o Tipo de Investimento</label>
+            <br>
+
+            <input
+                type="text"
+                id="outroTipoInvestimento"
+                placeholder="Digite o tipo de investimento"
+            >
+
+            <br><br>
+
+        </div>
+
+        <label>Data do Investimento</label>
+        <br>
+
+        <input
+            type="date"
+            id="dataInvestimento"
+        >
+
+        <br><br>
+
+        <label>Valor do Investimento</label>
+        <br>
+
+        <input
+            type="number"
+            step="0.01"
+            id="valorInvestimento"
+            placeholder="Valor"
+        >
+
+        <br><br>
+
+        <label>Observação</label>
+        <br>
+
+        <input
+            type="text"
+            id="observacaoInvestimento"
+            placeholder="Observação"
+        >
+
+        <br><br>
+
+        <button
+            class="button"
+            id="adicionarInvestimento"
+        >
+            Adicionar
+        </button>
+
+    </div>
+
+</div>
+
+<div
+    id="modalTipoInvestimento"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <button
+            id="fecharModalTipoInvestimento"
+            class="button"
+        >
+            ×
+        </button>
+
+        <h2>
+            Criar Tipo de Investimento
+        </h2>
+
+        <input
+            type="text"
+            id="novoTipoInvestimento"
+            placeholder="Nome do tipo de investimento"
+        >
+
+        <br><br>
+
+        <button
+            class="button"
+            id="salvarTipoInvestimento"
+        >
+            Salvar Tipo
+        </button>
 
     </div>
 

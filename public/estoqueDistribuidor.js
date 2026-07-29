@@ -4,6 +4,8 @@ window.location.pathname
 .split('/')
 .pop();
 
+let isOperador = false;
+
 document.addEventListener(
     'DOMContentLoaded',
     carregarTela
@@ -48,6 +50,17 @@ function gerarMeses(){
 }
 
 async function carregarTela(){
+
+    const sessionResponse =
+    await fetch(
+        '/session-data'
+    );
+
+    const sessionData =
+    await sessionResponse.json();
+
+    isOperador =
+        !sessionData.userNumero;
 
     const meses =
         gerarMeses();
@@ -144,45 +157,58 @@ function montarTabela(
         meses.forEach((mes, colunaIndex) => {
 
 
-            const registro =
-            estoque.find(
-                e =>
+const registro =
+estoque.find(
+    e =>
 
-                e.CodigoItem ==
-                item.CodigoItem
+    e.CodigoItem ==
+    item.CodigoItem
 
-                &&
+    &&
 
-                e.MesAnoEstoque ==
-                mes
-            );
+    e.MesAnoEstoque ==
+    mes
+);
 
-            linha += `
-                <td>
+const estoqueJaExiste =
+    registro
+    ? true
+    : false;
 
-                    <input
-                        type="number"
-                        class="estoque"
+linha += `
+    <td>
 
-                        data-linha="${linhaIndex}"
+        <input
+            type="number"
+            class="estoque"
 
-                        data-coluna="${colunaIndex}"
+            data-linha="${linhaIndex}"
 
-                        data-item="${item.CodigoItem}"
+            data-coluna="${colunaIndex}"
 
-                        data-mes="${mes}"
+            data-item="${item.CodigoItem}"
 
-                        value="${
-                            registro
-                            ?
-                            registro.Quantidade
-                            :
-                            ''
-                        }"
-                    >
+            data-mes="${mes}"
 
-                </td>
-            `;
+            data-existe="${estoqueJaExiste ? '1' : '0'}"
+
+            value="${
+                registro
+                ?
+                registro.Quantidade
+                :
+                ''
+            }"
+
+            ${
+                !isOperador && estoqueJaExiste
+                ? 'readonly title="Representantes não podem editar estoque já cadastrado"'
+                : ''
+            }
+        >
+
+    </td>
+`;
 
         });
 
@@ -204,18 +230,31 @@ document
 
 async function salvarEstoque(){
 
-    const registros =
-    [];
+    const registros = [];
 
     document
     .querySelectorAll(
         '.estoque'
     )
-    .forEach(input=>{
+    .forEach(input => {
 
+        const registroJaExiste =
+            input.dataset.existe === '1';
+
+        /*
+            Representante só pode inserir.
+            Se o registro já existe, não envia para o backend.
+        */
         if(
-            input.value !== ''
+            !isOperador &&
+            registroJaExiste
         ){
+
+            return;
+
+        }
+
+        if(input.value !== ''){
 
             registros.push({
 
@@ -238,25 +277,20 @@ async function salvarEstoque(){
 
     const response =
     await fetch(
-
         `/api/estoqueDistribuidor/${codigoDistribuidor}`,
-
         {
+            method: 'POST',
 
-            method:'POST',
-
-            headers:{
+            headers: {
                 'Content-Type':
-                'application/json'
+                    'application/json'
             },
 
             body:
-            JSON.stringify(
-                registros
-            )
-
+                JSON.stringify(
+                    registros
+                )
         }
-
     );
 
     const resultado =
@@ -266,6 +300,15 @@ async function salvarEstoque(){
 
         alert(
             'Estoque salvo com sucesso'
+        );
+
+        carregarTela();
+
+    }else{
+
+        alert(
+            resultado.erro ||
+            'Erro ao salvar estoque'
         );
 
     }

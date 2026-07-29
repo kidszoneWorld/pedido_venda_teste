@@ -1,7 +1,11 @@
 let contatoEditando = null;
+let isOperador = false;
+
 document.addEventListener(
     'DOMContentLoaded',
     async ()=>{
+
+        await verificarPermissaoInfo();
 
         await carregarDistribuidor();
 
@@ -9,6 +13,26 @@ document.addEventListener(
 
     }
 );
+
+async function verificarPermissaoInfo(){
+
+    const response =
+    await fetch(
+        '/session-data'
+    );
+
+    const sessionData =
+    await response.json();
+
+    const userNumero =
+        sessionData?.userNumero || null;
+
+    isOperador =
+        !userNumero;
+
+    aplicarPermissaoCamposDistribuidor();
+
+}
 
 async function editarContato(codigoContato){
 
@@ -74,6 +98,7 @@ document
         document.getElementById('HobbyContato').value = '';
         document.getElementById('EmailContato').value = '';
         document.getElementById('TelefoneContato').value = '';
+        document.getElementById('ObservacaoContato').value = '';
 
         document
         .getElementById(
@@ -134,6 +159,11 @@ document
     TelefoneContato:
         document.getElementById(
             'TelefoneContato'
+        ).value.trim(),
+
+    ObservacaoContato:
+        document.getElementById(
+            'ObservacaoContato'
         ).value.trim()
 
 };
@@ -322,13 +352,16 @@ async function carregarDistribuidor(){
     ).value =
     d.Representante;
 
+    aplicarPermissaoCamposDistribuidor();
 }
+
 async function carregarContatos(){
 
     const response =
     await fetch(
         `/api/distribuidor/${codigoDistribuidor}/contatos`
     );
+
     const contatos =
     await response.json();
 
@@ -337,53 +370,79 @@ async function carregarContatos(){
         'listaContatos'
     );
 
-    tbody.innerHTML='';
+    tbody.innerHTML = '';
 
-    contatos.forEach(c=>{
-        
+    contatos.forEach(c => {
+
         tbody.innerHTML += `
 
-        <tr>
+        <tr
+            class="linhaContato"
+            data-id="${c.CodigoContato}"
+        >
 
             <td>
-                ${c.NomeContato}
+                <input
+                    type="text"
+                    class="campo-contato-bloqueavel nomeContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+                    value="${c.NomeContato || ''}"
+                    ${isOperador ? '' : 'readonly'}
+                >
             </td>
 
             <td>
-                ${c.FuncaoContato}
-            </td>
-            <td>
-                ${formatarData(c.DataNascimentoContato)}
-            </td>
-            <td>
-                ${c.HobbyContato}
-            </td>
-            <td>
-                ${c.EmailContato}
+                <input
+                    type="text"
+                    class="campo-contato-bloqueavel funcaoContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+                    value="${c.FuncaoContato || ''}"
+                    ${isOperador ? '' : 'readonly'}
+                >
             </td>
 
             <td>
-                ${formatarTelefone(c.TelefoneContato)}
+                <input
+                    type="date"
+                    class="campo-contato-bloqueavel dataNascimentoContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+
+                    value="${formatarDataInput(c.DataNascimentoContato)}"
+                    ${isOperador ? '' : 'readonly'}
+                >
             </td>
 
             <td>
+                <input
+                    type="text"
+                    class="campo-contato-bloqueavel hobbyContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+                    value="${c.HobbyContato || ''}"
+                    ${isOperador ? '' : 'readonly'}
+                >
+            </td>
 
+            <td>
+                <input
+                    type="text"
+                    class="campo-contato-bloqueavel emailContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}                    
+                    value="${c.EmailContato || ''}"
+                    ${isOperador ? '' : 'readonly'}
+                >
+            </td>
 
-                    <button
-                        class="button"
-                        onclick="editarContato(${c.CodigoContato})"
-                    >
-                        Editar
-                    </button>
+            <td>
+                <input
+                    type="text"
+                    class="campo-contato-bloqueavel telefoneContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}                    
+                    value="${c.TelefoneContato || ''}"
+                    ${isOperador ? '' : 'readonly'}
+                >
+            </td>
 
-                    <button
-                        class="button"
-                        onclick="excluirContato(${c.CodigoContato})"
-                    >
-                        Excluir
-                    </button>
-                </td>
-
+            <td>
+                <input
+                    type="text"
+                    class="observacaoContatoTabela"
+                    value="${c.ObservacaoContato || ''}"
+                >
+            </td>
 
         </tr>
 
@@ -393,10 +452,23 @@ async function carregarContatos(){
 
 }
 
-function formatarData(dataSemFormatar){
-    let data = new Date(dataSemFormatar);
-    let formatadoBr = data.toLocaleDateString("pt-BR");
-    return formatadoBr;
+function formatarDataInput(data){
+
+    if(!data){
+        return '';
+    }
+
+    const dataObj =
+        new Date(data);
+
+    if(isNaN(dataObj)){
+        return '';
+    }
+
+    return dataObj
+        .toISOString()
+        .split('T')[0];
+
 }
 
 function formatarTelefone(numero) {
@@ -464,6 +536,221 @@ async function excluirContato(codigoContato){
         alert(
             'Erro ao excluir contato.'
         );
+
+    }
+
+}
+const btnSalvarContatosTabela =
+    document.getElementById(
+        'salvarContatosTabela'
+    );
+
+if(btnSalvarContatosTabela){
+
+    btnSalvarContatosTabela.addEventListener(
+        'click',
+        salvarContatosTabela
+    );
+
+}
+async function salvarContatosTabela(){
+
+    const linhas =
+        document.querySelectorAll(
+            '.linhaContato'
+        );
+
+    for(const linha of linhas){
+
+        const codigoContato =
+            linha.dataset.id;
+
+        let dados;
+
+        if(isOperador){
+
+            dados = {
+
+                NomeContato:
+                    linha.querySelector(
+                        '.nomeContatoTabela'
+                    ).value.trim(),
+
+                FuncaoContato:
+                    linha.querySelector(
+                        '.funcaoContatoTabela'
+                    ).value.trim(),
+
+                DataNascimentoContato:
+                    linha.querySelector(
+                        '.dataNascimentoContatoTabela'
+                    ).value,
+
+                HobbyContato:
+                    linha.querySelector(
+                        '.hobbyContatoTabela'
+                    ).value.trim(),
+
+                EmailContato:
+                    linha.querySelector(
+                        '.emailContatoTabela'
+                    ).value.trim(),
+
+                TelefoneContato:
+                    linha.querySelector(
+                        '.telefoneContatoTabela'
+                    ).value.trim(),
+
+                ObservacaoContato:
+                    linha.querySelector(
+                        '.observacaoContatoTabela'
+                    ).value.trim()
+
+            };
+
+            if(
+                !dados.NomeContato ||
+                !dados.FuncaoContato ||
+                !dados.EmailContato ||
+                !dados.TelefoneContato
+            ){
+
+                alert(
+                    'Nome, Função, E-mail e Telefone são obrigatórios.'
+                );
+
+                return;
+
+            }
+
+        }else{
+
+            dados = {
+
+                ObservacaoContato:
+                    linha.querySelector(
+                        '.observacaoContatoTabela'
+                    ).value.trim()
+
+            };
+
+        }
+
+        const response =
+        await fetch(
+            `/api/contatos/${codigoContato}`,
+            {
+                method: 'PUT',
+
+                headers: {
+                    'Content-Type':
+                    'application/json'
+                },
+
+                body:
+                    JSON.stringify(
+                        dados
+                    )
+            }
+        );
+
+        const resultado =
+        await response.json();
+
+        if(!resultado.sucesso){
+
+            alert(
+                resultado.erro ||
+                'Erro ao salvar contato.'
+            );
+
+            return;
+
+        }
+
+    }
+
+    alert(
+        'Contatos salvos com sucesso.'
+    );
+
+    carregarContatos();
+
+}
+
+function aplicarPermissaoCamposDistribuidor(){
+
+    const camposDistribuidor = [
+        'razaoSocial',
+        'cnpj',
+        'cidade',
+        'uf',
+        'representante'
+    ];
+
+    const botaoSalvarDistribuidor =
+        document.getElementById(
+            'salvarDistribuidor'
+        );
+
+    if(!isOperador){
+
+        camposDistribuidor.forEach(id => {
+
+            const campo =
+                document.getElementById(id);
+
+            if(campo){
+
+                campo.readOnly = true;
+
+                campo.classList.add(
+                    'campo-distribuidor-bloqueado'
+                );
+
+                campo.title =
+                    'Campo bloqueado para representantes';
+
+            }
+
+        });
+
+        if(botaoSalvarDistribuidor){
+
+            botaoSalvarDistribuidor.style.display =
+                'none';
+
+        }
+
+    }else{
+
+        camposDistribuidor.forEach(id => {
+
+            const campo =
+                document.getElementById(id);
+
+            if(campo){
+
+                campo.readOnly = false;
+
+                campo.classList.remove(
+                    'campo-distribuidor-bloqueado'
+                );
+
+                campo.classList.add(
+                    'campo-distribuidor-liberado'
+                );
+
+            }
+
+        });
+
+        if(botaoSalvarDistribuidor){
+
+            botaoSalvarDistribuidor.style.display =
+                'inline-block';
+
+        }
 
     }
 

@@ -387,6 +387,27 @@ router.get(
 
     }
 );
+
+
+router.put(
+    '/api/investimentoDistribuidor',
+    authMiddleware,
+    investimentoDistribuidorController.atualizarInvestimentos
+);
+
+router.get(
+    '/api/tiposInvestimento',
+    authMiddleware,
+    investimentoDistribuidorController.listarTiposInvestimento
+);
+
+router.post(
+    '/api/tiposInvestimento',
+    authMiddleware,
+    investimentoDistribuidorController.criarTipoInvestimento
+);
+
+
 router.get(
     '/api/displayDistribuidor/:codigoDistribuidor',
     authMiddleware,
@@ -551,7 +572,7 @@ router.get(
 router.post(
     '/api/investimentoDistribuidor/:codigoDistribuidor',
     authMiddleware,
-    investimentoDistribuidorController.salvarInvestimentos
+    investimentoDistribuidorController.inserirInvestimento
 );
 
 router.delete(
