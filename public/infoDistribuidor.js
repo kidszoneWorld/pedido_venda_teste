@@ -81,6 +81,11 @@ async function editarContato(codigoContato){
         contato.TelefoneContato || '';
 
     document.getElementById(
+        'ObservacaoContato'
+    ).value =
+        contato.ObservacaoContato || '';
+
+    document.getElementById(
         'modalContato'
     ).style.display = 'block';
 
@@ -384,63 +389,64 @@ async function carregarContatos(){
             <td>
                 <input
                     type="text"
-                    class="campo-contato-bloqueavel nomeContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+                    class="campo-contato-bloqueavel nomeContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"
                     value="${c.NomeContato || ''}"
-                    ${isOperador ? '' : 'readonly'}
+                    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
                 >
             </td>
 
             <td>
                 <input
                     type="text"
-                    class="campo-contato-bloqueavel funcaoContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+                    class="campo-contato-bloqueavel funcaoContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"
                     value="${c.FuncaoContato || ''}"
-                    ${isOperador ? '' : 'readonly'}
+                    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
                 >
             </td>
 
             <td>
                 <input
                     type="date"
-                    class="campo-contato-bloqueavel dataNascimentoContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
-
+                    class="campo-contato-bloqueavel dataNascimentoContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"
                     value="${formatarDataInput(c.DataNascimentoContato)}"
-                    ${isOperador ? '' : 'readonly'}
+                    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
                 >
             </td>
 
             <td>
                 <input
                     type="text"
-                    class="campo-contato-bloqueavel hobbyContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
+                    class="campo-contato-bloqueavel hobbyContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"
                     value="${c.HobbyContato || ''}"
-                    ${isOperador ? '' : 'readonly'}
+                    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
                 >
             </td>
 
             <td>
                 <input
                     type="text"
-                    class="campo-contato-bloqueavel emailContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}                    
+                    class="campo-contato-bloqueavel emailContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"
                     value="${c.EmailContato || ''}"
-                    ${isOperador ? '' : 'readonly'}
+                    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
                 >
             </td>
 
             <td>
                 <input
                     type="text"
-                    class="campo-contato-bloqueavel telefoneContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"4    value="${c.NomeContato || ''}"5    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}                    
+                    class="campo-contato-bloqueavel telefoneContatoTabela ${isOperador ? 'campo-liberado' : 'campo-bloqueado'}"
                     value="${c.TelefoneContato || ''}"
-                    ${isOperador ? '' : 'readonly'}
+                    ${isOperador ? '' : 'readonly title="Campo bloqueado para representantes"'}
                 >
             </td>
 
             <td>
                 <input
                     type="text"
-                    class="observacaoContatoTabela"
+                    class="observacaoContatoTabela campo-observacao-liberado"
                     value="${c.ObservacaoContato || ''}"
+                    title="Campo liberado para edição"
+                    placeholder="Digite uma observação"
                 >
             </td>
 

@@ -35,7 +35,7 @@ exports.excluirContato = async (req,res)=>{
 
 
 exports.salvarContato = async (req,res)=>{
-    
+
     try{
 
         const {
@@ -44,22 +44,23 @@ exports.salvarContato = async (req,res)=>{
             DataNascimentoContato,
             HobbyContato,
             EmailContato,
-            TelefoneContato
+            TelefoneContato,
+            ObservacaoContato
         } = req.body;
 
         if(
-                !NomeContato ||
-                !FuncaoContato ||
-                !EmailContato ||
-                !TelefoneContato
-            ){
+            !NomeContato ||
+            !FuncaoContato ||
+            !EmailContato ||
+            !TelefoneContato
+        ){
 
-                return res.status(400).json({
-                    sucesso:false,
-                    mensagem:'Nome, Função, E-mail e Telefone são obrigatórios.'
-                });
+            return res.status(400).json({
+                sucesso:false,
+                mensagem:'Nome, Função, E-mail e Telefone são obrigatórios.'
+            });
 
-            }
+        }
 
         const resultado =
         await pool.query(
@@ -74,12 +75,12 @@ exports.salvarContato = async (req,res)=>{
                 "DataNascimentoContato",
                 "HobbyContato",
                 "EmailContato",
-                "TelefoneContato"
+                "TelefoneContato",
                 "ObservacaoContato"
             )
             VALUES
             (
-                $1,$2,$3,$4,$5,$6,$7,8$
+                $1,$2,$3,$4,$5,$6,$7,$8
             )
             RETURNING *
             `,
@@ -93,6 +94,7 @@ exports.salvarContato = async (req,res)=>{
                 TelefoneContato,
                 ObservacaoContato
             ]
+
         );
 
         res.json({
