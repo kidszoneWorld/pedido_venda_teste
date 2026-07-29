@@ -76,11 +76,11 @@ function montarTabelaDistribuidores(distribuidores){
 
                 <td>
                     <button class="button" onclick="abrirSellIn(${d.CodigoDistribuidor})">
-                        SellIn
+                        Sell In
                     </button>
 
                     <button class="button" onclick="abrirSellOut(${d.CodigoDistribuidor})">
-                        SellOut
+                        Sell Out
                     </button>
 
                     <button class="button" onclick="abrirDisplay(${d.CodigoDistribuidor})">
