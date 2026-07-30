@@ -227,7 +227,7 @@ async function salvarPositivacao(){
         );
 
         carregarTela();
-
+        location.reload();
     }else{
 
         alert(

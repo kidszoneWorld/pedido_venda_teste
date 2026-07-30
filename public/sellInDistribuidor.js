@@ -495,16 +495,16 @@ async function salvarSellIn(){
     if(resultado.sucesso){
 
         alert(
-            'SellIn salvo com sucesso.'
+            'Sell In salvo com sucesso.'
         );
-
         carregarTela();
+        location.reload();
 
     }else{
 
         alert(
             resultado.erro ||
-            'Erro ao salvar SellIn.'
+            'Erro ao salvar Sell In.'
         );
 
     }

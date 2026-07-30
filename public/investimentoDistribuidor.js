@@ -721,7 +721,7 @@ async function salvarInvestimentos(){
         );
 
         carregarTela();
-
+        location.reload();
     }else{
 
         alert(

@@ -319,7 +319,7 @@ async function salvarRedes(){
         );
 
         carregarTela();
-
+        location.reload();
     }else{
 
         alert(

@@ -203,7 +203,7 @@ function montarTabela(
                                 }"
                                 ${
                                     !isOperador && sellOutJaExiste
-                                    ? 'readonly title="Representantes não podem editar SellOut já cadastrado"'
+                                    ? 'readonly title="Representantes não podem editar Sell Out já cadastrado"'
                                     : ''
                                 }
                             >
@@ -308,14 +308,15 @@ async function salvarSellOut(){
     if(resultado.sucesso){
 
         alert(
-            'SellOut salvo com sucesso.'
+            'Sell Out salvo com sucesso.'
         );
+        location.reload();
 
     }else{
 
         alert(
             resultado.erro ||
-            'Erro ao salvar SellOut.'
+            'Erro ao salvar Sell Out.'
         );
 
     }

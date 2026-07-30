@@ -303,7 +303,7 @@ async function salvarEstoque(){
         );
 
         carregarTela();
-
+        location.reload();
     }else{
 
         alert(

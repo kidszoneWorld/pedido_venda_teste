@@ -524,7 +524,7 @@ async function excluirContato(codigoContato){
             );
 
             carregarContatos();
-
+            location.reload();
         }else{
 
             alert(
@@ -681,7 +681,7 @@ async function salvarContatosTabela(){
     );
 
     carregarContatos();
-
+    location.reload();
 }
 
 function aplicarPermissaoCamposDistribuidor(){
