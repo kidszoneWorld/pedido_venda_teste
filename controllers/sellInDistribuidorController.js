@@ -54,7 +54,14 @@ exports.listarSellIn = async (req, res) => {
 exports.salvarSellIn = async (req, res) => {
 
     try {
+        if(req.session.userNumero){
 
+            return res.status(403).json({
+                sucesso:false,
+                erro:'Representantes não podem editar informações de Sell In.'
+            });
+
+        }
         const codigoDistribuidor =
             req.params.codigoDistribuidor;
 

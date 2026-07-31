@@ -15,10 +15,10 @@ async(req,res)=>{
             FROM "TbRedes"
 
             WHERE
-            "CodigoDistribuidor" = $1
+                "CodigoDistribuidor" = $1
 
             ORDER BY
-            "RedeRazaoSocial"
+                "RedeRazaoSocial"
             `,
             [
                 req.params.codigoDistribuidor
@@ -36,7 +36,9 @@ async(req,res)=>{
         console.error(err);
 
         res.status(500).json({
-            erro:err.message
+            sucesso:false,
+            erro:err.message,
+            detalhe:err.detail
         });
 
     }
@@ -49,7 +51,39 @@ async(req,res)=>{
     try{
 
         const rede =
-        req.body;
+            req.body;
+
+        console.log(
+            'Nova rede recebida:',
+            rede
+        );
+
+        if(!rede.RedeRazaoSocial){
+
+            return res.status(400).json({
+                sucesso:false,
+                erro:'Informe a razão social da rede.'
+            });
+
+        }
+
+        if(!rede.NomeFantasia){
+
+            return res.status(400).json({
+                sucesso:false,
+                erro:'Informe o nome fantasia da rede.'
+            });
+
+        }
+
+        if(!rede.DataInicioRede){
+
+            return res.status(400).json({
+                sucesso:false,
+                erro:'Informe a data de início da rede.'
+            });
+
+        }
 
         await pool.query(
 
@@ -64,7 +98,7 @@ async(req,res)=>{
                 "UF",
                 "SkuQuantidade",
                 "ValorPrimeiraCompra",
-                "RedeMesAno",
+                "DataInicioRede",
                 "ObservacaoRede"
             )
 
@@ -76,23 +110,31 @@ async(req,res)=>{
             `,
             [
 
-                req.params.codigoDistribuidor,
+                Number(
+                    req.params.codigoDistribuidor
+                ),
 
                 rede.RedeRazaoSocial,
 
                 rede.NomeFantasia,
 
-                rede.LojaQuantidade,
+                Number(
+                    rede.LojaQuantidade || 0
+                ),
 
-                rede.UF,
+                rede.UF || '',
 
-                rede.SkuQuantidade,
+                Number(
+                    rede.SkuQuantidade || 0
+                ),
 
-                rede.ValorPrimeiraCompra,
+                Number(
+                    rede.ValorPrimeiraCompra || 0
+                ),
 
-                rede.RedeMesAno,
+                rede.DataInicioRede,
 
-                rede.ObservacaoRede
+                rede.ObservacaoRede || ''
 
             ]
 
@@ -105,11 +147,16 @@ async(req,res)=>{
     }
     catch(err){
 
+        console.error(
+            'ERRO AO INSERIR REDE'
+        );
+
         console.error(err);
 
         res.status(500).json({
             sucesso:false,
-            erro:err.message
+            erro:err.message,
+            detalhe:err.detail
         });
 
     }
@@ -118,18 +165,20 @@ async(req,res)=>{
 
 exports.atualizarRede =
 async(req,res)=>{
-    if(req.session.userNumero){
 
-        return res.status(403).json({
-            sucesso:false,
-            erro:'Representantes não podem editar redes existentes.'
-        });
-
-    }
     try{
 
+        if(req.session.userNumero){
+
+            return res.status(403).json({
+                sucesso:false,
+                erro:'Representantes não podem editar redes existentes.'
+            });
+
+        }
+
         const redes =
-        req.body;
+            req.body;
 
         for(const rede of redes){
 
@@ -141,25 +190,25 @@ async(req,res)=>{
 
                 SET
 
-                "RedeRazaoSocial"=$1,
+                    "RedeRazaoSocial" = $1,
 
-                "NomeFantasia"=$2,
+                    "NomeFantasia" = $2,
 
-                "LojaQuantidade"=$3,
+                    "LojaQuantidade" = $3,
 
-                "UF"=$4,
+                    "UF" = $4,
 
-                "SkuQuantidade"=$5,
+                    "SkuQuantidade" = $5,
 
-                "ValorPrimeiraCompra"=$6,
+                    "ValorPrimeiraCompra" = $6,
 
-                "RedeMesAno"=$7,
+                    "DataInicioRede" = $7,
 
-                "ObservacaoRede"=$8
+                    "ObservacaoRede" = $8
 
                 WHERE
 
-                "CodigoRede"=$9
+                    "CodigoRede" = $9
                 `,
                 [
 
@@ -167,19 +216,27 @@ async(req,res)=>{
 
                     rede.NomeFantasia,
 
-                    rede.LojaQuantidade,
+                    Number(
+                        rede.LojaQuantidade || 0
+                    ),
 
-                    rede.UF,
+                    rede.UF || '',
 
-                    rede.SkuQuantidade,
+                    Number(
+                        rede.SkuQuantidade || 0
+                    ),
 
-                    rede.ValorPrimeiraCompra,
+                    Number(
+                        rede.ValorPrimeiraCompra || 0
+                    ),
 
-                    rede.RedeMesAno,
+                    rede.DataInicioRede || null,
 
-                    rede.ObservacaoRede,
+                    rede.ObservacaoRede || '',
 
-                    rede.CodigoRede
+                    Number(
+                        rede.CodigoRede
+                    )
 
                 ]
 
@@ -192,27 +249,21 @@ async(req,res)=>{
         });
 
     }
-catch(err){
+    catch(err){
 
-    console.error('ERRO INSERT REDE');
+        console.error(
+            'ERRO AO ATUALIZAR REDE'
+        );
 
-    console.error(err);
+        console.error(err);
 
-    console.error(err.detail);
+        res.status(500).json({
+            sucesso:false,
+            erro:err.message,
+            detalhe:err.detail
+        });
 
-    console.error(err.message);
-
-    res.status(500).json({
-
-        sucesso:false,
-
-        erro: err.message,
-
-        detalhe: err.detail
-
-    });
-
-}
+    }
 
 };
 
@@ -238,8 +289,7 @@ async(req,res)=>{
             FROM "TbRedes"
 
             WHERE
-
-            "CodigoRede" = $1
+                "CodigoRede" = $1
             `,
             [
                 req.params.codigoRede
@@ -258,7 +308,8 @@ async(req,res)=>{
 
         res.status(500).json({
             sucesso:false,
-            erro:err.message
+            erro:err.message,
+            detalhe:err.detail
         });
 
     }

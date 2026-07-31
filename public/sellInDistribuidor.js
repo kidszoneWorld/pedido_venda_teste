@@ -17,29 +17,48 @@ function gerarMeses(){
     const data =
         new Date();
 
+    const anoAtual =
+        data.getFullYear();
+
+    const anoAnterior =
+        anoAtual - 1;
+
+    // Últimos 3 meses do ano anterior: outubro, novembro e dezembro
     for(
-        let i = 12;
-        i >= 0;
-        i--
+        let mes = 10;
+        mes <= 12;
+        mes++
     ){
 
-        const d =
-            new Date(
-                data.getFullYear(),
-                data.getMonth() - i,
-                1
-            );
-
-        const mes =
-            String(
-                d.getMonth() + 1
-            ).padStart(
+        const mesFormatado =
+            String(mes)
+            .padStart(
                 2,
                 '0'
             );
 
         meses.push(
-            `${mes}/${d.getFullYear()}`
+            `${mesFormatado}/${anoAnterior}`
+        );
+
+    }
+
+    // Todos os meses do ano atual: janeiro até dezembro
+    for(
+        let mes = 1;
+        mes <= 12;
+        mes++
+    ){
+
+        const mesFormatado =
+            String(mes)
+            .padStart(
+                2,
+                '0'
+            );
+
+        meses.push(
+            `${mesFormatado}/${anoAtual}`
         );
 
     }
@@ -60,6 +79,21 @@ async function carregarTela(){
 
     isOperador =
         !sessionData.userNumero;
+
+    const btnSalvarSellIn =
+        document.getElementById(
+            'salvarSellIn'
+        );
+
+    if(
+        btnSalvarSellIn &&
+        !isOperador
+    ){
+
+        btnSalvarSellIn.style.display =
+            'none';
+
+    }
 
     const meses =
         gerarMeses();
@@ -141,7 +175,7 @@ function montarTabela(
     let linhaMeta = `
         <tr>
             <td>
-                Meta SellIn
+                Meta Sell In
             </td>
     `;
 
@@ -195,7 +229,7 @@ function montarTabela(
     let linhaSellIn = `
         <tr>
             <td>
-                Valor SellIn
+                Valor Sell In
             </td>
     `;
 
@@ -238,8 +272,8 @@ linhaSellIn += `
                     ''
                 }"
                 ${
-                    !isOperador && sellInJaExiste
-                    ? 'readonly title="Representantes não podem editar SellIn já cadastrado"'
+                    !isOperador
+                    ? 'readonly title="Representantes não podem editar Sell In"'
                     : ''
                 }
             >
@@ -387,55 +421,49 @@ document
 
 async function salvarSellIn(){
 
+    if(!isOperador){
+
+        alert(
+            'Representantes não podem editar informações de Sell In.'
+        );
+
+        return;
+
+    }
+
     const metas = [];
 
     const sellIn = [];
 
-    if(isOperador){
+    document
+    .querySelectorAll(
+        '.metaSellIn'
+    )
+    .forEach(input => {
 
-        document
-        .querySelectorAll(
-            '.metaSellIn'
-        )
-        .forEach(input => {
+        if(input.value !== ''){
 
-            if(input.value !== ''){
+            metas.push({
 
-                metas.push({
+                MesAnoMetaSellIn:
+                    input.dataset.mes,
 
-                    MesAnoMetaSellIn:
-                        input.dataset.mes,
+                MetaSellIn:
+                    Number(
+                        input.value
+                    )
 
-                    MetaSellIn:
-                        Number(
-                            input.value
-                        )
+            });
 
-                });
+        }
 
-            }
-
-        });
-
-    }
+    });
 
     document
     .querySelectorAll(
         '.valorSellIn'
     )
     .forEach(input => {
-
-        const registroJaExiste =
-            input.dataset.existe === '1';
-
-        if(
-            !isOperador &&
-            registroJaExiste
-        ){
-
-            return;
-
-        }
 
         if(input.value !== ''){
 
@@ -454,21 +482,6 @@ async function salvarSellIn(){
         }
 
     });
-
-    console.log(
-        'isOperador:',
-        isOperador
-    );
-
-    console.log(
-        'metas enviadas:',
-        metas
-    );
-
-    console.log(
-        'sellIn enviado:',
-        sellIn
-    );
 
     const response =
     await fetch(
@@ -497,8 +510,8 @@ async function salvarSellIn(){
         alert(
             'Sell In salvo com sucesso.'
         );
+
         carregarTela();
-        location.reload();
 
     }else{
 
@@ -509,9 +522,7 @@ async function salvarSellIn(){
 
     }
 
-}     
-    
-
+}
 
 function configurarNavegacao(){
 

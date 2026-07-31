@@ -588,7 +588,7 @@ async function adicionarDisplay(){
 
     if(resultado.sucesso){
 
-        alert('Venda de display adicionada.');
+        alert('Bonificação de display adicionada.');
 
         document
         .getElementById(
@@ -603,7 +603,7 @@ async function adicionarDisplay(){
 
         alert(
             resultado.erro ||
-            'Erro ao adicionar venda de display.'
+            'Erro ao adicionar Bonificação de display.'
         );
 
     }
@@ -645,7 +645,7 @@ async function salvarDisplays(){
     if(!isOperador){
 
         alert(
-            'Você não tem permissão para editar vendas de display existentes.'
+            'Você não tem permissão para editar Bonificação de display existentes.'
         );
 
         return;
@@ -784,7 +784,7 @@ async function excluirDisplay(codigoDisplay){
 
     const confirmar =
     confirm(
-        'Deseja realmente excluir esta venda de display?'
+        'Deseja realmente excluir esta Bonificação de display?'
     );
 
     if(!confirmar){
@@ -806,7 +806,7 @@ async function excluirDisplay(codigoDisplay){
 
     if(resultado.sucesso){
 
-        alert('Venda de display excluída.');
+        alert('Bonificação de display excluída.');
 
         carregarTela();
 

@@ -1255,3 +1255,52 @@ body.dark-theme .btn-remover-linha:hover {
     background: var(--button-hover-bg-dark);
     color: var(--button-hover-text-dark);
 }
+
+
+
+body.light-theme .button{
+    background-color:var(--button-text-light); /* mesma cor do fundo */
+    color: var(--background-color-dark);
+    border: 2px solid #c4007a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+
+}
+
+body.light-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
+
+
+
+body.light-theme .header {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+}
+
+body.dark-theme .header {
+    background-color: var(--background-color-dark);
+    color: var(--button-text-dark);
+}
+
+
+body.dark-theme .date{
+    color: var(--table-text-color-dark);
+}
+body.dark-theme .header {
+    background-color: var(--background-color-dark);
+    color: var(--button-text-dark);
+}
+
+
+body.dark-theme .date{
+    color: var(--table-text-color-dark);
+}
+
+body.light-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
+

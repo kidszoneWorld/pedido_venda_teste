@@ -163,8 +163,9 @@ function montarTabela(redes){
 
             <td>
                 <input
-                    value="${rede.RedeMesAno || ''}"
-                    class="mes"
+                    type="date"
+                    value="${formatarDataInput(rede.DataInicioRede)}"
+                    class="dataInicio"
                     ${isOperador ? '' : 'readonly'}
                 >
             </td>
@@ -272,10 +273,9 @@ async function salvarRedes(){
                 '.valor'
             ).value,
 
-            RedeMesAno:
-            linha
-            .querySelector(
-                '.mes'
+            DataInicioRede:
+            linha.querySelector(
+                '.dataInicio'
             ).value,
 
             ObservacaoRede:
@@ -330,6 +330,26 @@ async function salvarRedes(){
     }
 
 }
+
+function formatarDataInput(data){
+
+    if(!data){
+        return '';
+    }
+
+    const dataObj =
+        new Date(data);
+
+    if(isNaN(dataObj)){
+        return '';
+    }
+
+    return dataObj
+        .toISOString()
+        .split('T')[0];
+
+}
+
 
 async function excluirRede(codigoRede){
 
@@ -425,71 +445,120 @@ document
 )
 .addEventListener(
     'click',
-    async ()=>{
+    adicionarRede
+);
 
-        await fetch(
+async function adicionarRede(){
 
-            `/api/redesDistribuidor/${codigoDistribuidor}`,
+    const dados = {
 
-            {
+        RedeRazaoSocial:
+        document
+        .getElementById(
+            'redeRazaoSocial'
+        ).value.trim(),
 
-                method:'POST',
+        NomeFantasia:
+        document
+        .getElementById(
+            'nomeFantasia'
+        ).value.trim(),
 
-                headers:{
-                    'Content-Type':
-                    'application/json'
-                },
+        LojaQuantidade:
+        document
+        .getElementById(
+            'lojaQuantidade'
+        ).value,
 
-                body:
-                JSON.stringify({
+        UF:
+        document
+        .getElementById(
+            'uf'
+        ).value.trim().toUpperCase(),
 
-                    RedeRazaoSocial:
-                    document.getElementById(
-                        'redeRazaoSocial'
-                    ).value,
+        SkuQuantidade:
+        document
+        .getElementById(
+            'skuQuantidade'
+        ).value,
 
-                    NomeFantasia:
-                    document.getElementById(
-                        'nomeFantasia'
-                    ).value,
+        ValorPrimeiraCompra:
+        document
+        .getElementById(
+            'valorPrimeiraCompra'
+        ).value,
 
-                    LojaQuantidade:
-                    document.getElementById(
-                        'lojaQuantidade'
-                    ).value,
+        DataInicioRede:
+        document
+        .getElementById(
+            'dataInicioRede'
+        ).value,
 
-                    UF:
-                    document.getElementById(
-                        'uf'
-                    ).value,
+        ObservacaoRede:
+        document
+        .getElementById(
+            'observacaoRede'
+        ).value.trim()
 
-                    SkuQuantidade:
-                    document.getElementById(
-                        'skuQuantidade'
-                    ).value,
+    };
 
-                    ValorPrimeiraCompra:
-                    document.getElementById(
-                        'valorPrimeiraCompra'
-                    ).value,
+    console.log(
+        'Dados nova rede:',
+        dados
+    );
 
-                    RedeMesAno:
-                    document.getElementById(
-                        'redeMesAno'
-                    ).value,
+    const response =
+    await fetch(
 
-                    ObservacaoRede:
-                    document.getElementById(
-                        'observacaoRede'
-                    ).value
+        `/api/redesDistribuidor/${codigoDistribuidor}`,
 
-                })
+        {
+            method:'POST',
 
-            }
+            headers:{
+                'Content-Type':
+                'application/json'
+            },
 
+            body:
+            JSON.stringify(
+                dados
+            )
+        }
+
+    );
+
+    const resultado =
+    await response.json();
+
+    console.log(
+        'Resultado nova rede:',
+        resultado
+    );
+
+    if(resultado.sucesso){
+
+        alert(
+            'Rede cadastrada com sucesso.'
         );
-        document.getElementById('modalRede').style.display = 'none';
+
+        document
+        .getElementById(
+            'modalRede'
+        )
+        .style.display =
+            'none';
+
         carregarTela();
 
+    }else{
+
+        alert(
+            resultado.detalhe ||
+            resultado.erro ||
+            'Erro ao cadastrar rede.'
+        );
+
     }
-);
+
+}
