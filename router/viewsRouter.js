@@ -6,9 +6,9 @@ const invoicesController = require('../controllers/invoicesControllers');
 const { authMiddleware, authenticateUser } = require('../middleware/authMiddleware');
 const inputOrdersController = require('../controllers/inputOrdersControllers');
 const eficienciaController = require('../controllers/eficienciaController');
-const displayController = require('../controllers/displayController');  
-const redesController = require('../controllers/redesController');  
-const sellOutController = require('../controllers/sellOutController');
+ 
+ 
+
 const fernandoController = require('../controllers/fernandoController');
 const clientController = require('../controllers/clientController');
 const devController = require('../controllers/devController');
@@ -652,18 +652,9 @@ router.get('/api/lista-preco-Sem-Verificar/:listaId', productController.getLista
 router.get('/api/eficiencia/:codgroup', eficienciaController.getEficienciaBycodgroup);
 router.post('/api/eficiencia/salvar', eficienciaController.salvarEficiencia);
 
-router.get('/api/display/:codgroup', displayController.getDisplayBycodgroup);
-router.post('/api/display/salvar', displayController.salvarDisplay);
-router.delete('/api/display/remover', displayController.removerLinhaDisplay);
-
-router.get('/api/redes/:codgroup', redesController.getRedesBycodgroup);
-router.post('/api/redes/salvar', redesController.salvarRedes);
-router.delete('/api/redes/remover', redesController.removerLinhaRedes);
 
 
-router.get('/api/sellOut/:codgroup', sellOutController.getSellOutBycodgroup);
-router.post('/api/sellOut/salvar', sellOutController.salvarSellOut);        
-router.delete('/api/sellOut/remover', sellOutController.removerLinhaSellOut);
+
 
 router.post('/api/devolucoes', devController.salvarDevolucao);
 router.get('/api/devolucoes/:id', devController.buscarDevolucaoPorId);
