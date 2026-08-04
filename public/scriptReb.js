@@ -52,7 +52,7 @@ console.log('script.js carregado');
 
 //  limparCamposCliente();
 //  atualizarTotais();
-//alert('Olá Sr(a).Representante,\nSomente serão aceitas rebaixas com até 180 dias, a partir entrega da nota fiscal de origem!!!')
+alert('Olá Sr(a).Representante,\nSomente serão aceitas devoluções com até 180 dias, a partir entrega da nota fiscal de origem!!!')
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
 // ======================================================================
@@ -127,10 +127,10 @@ cnpjInput1.addEventListener('blur', async function () {
 
     showFeedback('Carregando cliente...');
     this.readOnly = true;
-
+    let api = "documento"
     let clienteApi;
 
-   try {
+    try {
         const res = await fetch(`/api/cliente/${api}/${cnpj}`);
         if (!res.ok) throw new Error();
         clienteApi = await res.json();
@@ -171,6 +171,7 @@ cnpjInput1.addEventListener('blur', async function () {
         garantirLinhaInicial();
     }
 });
+
 
 
 codInput1.addEventListener('blur', async function () {
@@ -255,6 +256,7 @@ function preencherCliente(c) {
     el('formPagDescricao').value = c[26];
     el('email_rep').value = c[22];
 }
+
 
 
 
