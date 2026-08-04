@@ -448,8 +448,8 @@ const putCommand = new PutObjectCommand({
 
     const info = await transporter.sendMail({
       from: "Rebaixas KIDS ZONE <kidzonkidszonemail@gmail.com>",
-      // to: "comercial.kz@kidszoneworld.com.br", //trocar depois
-      to: "luis.henrique@kidszoneworld.com.br", //trocar depois
+      to: "comercial.kz@kidszoneworld.com.br", //trocar depois
+    //   to: "luis.henrique@kidszoneworld.com.br", //trocar depois
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `
