@@ -1420,3 +1420,27 @@ body.dark-theme .btn-remover-linha:hover {
     z-index: 9999; /*MUITO IMPORTANTE */
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
+
+
+.campo-moeda {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.campo-moeda span {
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    white-space: nowrap;
+}
+
+.campo-moeda input {
+    flex: 1;
+    width: 100%;
+}
+
+body.dark-theme .campo-moeda span {
+    color: #ffffff;
+}

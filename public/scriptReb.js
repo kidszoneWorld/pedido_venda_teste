@@ -318,7 +318,6 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
 }
 });
 
-//mongo
 const dataBR = new Date()
 const dataFormatada = dataBR.toLocaleDateString('pt-BR', {
     timeZone: 'UTC'
@@ -523,6 +522,7 @@ function adicionarNovaLinha() {
 
 
     for (let i = 0; i < 11; i++) {
+        
         const td = document.createElement('td');
 
         // coluna oculta (ItemId)
@@ -559,19 +559,77 @@ function adicionarNovaLinha() {
         
         
         // ✏️ INPUT NORMAL
-        const input = document.createElement('input');
+const input =
+    document.createElement('input');
 
-            input.type = 'text';
+input.type =
+    'text';
 
-        // TAB só em quase tudo
-        input.tabIndex = (i === 0 || i === 1 || i === 2 || i === 3 || i === 4 || i === 8) ? 0 : -1;
+// TAB só em quase tudo
+input.tabIndex =
+    (
+        i === 0 ||
+        i === 1 ||
+        i === 2 ||
+        i === 3 ||
+        i === 4 ||
+        i === 8
+    )
+    ? 0
+    : -1;
 
-        input.style.padding = '5px';
-        input.style.width = '100%';
-        input.style.boxSizing = 'border-box';
+input.style.padding =
+    '3px';
 
-        td.appendChild(input);
-        tr.appendChild(td);
+input.style.width =
+    '100%';
+
+input.style.boxSizing =
+    'border-box';
+
+// CAMPOS COM R$
+if(
+    i === 4 ||
+    i === 5 ||
+    i === 8
+){
+
+    const wrapperMoeda =
+        document.createElement('div');
+
+    wrapperMoeda.classList.add(
+        'campo-moeda'
+    );
+
+    const simboloMoeda =
+        document.createElement('span');
+
+    simboloMoeda.textContent =
+        'R$';
+
+    wrapperMoeda.appendChild(
+        simboloMoeda
+    );
+
+    wrapperMoeda.appendChild(
+        input
+    );
+
+    td.appendChild(
+        wrapperMoeda
+    );
+
+}else{
+
+    td.appendChild(
+        input
+    );
+
+}
+
+tr.appendChild(
+    td
+);
         
         // =========================
         // NAVEGAÇÃO ↑ ↓ TAB
