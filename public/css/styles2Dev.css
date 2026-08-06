@@ -1444,3 +1444,14 @@ body.dark-theme .btn-remover-linha:hover {
 body.dark-theme .campo-moeda span {
     color: #ffffff;
 }
+
+/* Campo quantidade sem setas */
+.quantidadeInput::-webkit-outer-spin-button,
+.quantidadeInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantidadeInput {
+    -moz-appearance: textfield;
+}

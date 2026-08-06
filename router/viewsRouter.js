@@ -204,6 +204,21 @@ router.get(
     }
 );
 
+router.get(
+    '/devolucaoEditar.html',
+    authMiddleware,
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'devolucaoEditar.html'
+            )
+        );
+    }
+);
+
 // Rota para a página de eficiencia cliente (eficiencia.html)
 router.get('/eficiencia',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'eficiencia.html'));
@@ -320,6 +335,12 @@ router.get('/api/devolucao/:id', devController.buscarDevolucaoPorId);
 // Devolucao
 router.get('/api/devolucoes', devController.listarDevolucoes);
 router.put('/devolucao/:id', devController.atualizarDevolucao);
+
+router.put(
+    '/api/devolucao/:id/editar',
+    authMiddleware,
+    devController.editarDevolucaoPendente
+);
 
 router.get(
     '/api/itens',

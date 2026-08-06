@@ -250,4 +250,59 @@ ${downloadLinks}
     //setTimeout(() => emailsRecentes.delete(emailKey), 10000);
   }
 };
+
+exports.editarDevolucaoPendente = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const dev =
+            await devolucaoRepository.buscarPorId(id);
+
+        if(!dev){
+            return res.status(404).json({
+                success:false,
+                error:'Devolução não encontrada.'
+            });
+        }
+
+        const status =
+            String(
+                dev.status || ''
+            ).toLowerCase();
+
+        const finalizado =
+            Number(
+                dev.finalizado || 0
+            );
+
+        if(
+            status !== 'pendente' ||
+            finalizado === 1
+        ){
+            return res.status(403).json({
+                success:false,
+                error:'Somente devoluções pendentes podem ser editadas.'
+            });
+        }
+
+        const dados = req.body;
+
+        await devolucaoRepository.atualizarDadosDevolucaoPendente(
+            id,
+            dados
+        );
+
+        res.json({
+            success:true
+        });
+
+    }catch(err){
+        console.error(err);
+
+        res.status(500).json({
+            success:false,
+            error:err.message
+        });
+    }
+};
  

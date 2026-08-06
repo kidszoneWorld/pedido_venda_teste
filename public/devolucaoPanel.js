@@ -198,6 +198,9 @@ function renderizarTabela(lista) {
         if (isReprovado) {
             finalizado = true;
 }
+const podeEditar =
+    status === 'pendente' &&
+    dev.finalizado !== 1;
 // dev.data =   formatarData(dev.data)
 // console.log("dev: "+dev.data);
 // console.log("dev "+JSON.stringify(dev))
@@ -212,6 +215,12 @@ tr.innerHTML = `
     <td>
     <center>
         <button class="button" target="_blank" onclick="verDetalhes('${dev.id}')">Ver</button>
+
+        ${
+            podeEditar
+            ? `<button class="button" onclick="editarDevolucao('${dev.id}')">Editar</button>`
+            : ''
+        }
     </center>
     </td>
     <td>
@@ -252,6 +261,9 @@ document.getElementById('filtroStatus').addEventListener('change', aplicarFiltro
 document.getElementById('filtroFinalizado').addEventListener('change', aplicarFiltros);
 document.getElementById('filtroNfVinculada').addEventListener('input', aplicarFiltros);
 
+function editarDevolucao(id){
+    window.open(`/devolucaoEditar.html?id=${id}`, '_blank');
+}
 // helpers
 function formatarCNPJ(cnpj) {
     if (!cnpj) return '';

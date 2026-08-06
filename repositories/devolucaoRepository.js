@@ -119,6 +119,162 @@ class DevolucaoRepository {
     return rows[0];
   }
 
+  async atualizarDadosDevolucaoPendente(devId, dados) {
+
+    const client =
+        await pool.connect();
+
+    try {
+
+        await client.query(
+            'BEGIN'
+        );
+
+        const devolucaoResult =
+        await client.query(
+            `
+            SELECT
+                "DevId",
+                "Status",
+                "Finalizado"
+            FROM public."TbDevolucoes"
+            WHERE
+                "DevId" = $1
+            FOR UPDATE
+            `,
+            [
+                devId
+            ]
+        );
+
+        if(
+            devolucaoResult.rows.length === 0
+        ){
+
+            throw new Error(
+                'Devolução não encontrada.'
+            );
+
+        }
+
+        const devolucao =
+            devolucaoResult.rows[0];
+
+        const status =
+            String(
+                devolucao.Status || ''
+            ).toLowerCase();
+
+        const finalizado =
+            Number(
+                devolucao.Finalizado || 0
+            );
+
+        if(
+            status !== 'pendente' ||
+            finalizado === 1
+        ){
+
+            throw new Error(
+                'Somente devoluções pendentes podem ser editadas.'
+            );
+
+        }
+
+        await client.query(
+            `
+            UPDATE public."TbDevolucoes"
+            SET
+                "Motivo" = $1
+            WHERE
+                "DevId" = $2
+            `,
+            [
+                dados.motivo,
+                devId
+            ]
+        );
+
+        await client.query(
+            `
+            DELETE FROM public."TbDevolucaoProdutos"
+            WHERE
+                "DevId" = $1
+            `,
+            [
+                devId
+            ]
+        );
+
+        for(
+            const produto of dados.produtos
+        ){
+
+            await client.query(
+                `
+                INSERT INTO public."TbDevolucaoProdutos"
+                (
+                    "DevId",
+                    "NfOrigem",
+                    "ProdData",
+                    "CodigoItem",
+                    "Lote",
+                    "Quantidade",
+                    "Uv",
+                    "Descricao",
+                    "PrecoUnitario",
+                    "Total"
+                )
+                VALUES
+                (
+                    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+                )
+                `,
+                [
+                    devId,
+                    produto.nforigem,
+                    produto.data,
+                    produto.codigoItem,
+                    produto.lote,
+                    produto.quantidade,
+                    produto.uv,
+                    produto.descricao,
+                    produto.precounitario,
+                    produto.total
+                ]
+            );
+
+        }
+
+        await client.query(
+            'COMMIT'
+        );
+
+        return {
+            sucesso: true
+        };
+
+    } catch (err) {
+
+        await client.query(
+            'ROLLBACK'
+        );
+
+        console.error(
+            'Erro ao editar devolução pendente:',
+            err
+        );
+
+        throw err;
+
+    } finally {
+
+        client.release();
+
+    }
+
+}
+
   async inserirProduto(devId, produto) {
 // console.log(produto)
     await pool.query(`
