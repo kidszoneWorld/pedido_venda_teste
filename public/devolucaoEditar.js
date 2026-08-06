@@ -384,7 +384,7 @@ function configurarEventos(){
 
                 }
 
-                adicionarNovaLinhaEditavel();
+                // adicionarNovaLinhaEditavel();
 
             }
         );
@@ -536,10 +536,10 @@ function verificarPermissaoEdicao(dev){
             'salvarEdicaoDevolucao'
         );
 
-    const btnAdicionar =
-        el(
-            'adicionarLinha'
-        );
+    // const btnAdicionar =
+    //     el(
+    //         'adicionarLinha'
+    //     );
 
 
 
@@ -1183,7 +1183,7 @@ function navegarEnterTab(indiceColuna, linhaAtual, linhas, tr){
 
         if(linhaAtual === linhas.length - 1){
 
-            adicionarNovaLinhaEditavel();
+            // adicionarNovaLinhaEditavel();
 
             setTimeout(
                 () => {
