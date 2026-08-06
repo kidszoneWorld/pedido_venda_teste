@@ -188,19 +188,35 @@ function converterMoedaParaNumero(valor){
 
 function converterQuantidadeParaInteiro(valor){
 
-    const quantidade =
-        parseInt(
-            String(valor || '')
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ){
+        return 0;
+    }
+
+    const numero =
+        Number(
+            String(valor)
             .replace(
-                /\D/g,
+                'R$',
                 ''
-            ),
-            10
+            )
+            .replace(
+                ',',
+                '.'
+            )
+            .trim()
         );
 
-    return isNaN(quantidade)
-        ? 0
-        : quantidade;
+    if(isNaN(numero)){
+        return 0;
+    }
+
+    return Math.trunc(
+        numero
+    );
 
 }
 
@@ -1895,7 +1911,7 @@ async function salvarEdicaoDevolucao(){
             );
 
             window.location.href =
-                `/devolucaoDetalhe.html?id=${devolucaoAtual.id}`;
+                `/devolucaoPanel`;
 
         }else{
 
