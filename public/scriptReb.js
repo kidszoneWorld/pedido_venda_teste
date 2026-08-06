@@ -491,7 +491,7 @@ function validarTabelaPedido() {
             return false;
         }
 
-        // 🚫 BLOQUEIO DE 6 MESES
+        // BLOQUEIO DE 6 MESES
 /*        if (dataMaiorQue6Meses(data)) {
             alert(`A data da linha ${i + 1} é superior a 6 meses. Não é permitido.`);
             inputs[1]?.focus();
@@ -579,7 +579,7 @@ input.tabIndex =
     : -1;
 
 input.style.padding =
-    '3px';
+    '5px';
 
 input.style.width =
     '100%';
@@ -591,6 +591,7 @@ input.style.boxSizing =
 if(
     i === 4 ||
     i === 5 ||
+    i === 6 ||
     i === 8
 ){
 
@@ -764,7 +765,7 @@ if (i === 1) {
                 });
 
             totalLinha = preco * qtd;
-                cells[8].value = formatador.format(totalLinha)
+                cells[8].value = totalLinha
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
@@ -782,7 +783,7 @@ if (i === 1) {
                 
 
             totalLinha = rebaixa * qtd;
-                cells[8].value = formatador.format(totalLinha)
+                cells[8].value = totalLinha;
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
@@ -800,12 +801,12 @@ if (i === 1) {
                 
 
             totalLinha = rebaixa * qtd;
-                cells[8].value = formatador.format(totalLinha)
+                cells[8].value = totalLinha;
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
 
             totalAtual= preco - rebaixa;
-                cells[6].value = formatador.format(totalAtual)
+                cells[6].value = totalAtual;
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
@@ -821,7 +822,7 @@ if (i === 1) {
 
 
             totalAtual = preco - rebaixa;
-                cells[6].value = formatador.format(totalAtual)
+                cells[6].value = totalAtual;
                 tr.dataset.itemId = item.ItemId;
                 atualizarTotais();
             });
