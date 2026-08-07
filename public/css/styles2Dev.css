@@ -1452,6 +1452,35 @@ body.dark-theme .campo-moeda span {
     margin: 0;
 }
 
+body.light-theme .button{
+    background-color:var(--button-text-light); /* mesma cor do fundo */
+    color: var(--background-color-dark);
+    border: 2px solid #c4007a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+
+}
+
+body.light-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
+
+body.dark-theme .button{
+    background-color: var(--button-bg-light); /* mesma cor do fundo */
+    color: #fff;
+    border: 2px solid #a50066;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+
+body.dark-theme .button:hover {
+    background-color: #c4007a;
+    border-color: #c4007a;
+}
+
 .quantidadeInput {
     -moz-appearance: textfield;
 }

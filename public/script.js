@@ -1385,6 +1385,262 @@ console.log('Itens:', itensPedidoVenda);
 }
 });
 
+function escaparHtml(valor){
+
+    return String(valor || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+}
+
+function criarHtmlPesquisavelDoPedido(){
+
+    const clone =
+        document
+        .querySelector(
+            '.container'
+        )
+        .cloneNode(
+            true
+        );
+
+    clone
+    .querySelectorAll(
+        '.no-print, .button-group, #helpContainer, #overlay, #helpModal, #customModal, #customModal1'
+    )
+    .forEach(elemento => {
+
+        elemento.remove();
+
+    });
+
+    clone
+    .querySelectorAll(
+        'input, textarea, select'
+    )
+    .forEach(campo => {
+
+        const valor =
+            campo.tagName === 'SELECT'
+            ? campo.options[campo.selectedIndex]?.text || campo.value
+            : campo.value;
+
+        const span =
+            document.createElement(
+                'span'
+            );
+
+        span.textContent =
+            valor || '';
+
+        span.className =
+            campo.className || '';
+
+        span.style.display =
+            'inline-block';
+
+        span.style.minHeight =
+            '18px';
+
+        span.style.width =
+            campo.style.width || '100%';
+
+        span.style.boxSizing =
+            'border-box';
+
+        span.style.padding =
+            campo.style.padding || '5px';
+
+        span.style.border =
+            '1px solid #999';
+
+        span.style.backgroundColor =
+            '#fff';
+
+        span.style.color =
+            '#000';
+
+        if(campo.tagName === 'TEXTAREA'){
+
+            span.style.whiteSpace =
+                'pre-wrap';
+
+            span.style.minHeight =
+                '60px';
+
+        }
+
+        campo.replaceWith(
+            span
+        );
+
+    });
+
+    const estilos =
+        Array
+        .from(
+            document.querySelectorAll(
+                'link[rel="stylesheet"], style'
+            )
+        )
+        .map(elemento => elemento.outerHTML)
+        .join('\n');
+
+    return `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            ${estilos}
+            <style>
+                @page {
+                    size: A4 landscape;
+                    margin: 0;
+                }
+
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background: #ffffff;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+
+                .container {
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+
+                table {
+                    border-collapse: collapse;
+                }
+
+                th,
+                td {
+                    page-break-inside: avoid;
+                }
+
+                span {
+                    font-family: Arial, sans-serif;
+                    font-size: inherit;
+                }
+            </style>
+        </head>
+        <body>
+            ${clone.outerHTML}
+        </body>
+        </html>
+    `;
+
+}
+
+async function gerarPdfPesquisavelBlob(fileName){
+
+    const html =
+        criarHtmlPesquisavelDoPedido();
+
+    const response =
+        await fetch(
+            '/api/pedido-venda/pdf-pesquisavel',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    html,
+                    fileName
+                })
+            }
+        );
+
+    if(!response.ok){
+
+        let mensagem =
+            'Erro ao gerar PDF pesquisável.';
+
+        try {
+
+            const erro =
+                await response.json();
+
+            mensagem =
+                erro.erro ||
+                erro.error ||
+                mensagem;
+
+        } catch {}
+
+        throw new Error(
+            mensagem
+        );
+
+    }
+
+    return await response.blob();
+
+}
+
+function baixarBlob(blob, fileName){
+
+    const pdfURL =
+        URL.createObjectURL(
+            blob
+        );
+
+    const a =
+        document.createElement(
+            'a'
+        );
+
+    a.href =
+        pdfURL;
+
+    a.download =
+        fileName;
+
+    document.body.appendChild(
+        a
+    );
+
+    a.click();
+
+    document.body.removeChild(
+        a
+    );
+
+    URL.revokeObjectURL(
+        pdfURL
+    );
+
+}
+
+function blobParaDataUri(blob){
+
+    return new Promise((resolve, reject) => {
+
+        const reader =
+            new FileReader();
+
+        reader.onloadend =
+            () => resolve(
+                reader.result
+            );
+
+        reader.onerror =
+            reject;
+
+        reader.readAsDataURL(
+            blob
+        );
+
+    });
+
+}
+
 //--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1467,14 +1723,16 @@ document.addEventListener("DOMContentLoaded", () => {
             btPdfGeneration.disabled = true;
             console.log('Iniciando geração do PDF...');
 
-            const pdfBlob = await html2pdf().set(options).from(content).output('blob');
-            const pdfURL = URL.createObjectURL(pdfBlob);
-            const a = document.createElement('a');
-            a.href = pdfURL;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const pdfBlob =
+                await gerarPdfPesquisavelBlob(
+                    filename
+                );
+
+            baixarBlob(
+                pdfBlob,
+                filename
+            );
+
             console.log('PDF baixado com sucesso.');
             alert('PDF criado e salvo nos downloads.');
 
@@ -1512,8 +1770,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Reexibe os elementos antes de gerar o PDF para envio
                     elementsToHide1.forEach(el1 => el1.style.display = 'none');
 
-                    const pdfBase64 = await html2pdf().set(options).from(content).outputPdf('datauristring');
-                    console.log('PDF gerado para envio, iniciando requisição...');
+                    const pdfBlobEnvio =
+                        await gerarPdfPesquisavelBlob(
+                            filename
+                        );
+
+                    const pdfBase64 =
+                        await blobParaDataUri(
+                            pdfBlobEnvio
+                        );
+
+                    console.log(
+                        'PDF pesquisável gerado para envio, iniciando requisição...'
+                    );
 
                     const response = await fetch('/send-pdf', {
                         method: 'POST',

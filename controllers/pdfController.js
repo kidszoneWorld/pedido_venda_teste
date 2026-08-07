@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const puppeteer = require('puppeteer');
 
 let emailsRecentes = new Map();
 
