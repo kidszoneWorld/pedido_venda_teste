@@ -4,6 +4,7 @@
 
 let devolucaoAtual = null;
 let edicaoBloqueada = false;
+let dataBaseDevolucao = null;
 
 const el =
     id =>
@@ -120,34 +121,67 @@ function formatarDataInput(data){
         return '';
     }
 
-    if(
-        typeof data === 'string' &&
-        data.includes('T')
-    ){
+    if(data instanceof Date){
 
-        return data.split('T')[0];
+        if(isNaN(data)){
+            return '';
+        }
+
+        return formatarDataISO(
+            data
+        );
 
     }
 
-    if(
-        typeof data === 'string' &&
-        /^\d{4}-\d{2}-\d{2}$/.test(data)
-    ){
+    const valor =
+        String(data)
+        .trim();
 
-        return data;
+    if(!valor){
+        return '';
+    }
+
+    if(valor.includes('T')){
+
+        return valor
+            .split('T')[0];
+
+    }
+
+    if(/^\d{4}-\d{2}-\d{2}$/.test(valor)){
+
+        return valor;
+
+    }
+
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(valor)){
+
+        const partes =
+            valor.split('/');
+
+        const dia =
+            partes[0];
+
+        const mes =
+            partes[1];
+
+        const ano =
+            partes[2];
+
+        return `${ano}-${mes}-${dia}`;
 
     }
 
     const dataObj =
-        new Date(data);
+        new Date(valor);
 
     if(isNaN(dataObj)){
         return '';
     }
 
-    return dataObj
-        .toISOString()
-        .split('T')[0];
+    return formatarDataISO(
+        dataObj
+    );
 
 }
 
@@ -245,25 +279,59 @@ function formatarDataISO(data){
 
 }
 
-function obterDataHojeISO(){
+function obterDataBaseDevolucao(){
+
+    if(!dataBaseDevolucao){
+
+        console.error(
+            'Data base da devolução não definida.'
+        );
+
+        return null;
+
+    }
+
+    return new Date(
+        dataBaseDevolucao + 'T00:00:00'
+    );
+
+}
+
+function obterDataBaseDevolucaoISO(){
+
+    const dataBase =
+        obterDataBaseDevolucao();
+
+    if(!dataBase){
+        return '';
+    }
 
     return formatarDataISO(
-        new Date()
+        dataBase
     );
 
 }
 
 function obterDataLimite180DiasISO(){
 
-    const data =
-        new Date();
+    const dataBase =
+        obterDataBaseDevolucao();
 
-    data.setDate(
-        data.getDate() - 180
+    if(!dataBase){
+        return '';
+    }
+
+    const limite =
+        new Date(
+            dataBase
+        );
+
+    limite.setDate(
+        limite.getDate() - 180
     );
 
     return formatarDataISO(
-        data
+        limite
     );
 
 }
@@ -274,15 +342,19 @@ function dataDentroDoLimite180Dias(dataValor){
         return false;
     }
 
+    const dataBase =
+        obterDataBaseDevolucao();
+
+    if(!dataBase){
+        return false;
+    }
+
     const dataInformada =
         new Date(
             dataValor + 'T00:00:00'
         );
 
-    const hoje =
-        new Date();
-
-    hoje.setHours(
+    dataBase.setHours(
         0,
         0,
         0,
@@ -290,7 +362,9 @@ function dataDentroDoLimite180Dias(dataValor){
     );
 
     const limite =
-        new Date();
+        new Date(
+            dataBase
+        );
 
     limite.setDate(
         limite.getDate() - 180
@@ -305,7 +379,7 @@ function dataDentroDoLimite180Dias(dataValor){
 
     return (
         dataInformada >= limite &&
-        dataInformada <= hoje
+        dataInformada <= dataBase
     );
 
 }
@@ -476,6 +550,33 @@ async function carregarDevolucao(){
         devolucaoAtual =
             dev;
 
+        dataBaseDevolucao =
+            formatarDataInput(
+                dev.data ||
+                dev.Data
+            );
+
+        console.log(
+            'Data original da devolução:',
+            dev.data || dev.Data
+        );
+
+        console.log(
+            'Data base ISO usada no limite:',
+            dataBaseDevolucao
+        );
+
+        if(!dataBaseDevolucao){
+
+            alert(
+                'Não foi possível identificar a data de criação da devolução. A edição será bloqueada.'
+            );
+
+            edicaoBloqueada =
+                true;
+
+        }
+
         preencherDadosDevolucao(
             dev
         );
@@ -487,6 +588,7 @@ async function carregarDevolucao(){
         verificarPermissaoEdicao(
             dev
         );
+        
 
         atualizarTotais();
 
@@ -536,10 +638,10 @@ function verificarPermissaoEdicao(dev){
             'salvarEdicaoDevolucao'
         );
 
-    // const btnAdicionar =
-    //     el(
-    //         'adicionarLinha'
-    //     );
+    const btnAdicionar =
+        el(
+            'adicionarLinha'
+        );
 
 
 
@@ -724,7 +826,7 @@ function adicionarNovaLinhaEditavel(produto = null){
                 obterDataLimite180DiasISO();
 
             input.max =
-                obterDataHojeISO();
+                obterDataBaseDevolucaoISO();
 
         }else if(i === 4){
 
@@ -1688,7 +1790,7 @@ function validarTabelaPedido(){
         ){
 
             alert(
-                `A data da NF na linha ${i + 1} deve estar entre ${obterDataLimite180DiasISO()} e ${obterDataHojeISO()}.`
+                `A data da NF na linha ${i + 1} deve estar entre ${obterDataLimite180DiasISO()} e ${obterDataBaseDevolucaoISO()}.`
             );
 
             tr.querySelector(
