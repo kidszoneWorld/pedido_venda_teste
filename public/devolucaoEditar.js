@@ -762,7 +762,7 @@ function adicionarNovaLinhaEditavel(produto = null){
 
         }
 
-        if(i === 6){
+        if(i === 7){
 
             const btn =
                 document.createElement(
@@ -828,7 +828,7 @@ function adicionarNovaLinhaEditavel(produto = null){
             input.max =
                 obterDataBaseDevolucaoISO();
 
-        }else if(i === 4){
+        }else if(i === 5){
 
             input.type =
                 'number';
@@ -869,7 +869,7 @@ function adicionarNovaLinhaEditavel(produto = null){
             produto
         );
 
-        if(i === 4){
+        if(i === 5){
 
             input.value =
                 String(input.value || '')
@@ -899,8 +899,7 @@ function adicionarNovaLinhaEditavel(produto = null){
         }
 
         if(
-            i === 5 ||
-            i === 7 ||
+            i === 6 ||
             i === 9
         ){
 
@@ -986,10 +985,10 @@ function configurarClasseCampo(input, indiceColuna){
         0: 'nfOrigemInput',
         1: 'dataInput',
         2: 'codigoItemInput',
-        3: 'loteInput',
-        4: 'quantidadeInput',
-        5: 'uvInput',
-        7: 'descricaoInput',
+        3: 'descricaoInput',
+        4: 'loteInput',
+        5: 'quantidadeInput',
+        6: 'uvInput',
         8: 'precoUnitarioInput',
         9: 'totalInput',
         10: 'itemIdInput'
@@ -1040,7 +1039,7 @@ function preencherInputProduto(input, indiceColuna, produto){
 
             break;
 
-        case 3:
+        case 4:
 
             input.value =
                 produto.lote ||
@@ -1048,7 +1047,7 @@ function preencherInputProduto(input, indiceColuna, produto){
 
             break;
 
-        case 4:
+        case 5:
 
             input.value =
                 produto.quantidade
@@ -1059,7 +1058,7 @@ function preencherInputProduto(input, indiceColuna, produto){
 
             break;
 
-        case 5:
+        case 6:
 
             input.value =
                 produto.uv ||
@@ -1068,7 +1067,7 @@ function preencherInputProduto(input, indiceColuna, produto){
 
             break;
 
-        case 7:
+        case 3:
 
             input.value =
                 produto.descricao ||
@@ -1270,6 +1269,17 @@ function navegarEnterTab(indiceColuna, linhaAtual, linhas, tr){
     }
 
     if(indiceColuna === 4){
+
+        tr.cells[5]
+        ?.querySelector(
+            'input'
+        )
+        ?.focus();
+
+        return;
+
+    }
+    if(indiceColuna === 5){
 
         tr.cells[8]
         ?.querySelector(

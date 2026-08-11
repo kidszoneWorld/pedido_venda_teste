@@ -1484,3 +1484,21 @@ body.dark-theme .button:hover {
 .quantidadeInput {
     -moz-appearance: textfield;
 }
+
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+#tutorialBox button {
+    opacity: 1;
+    cursor: pointer;
+    pointer-events: auto;
+}
+#tutorialOverlay,
+#tutorialBox {
+    display: none;
+}

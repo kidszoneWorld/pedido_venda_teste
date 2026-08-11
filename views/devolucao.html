@@ -145,7 +145,13 @@
         <div class="button-group">
             <button id="button_pdf">INSERIR ANEXOS E ENVIAR E-MAIL </button>
         </div>
-   
+               <button
+                    type="button"
+                    id="iniciarTutorial"
+                    class="button"
+                >
+                    Ajuda
+                </button>
         <div class="section">
             <div class="section-title">DADOS DO CLIENTE</div>
             <form class="form-group">
@@ -269,11 +275,11 @@
                             <th class="nfOrigem">NF ORIGEM</th>
                             <th class="data">Data NF</th>
                             <th class="cod">CÓD</th>
+                            <th class="descricao">DESCRIÇÃO</th>
                             <th class="lote">Lote</th>
                             <th class="qtd">QTD</th>
                             <th class="uv" >UV</th>
                             <th class="pack">EXCLUIR</th>
-                            <th class="descricao">DESCRIÇÃO</th>
                             <th class="unit">R$ UNITARIO COM IPI</th>
                             <th class="total" >TOTAL R$</th>
                             <th class="itemId" id="esconder">Item ID</th>
@@ -305,7 +311,7 @@
                 <a href="/devolucaoPanel"><button class="button button-group">Painel de Devoluções</button></a>
             </div>
         </div>
-        
+
         
         
     </div>
@@ -335,9 +341,9 @@
         });
     </script>
 
-<div id="tutorialOverlay"></div>
+<div id="tutorialOverlay" style="display: none;"></div>
 
-<div id="tutorialBox">
+<div id="tutorialBox" style="display: none;">
     <p id="tutorialText"></p>
     <div class="tutorial-buttons">
         <button onclick="prevStep()">Voltar</button>

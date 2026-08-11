@@ -10,6 +10,10 @@ let icmsSTData;
 let listaPrecosIpiData;
   
 let step = 0;
+let tutorialAtivo = false;
+
+const estadosCamposTutorial =
+    new Map();
 
 // Helper DOM
 const el = id => document.getElementById(id);
@@ -336,10 +340,10 @@ function montarObjetoDevolucao() {
             nforigem: cells[0]?.value,
             data: cells[1]?.value, // ou você pode ter um campo de data
             codigoItem: cells[2]?.value,
-            lote: cells[3]?.value, // se tiver campo, mapeia aqui
-            quantidade: cells[4]?.value || 0,
-            uv: cells[5]?.value,
-            descricao: cells[6]?.value,
+            lote: cells[4]?.value, // se tiver campo, mapeia aqui
+            quantidade: cells[5]?.value || 0,
+            uv: cells[6]?.value,
+            descricao: cells[3]?.value,
             precounitario: parseFloat(
                 cells[7]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
             ) || 0,
@@ -409,7 +413,7 @@ function atualizarTotalVolumes() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     linhas.forEach(tr => {
-        const cell = tr.cells[4]?.querySelector('input');
+        const cell = tr.cells[5]?.querySelector('input');
         if (cell && cell.value) {
             const quantidade = parseFloat(cell.value.replace(",", "."));
             if (!isNaN(quantidade)) {
@@ -432,7 +436,7 @@ function atualizarTotalProdutos() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     linhas.forEach(tr => {
-        const quantidadeCell = tr.cells[4]?.querySelector('input');
+        const quantidadeCell = tr.cells[5]?.querySelector('input');
         const valorTotalLinhaCell = tr.cells[9]?.querySelector('input');
         console.log('Quantidade cell:', quantidadeCell);
         console.log('Valor unitário cell:', valorTotalLinhaCell);
@@ -524,7 +528,7 @@ function adicionarNovaLinha() {
         }
 
         // 🗑 BOTÃO REMOVER LINHA
-        if (i === 6) {
+        if (i === 7) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.classList.add('btn-remover-linha');
@@ -560,7 +564,7 @@ function adicionarNovaLinha() {
             input.type = 'text';
         }
         // TAB só em quase tudo
-        input.tabIndex = (i === 0 || i === 1 || i === 2 || i === 3 || i === 4 || i === 8) ? 0 : -1;
+        input.tabIndex = (i === 0 || i === 1 || i === 2 || i === 4 || i === 5 || i === 8) ? 0 : -1;
 
         input.style.padding = '5px';
         input.style.width = '100%';
@@ -628,12 +632,12 @@ function adicionarNovaLinha() {
     }
     // se estiver na quantidade (coluna 2)
     if (i === 2) {
-        tr.cells[3]?.querySelector('input')?.focus();
-    }
-    if (i === 3) {
         tr.cells[4]?.querySelector('input')?.focus();
     }
     if (i === 4) {
+        tr.cells[5]?.querySelector('input')?.focus();
+    }
+    if (i === 5) {
         tr.cells[8]?.querySelector('input')?.focus();
     }
 }
@@ -663,7 +667,7 @@ if (i === 2) {
         const cells = tr.querySelectorAll('td input');
 
         // 🔄 FEEDBACK VISUAL
-        cells[6].value = 'Carregando item, por favor aguarde...';
+        cells[3].value = 'Carregando item, por favor aguarde...';
         this.readOnly = true;
 
 
@@ -683,21 +687,21 @@ if (i === 2) {
             }
 
             const item = data[0];
-            cells[5].value = 'UN';
-            cells[5].readOnly = true;
-            cells[6].value = item.ItemDescricao;
+            cells[6].value = 'UN';
+            cells[6].readOnly = true;
+            cells[3].value = item.ItemDescricao;
             cells[7].readOnly = false; 
             cells[8].readOnly = true;
-            cells[6].readOnly = true;
+            cells[3].readOnly = true;
 
             cells[2].addEventListener('input', (e) => {
                 cells[7].value = '';
                 cells[1].value = '';
                 cells[0].value = '';
-                cells[3].value = '';
                 cells[4].value = '';
-                const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[4].value.replace(',', '.')) || 0;
+                cells[5].value = '';
+                const preco = parseFloat(cells[8].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[5].value.replace(',', '.')) || 0;
                 console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -711,10 +715,10 @@ if (i === 2) {
             });
 
 
-            cells[4].addEventListener('input', (e) => {
+            cells[5].addEventListener('input', (e) => {
 
-                const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[4].value.replace(',', '.')) || 0;
+                const preco = parseFloat(cells[8].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[5].value.replace(',', '.')) || 0;
                 console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -731,7 +735,7 @@ if (i === 2) {
             cells[7].addEventListener('input', (e) => {
 
                 const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[4].value.replace(',', '.')) || 0;
+                const qtd = parseFloat(cells[5].value.replace(',', '.')) || 0;
                 console.log(preco);
                 const formatador = new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -844,9 +848,6 @@ closeButton.addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-showStep();
-
-
 //consts email
     const emailModal = document.getElementById('emailModalDevolucao');
     const buttonPdf = document.getElementById('button_pdf');
@@ -884,6 +885,7 @@ showStep();
     function isValidEmail(email) {
         return emailRegex.test(email.trim());
     }
+
 
 
   // Função para validar uma lista de e-mails separados por ";"
@@ -1292,54 +1294,288 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-//tutorial
-
+// ======================================================================
+// 🎓 TUTORIAL
+// ======================================================================
 
 const tutorialSteps = [
 
     {
         element: '#cnpj',
-        text: 'Passo 1. Informe o CNPJ do cliente.\n\n As demais informações serão carregadas automaticamente.\n\nAperte em próximo para continuar com o tutorial ou pressione finalizar para sair'
+        text: 'Passo 1. Informe o CNPJ do cliente.\n\nAs demais informações serão carregadas automaticamente.\n\nAperte em próximo para continuar com o tutorial ou pressione finalizar para sair.'
     },
+
     {
         element: '#observation',
         text: 'Passo 2. Informe o motivo da devolução.'
     },
+
     {
         element: '#dadosPedido',
-        text: "Passo 3. Adicione os itens a serem devolvidos, preenchendo TODOS os campos:\n" +
+        text:
+            "Passo 3. Adicione os itens a serem devolvidos, preenchendo TODOS os campos:\n" +
             "- NF de origem\n" +
             "- Data da NF\n" +
-            "- Código do item (carrega automaticamente a descrição)\n" +
+            "- Código do item, que carrega automaticamente a descrição\n" +
             "- Lote\n" +
-            "- Quantidade (em unidade)\n" +
-            "- Valor unitário\n\n" 
-    },    
+            "- Quantidade em unidade\n" +
+            "- Valor unitário\n\n"
+    },
+
     {
         element: '#button_pdf',
-        text: "Passo 4. Clique em 'Enviar por e-mail'.\n" +
-            "Anexe as imagens dos itens devolvidos e, se necessário, adicione destinatários em cópia (CC) separando os emails por ;.\n\n"
+        text:
+            "Passo 4. Clique em 'Enviar por e-mail'.\n" +
+            "Anexe as imagens dos itens devolvidos e, se necessário, adicione destinatários em cópia, separando os e-mails por ;.\n\n"
     }
+
 ];
+function bloquearCamposDuranteTutorial(){
 
-function showStep() {
-    console.log("step" + step)
-    const overlay = document.getElementById('tutorialOverlay');
-    const box = document.getElementById('tutorialBox');
-    const text = document.getElementById('tutorialText');
+    tutorialAtivo =
+        true;
 
-    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+    const campos =
+        document.querySelectorAll(
+            'input, textarea, select, button'
+        );
 
-    const stepData = tutorialSteps[step];
-    const element = document.querySelector(stepData.element);
+    campos.forEach(campo => {
 
-    if (!element) return;
+        if(
+            campo.closest('#tutorialBox') ||
+            campo.closest('#tutorialOverlay')
+        ){
+            return;
+        }
 
-    element.classList.add('highlight');
+        if(!estadosCamposTutorial.has(campo)){
 
-    //TRATAMENTO ESPECIAL PARA O PRIMEIRO STEP
-    if (step === 0) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+            estadosCamposTutorial.set(
+                campo,
+                {
+                    disabled: campo.disabled,
+                    readOnly: campo.readOnly || false,
+                    pointerEvents: campo.style.pointerEvents || '',
+                    cursor: campo.style.cursor || '',
+                    tabIndex: campo.getAttribute('tabindex')
+                }
+            );
+
+        }
+
+        campo.disabled =
+            true;
+
+        if(
+            campo.tagName === 'INPUT' ||
+            campo.tagName === 'TEXTAREA'
+        ){
+
+            campo.readOnly =
+                true;
+
+        }
+
+        campo.style.pointerEvents =
+            'none';
+
+        campo.style.cursor =
+            'not-allowed';
+
+        campo.setAttribute(
+            'tabindex',
+            '-1'
+        );
+
+    });
+
+}
+
+function liberarCamposAposTutorial(){
+
+    tutorialAtivo =
+        false;
+
+    estadosCamposTutorial.forEach((estado, campo) => {
+
+        campo.disabled =
+            estado.disabled;
+
+        if(
+            campo.tagName === 'INPUT' ||
+            campo.tagName === 'TEXTAREA'
+        ){
+
+            campo.readOnly =
+                estado.readOnly;
+
+        }
+
+        campo.style.pointerEvents =
+            estado.pointerEvents;
+
+        campo.style.cursor =
+            estado.cursor;
+
+        if(estado.tabIndex === null){
+
+            campo.removeAttribute(
+                'tabindex'
+            );
+
+        }else{
+
+            campo.setAttribute(
+                'tabindex',
+                estado.tabIndex
+            );
+
+        }
+
+    });
+
+    estadosCamposTutorial.clear();
+
+}
+
+function bloquearEventosForaDoTutorial(){
+
+    document.addEventListener(
+        'click',
+        function(e){
+
+            if(
+                tutorialAtivo &&
+                !e.target.closest('#tutorialBox')
+            ){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+            }
+
+        },
+        true
+    );
+
+    document.addEventListener(
+        'keydown',
+        function(e){
+
+            if(
+                tutorialAtivo &&
+                !e.target.closest('#tutorialBox')
+            ){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+            }
+
+        },
+        true
+    );
+
+}
+
+function iniciarTutorial(){
+
+    step =
+        0;
+
+    bloquearEventosForaDoTutorial();
+
+    bloquearCamposDuranteTutorial();
+
+    showStep();
+
+}
+
+function showStep(){
+
+    console.log(
+        'step ' + step
+    );
+    bloquearCamposDuranteTutorial();
+
+    const overlay =
+        document.getElementById(
+            'tutorialOverlay'
+        );
+
+    const box =
+        document.getElementById(
+            'tutorialBox'
+        );
+
+    const text =
+        document.getElementById(
+            'tutorialText'
+        );
+
+    if(
+        !overlay ||
+        !box ||
+        !text
+    ){
+
+        console.error(
+            'Elementos do tutorial não encontrados.'
+        );
+
+        return;
+
+    }
+
+    document
+    .querySelectorAll(
+        '.highlight'
+    )
+    .forEach(el => {
+
+        el.classList.remove(
+            'highlight'
+        );
+
+    });
+
+    const stepData =
+        tutorialSteps[step];
+
+    const element =
+        document.querySelector(
+            stepData.element
+        );
+
+    if(!element){
+
+        console.error(
+            'Elemento do passo não encontrado:',
+            stepData.element
+        );
+
+        return;
+
+    }
+
+    element.classList.add(
+        'highlight'
+    );
+
+    overlay.style.display =
+        'block';
+
+    box.style.display =
+        'block';
+
+    text.innerText =
+        stepData.text;
+
+    if(step === 0){
+
+        window.scrollTo({
+            top: 0, behavior: 'smooth' });
 
         setTimeout(() => {
             const rect = element.getBoundingClientRect();
@@ -1387,12 +1623,54 @@ function prevStep() {
     }
 }
 
-function endTutorial() {
-    document.getElementById('tutorialOverlay').style.display = 'none';
-    document.getElementById('tutorialBox').style.display = 'none';
+function endTutorial(){
 
-    document.querySelectorAll('.highlight')
-        .forEach(el => el.classList.remove('highlight'));
+    document.getElementById(
+        'tutorialOverlay'
+    ).style.display =
+        'none';
 
-    step = 0; // reseta o tutorial
+    document.getElementById(
+        'tutorialBox'
+    ).style.display =
+        'none';
+
+    document
+    .querySelectorAll(
+        '.highlight'
+    )
+    .forEach(el => {
+
+        el.classList.remove(
+            'highlight'
+        );
+
+    });
+
+    liberarCamposAposTutorial();
+
+    step =
+        0;
+
 }
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        const botaoTutorial =
+            document.getElementById(
+                'iniciarTutorial'
+            );
+
+        if(botaoTutorial){
+
+            botaoTutorial.addEventListener(
+                'click',
+                iniciarTutorial
+            );
+
+        }
+
+    }
+);
