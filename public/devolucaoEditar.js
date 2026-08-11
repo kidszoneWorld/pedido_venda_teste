@@ -581,6 +581,14 @@ async function carregarDevolucao(){
             dev
         );
 
+        await preencherCodgroupPeloCliente(
+            dev
+        );
+
+        renderizarProdutos(
+            dev.produtos || []
+        );
+
         renderizarProdutos(
             dev.produtos || []
         );
@@ -606,6 +614,26 @@ async function carregarDevolucao(){
         ocultarFeedback();
 
     }
+
+}
+
+function obterListaPrecoId(){
+
+    const campoCodgroup =
+        document.getElementById(
+            'codgroup'
+        );
+
+    return (
+        campoCodgroup?.value ||
+        devolucaoAtual?.codgroup ||
+        devolucaoAtual?.codGroup ||
+        devolucaoAtual?.listaId ||
+        devolucaoAtual?.listaPrecoId ||
+        devolucaoAtual?.ListaPrecoId ||
+        devolucaoAtual?.ListaPrecoID ||
+        ''
+    );
 
 }
 
@@ -701,7 +729,23 @@ function preencherDadosDevolucao(dev){
 
     el('observation').value =
         dev.motivo || '';
+    const campoCodgroup =
+    el(
+        'codgroup'
+    );
 
+    if(campoCodgroup){
+
+        campoCodgroup.value =
+            dev.codgroup ||
+            dev.codGroup ||
+            dev.listaId ||
+            dev.listaPrecoId ||
+            dev.ListaPrecoId ||
+            dev.ListaPrecoID ||
+            '';
+
+    }
 }
 
 // ======================================================================
@@ -1348,11 +1392,6 @@ async function tratarCodigoItem(inputCodigo, tr){
         return;
     }
 
-    const cells =
-        tr.querySelectorAll(
-            'input'
-        );
-
     const descricaoInput =
         tr.querySelector(
             '.descricaoInput'
@@ -1361,6 +1400,11 @@ async function tratarCodigoItem(inputCodigo, tr){
     const uvInput =
         tr.querySelector(
             '.uvInput'
+        );
+
+    const itemIdInput =
+        tr.querySelector(
+            '.itemIdInput'
         );
 
     if(descricaoInput){
@@ -1375,38 +1419,21 @@ async function tratarCodigoItem(inputCodigo, tr){
 
     try{
 
-        const listaIdCampo =
-            document.getElementById(
-                'codgroup'
-            );
-
         const listaId =
-            listaIdCampo
-            ? listaIdCampo.value
-            : '';
+            obterListaPrecoId();
 
         if(!listaId){
 
-            if(descricaoInput){
-
-                descricaoInput.value =
-                    descricaoInput.value === 'Carregando item, por favor aguarde...'
-                    ? ''
-                    : descricaoInput.value;
-
-            }
-
-            inputCodigo.readOnly =
-                false;
-
-            return;
+            throw new Error(
+                'Lista de preço do cliente não encontrada. Verifique se o campo codgroup está sendo carregado na edição.'
+            );
 
         }
 
         const response =
-        await fetch(
-            `/api/lista-preco-Sem-Verificar/${listaId}?codigo=${encodeURIComponent(codigo)}`
-        );
+            await fetch(
+                `/api/lista-preco-Sem-Verificar/${listaId}?codigo=${encodeURIComponent(codigo)}`
+            );
 
         if(!response.ok){
 
@@ -1423,7 +1450,7 @@ async function tratarCodigoItem(inputCodigo, tr){
         const data =
             await response.json();
 
-        if(!data.length){
+        if(!Array.isArray(data) || !data.length){
 
             throw new Error(
                 'Item não encontrado'
@@ -1434,28 +1461,42 @@ async function tratarCodigoItem(inputCodigo, tr){
         const item =
             data[0];
 
-        if(uvInput){
-
-            uvInput.value =
-                'UN';
-
-        }
-
         if(descricaoInput){
 
             descricaoInput.value =
                 item.ItemDescricao ||
+                item.descricao ||
                 '';
+
+            descricaoInput.readOnly =
+                true;
 
         }
 
-        if(cells[9]){
+        if(uvInput){
 
-            cells[9].value =
+            uvInput.value =
+                item.Uv ||
+                item.uv ||
+                'UN';
+
+            uvInput.readOnly =
+                true;
+
+        }
+
+        if(itemIdInput){
+
+            itemIdInput.value =
                 item.ItemId ||
+                item.itemId ||
                 '';
 
         }
+
+        calcularLinha(
+            tr
+        );
 
     }catch(error){
 
@@ -1469,6 +1510,20 @@ async function tratarCodigoItem(inputCodigo, tr){
         if(descricaoInput){
 
             descricaoInput.value =
+                '';
+
+        }
+
+        if(uvInput){
+
+            uvInput.value =
+                '';
+
+        }
+
+        if(itemIdInput){
+
+            itemIdInput.value =
                 '';
 
         }
@@ -1487,6 +1542,76 @@ async function tratarCodigoItem(inputCodigo, tr){
 // ======================================================================
 // 🧮 TOTAIS
 // ======================================================================
+
+async function preencherCodgroupPeloCliente(dev){
+
+    const campoCodgroup =
+        document.getElementById(
+            'codgroup'
+        );
+
+    if(!campoCodgroup){
+        console.error(
+            'Campo codgroup não encontrado no HTML.'
+        );
+        return;
+    }
+
+    if(campoCodgroup.value){
+        return;
+    }
+
+    const codCliente =
+        dev.codCliente ||
+        dev.cod_cliente ||
+        dev.ClienteId ||
+        dev.clienteId;
+
+    if(!codCliente){
+        console.error(
+            'Código do cliente não encontrado na devolução.'
+        );
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/cliente/codigo/${codCliente}`
+            );
+
+        if(!response.ok){
+            throw new Error(
+                'Erro ao buscar cliente para obter lista de preço.'
+            );
+        }
+
+        const cliente =
+            await response.json();
+
+        campoCodgroup.value =
+            cliente.LISTA ||
+            cliente.lista ||
+            cliente.ListaPrecoId ||
+            cliente.listaPrecoId ||
+            '';
+
+        console.log(
+            'codgroup carregado na edição:',
+            campoCodgroup.value
+        );
+
+    }catch(error){
+
+        console.error(
+            'Erro ao carregar codgroup pelo cliente:',
+            error
+        );
+
+    }
+
+}
 
 function calcularLinha(tr){
 
