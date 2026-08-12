@@ -394,7 +394,7 @@ async function salvarDevolucaoMongo() {
         const result = await res.json();
 
         if (res.ok) {
-            console.log('Devolução salva, aperte ok para enviar o email......');
+            console.log('Devolução salva, clique em ok para enviar o email......');
         } else {
             throw new Error(result.error);
         }
@@ -1302,7 +1302,7 @@ const tutorialSteps = [
 
     {
         element: '#cnpj',
-        text: 'Passo 1. Informe o CNPJ do cliente.\n\nAs demais informações serão carregadas automaticamente.\n\nAperte em próximo para continuar com o tutorial ou pressione finalizar para sair.'
+        text: 'Passo 1. Informe o CNPJ do cliente.\n\nAs demais informações serão carregadas automaticamente.\n\nClique em próximo para continuar com o tutorial ou pressione finalizar para sair.'
     },
 
     {

@@ -161,19 +161,19 @@ function renderizarTabela(lista) {
 
         let finalizado = reb.finalizado === 1;
         if (status === 'pendente') {
-            tr.style.backgroundColor = '#fff3cd'; // amarelo claro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-pen)'); // amarelo
         }
 
         if (status === 'aprovado' && finalizado) {
-            tr.style.backgroundColor = '#98ecad'; // verde escuro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-fin)'); // verde
         }
 
         if (status === 'aprovado' && !finalizado) {
-            tr.style.backgroundColor = '#c0e9ca'; //  verde claro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-apr)' , 'important');   // verde claro
         }
 
         if (status === 'reprovado') {
-            tr.style.backgroundColor = '#f8d7da'; // vermelho claro
+            tr.style.setProperty('background-color', 'var(--tr-bg-cor-rep)'); // vermelho
         }
 
         const totalItens = reb.produtos.reduce((acc, p) => acc + Number(p.total), 0);
@@ -202,7 +202,7 @@ tr.innerHTML = `
     <td>${formatarMoeda(totalItens)}</td>
     <td>
     <center>
-        <button target="_blank" onclick="verDetalhes('${reb.id}')">Ver</button>
+        <button target="_blank" onclick="verDetalhes('${reb.id}')" class="button">Ver</button>
     </center>
     </td>
     <td>
@@ -221,7 +221,7 @@ tr.innerHTML = `
     <input name="nfVinculada" placeholder="inserir nota vinculada" size="5" value="${reb.nfVinculada}" ${(isPendente || isReprovado) ? 'disabled' : ''} ${isRep ? 'disabled' : ''}>
     </center></td>
     <td>
-        <button onclick="salvar('${reb.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
+        <button class="button" onclick="salvar('${reb.id}', this)" ${isRep ? 'disabled' : ''}>Salvar</button>
     </td>
 `;
         tbody.appendChild(tr);
