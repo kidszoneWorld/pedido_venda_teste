@@ -135,22 +135,22 @@ function renderizarDados(dev) {
     const container = document.getElementById('dadosPedido');
     const isFinalizado = dev.finalizado === 1;
     container.innerHTML = `
-        <div><b>Devolução:</b> ${dev.id}</div>
-        <div><b>Cliente:</b> ${dev.razaoSocial}</div>
-        <div><b>CNPJ:</b> ${formatarCNPJ(dev.cnpj)}</div>
-        <div><b>Endereço:</b> ${dev.endereco}</div>
-        <div><b>Cidade:</b> ${dev.cidade}</div>
-        <div><b>UF:</b> ${dev.uf}</div>
-        <div><b>CEP:</b> ${dev.cep}</div>
-        <div><b>Bairro:</b> ${dev.bairro}</div>
-        <div><b>Telefone:</b> ${dev.telefone}</div>
-        <div><b>Email:</b> ${dev.email}</div>
-        <div><b>Email Fiscal:</b> ${dev.emailFiscal}</div>
-        <div><b>Representante:</b> ${dev.representante}</div>
-        <div><b>Status:</b> ${dev.status}</div>
-        <div><b>Finalizado:</b> ${isFinalizado ? 'Finalizado' : 'Não FInalizado'}</div>
-        <div><b>nfVinculada:</b> ${dev.nfVinculada}</div>
-        <div><b>Motivo:</b> <textarea rows="4" cols="50" disabled>${dev.motivo}</textarea></div>
+        <div class="divText"><b>Devolução:</b> ${dev.id}</div>
+        <div class="divText"><b>Cliente:</b> ${dev.razaoSocial}</div>
+        <div class="divText"><b>CNPJ:</b> ${formatarCNPJ(dev.cnpj)}</div>
+        <div class="divText"><b>Endereço:</b> ${dev.endereco}</div>
+        <div class="divText"><b>Cidade:</b> ${dev.cidade}</div>
+        <div class="divText"><b>UF:</b> ${dev.uf}</div>
+        <div class="divText"><b>CEP:</b> ${dev.cep}</div>
+        <div class="divText"><b>Bairro:</b> ${dev.bairro}</div>
+        <div class="divText"><b>Telefone:</b> ${dev.telefone}</div>
+        <div class="divText"><b>Email:</b> ${dev.email}</div>
+        <div class="divText"><b>Email Fiscal:</b> ${dev.emailFiscal}</div>
+        <div class="divText"><b>Representante:</b> ${dev.representante}</div>
+        <div class="divText"><b>Status:</b> ${dev.status}</div>
+        <div class="divText"><b>Finalizado:</b> ${isFinalizado ? 'Finalizado' : 'Não FInalizado'}</div>
+        <div class="divText"><b>nfVinculada:</b> ${dev.nfVinculada}</div>
+        <div class="divText"><b>Motivo:</b> <textarea rows="4" cols="50" disabled>${dev.motivo}</textarea></div>
     `;
 }
 
@@ -164,10 +164,10 @@ function renderizarProdutos(produtos) {
             <td>${p.nfOrigem}</td>
             <td>${formatarProdData(p.ProdData)}</td>
             <td>${p.codigoItem}</td>
+            <td>${p.descricao}</td>
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
             <td>${p.uv}</td>
-            <td>${p.descricao}</td>
             <td>R$${formatarMoeda(p.precoUnitario)}</td>
             <td>R$${formatarMoeda(p.total)}</td>
         `;

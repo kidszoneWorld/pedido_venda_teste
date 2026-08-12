@@ -215,6 +215,9 @@ body.dark-theme .link-label {
     color: var(--text-color-dark);
 }
 
+body.dark-theme .divText{
+    color: var(--button-text-dark);
+}
 
 .header {
     width: 100%;

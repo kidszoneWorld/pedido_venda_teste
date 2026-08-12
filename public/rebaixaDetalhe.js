@@ -136,22 +136,22 @@ function renderizarDados(reb) {
     const container = document.getElementById('dadosPedido');
     const isFinalizado = reb.finalizado === 1;
     container.innerHTML = `
-        <div><b>Rebaixa:</b> ${reb.id}</div>
-        <div><b>Cliente:</b> ${reb.razaosocial}</div>
-        <div><b>CNPJ:</b> ${formatarCNPJ(reb.cnpj)}</div>
-        <div><b>Endereço:</b> ${reb.endereco}</div>
-        <div><b>Cidade:</b> ${reb.cidade}</div>
-        <div><b>UF:</b> ${reb.uf}</div>
-        <div><b>CEP:</b> ${reb.Cep}</div>
-        <div><b>Bairro:</b> ${reb.bairro}</div>
-        <div><b>Telefone:</b> ${reb.telefone}</div>
-        <div><b>Email:</b> ${reb.email}</div>
-        <div><b>Email Fiscal:</b> ${reb.emailFiscal}</div>
-        <div><b>Representante:</b> ${reb.representante}</div>
-        <div><b>Status:</b> ${reb.status}</div>
-        <div><b>Finalizado:</b> ${isFinalizado ? 'Finalizado' : 'Não FInalizado'}</div>
-        <div><b>nfVinculada:</b> ${reb.nfVinculada}</div>
-        <div><b>Motivo:</b> <textarea rows="4" cols="50" disabled>${reb.motivo}</textarea></div>
+        <div class="divText"><b>Rebaixa:</b> ${reb.id}</div>
+        <div class="divText"><b>Cliente:</b> ${reb.razaosocial}</div>
+        <div class="divText"><b>CNPJ:</b> ${formatarCNPJ(reb.cnpj)}</div>
+        <div class="divText"><b>Endereço:</b> ${reb.endereco}</div>
+        <div class="divText"><b>Cidade:</b> ${reb.cidade}</div>
+        <div class="divText"><b>UF:</b> ${reb.uf}</div>
+        <div class="divText"><b>CEP:</b> ${reb.Cep}</div>
+        <div class="divText"><b>Bairro:</b> ${reb.bairro}</div>
+        <div class="divText"><b>Telefone:</b> ${reb.telefone}</div>
+        <div class="divText"><b>Email:</b> ${reb.email}</div>
+        <div class="divText"><b>Email Fiscal:</b> ${reb.emailFiscal}</div>
+        <div class="divText"><b>Representante:</b> ${reb.representante}</div>
+        <div class="divText"><b>Status:</b> ${reb.status}</div>
+        <div class="divText"><b>Finalizado:</b> ${isFinalizado ? 'Finalizado' : 'Não FInalizado'}</div>
+        <div class="divText"><b>nfVinculada:</b> ${reb.nfVinculada}</div>
+        <div class="divText"><b>Motivo:</b> <textarea rows="4" cols="50" disabled>${reb.motivo}</textarea></div>
     `;
 }
 
