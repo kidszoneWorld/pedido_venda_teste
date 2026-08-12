@@ -925,7 +925,7 @@ closeButton.addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-showStep();
+// showStep();
 
 
 //consts email
