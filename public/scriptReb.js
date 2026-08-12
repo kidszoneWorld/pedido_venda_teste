@@ -10,7 +10,11 @@ let icmsSTData;
 let listaPrecosIpiData;
   
 let step = 0;
+let tutorialAtivo = false;
 
+const estadosCamposTutorial =
+    new Map();
+    
 // Helper DOM
 const el = id => document.getElementById(id);
 
@@ -872,7 +876,6 @@ function verificarCodigoDuplicado(codigo) {
             contador++;
         }
     });
-
     return contador > 1;
 }
 
@@ -1402,24 +1405,252 @@ const tutorialSteps = [
     }
 ];
 
-function showStep() {
-    console.log("step" + step)
-    const overlay = document.getElementById('tutorialOverlay');
-    const box = document.getElementById('tutorialBox');
-    const text = document.getElementById('tutorialText');
+function bloquearCamposDuranteTutorial(){
 
-    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+    tutorialAtivo =
+        true;
 
-    const stepData = tutorialSteps[step];
-    const element = document.querySelector(stepData.element);
+    const campos =
+        document.querySelectorAll(
+            'input, textarea, select, button'
+        );
 
-    if (!element) return;
+    campos.forEach(campo => {
 
-    element.classList.add('highlight');
+        if(
+            campo.closest('#tutorialBox') ||
+            campo.closest('#tutorialOverlay')
+        ){
+            return;
+        }
 
-    //TRATAMENTO ESPECIAL PARA O PRIMEIRO STEP
-    if (step === 0) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if(!estadosCamposTutorial.has(campo)){
+
+            estadosCamposTutorial.set(
+                campo,
+                {
+                    disabled: campo.disabled,
+                    readOnly: campo.readOnly || false,
+                    pointerEvents: campo.style.pointerEvents || '',
+                    cursor: campo.style.cursor || '',
+                    tabIndex: campo.getAttribute('tabindex')
+                }
+            );
+
+        }
+
+        campo.disabled =
+            true;
+
+        if(
+            campo.tagName === 'INPUT' ||
+            campo.tagName === 'TEXTAREA'
+        ){
+
+            campo.readOnly =
+                true;
+
+        }
+
+        campo.style.pointerEvents =
+            'none';
+
+        campo.style.cursor =
+            'not-allowed';
+
+        campo.setAttribute(
+            'tabindex',
+            '-1'
+        );
+
+    });
+
+}
+
+function liberarCamposAposTutorial(){
+
+    tutorialAtivo =
+        false;
+
+    estadosCamposTutorial.forEach((estado, campo) => {
+
+        campo.disabled =
+            estado.disabled;
+
+        if(
+            campo.tagName === 'INPUT' ||
+            campo.tagName === 'TEXTAREA'
+        ){
+
+            campo.readOnly =
+                estado.readOnly;
+
+        }
+
+        campo.style.pointerEvents =
+            estado.pointerEvents;
+
+        campo.style.cursor =
+            estado.cursor;
+
+        if(estado.tabIndex === null){
+
+            campo.removeAttribute(
+                'tabindex'
+            );
+
+        }else{
+
+            campo.setAttribute(
+                'tabindex',
+                estado.tabIndex
+            );
+
+        }
+
+    });
+
+    estadosCamposTutorial.clear();
+
+}
+
+function bloquearEventosForaDoTutorial(){
+
+    document.addEventListener(
+        'click',
+        function(e){
+
+            if(
+                tutorialAtivo &&
+                !e.target.closest('#tutorialBox')
+            ){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+            }
+
+        },
+        true
+    );
+
+    document.addEventListener(
+        'keydown',
+        function(e){
+
+            if(
+                tutorialAtivo &&
+                !e.target.closest('#tutorialBox')
+            ){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+            }
+
+        },
+        true
+    );
+
+}
+
+function iniciarTutorial(){
+
+    step =
+        0;
+
+    bloquearEventosForaDoTutorial();
+
+    bloquearCamposDuranteTutorial();
+
+    showStep();
+
+}
+
+function showStep(){
+
+    console.log(
+        'step ' + step
+    );
+    bloquearCamposDuranteTutorial();
+
+    const overlay =
+        document.getElementById(
+            'tutorialOverlay'
+        );
+
+    const box =
+        document.getElementById(
+            'tutorialBox'
+        );
+
+    const text =
+        document.getElementById(
+            'tutorialText'
+        );
+
+    if(
+        !overlay ||
+        !box ||
+        !text
+    ){
+
+        console.error(
+            'Elementos do tutorial não encontrados.'
+        );
+
+        return;
+
+    }
+
+    document
+    .querySelectorAll(
+        '.highlight'
+    )
+    .forEach(el => {
+
+        el.classList.remove(
+            'highlight'
+        );
+
+    });
+
+    const stepData =
+        tutorialSteps[step];
+
+    const element =
+        document.querySelector(
+            stepData.element
+        );
+
+    if(!element){
+
+        console.error(
+            'Elemento do passo não encontrado:',
+            stepData.element
+        );
+
+        return;
+
+    }
+
+    element.classList.add(
+        'highlight'
+    );
+
+    overlay.style.display =
+        'block';
+
+    box.style.display =
+        'block';
+
+    text.innerText =
+        stepData.text;
+
+    if(step === 0){
+
+        window.scrollTo({
+            top: 0, behavior: 'smooth' });
 
         setTimeout(() => {
             const rect = element.getBoundingClientRect();
@@ -1467,12 +1698,54 @@ function prevStep() {
     }
 }
 
-function endTutorial() {
-    document.getElementById('tutorialOverlay').style.display = 'none';
-    document.getElementById('tutorialBox').style.display = 'none';
+function endTutorial(){
 
-    document.querySelectorAll('.highlight')
-        .forEach(el => el.classList.remove('highlight'));
+    document.getElementById(
+        'tutorialOverlay'
+    ).style.display =
+        'none';
 
-    step = 0; // reseta o tutorial
+    document.getElementById(
+        'tutorialBox'
+    ).style.display =
+        'none';
+
+    document
+    .querySelectorAll(
+        '.highlight'
+    )
+    .forEach(el => {
+
+        el.classList.remove(
+            'highlight'
+        );
+
+    });
+
+    liberarCamposAposTutorial();
+
+    step =
+        0;
+
 }
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        const botaoTutorial =
+            document.getElementById(
+                'iniciarTutorial'
+            );
+
+        if(botaoTutorial){
+
+            botaoTutorial.addEventListener(
+                'click',
+                iniciarTutorial
+            );
+
+        }
+
+    }
+);
