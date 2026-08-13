@@ -134,6 +134,107 @@ async function carregarTela(){
 
 }
 
+function numeroParaMoedaBR(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ){
+        return '';
+    }
+
+    const numero =
+        Number(
+            valor
+        );
+
+    if(isNaN(numero)){
+        return '';
+    }
+
+    return numero.toLocaleString(
+        'pt-BR',
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+function moedaBRParaNumero(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ){
+        return 0;
+    }
+
+    const normalizado =
+        String(valor)
+            .replace(
+                'R$',
+                ''
+            )
+            .replace(
+                /\./g,
+                ''
+            )
+            .replace(
+                ',',
+                '.'
+            )
+            .trim();
+
+    const numero =
+        Number(
+            normalizado
+        );
+
+    return isNaN(numero)
+        ? 0
+        : numero;
+
+}
+
+function formatarCampoMoedaBR(input){
+
+    const valorOriginal =
+        input.value;
+
+    if(!valorOriginal){
+
+        input.value =
+            '';
+
+        return;
+
+    }
+
+    const numero =
+        moedaBRParaNumero(
+            valorOriginal
+        );
+
+    if(isNaN(numero)){
+
+        input.value =
+            '';
+
+        return;
+
+    }
+
+    input.value =
+        numeroParaMoedaBR(
+            numero
+        );
+
+}
+
 function montarTabela(
     metas,
     sellIn,
@@ -199,18 +300,20 @@ function montarTabela(
                         <span>R$</span>
 
                         <input
-                            type="number"
-                            step="0.01"
+                            type="text"
+                            inputmode="decimal"
                             class="estoque metaSellIn"
                             data-coluna="${colunaIndex}"
                             data-mes="${mes}"
                             value="${
                                 registroMeta
                                 ?
-                                registroMeta.MetaSellIn
+                                numeroParaMoedaBR(
+                                    registroMeta.MetaSellIn
+                                )
                                 :
                                 ''
-                            }"
+                            }"          
                             ${isOperador ? '' : 'readonly'}
                         >
 
@@ -258,8 +361,8 @@ linhaSellIn += `
             <span>R$</span>
 
             <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputmode="decimal"
                 class="estoque valorSellIn"
                 data-coluna="${colunaIndex}"
                 data-mes="${mes}"
@@ -267,7 +370,9 @@ linhaSellIn += `
                 value="${
                     registroSellIn
                     ?
-                    registroSellIn.ValorSellIn
+                    numeroParaMoedaBR(
+                        registroSellIn.ValorSellIn
+                    )
                     :
                     ''
                 }"
@@ -350,10 +455,31 @@ function configurarCalculoPercentual(){
             calcularTodosPercentuais
         );
 
+        input.addEventListener(
+            'blur',
+            () => {
+
+                formatarCampoMoedaBR(
+                    input
+                );
+
+                calcularTodosPercentuais();
+
+            }
+        );
+
+        input.addEventListener(
+            'focus',
+            () => {
+
+                input.select();
+
+            }
+        );
+
     });
 
 }
-
 function calcularTodosPercentuais(){
 
     document
@@ -376,12 +502,12 @@ function calcularTodosPercentuais(){
             );
 
         const metaNumero =
-            Number(
+            moedaBRParaNumero(
                 meta?.value || 0
             );
 
         const valorNumero =
-            Number(
+            moedaBRParaNumero(
                 valor?.value || 0
             );
 
@@ -397,7 +523,13 @@ function calcularTodosPercentuais(){
                 ) * 100;
 
             inputPercentual.value =
-                percentual.toFixed(2) + '%';
+                percentual.toLocaleString(
+                    'pt-BR',
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                ) + '%';
 
         }else{
 
@@ -449,7 +581,7 @@ async function salvarSellIn(){
                     input.dataset.mes,
 
                 MetaSellIn:
-                    Number(
+                    moedaBRParaNumero(
                         input.value
                     )
 
@@ -473,7 +605,7 @@ async function salvarSellIn(){
                     input.dataset.mes,
 
                 ValorSellIn:
-                    Number(
+                    moedaBRParaNumero(
                         input.value
                     )
 
