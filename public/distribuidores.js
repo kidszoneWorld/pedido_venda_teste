@@ -8,10 +8,85 @@ document.addEventListener(
 
         configurarEventos();
 
+        restaurarFiltrosDistribuidores();
+
         await carregarDistribuidores();
 
     }
 );
+
+const STORAGE_FILTROS_DISTRIBUIDORES =
+    'filtrosDistribuidores';
+
+function salvarFiltrosDistribuidores(){
+
+    const filtros = {
+        cnpj:
+            document.getElementById('filtroCnpj')?.value || '',
+
+        razao:
+            document.getElementById('filtroRazao')?.value || '',
+
+        representante:
+            document.getElementById('filtroRepresentante')?.value || ''
+    };
+
+    sessionStorage.setItem(
+        STORAGE_FILTROS_DISTRIBUIDORES,
+        JSON.stringify(filtros)
+    );
+
+}
+
+function restaurarFiltrosDistribuidores(){
+
+    const filtrosSalvos =
+        sessionStorage.getItem(
+            STORAGE_FILTROS_DISTRIBUIDORES
+        );
+
+    if(!filtrosSalvos){
+        return;
+    }
+
+    const filtros =
+        JSON.parse(filtrosSalvos);
+
+    const filtroCnpj =
+        document.getElementById('filtroCnpj');
+
+    const filtroRazao =
+        document.getElementById('filtroRazao');
+
+    const filtroRepresentante =
+        document.getElementById('filtroRepresentante');
+
+    if(filtroCnpj){
+        filtroCnpj.value =
+            filtros.cnpj || '';
+    }
+
+    if(filtroRazao){
+        filtroRazao.value =
+            filtros.razao || '';
+    }
+
+    if(filtroRepresentante){
+        filtroRepresentante.value =
+            filtros.representante || '';
+    }
+
+}
+
+function existemFiltrosPreenchidos(){
+
+    return Boolean(
+        document.getElementById('filtroCnpj')?.value ||
+        document.getElementById('filtroRazao')?.value ||
+        document.getElementById('filtroRepresentante')?.value
+    );
+
+}
 
 async function verificarPermissao() {
 
@@ -181,9 +256,17 @@ async function carregarDistribuidores(){
     listaDistribuidoresCompleta =
         distribuidores;
 
-    montarTabelaDistribuidores(
-        listaDistribuidoresCompleta
-    );
+    if(existemFiltrosPreenchidos()){
+
+        aplicarFiltrosDistribuidores();
+
+    }else{
+
+        montarTabelaDistribuidores(
+            listaDistribuidoresCompleta
+        );
+
+    }
 
 }
 
@@ -390,6 +473,8 @@ if(filtroCnpj){
                     filtroCnpj.value
                 );
 
+            salvarFiltrosDistribuidores();
+
             aplicarFiltrosDistribuidores();
 
         }
@@ -401,7 +486,13 @@ if(filtroRazao){
 
     filtroRazao.addEventListener(
         'input',
-        aplicarFiltrosDistribuidores
+        () => {
+
+            salvarFiltrosDistribuidores();
+
+            aplicarFiltrosDistribuidores();
+
+        }
     );
 
 }
@@ -410,7 +501,13 @@ if(filtroRepresentante){
 
     filtroRepresentante.addEventListener(
         'input',
-        aplicarFiltrosDistribuidores
+        () => {
+
+            salvarFiltrosDistribuidores();
+
+            aplicarFiltrosDistribuidores();
+
+        }
     );
 
 }
@@ -565,10 +662,56 @@ document
         );
 
     }
+    const btnLimparFiltros =
+    document.getElementById(
+        'limparFiltros'
+    );
+
+if(btnLimparFiltros){
+
+    btnLimparFiltros.addEventListener(
+        'click',
+        limparFiltrosDistribuidores
+    );
+
+}
 }
 function apenasNumeros(valor){
 
     return String(valor || '').replace(/\D/g, '');
+
+}
+
+function limparFiltrosDistribuidores(){
+
+    sessionStorage.removeItem(
+        STORAGE_FILTROS_DISTRIBUIDORES
+    );
+
+    const filtroCnpj =
+        document.getElementById('filtroCnpj');
+
+    const filtroRazao =
+        document.getElementById('filtroRazao');
+
+    const filtroRepresentante =
+        document.getElementById('filtroRepresentante');
+
+    if(filtroCnpj){
+        filtroCnpj.value = '';
+    }
+
+    if(filtroRazao){
+        filtroRazao.value = '';
+    }
+
+    if(filtroRepresentante){
+        filtroRepresentante.value = '';
+    }
+
+    montarTabelaDistribuidores(
+        listaDistribuidoresCompleta
+    );
 
 }
 
