@@ -43,8 +43,8 @@ body.light-theme .container {
 }
 
 body.light-theme .header {
-    background-color: var(--header-bg-light);
-    color: var(--text-color-light);
+    background-color: var(--background-color-light);
+    color: var(--background-color-light);
 }
 
 body.light-theme .section-title,
@@ -194,14 +194,13 @@ body.dark-theme #dadosPedido tbody tr td input{
     border:none;
 }
 body.light-theme .header-container {
-    background-color: var(--header-bg-light);
-    color: var(--text-color-light);
+    color: var(--background-color-light);
 }
 
 body.light-theme .header-title,
 body.light-theme .header-right h4,
 body.light-theme .link-label {
-    color: var(--text-color-light);
+    color: var(--background-color-light);
 }
 
 body.dark-theme .header-container {
@@ -280,14 +279,13 @@ body.dark-theme .divText{
     padding: 0;
     width: 100%;
     /* background-color: #f3f3f3;*/
-    background-color: #caccc6;
     /* background-color: rgb(248, 184, 228)*/
 }
 .container {
     width: 95%;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: #cecdcd;
     border: 1px solid #ddd;
     margin-top: 20px;
     margin-bottom: 20px;

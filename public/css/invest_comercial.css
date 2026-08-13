@@ -41,6 +41,7 @@ body {
     width: 150px;
 }
 
+
 .header .date {
     position: absolute;
     top: 10px;
@@ -87,7 +88,7 @@ body {
     text-align: center;
 }
 
-.form-grid {
+body.light-theme .form-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Define 3 colunas por linha */
     gap: 10px;
@@ -96,24 +97,72 @@ body {
     margin-top: 10px;
 }
 
-.form-grid div {
+body.light-theme .form-grid div {
     display: flex;
     flex-direction: column;
 }
 
-.form-grid label {
+body.light-theme .form-grid label {
     font-weight: bold;
     margin-bottom: 5px;
     font-size: 14px;
 }
 
-.form-grid input,
-.form-grid select {
+body.light-theme .form-grid input,
+body.light-theme .form-grid select {
     padding: 8px;
     border: 1px solid #242323;
     border-radius: 3px;
     width: 100%; /* Ajusta para ocupar toda a largura da célula */
     box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
+}
+
+body.dark-theme .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Define 3 colunas por linha */
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #3f3d3d;
+    margin-top: 10px;
+}
+
+body.dark-theme .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Define 3 colunas por linha */
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #3f3d3d;
+    margin-top: 10px;
+}
+
+body.dark-theme .form-grid div {
+    display: flex;
+    flex-direction: column;
+}
+
+body.dark-theme .form-grid label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: var(--button-hover-text-dark);
+}
+
+body.dark-theme .form-grid input,
+body.dark-theme .form-grid select {
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 3px;
+    width: 100%; /* Ajusta para ocupar toda a largura da célula */
+    box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
+}
+
+body.dark-theme .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Define 3 colunas por linha */
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #3f3d3d;
+    margin-top: 10px;
 }
 
 /* Estilizar especificamente a div que contém o TIPO DE AÇÃO SOLICITADA */
@@ -955,6 +1004,12 @@ body.dark-theme #dadosPedido tbody tr td input{
     background-color:var(--table-bg-dark);
     color: var(--button-hover-text-dark);
     border:none;
+}
+
+body.dark-theme .action-table td{
+
+    color: var(--button-hover-text-dark);
+
 }
 
 

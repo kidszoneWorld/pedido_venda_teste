@@ -44,9 +44,67 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log('Botão de PDF clicado');
 
        // Validação básica
-        if (!clienteInput.value || !cnpjInput.value || !responsavelInput.value || !representante.value) {
-            alert('Por favor, preencha os campos Cliente, CNPJ,Responsável, Representante Responsável e Valor .');
-          return;
+        if(!clienteInput.value.trim()){
+
+            alert(
+                'Por favor, preencha o campo Cliente.'
+            );
+
+            clienteInput.focus();
+
+            return;
+
+        }
+
+        if(!cnpjInput.value.trim()){
+
+            alert(
+                'Por favor, preencha o campo CNPJ.'
+            );
+
+            cnpjInput.focus();
+
+            return;
+
+        }
+
+        if(!responsavelInput.value.trim()){
+
+            alert(
+                'Por favor, preencha o campo Responsável.'
+            );
+
+            responsavelInput.focus();
+
+            return;
+
+        }
+
+        if(!representante.value.trim()){
+
+            alert(
+                'Por favor, preencha o campo Representante Responsável.'
+            );
+
+            representante.style.border =
+                '2px solid red';
+
+            representante.focus();
+
+            representante.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            setTimeout(() => {
+
+                representante.style.border =
+                    '';
+
+            }, 3000);
+
+            return;
+
         }
 
         // Ocultar elementos que não devem aparecer no PDF
