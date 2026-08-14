@@ -154,6 +154,95 @@ function preencherSelectTipoInvestimento(){
 
 }
 
+function numeroParaMoedaBR(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ){
+        return '';
+    }
+
+    const numero =
+        Number(
+            valor
+        );
+
+    if(isNaN(numero)){
+        return '';
+    }
+
+    return numero.toLocaleString(
+        'pt-BR',
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+function moedaBRParaNumero(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ){
+        return 0;
+    }
+
+    const normalizado =
+        String(valor)
+            .replace(
+                'R$',
+                ''
+            )
+            .replace(
+                /\./g,
+                ''
+            )
+            .replace(
+                ',',
+                '.'
+            )
+            .trim();
+
+    const numero =
+        Number(
+            normalizado
+        );
+
+    return isNaN(numero)
+        ? 0
+        : numero;
+
+}
+
+function formatarCampoMoedaBR(input){
+
+    if(!input.value){
+
+        input.value =
+            '';
+
+        return;
+
+    }
+
+    const numero =
+        moedaBRParaNumero(
+            input.value
+        );
+
+    input.value =
+        numeroParaMoedaBR(
+            numero
+        );
+
+}
+
 function montarTabela(
     investimentos
 ){
@@ -170,55 +259,55 @@ function montarTabela(
         tbody.innerHTML += `
 
             <tr
-                class="linhaInvestimento"
-                data-id="${investimento.CodigoInvestimento}"
+    class="linhaInvestimento"
+    data-id="${investimento.CodigoInvestimento}"
+>
+
+    <td class="coluna-tipo-investimento">
+        <input
+            type="text"
+            class="tipoInvestimentoTabela"
+            value="${investimento.TipoInvestimento || ''}"
+            ${isOperador ? '' : 'readonly'}
+        >
+    </td>
+
+    <td class="coluna-data-investimento">
+        <input
+            type="date"
+            class="dataInvestimentoTabela"
+            value="${formatarDataInput(investimento.DataInvestimento)}"
+            ${isOperador ? '' : 'readonly'}
+        >
+    </td>
+
+    <td class="coluna-valor-investimento">
+        <div class="campo-moeda">
+            <span>R$</span>
+            <input
+                type="text"
+                inputmode="decimal"
+                class="estoque valorInvestimentoTabela"
+                value="${
+                    investimento.ValorInvestimento
+                    ? numeroParaMoedaBR(
+                        investimento.ValorInvestimento
+                    )
+                    : ''
+                }"
+                ${isOperador ? '' : 'readonly'}
             >
+        </div>
+    </td>
 
-                <td>
-                    <input
-                        type="text"
-                        class="tipoInvestimentoTabela"
-                        value="${investimento.TipoInvestimento || ''}"
-                        ${isOperador ? '' : 'readonly'}
-                    >
-                </td>
+    <td class="coluna-observacao-investimento">
+        <textarea
+            class="observacaoInvestimentoTabela"
+            ${isOperador ? '' : 'readonly'}
+        >${investimento.ObservacaoInvestimento || ''}</textarea>
+    </td>
 
-                <td>
-                    <input
-                        type="date"
-                        class="dataInvestimentoTabela"
-                        value="${formatarDataInput(investimento.DataInvestimento)}"
-                        ${isOperador ? '' : 'readonly'}
-                    >
-                </td>
-
-                <td>
-                    <div class="campo-moeda">
-
-                        <span>R$</span>
-
-                        <input
-                            type="number"
-                            step="0.01"
-                            class="estoque valorInvestimentoTabela"
-                            value="${investimento.ValorInvestimento || ''}"
-                            ${isOperador ? '' : 'readonly'}
-                        >
-
-                    </div>
-                </td>
-
-                <td>
-                    <input
-                        type="text"
-                        class="observacaoInvestimentoTabela"
-                        value="${investimento.ObservacaoInvestimento || ''}"
-                        ${isOperador ? '' : 'readonly'}
-                    >
-                </td>
-
-            </tr>
-
+</tr>
         `;
 
     });
@@ -377,6 +466,32 @@ function configurarEventosInvestimento(){
         };
 
     }
+    const valorInvestimento =
+    document.getElementById(
+        'valorInvestimento'
+    );
+
+if(valorInvestimento){
+
+    valorInvestimento.type =
+        'text';
+
+    valorInvestimento.inputMode =
+        'decimal';
+
+    valorInvestimento.addEventListener(
+        'blur',
+        () => {
+
+            formatarCampoMoedaBR(
+                valorInvestimento
+            );
+
+        }
+    );
+
+}
+
 
 }
 
@@ -451,12 +566,13 @@ async function adicionarInvestimento(){
             )
             .value,
 
-        ValorInvestimento:
-            document
-            .getElementById(
-                'valorInvestimento'
-            )
-            .value,
+            ValorInvestimento:
+                moedaBRParaNumero(
+                    document
+                    .getElementById(
+                        'valorInvestimento'
+                    ).value
+                ),
 
         ObservacaoInvestimento:
             document
@@ -465,7 +581,6 @@ async function adicionarInvestimento(){
             )
             .value
             .trim()
-
     };
 
     if(!dados.TipoInvestimento){
@@ -634,16 +749,6 @@ document
 
 async function salvarInvestimentos(){
 
-    if(!isOperador){
-
-        alert(
-            'Representantes não podem editar investimentos.'
-        );
-
-        return;
-
-    }
-
     const investimentos = [];
 
     document
@@ -673,7 +778,7 @@ async function salvarInvestimentos(){
                 .value,
 
             ValorInvestimento:
-                Number(
+                moedaBRParaNumero(
                     linha
                     .querySelector(
                         '.valorInvestimentoTabela'
@@ -746,6 +851,28 @@ function configurarCalculoTotalInvestimento(){
             calcularTotalInvestimento
         );
 
+        input.addEventListener(
+            'blur',
+            () => {
+
+                formatarCampoMoedaBR(
+                    input
+                );
+
+                calcularTotalInvestimento();
+
+            }
+        );
+
+        input.addEventListener(
+            'focus',
+            () => {
+
+                input.select();
+
+            }
+        );
+
     });
 
 }
@@ -761,7 +888,7 @@ function calcularTotalInvestimento(){
     .forEach(input => {
 
         const valor =
-            Number(
+            moedaBRParaNumero(
                 input.value
             );
 
