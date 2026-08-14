@@ -281,6 +281,82 @@ function garantirLinhaInicial() {
     if (!tbody.querySelector('tr')) adicionarNovaLinha();
 }
 
+function moedaBRParaNumero(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ){
+        return 0;
+    }
+
+    const normalizado =
+        String(valor)
+            .replace('R$', '')
+            .replace(/\./g, '')
+            .replace(',', '.')
+            .trim();
+
+    const numero =
+        Number(normalizado);
+
+    return isNaN(numero)
+        ? 0
+        : numero;
+
+}
+
+function numeroParaMoedaBR(valor){
+
+    const numero =
+        Number(valor || 0);
+
+    return numero.toLocaleString(
+        'pt-BR',
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+function formatarCampoMoedaBR(input){
+
+    if(!input.value){
+        input.value = '';
+        return;
+    }
+
+    const numero =
+        moedaBRParaNumero(
+            input.value
+        );
+
+    input.value =
+        numeroParaMoedaBR(
+            numero
+        );
+
+}
+
+function numeroQuantidade(valor){
+
+    const numero =
+        Number(
+            String(valor || '')
+                .replace(',', '.')
+                .trim()
+        );
+
+    return isNaN(numero)
+        ? 0
+        : numero;
+
+}
+
+
 // ======================================================================
 // 🚀 ENVIO DO PEDIDO
 // ======================================================================
@@ -337,26 +413,45 @@ function montarObjetoRebaixa() {
         if (!cells[1]?.value) return; // ignora linha vazia
 
         produtos.push({
-            nforigem: cells[0]?.value,
-            codigoItem: cells[1]?.value,
-            descricao: cells[2]?.value,
-            lote: cells[3]?.value,
-            precounitario: parseFloat(
-                cells[4]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
-            ) || 0,
-            rebaixa: parseFloat(
-                cells[5]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
-            ) || 0,
-            atual: parseFloat(
-                cells[6]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
-            ) || 0,
-            quantidade: cells[7]?.value || 0,
 
+            nforigem:
+                cells[0]?.value,
 
-            total: parseFloat(
-                cells[8]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
-            ) || 0
+            codigoItem:
+                cells[1]?.value,
+
+            descricao:
+                cells[2]?.value,
+
+            lote:
+                cells[3]?.value,
+
+            precounitario:
+                moedaBRParaNumero(
+                    cells[4]?.value
+                ),
+
+            rebaixa:
+                moedaBRParaNumero(
+                    cells[5]?.value
+                ),
+
+            atual:
+                moedaBRParaNumero(
+                    cells[6]?.value
+                ),
+
+            quantidade:
+                numeroQuantidade(
+                    cells[7]?.value
+                ),
+
+            total:
+                moedaBRParaNumero(
+                    cells[8]?.value
+                )
         });
+
     });
 
     const rebaixa = {
@@ -414,49 +509,98 @@ async function salvarRebaixaMongo() {
 
 
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
-function atualizarTotalVolumes() {
-    let totalVolumes = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function atualizarTotalVolumes(){
+
+    let totalVolumes =
+        0;
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody tr'
+        );
 
     linhas.forEach(tr => {
-        const cell = tr.cells[4]?.querySelector('input');
-        if (cell && cell.value) {
-            const quantidade = parseFloat(cell.value.replace(",", "."));
-            if (!isNaN(quantidade)) {
-                totalVolumes += quantidade;
-                console.log('Quantidade adicionada:', quantidade);
-                console.log('Total de volumes até agora:', totalVolumes);
+
+        const cell =
+            tr.cells[7]?.querySelector(
+                'input'
+            );
+
+        if(cell && cell.value){
+
+            const quantidade =
+                numeroQuantidade(
+                    cell.value
+                );
+
+            if(!isNaN(quantidade)){
+
+                totalVolumes +=
+                    quantidade;
+
             }
+
         }
+
     });
 
-    document.getElementById('volume').value = totalVolumes;
+    document.getElementById(
+        'volume'
+    ).value =
+        totalVolumes;
+
 }
 
-
-
-
 // Função para atualizar o total de produtos (quantidade * valor unitário)
-function atualizarTotalProdutos() {
-    let totalProdutos = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function atualizarTotalProdutos(){
+
+    let totalProdutos =
+        0;
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody tr'
+        );
 
     linhas.forEach(tr => {
-        const quantidadeCell = tr.cells[4]?.querySelector('input');
-        const valorTotalLinhaCell = tr.cells[8]?.querySelector('input');
-        console.log('Quantidade cell:', quantidadeCell);
-        console.log('Valor unitário cell:', valorTotalLinhaCell);
 
-        if (quantidadeCell && valorTotalLinhaCell && quantidadeCell.value && valorTotalLinhaCell.value) {
-            const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
-            const valorTotalLinha = parseFloat(valorTotalLinhaCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
-            if (!isNaN(quantidade) && !isNaN(valorTotalLinha)) {
-                totalProdutos += valorTotalLinha;
+        const valorTotalLinhaCell =
+            tr.cells[8]?.querySelector(
+                'input'
+            );
+
+        if(
+            valorTotalLinhaCell &&
+            valorTotalLinhaCell.value
+        ){
+
+            const valorTotalLinha =
+                moedaBRParaNumero(
+                    valorTotalLinhaCell.value
+                );
+
+            if(!isNaN(valorTotalLinha)){
+
+                totalProdutos +=
+                    valorTotalLinha;
+
             }
+
         }
+
     });
 
-    document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    document.getElementById(
+        'total'
+    ).value =
+        totalProdutos.toLocaleString(
+            'pt-BR',
+            {
+                style: 'currency',
+                currency: 'BRL'
+            }
+        );
+
 }
 
 function dataMaiorQue6Meses(dataInput) {
@@ -469,52 +613,136 @@ function dataMaiorQue6Meses(dataInput) {
     return dataSelecionada < limite;
 }
 
-function validarTabelaPedido() {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function validarTabelaPedido(){
 
-    if (!linhas.length) {
-        alert("Adicione pelo menos um item no pedido.");
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody tr'
+        );
+
+    if(!linhas.length){
+
+        alert(
+            'Adicione pelo menos um item no pedido.'
+        );
+
         return false;
+
     }
 
-    for (let i = 0; i < linhas.length; i++) {
-        const tr = linhas[i];
-        const inputs = tr.querySelectorAll('input');
+    for(let i = 0; i < linhas.length; i++){
 
-        // Campos obrigatórios por índice da coluna:
-        // 1 = código
-        // 2 = quantidade
-        // 5 = valor unitário
-        // 6 = total
+        const tr =
+            linhas[i];
 
-        const nf = inputs[0]?.value.trim()
-        const data = inputs[1]?.value.trim();
-        if (!data) {
-            alert(`Preencha a data na linha ${i + 1}`);
-            inputs[1]?.focus();
-            return false;
-        }
+        const inputs =
+            tr.querySelectorAll(
+                'input'
+            );
 
-        // BLOQUEIO DE 6 MESES
-/*        if (dataMaiorQue6Meses(data)) {
-            alert(`A data da linha ${i + 1} é superior a 6 meses. Não é permitido.`);
-            inputs[1]?.focus();
-            return false;
-}*/
-        const codigo = inputs[2]?.value.trim();
-        const lote = inputs[3]?.value.trim();
-        const quantidade = inputs[4]?.value.trim();
-        const valor = inputs[7]?.value.trim();
-        const total = inputs[8]?.value.trim();
+        const nf =
+            inputs[0]?.value.trim();
 
-        if (!codigo || !quantidade || !valor || !total || !nf || !lote || !data) {
-            alert(`Preencha todos os campos da linha ${i + 1}`);
+        const codigo =
+            inputs[1]?.value.trim();
+
+        const descricao =
+            inputs[2]?.value.trim();
+
+        const lote =
+            inputs[3]?.value.trim();
+
+        const preco =
+            inputs[4]?.value.trim();
+
+        const rebaixa =
+            inputs[5]?.value.trim();
+
+        const atual =
+            inputs[6]?.value.trim();
+
+        const quantidade =
+            inputs[7]?.value.trim();
+
+        const total =
+            inputs[8]?.value.trim();
+
+        if(
+            !nf ||
+            !codigo ||
+            !descricao ||
+            !lote ||
+            !preco ||
+            !rebaixa ||
+            !atual ||
+            !quantidade ||
+            !total
+        ){
+
+            alert(
+                `Preencha todos os campos da linha ${i + 1}`
+            );
+
             inputs[0]?.focus();
+
             return false;
+
         }
+
     }
 
     return true;
+
+}
+
+function recalcularLinhaRebaixa(tr){
+
+    const cells =
+        tr.querySelectorAll(
+            'td input'
+        );
+
+    const preco =
+        moedaBRParaNumero(
+            cells[4]?.value
+        );
+
+    const rebaixa =
+        moedaBRParaNumero(
+            cells[5]?.value
+        );
+
+    const qtd =
+        numeroQuantidade(
+            cells[7]?.value
+        );
+
+    const atual =
+        preco - rebaixa;
+
+    const total =
+        rebaixa * qtd;
+
+    if(cells[6]){
+
+        cells[6].value =
+            numeroParaMoedaBR(
+                atual
+            );
+
+    }
+
+    if(cells[8]){
+
+        cells[8].value =
+            numeroParaMoedaBR(
+                total
+            );
+
+    }
+
+    atualizarTotais();
+
 }
 
 
@@ -528,7 +756,25 @@ function adicionarNovaLinha() {
     for (let i = 0; i < 11; i++) {
         
         const td = document.createElement('td');
+        const classesColunas = {
+                0: 'col-reb-nf',
+                1: 'col-reb-codigo',
+                2: 'col-reb-descricao',
+                3: 'col-reb-lote',
+                4: 'col-reb-preco',
+                5: 'col-reb-rebaixa',
+                6: 'col-reb-atual',
+                7: 'col-reb-quantidade',
+                8: 'col-reb-total',
+                9: 'col-reb-excluir',
+                10: 'col-reb-itemid'
+            };
 
+            if(classesColunas[i]){
+                td.classList.add(
+                    classesColunas[i]
+                );
+            }
         // coluna oculta (ItemId)
         if (i === 10) {
             td.style.display = 'none';
@@ -590,6 +836,84 @@ input.style.width =
 
 input.style.boxSizing =
     'border-box';
+
+const camposDinheiro =
+    [4, 5, 6, 8];
+
+const camposCalculam =
+    [4, 5, 7];
+
+if(camposDinheiro.includes(i)){
+
+    input.classList.add(
+        'campo-dinheiro-reb'
+    );
+
+    input.inputMode =
+        'decimal';
+
+}
+
+if(i === 7){
+
+    input.classList.add(
+        'campo-qtd-reb'
+    );
+
+    input.inputMode =
+        'decimal';
+
+}
+
+if(i === 6 || i === 8){
+
+    input.readOnly =
+        true;
+
+}
+
+if(camposCalculam.includes(i)){
+
+    input.addEventListener(
+        'input',
+        () => {
+
+            recalcularLinhaRebaixa(
+                tr
+            );
+
+        }
+    );
+
+}
+
+if(camposDinheiro.includes(i)){
+
+    input.addEventListener(
+        'blur',
+        () => {
+
+            formatarCampoMoedaBR(
+                input
+            );
+
+            recalcularLinhaRebaixa(
+                tr
+            );
+
+        }
+    );
+
+    input.addEventListener(
+        'focus',
+        () => {
+
+            input.select();
+
+        }
+    );
+
+}
 
 // CAMPOS COM R$
 if(
@@ -748,89 +1072,51 @@ if (i === 1) {
                 throw new Error('Item não encontrado');
             }
 
-            const item = data[0];
-            cells[2].value = item.ItemDescricao;
+            const item =
+    data[0];
 
-            cells[1].addEventListener('input', (e) => {
-                cells[2].value = '';
-                cells[3].value = '';
-                cells[4].value = '';
-                cells[5].value = '';
-                cells[6].value = '';
-                cells[7].value = '';
-                cells[8].value = '';               
-                
-                const preco = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                console.log(preco);
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
+cells[2].value =
+    item.ItemDescricao || '';
 
-            totalLinha = preco * qtd;
-                cells[8].value = totalLinha
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
+tr.dataset.itemId =
+    item.ItemId || '';
 
+cells[1].addEventListener(
+    'input',
+    () => {
 
-            cells[7].addEventListener('input', (e) => {
+        cells[2].value =
+            '';
 
-                const rebaixa = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[7].value.replace(',', '.')) || 0;
+        cells[3].value =
+            '';
 
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-                
+        cells[4].value =
+            '';
 
-            totalLinha = rebaixa * qtd;
-                cells[8].value = totalLinha;
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
+        cells[5].value =
+            '';
 
-            cells[5].addEventListener('input', (e) => {
+        cells[6].value =
+            '';
 
-                const preco = parseFloat(cells[4].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                const rebaixa = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                console.log(preco);
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-                
+        cells[7].value =
+            '';
 
-            totalLinha = rebaixa * qtd;
-                cells[8].value = totalLinha;
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
+        cells[8].value =
+            '';
 
-            totalAtual= preco - rebaixa;
-                cells[6].value = totalAtual;
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
+        tr.dataset.itemId =
+            '';
 
-            cells[4].addEventListener('input', (e) => {
-                const preco = parseFloat(cells[4].value.replace(',', '.')) || 0;
-                const rebaixa = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-                
+        atualizarTotais();
 
+    }
+);
 
-            totalAtual = preco - rebaixa;
-                cells[6].value = totalAtual;
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
-
+recalcularLinhaRebaixa(
+    tr
+);
 
         } catch (error) {
             alert(error.message);

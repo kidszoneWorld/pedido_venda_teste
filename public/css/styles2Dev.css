@@ -1502,3 +1502,104 @@ button:disabled {
 #tutorialBox {
     display: none;
 }
+
+/* ================================
+   TABELA REBAIXA - LARGURAS
+   ================================ */
+
+#dadosPedido {
+    table-layout: fixed;
+    width: 1000px;
+    min-width: 1000px;
+}
+
+/* Reduz padding para sobrar espaço real nos inputs */
+#dadosPedido th,
+#dadosPedido td {
+    padding: 6px 4px;
+}
+
+/* Colunas pequenas */
+#dadosPedido col.col-reb-nf {
+    width: 8%;
+}
+
+#dadosPedido col.col-reb-codigo {
+    width: 7%;
+}
+
+#dadosPedido col.col-reb-descricao {
+    width: 13%;
+}
+
+#dadosPedido col.col-reb-lote {
+    width: 9%;
+}
+
+/* Colunas numéricas maiores */
+#dadosPedido col.col-reb-preco {
+    width: 9%;
+}
+
+#dadosPedido col.col-reb-rebaixa {
+    width: 9%;
+}
+
+#dadosPedido col.col-reb-atual {
+    width: 9%;
+}
+
+#dadosPedido col.col-reb-quantidade {
+    width: 8%;
+}
+
+#dadosPedido col.col-reb-total {
+    width: 12%;
+}
+
+/* Botão excluir */
+#dadosPedido col.col-reb-excluir {
+    width: 7%;
+}
+
+/* Item ID oculto */
+#dadosPedido col.col-reb-itemid {
+    width: 0;
+    display: none;
+}
+
+/* Inputs ocupam a coluna inteira */
+#dadosPedido td input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 3px;
+}
+
+/* Campos com R$ */
+#dadosPedido .campo-moeda {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    width: 100%;
+}
+
+#dadosPedido .campo-moeda span {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#dadosPedido .campo-moeda input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Evita descrição quebrar ou empurrar colunas */
+#dadosPedido .col-reb-descricao input,
+#dadosPedido td:nth-child(3) input {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
