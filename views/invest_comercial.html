@@ -9,8 +9,22 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="manifest" href="/images/site.webmanifest">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="/css/invest_comercial.css?v=1783967913322">
-    <link rel="stylesheet" href="/css/theme-toggle.css?v=1783967913322">
+    <link rel="stylesheet" href="/css/invest_comercial.css?v=1787056278975">
+    <link rel="stylesheet" href="/css/distribuidores.css">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1787056278975">
+    <style>
+        /* Estilos aplicados diretamente para garantir a quebra de linha e expansão no container */
+        #acaoSolicita {
+            width: 100%;
+            box-sizing: border-box;
+            resize: none;
+            overflow-y: hidden;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: inherit;
+        }
+    </style>
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -40,27 +54,43 @@
            </div>
       </footer>
     <div class="container">
-        <div class="header">
-            <a href="/"><img src="/images/logo.png" alt="Imagem KidsZone"></a>
-            <div class="date"></div>
-            <script>
-                function atualizarDataHora() {
-                    const elementoData = document.querySelector('.date');
-                    const agora = new Date();
-                    const dataFormatada = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                    const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    elementoData.textContent = `${dataFormatada} ${horaFormatada}`;
-                    elementoData.style.fontSize = "105%";
-                }
-                atualizarDataHora();
-                setInterval(atualizarDataHora, 1000);
-            </script>
-        </div>
+                <div class="header">
+           <a href="/"><img src="/images/logo.png" alt="Imagem KidsZone"></a> 
+            <div class="date"></div> <!-- A data e hora serão inseridas aqui -->
+                <script>
+                    // Função para formatar a data e hora
+                    function atualizarDataHora() {
+                        const elementoData = document.querySelector('.date');
+                        const agora = new Date();
+                        const dataFormatada = agora.toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
+                        const horaFormatada = agora.toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        elementoData.textContent = `${dataFormatada} ${horaFormatada}`;
+                        elementoData.style.fontSize="105%";
+                        elementoData.style.color="#FFFFFF";
 
+                    }
+            
+                    // Chama a função inicialmente e depois a cada segundo para manter a hora atualizada
+                    atualizarDataHora();
+                    setInterval(atualizarDataHora, 1000);
+                </script>
+
+            <!-- Mensagem de feedback -->
+            <div id="feedback1" style="display: none; text-align: center; font-weight: bold; margin: 10px; color: red;">
+                Estamos enviando o pedido, aguarde...
+            </div>
+        </div>
         <div class="button-group">
             <button id="button_pdf">SALVAR EM PDF E ENVIAR E-MAIL</button>
         </div>
-
         <div class="section">
             <div class="section-title">SOLICITAÇÃO DE INVESTIMENTO COMERCIAL - KZ</div>
             <div class="form-grid">
@@ -124,7 +154,8 @@
 
         <div class="acao-solicitada-container">
             <label class="acao_solicita" for="acaoSolicita">RESUMO DA AÇÃO SOLICITADA:</label>
-            <input type="text" id="acaoSolicita">
+            <!-- ALTERADO DE INPUT PARA TEXTAREA -->
+            <textarea id="acaoSolicita" rows="1"></textarea>
         </div>
 
         <div class="section">
@@ -143,59 +174,22 @@
             </div>
 
             <div class="action-table-container">
-                <table class="action-table" border="1">
-                    <thead>
-                        <tr>
-                            <th>TIPO</th>
-                            <th>SELECIONAR</th>
-                            <th>DESCRIÇÃO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Ambientação</td>
-                            <td><input type="checkbox" id="ambientacao"></td>
-                            <td><input type="text" id="Descrição_ambientacao" placeholder="Descrição"></td>
-                        </tr>
-                        <tr>
-                            <td>Aniversário da loja</td>
-                            <td><input type="checkbox" id="aniversario_loja"></td>
-                            <td><input type="text" id="Descrição_Aniversário da loja" placeholder="Descrição"></td>
-                        </tr>
-                        <tr>
-                            <td>Campanha de Incentivo</td>
-                            <td><input type="checkbox" id="campanha_incentivo"></td>
-                            <td><input type="text" id="Descrição_campanha_incentivo" placeholder="Descrição"></td>
-                        </tr>
-                        <tr>
-                            <td>Encartes</td>
-                            <td><input type="checkbox" id="encartes"></td>
-                            <td><input type="text" id="Descrição_encartes" placeholder="Descrição"></td>
-                        </tr>
-                        <tr>
-                            <td>Inauguração</td>
-                            <td><input type="checkbox" id="inauguracao"></td>
-                            <td><input type="text" id="Descrição_inauguracao" placeholder="Descrição"></td>
-                        </tr>
-                        <tr>
-                            <td>Introdução</td>
-                            <td><input type="checkbox" id="introducao"></td>
-                            <td><input type="text" id="Descrição_introducao" placeholder="Descrição"></td>
-                         <tr>
-                            <td>Outros</td>
-                            <td><input type="checkbox" id="outros"></td>
-                            <td><input type="text" id="descricao_outros" placeholder="Descrição"></td>
-                        <tr>
-                            <td>Bonificação</td>
-                            <td><input type="checkbox" id="Bonificação"></td>
-                            
-                        <tr>
-                            <td>Abatimento</td>
-                            <td><input type="checkbox" id="abatimento"></td>
-                            
-                        </tr>
-                    </tbody>
-                </table>
+                <select name="tipoInvestimento" id="tipoInvestimento" class="tipoInvestimento">
+                    <option value=""></option>
+                    <option value="Bonificacao">Bonificação</option>
+                    <option value="Abatimento">Abatimento</option>
+                </select>
+                <select name="descricaoInvestimento" id="descricaoInvestimento" class="tipoInvestimento">
+                    <option value=""></option>
+                    <option value="Ambientação">Ambientação</option>
+                    <option value="Aniversário da Loja">Aniversário da Loja</option>
+                    <option value="Campanha de Incentivo">Campanha de Incentivo</option>
+                    <option value="Encartes">Encartes</option>
+                    <option value="Inauguração">Inauguração</option>
+                    <option value="Introdução">Introdução</option>
+                    <option value="Outros">Outros</option>
+
+                </select>
             </div>
         </div>
 
@@ -262,10 +256,10 @@
             </div>
 
         </div>
-        <div class="observations">
-            <div class="obs-title">OBSERVAÇÕES:</div>
+    <div class="observations">
+        <div class="obs-title">OBSERVAÇÕES:</div>
             <textarea id="observacoes" placeholder="Escreva suas observações aqui..."  style="height: 170px; white-space: pre-wrap; overflow-wrap: break-word;"></textarea>
-        <div id="observacoesPdf" class="observacoes-pdf"></div>
+            <div id="observacoesPdf" class="observacoes-pdf"></div>
         </div>
     </div>
 
@@ -276,8 +270,19 @@
         </div>
     </footer> -->
 
-    <script src="/invest_comercial.js?v=1783967913322"></script>
-    <script src="/pdf_invest_comercial.js?v=1783967913322"></script>
-    <script src="/theme-toggle.js?v=1783967913322"></script>
+    <script src="/invest_comercial.js?v=1787056278975"></script>
+    <script src="/pdf_invest_comercial.js?v=1787056278975"></script>
+    <script src="/theme-toggle.js?v=1787056278975"></script>
+
+    <!-- SCRIPT PARA AUMENTAR A ALTURA AUTOMATICAMENTE CONFORME A DIGITAÇÃO -->
+    <script>
+        const textareaAcao = document.getElementById('acaoSolicita');
+        if (textareaAcao) {
+            textareaAcao.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        }
+    </script>
   </body> 
 </html>
