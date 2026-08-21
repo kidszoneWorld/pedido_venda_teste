@@ -1239,7 +1239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     
     // E-mail fixo que não pode ser removido
-    const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`; // Trocar depois
+    const FIXED_EMAIL = `comercial.kz@kidszoneworld.com.br`; // Trocar depois
     
     // const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br`; // Trocar depois
     let generatedPdfFile = null;
