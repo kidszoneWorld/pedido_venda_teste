@@ -80,28 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
-        if(!representante.value.trim()){
+        if(
+            !representanteCarregado ||
+            !representante?.value.trim()
+        ){
 
             alert(
-                'Por favor, preencha o campo Representante Responsável.'
+                'O representante ainda não foi identificado pela sessão. Aguarde o carregamento ou entre novamente no sistema.'
             );
-
-            representante.style.border =
-                '2px solid red';
-
-            representante.focus();
-
-            representante.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-
-            setTimeout(() => {
-
-                representante.style.border =
-                    '';
-
-            }, 3000);
 
             return;
 
@@ -180,20 +166,87 @@ document.addEventListener("DOMContentLoaded", () => {
                     const pdfBase64 = await html2pdf().set(options).from(content).outputPdf('datauristring');
                     console.log('PDF gerado para envio, iniciando requisição...');
 
-                    const response = await fetch('/send-pdf-investComercial', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            pdfBase64,
-                            razaoSocial: cliente,
-                            codCliente: cnpj,
-                            rep: rep,
-                        })
-                    });
+const dadosInvestimento =
+    window.montarDadosInvestimentoComercial();
 
-                    const result = await response.text();
-                    console.log('Resposta do servidor:', result);
-                    alert(result);
+if(
+    !window.validarDadosInvestimentoComercial(
+        dadosInvestimento
+    )
+){
+    return;
+}
+
+const response =
+    await fetch(
+        '/send-pdf-investComercial',
+        {
+            method: 'POST',
+
+            headers: {
+                'Content-Type':
+                    'application/json'
+            },
+
+            body:
+                JSON.stringify({
+
+                    pdfBase64:
+                        pdfBase64,
+
+                    razaoSocial:
+                        cliente,
+
+                    codCliente:
+                        cnpj,
+
+                    rep:
+                        dadosInvestimento
+                            .representanteInvestimento,
+
+                    dadosInvestimento:
+                        dadosInvestimento
+
+                })
+        }
+    );
+
+                    const result =
+                        await response.json();
+
+                    if(!response.ok){
+
+    const detalhes = [
+        result.mensagem,
+        result.detalhe,
+        result.codigoErro
+            ? `Código PostgreSQL: ${result.codigoErro}`
+            : '',
+        result.coluna
+            ? `Coluna: ${result.coluna}`
+            : '',
+        result.tabela
+            ? `Tabela: ${result.tabela}`
+            : '',
+        result.restricao
+            ? `Restrição: ${result.restricao}`
+            : ''
+    ]
+    .filter(Boolean)
+    .join('\n');
+
+    throw new Error(
+        detalhes ||
+        'Erro ao salvar e enviar o investimento.'
+    );
+
+}
+
+                    alert(
+                        `${result.mensagem}\nNúmero do investimento: ${result.codigoInvestimento}`
+                    );
+
+
                 } catch (error) {
                     console.error('Erro ao enviar o e-mail:', error);
                     alert('Erro ao enviar o e-mail.');

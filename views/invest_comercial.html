@@ -188,8 +188,8 @@
                     <option value="Inauguração">Inauguração</option>
                     <option value="Introdução">Introdução</option>
                     <option value="Outros">Outros</option>
-
                 </select>
+                <input type="text" id="observacaoDescricaoInvestimento" placeholder="Descrição do Investimento" class="text">
             </div>
         </div>
 
@@ -229,39 +229,38 @@
         </div>
 
         <div class="section">
-            <div class="form-grid">
-                <div class="checkbox-group">
-                    <label for="avaliacao">Avaliação Gerentes de Vendas Juliana Silva / Marcos Sancovsky</label>
+
+                    <label for="representante">
+                        representante Responsável:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="representante"
+                        readonly
+                        placeholder="Carregando representante..."
+                    >
                 </div>
-                <div class="checkbox-group">
-                    <label for="aprovado">Aprovado</label>
-                    <input type="checkbox" id="aprovado">
-                </div>
-                <div class="checkbox-group">
-                    <label for="reprovado">Reprovado</label>
-                    <input type="checkbox" id="reprovado">
-                </div>
-            </div>
-            <div class="form-grid">
+<!-- 
+                    <input type="checkbox" id="aprovado" hidden>
+
+                    <input type="checkbox" id="reprovado" hidden> -->
+
                 <div>
                     <label for="responsavel_aprovacao">Responsável pela aprovação:</label>
                     <input type="text" id="responsavel_aprovacao" value="Marcos Sancovsky/Juliana Silva" readonly>
-                    <div>
-                    <label for="Representante">Representante Responsável:</label>
-                    <input type="text" id="representante" value="" >
-                    </div>
-                    <label for="assinatura">Assinatura</label>
-                    <input type="text" id="assinatura">
+
                 </div>
+                    <div class="observations">
+                        <div class="obs-title">OBSERVAÇÕES:</div>
+                            <textarea id="observacoes" placeholder="Escreva suas observações aqui..."  style="height: 170px; white-space: pre-wrap; overflow-wrap: break-word;"></textarea>
+                            <div id="observacoesPdf" class="observacoes-pdf"></div>
+                        </div>
+                    </div>
+
             </div>
 
         </div>
-    <div class="observations">
-        <div class="obs-title">OBSERVAÇÕES:</div>
-            <textarea id="observacoes" placeholder="Escreva suas observações aqui..."  style="height: 170px; white-space: pre-wrap; overflow-wrap: break-word;"></textarea>
-            <div id="observacoesPdf" class="observacoes-pdf"></div>
-        </div>
-    </div>
 
     <!-- <footer>
         <div class="link_sites">

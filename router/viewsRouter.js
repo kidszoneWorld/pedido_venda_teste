@@ -519,15 +519,6 @@ router.get('/error-404', (req, res) => {
     res.status(404).sendFile(path.join(__dirname, '..', 'views', 'error-404.html'));
 });
 
-
-// Rota para enviar os dados da sessão para o front-end
-router.get('/session-data', authMiddleware, (req, res) => {
-    res.json({
-        userNumero: req.session.userNumero || '',
-        isAuthenticated: req.session.isAuthenticated || false,
-        user: req.session.user || null,
-    });
-});
 //rota listar distribuidores
 router.get(
     '/api/distribuidores',
@@ -660,6 +651,49 @@ router.post('/logout', (req, res) => {
         res.status(200).send('Sessão encerrada com sucesso.');
     });
 });
+
+
+router.get(
+    '/session-data',
+    authMiddleware,
+    (req, res) => {
+
+        const usuarioSessao =
+            req.session?.user;
+
+        if(!usuarioSessao){
+
+            return res
+                .status(401)
+                .json({
+                    sucesso: false,
+                    mensagem:
+                        'Usuário não identificado na sessão.'
+                });
+
+        }
+
+        return res.json({
+
+            sucesso:
+                true,
+
+            userId:
+                usuarioSessao.id || '',
+
+            userEmail:
+                usuarioSessao.email || '',
+
+            userNome:
+                usuarioSessao.nome || '',
+
+            userNumero:
+                usuarioSessao.numero || ''
+
+        });
+
+    }
+);
 
 //Rota post para pedidos
 
