@@ -2100,3 +2100,72 @@ body.dark-theme .btn-remover-linha:hover {
     background: var(--button-hover-bg-dark);
     color: var(--button-hover-text-dark);
 }
+
+
+/* Aplicado somente durante a geração do PDF */
+body.gerando-pdf {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+}
+
+body.gerando-pdf .container {
+    /*
+     * A4 paisagem tem 297 mm.
+     * Com margens de 8 mm em cada lado,
+     * a largura útil fica em 281 mm.
+     */
+    width: 281mm !important;
+    max-width: 281mm !important;
+    min-width: 0 !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 5mm !important;
+
+    box-sizing: border-box !important;
+
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    overflow: visible !important;
+    background-color: #ffffff !important;
+}
+
+body.gerando-pdf .section,
+body.gerando-pdf .form-grid,
+body.gerando-pdf .payment-conditions,
+body.gerando-pdf .action-table-container,
+body.gerando-pdf .investment-table-container,
+body.gerando-pdf .observations {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+body.gerando-pdf table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    box-sizing: border-box !important;
+}
+
+body.gerando-pdf input,
+body.gerando-pdf textarea,
+body.gerando-pdf select {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+body.gerando-pdf .no-print,
+body.gerando-pdf .button-group,
+body.gerando-pdf footer {
+    display: none !important;
+}

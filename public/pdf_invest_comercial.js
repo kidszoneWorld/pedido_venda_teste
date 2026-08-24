@@ -40,6 +40,30 @@ document.addEventListener("DOMContentLoaded", () => {
     feedbackDiv.style.borderRadius = '5px';
     document.body.appendChild(feedbackDiv);
 
+
+    function prepararTelaParaPDF(){
+
+        document.body.classList.add(
+            'gerando-pdf'
+        );
+
+        window.scrollTo(
+            0,
+            0
+        );
+
+    }
+
+    function restaurarTelaDepoisDoPDF(){
+
+        document.body.classList.remove(
+            'gerando-pdf'
+        );
+
+    }
+
+
+
     async function gerarEEnviarPDF() {
         console.log('Botão de PDF clicado');
 
@@ -116,18 +140,153 @@ document.addEventListener("DOMContentLoaded", () => {
         const filename = `Solicitacao_Investimento_comercial_${cliente}_${cnpj}_${responsavel}_${timestamp}.pdf`;
 
         const options = {
-            margin: [10, 10, 10, 10],
-            filename: filename,
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+
+            margin: [
+                8,
+                8,
+                8,
+                8
+            ],
+
+            filename:
+                filename,
+
+            image: {
+                type:
+                    'jpeg',
+
+                quality:
+                    0.98
+            },
+
+            html2canvas: {
+
+                scale:
+                    2,
+
+                useCORS:
+                    true,
+
+                allowTaint:
+                    false,
+
+                logging:
+                    false,
+
+                backgroundColor:
+                    '#ffffff',
+
+                scrollX:
+                    0,
+
+                scrollY:
+                    0,
+
+                x:
+                    0,
+
+                y:
+                    0,
+
+                /*
+                * Usa a largura real do conteúdo centralizado,
+                * em vez da largura rolável da página.
+                */
+                windowWidth:
+                    content.offsetWidth,
+
+                onclone:
+                    documentoClonado => {
+
+                        documentoClonado
+                            .body
+                            .classList
+                            .add(
+                                'gerando-pdf'
+                            );
+
+                        const containerClonado =
+                            documentoClonado
+                                .querySelector(
+                                    '.container'
+                                );
+
+                        if(containerClonado){
+
+                            containerClonado.style.marginLeft =
+                                'auto';
+
+                            containerClonado.style.marginRight =
+                                'auto';
+
+                            containerClonado.style.left =
+                                '0';
+
+                            containerClonado.style.transform =
+                                'none';
+
+                        }
+
+                    }
+
+            },
+
+            jsPDF: {
+
+                unit:
+                    'mm',
+
+                format:
+                    'a4',
+
+                orientation:
+                    'landscape',
+
+                compress:
+                    true
+
+            },
+
             pagebreak: {
-                mode: ['css', 'legacy']
+
+                mode: [
+                    'avoid-all',
+                    'css',
+                    'legacy'
+                ],
+
+                avoid: [
+                    '.form-grid',
+                    '.payment-conditions',
+                    '.action-table-container',
+                    '.observations',
+                    'tr',
+                    'td',
+                    'th'
+                ]
+
             }
+
         };
 
         try {
             btPdfGeneration.disabled = true;
             console.log('Iniciando geração do PDF...');
+
+
+            prepararTelaParaPDF();
+
+            await new Promise(resolve => {
+
+                requestAnimationFrame(() => {
+
+                    requestAnimationFrame(
+                        resolve
+                    );
+
+                });
+
+            });
 
             // Gerar e baixar o PDF
             const pdfBlob = await html2pdf().set(options).from(content).output('blob');
@@ -162,6 +321,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 elementsToHide.forEach(el => el.style.display = 'none');
 
                 try {
+
+                    prepararTelaParaPDF();
+
+                        await new Promise(resolve => {
+
+                            requestAnimationFrame(() => {
+
+                                requestAnimationFrame(
+                                    resolve
+                                );
+
+                            });
+
+                        });
+
                     // Gerar PDF para envio
                     const pdfBase64 = await html2pdf().set(options).from(content).outputPdf('datauristring');
                     console.log('PDF gerado para envio, iniciando requisição...');
@@ -250,14 +424,30 @@ const response =
                 } catch (error) {
                     console.error('Erro ao enviar o e-mail:', error);
                     alert('Erro ao enviar o e-mail.');
-                } finally {
-                        feedbackDiv.style.display = 'none';
+                } 
+                finally {
 
-                        textareaObs.style.display = 'block';
-                        observacoesPdf.style.display = 'none';
+                    restaurarTelaDepoisDoPDF();
 
-                        elementsToHide.forEach(el => el.style.display = 'flex');
-                    }
+                    feedbackDiv.style.display =
+                        'none';
+
+                    textareaObs.style.display =
+                        'block';
+
+                    observacoesPdf.style.display =
+                        'none';
+
+                    elementsToHide.forEach(
+                        elemento => {
+
+                            elemento.style.display =
+                                '';
+
+                        }
+                    );
+
+                }
             };
         } catch (error) {
             console.error('Erro ao salvar ou enviar o PDF:', error);
