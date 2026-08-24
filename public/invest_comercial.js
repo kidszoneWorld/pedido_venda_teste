@@ -43,12 +43,18 @@ async function carregarRepresentanteDaSessao(){
             'Campo #representante não encontrado.'
         );
 
-        return;
+        return false;
 
     }
 
+    representanteCarregado =
+        false;
+
     campoRepresentante.value =
         'Carregando representante...';
+
+    campoRepresentante.readOnly =
+        true;
 
     try{
 
@@ -72,10 +78,7 @@ async function carregarRepresentanteDaSessao(){
         const resultado =
             await response.json();
 
-        if(
-            !response.ok ||
-            !resultado.sucesso
-        ){
+        if(!response.ok){
 
             throw new Error(
                 resultado.mensagem ||
@@ -85,32 +88,66 @@ async function carregarRepresentanteDaSessao(){
         }
 
         const numero =
-            resultado.userNumero;
+            resultado.userNumero ||
+            resultado.user?.numero ||
+            '';
 
         const nome =
-            resultado.userNome;
+            resultado.userNome ||
+            resultado.user?.nome ||
+            '';
 
-        if(!numero || !nome){
+        if(numero){
 
-            throw new Error(
-                'Número ou nome do representante não encontrado na sessão.'
-            );
+            campoRepresentante.value =
+                nome
+                    ? `${numero} - ${nome}`
+                    : String(numero);
+
+            campoRepresentante.dataset.numero =
+                String(numero);
+
+            campoRepresentante.dataset.nome =
+                String(nome);
+
+            campoRepresentante.dataset.origem =
+                'sessao';
+
+            campoRepresentante.readOnly =
+                true;
+
+            representanteCarregado =
+                true;
+
+            return true;
 
         }
 
         campoRepresentante.value =
-            `${numero} - ${nome}`;
+            nome || '';
 
         campoRepresentante.dataset.numero =
-            String(numero);
+            '';
 
         campoRepresentante.dataset.nome =
             String(nome);
 
+        campoRepresentante.dataset.origem =
+            'manual';
+
         campoRepresentante.readOnly =
+            false;
+
+        campoRepresentante.placeholder =
+            'Digite o representante responsável';
+
+        representanteCarregado =
             true;
 
-        representanteCarregado = true;
+        campoRepresentante.focus();
+
+        return true;
+
     }catch(error){
 
         console.error(
@@ -121,9 +158,27 @@ async function carregarRepresentanteDaSessao(){
         campoRepresentante.value =
             '';
 
-        alert(
-            'Não foi possível identificar o representante. Entre novamente no sistema.'
-        );
+        campoRepresentante.dataset.numero =
+            '';
+
+        campoRepresentante.dataset.nome =
+            '';
+
+        campoRepresentante.dataset.origem =
+            'manual';
+
+        campoRepresentante.readOnly =
+            false;
+
+        campoRepresentante.placeholder =
+            'Digite o representante responsável';
+
+        representanteCarregado =
+            true;
+
+        campoRepresentante.focus();
+
+        return true;
 
     }
 
@@ -1075,11 +1130,24 @@ window.validarDadosInvestimentoComercial =
 
         }
 
-        if(!dados.representanteInvestimento){
+        if(
+            !dados.representanteInvestimento ||
+            !dados.representanteInvestimento.trim()
+        ){
 
             alert(
-                'Representante não identificado na sessão.'
+                'Informe o representante responsável.'
             );
+
+            const campoRepresentante =
+                document.getElementById(
+                    'representante'
+                );
+
+            campoRepresentante.readOnly =
+                false;
+
+            campoRepresentante.focus();
 
             return false;
 

@@ -105,17 +105,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if(
-            !representanteCarregado ||
-            !representante?.value.trim()
-        ){
+    !representante ||
+    !representante.value.trim() ||
+    representante.value ===
+        'Carregando representante...'
+){
 
-            alert(
-                'O representante ainda não foi identificado pela sessão. Aguarde o carregamento ou entre novamente no sistema.'
-            );
+    alert(
+        'Informe o representante responsável.'
+    );
 
-            return;
+    representante.readOnly =
+        false;
 
-        }
+    representante.focus();
+
+    representante.scrollIntoView({
+        behavior:
+            'smooth',
+
+        block:
+            'center'
+    });
+
+    return;
+
+}
+
 
         // Ocultar elementos que não devem aparecer no PDF
         const elementsToHide = document.querySelectorAll('.no-print, .button-group');

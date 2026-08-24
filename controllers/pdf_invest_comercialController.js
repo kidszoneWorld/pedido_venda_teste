@@ -38,51 +38,75 @@ function numeroOuZero(valor){
 exports.sendPdf =
     async (req, res) => {
 
-        const {
-            pdfBase64,
-            razaoSocial,
-            codCliente,
-            dadosInvestimento
-        } = req.body;
-
-        const usuarioSessao =
-            req.session?.user;
-
-        if(!usuarioSessao){
-
-            return res
-                .status(401)
-                .json({
-                    sucesso: false,
-                    mensagem:
-                        'Sessão expirada ou usuário não autenticado.'
-                });
-
-        }
-
-        const numeroRepresentante =
-            usuarioSessao.numero;
-
-        const nomeRepresentante =
-            usuarioSessao.nome;
-
-        if(
-            !numeroRepresentante ||
-            !nomeRepresentante
+       if(
+            !pdfBase64 ||
+            !razaoSocial ||
+            !codCliente ||
+            !dadosInvestimento
         ){
 
             return res
-                .status(401)
+                .status(400)
                 .json({
-                    sucesso: false,
+                    sucesso:
+                        false,
+
                     mensagem:
-                        'Representante não identificado na sessão.'
+                        'Dados incompletos para salvar e enviar o PDF.'
                 });
 
         }
 
-        const representanteSessao =
-            `${numeroRepresentante} - ${nomeRepresentante}`;
+        const usuarioSessao =
+         req.session?.user || {};
+
+        const numeroRepresentante =
+            usuarioSessao.numero ||
+            req.session?.userNumero ||
+            '';
+
+        const nomeRepresentante =
+            usuarioSessao.nome ||
+            req.session?.userNome ||
+            '';
+
+        const representanteDigitado =
+            textoOuNull(
+                dadosInvestimento
+                    ?.representanteInvestimento
+            );
+
+        let representanteResponsavel =
+            null;
+
+        if(numeroRepresentante){
+
+            representanteResponsavel =
+                nomeRepresentante
+                    ? `${numeroRepresentante} - ${nomeRepresentante}`
+                    : String(numeroRepresentante);
+
+        }else{
+
+            representanteResponsavel =
+                representanteDigitado;
+
+        }
+
+        if(!representanteResponsavel){
+
+            return res
+                .status(400)
+                .json({
+                    sucesso:
+                        false,
+
+                    mensagem:
+                        'Representante responsável não informado.'
+                });
+
+        }
+
 
         if(
             !pdfBase64 ||
@@ -239,7 +263,7 @@ exports.sendPdf =
                 ),
 
                 textoOuNull(
-                    representanteSessao
+                    representanteResponsavel
                 ),
 
                 textoOuNull(
