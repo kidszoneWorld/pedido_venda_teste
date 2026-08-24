@@ -107,24 +107,6 @@ exports.sendPdf =
 
         }
 
-
-        if(
-            !pdfBase64 ||
-            !razaoSocial ||
-            !codCliente ||
-            !dadosInvestimento
-        ){
-
-            return res
-                .status(400)
-                .json({
-                    sucesso: false,
-                    mensagem:
-                        'Dados incompletos para salvar e enviar o PDF.'
-                });
-
-        }
-
         const emailKey =
             `${razaoSocial}-${codCliente}`;
 

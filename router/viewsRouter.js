@@ -106,6 +106,53 @@ router.get(
         );
     }
 );
+
+router.get(
+    '/session-data',
+    authMiddleware,
+    (req, res) => {
+
+        const usuario =
+            req.session?.user || {};
+
+        return res.json({
+            sucesso: true,
+
+            isAuthenticated:
+                req.session?.isAuthenticated === true,
+
+            userNumero:
+                usuario.numero ||
+                req.session?.userNumero ||
+                '',
+
+            userNome:
+                usuario.nome ||
+                req.session?.userNome ||
+                '',
+
+            user: {
+                id:
+                    usuario.id || '',
+
+                email:
+                    usuario.email || '',
+
+                nome:
+                    usuario.nome ||
+                    req.session?.userNome ||
+                    '',
+
+                numero:
+                    usuario.numero ||
+                    req.session?.userNumero ||
+                    ''
+            }
+        });
+
+    }
+);
+
 router.get(
     '/displayDistribuidor/:codigoDistribuidor',
     authMiddleware,
@@ -651,49 +698,6 @@ router.post('/logout', (req, res) => {
         res.status(200).send('Sessão encerrada com sucesso.');
     });
 });
-
-
-router.get(
-    '/session-data',
-    authMiddleware,
-    (req, res) => {
-
-        const usuarioSessao =
-            req.session?.user;
-
-        if(!usuarioSessao){
-
-            return res
-                .status(401)
-                .json({
-                    sucesso: false,
-                    mensagem:
-                        'Usuário não identificado na sessão.'
-                });
-
-        }
-
-        return res.json({
-
-            sucesso:
-                true,
-
-            userId:
-                usuarioSessao.id || '',
-
-            userEmail:
-                usuarioSessao.email || '',
-
-            userNome:
-                usuarioSessao.nome || '',
-
-            userNumero:
-                usuarioSessao.numero || ''
-
-        });
-
-    }
-);
 
 //Rota post para pedidos
 

@@ -1,47 +1,221 @@
 let listaOriginal = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-    aplicarRestricaoRepresentante();
-});
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
 
-async function aplicarRestricaoRepresentante() {
-    try {
-        window.isRepresentante = true;
-        
-        // Faz a requisição para obter os dados da sessão
-        const response = await fetch('/session-data');
-        const sessionData = await response.json();
+        const sessaoValida =
+            await aplicarRestricaoRepresentante();
 
-        // Define os dados no front-end
-        if (sessionData.isAuthenticated) {
-            window.sessionData = sessionData;
-
-            const userNumero = window.sessionData?.userNumero || null;
-            
-            if (!userNumero) {
-                window.isRepresentante = false;
-                return;
-            }
-            const inputRep = document.getElementById('filtroRepresentante');
-
-            // força valor
-            inputRep.value = userNumero;
-            
-                inputRep.readOnly = true;
-                inputRep.style.backgroundColor = '#e9ecef';
-                inputRep.style.cursor = 'not-allowed';
-            
-
-
-        } else {
-            console.warn('Usuário não autenticado');
-            window.location.href = '/login2'; // Redireciona para a página de login
+        if(!sessaoValida){
+            return;
         }
-    } catch (error) {
-        console.error('Erro ao carregar os dados da sessão:', error);
-    }
-};
 
+        await carregarRebaixas();
+
+    }
+);
+
+async function aplicarRestricaoRepresentante(){
+
+    const inputRep =
+        document.getElementById(
+            'filtroRepresentante'
+        );
+
+    try{
+
+        const response =
+            await fetch(
+                '/session-data',
+                {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                }
+            );
+
+        if(
+            response.redirected &&
+            response.url.includes('/login2')
+        ){
+
+            window.location.replace(
+                '/login2'
+            );
+
+            return false;
+
+        }
+
+        if(response.status === 401){
+
+            window.location.replace(
+                '/login2'
+            );
+
+            return false;
+
+        }
+
+        const contentType =
+            response.headers.get(
+                'content-type'
+            ) || '';
+
+        if(
+            !contentType.includes(
+                'application/json'
+            )
+        ){
+
+            throw new Error(
+                'A rota de sessão não retornou JSON.'
+            );
+
+        }
+
+        const sessionData =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                sessionData.mensagem ||
+                `Erro ao consultar a sessão: ${response.status}`
+            );
+
+        }
+
+        console.log(
+            'Dados recebidos da sessão:',
+            sessionData
+        );
+
+        const autenticado =
+            sessionData.isAuthenticated === true ||
+            sessionData.sucesso === true ||
+            Boolean(sessionData.user);
+
+        if(!autenticado){
+
+            console.warn(
+                'A rota respondeu, mas a sessão não está autenticada.'
+            );
+
+            window.location.replace(
+                '/login2'
+            );
+
+            return false;
+
+        }
+
+        window.sessionData =
+            sessionData;
+
+        window.usuarioAutenticado =
+            true;
+
+        const userNumero =
+            sessionData.userNumero ||
+            sessionData.user?.numero ||
+            '';
+
+        if(userNumero){
+
+            window.isRepresentante =
+                true;
+
+            if(inputRep){
+
+                inputRep.value =
+                    String(userNumero);
+
+                inputRep.readOnly =
+                    true;
+
+                inputRep.disabled =
+                    false;
+
+                inputRep.style.backgroundColor =
+                    '#e9ecef';
+
+                inputRep.style.cursor =
+                    'not-allowed';
+
+                inputRep.placeholder =
+                    '';
+
+            }
+
+            return true;
+
+        }
+
+        window.isRepresentante =
+            false;
+
+        if(inputRep){
+
+            inputRep.value =
+                '';
+
+            inputRep.readOnly =
+                false;
+
+            inputRep.disabled =
+                false;
+
+            inputRep.style.backgroundColor =
+                '';
+
+            inputRep.style.cursor =
+                '';
+
+            inputRep.placeholder =
+                'Digite o código do representante';
+
+        }
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            'Erro ao aplicar restrição de representante:',
+            error
+        );
+
+        window.isRepresentante =
+            false;
+
+        if(inputRep){
+
+            inputRep.readOnly =
+                false;
+
+            inputRep.disabled =
+                false;
+
+            inputRep.style.backgroundColor =
+                '';
+
+            inputRep.style.cursor =
+                '';
+
+            inputRep.placeholder =
+                'Digite o código do representante';
+
+        }
+
+        return false;
+
+    }
+
+}
 
 function exportarExcel() {
     // usa os dados já filtrados (IMPORTANTE)
@@ -361,5 +535,3 @@ function salvar(id, btn) {
 function verDetalhes(id) {
     window.open( `/rebaixaDetalhe.html?id=${id}`, '_blank');
 }
-
-carregarRebaixas();

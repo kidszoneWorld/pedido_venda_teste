@@ -7,71 +7,144 @@ function authMiddleware(req, res, next) {
 
     res.redirect('/login2');
 }
-async function authenticateUser(req, res) {
 
-    try {
+async function authenticateUser(req, res){
 
-        const email = req.body?.email;
-        const senha = req.body?.senha;
+    try{
 
-        const result = await pool.query(
-            `SELECT *
-             FROM "TbUsuarios"
-             WHERE "UsuEmail" = $1`,
-            [email]
-        );
+        const email =
+            req.body?.email;
 
-        if (result.rows.length === 0) {
-            return res.redirect('/error-404');
+        const senha =
+            req.body?.senha;
+
+        if(!email || !senha){
+
+            return res
+                .status(400)
+                .json({
+                    message:
+                        'E-mail e senha são obrigatórios.'
+                });
+
         }
 
-        const user = result.rows[0];
+        const result =
+            await pool.query(
+                `
+                    SELECT *
+                    FROM "TbUsuarios"
+                    WHERE "UsuEmail" = $1
+                `,
+                [
+                    email
+                ]
+            );
+
+        if(result.rows.length === 0){
+
+            return res.redirect(
+                '/error-404'
+            );
+
+        }
+
+        const user =
+            result.rows[0];
 
         const senhaBanco =
             user.UsuSenha ||
             user.ususenha;
 
-        if (senha !== senhaBanco) {
-            return res.redirect('/error-404');
+        if(senha !== senhaBanco){
+
+            return res.redirect(
+                '/error-404'
+            );
+
         }
 
-        // AQUI DENTRO
-        req.session.isAuthenticated = true;
+        const usuarioId =
+            user.UsuId ||
+            user.usuid ||
+            '';
+
+        const usuarioEmail =
+            user.UsuEmail ||
+            user.usuemail ||
+            '';
+
+        const usuarioNome =
+            user.UsuNome ||
+            user.usunome ||
+            '';
+
+        const usuarioNumero =
+            user.UsuNumero ||
+            user.usunumero ||
+            '';
+
+        req.session.isAuthenticated =
+            true;
 
         req.session.user = {
-             id:
-                user.UsuId ||
-                user.usuid,
+            id:
+                usuarioId,
 
             email:
-                user.UsuEmail ||
-                user.usuemail,
+                usuarioEmail,
 
             nome:
-                user.UsuNome ||
-                user.usunome,
+                usuarioNome,
 
             numero:
-                user.UsuNumero ||
-                user.usunumero
-        
+                usuarioNumero
         };
 
-        
         req.session.userNumero =
-            user.UsuNumero ||
-            user.usunumero;
+            usuarioNumero;
 
-        return res.redirect('/');
-        
-    } catch (error) {
+        req.session.userNome =
+            usuarioNome;
 
-        console.error(error);
+        req.session.save(error => {
 
-        return res.status(500).json({
-            message: error.message
+            if(error){
+
+                console.error(
+                    'Erro ao salvar a sessão:',
+                    error
+                );
+
+                return res
+                    .status(500)
+                    .json({
+                        message:
+                            'Erro ao salvar a sessão.'
+                    });
+
+            }
+
+            return res.redirect('/');
+
         });
+
+    }catch(error){
+
+        console.error(
+            'Erro na autenticação:',
+            error
+        );
+
+        return res
+            .status(500)
+            .json({
+                message:
+                    error.message
+            });
+
     }
+
 }
 
 module.exports = {
