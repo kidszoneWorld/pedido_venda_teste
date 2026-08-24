@@ -293,19 +293,19 @@ div.acao-solicitada-container {
 }
 
 .investment-table .parcela {
-    width: 20%;
+    width: 11%;
 }
 
 .investment-table .valor {
-    width: 30%;
+    width: 39%;
 }
 
 .investment-table .pago {
-    width: 20%;
+    width: 39%;
 }
 
 .investment-table .valor-pago {
-    width: 30%;
+    width: 39%;
 }
 
 .payment-conditions {
@@ -432,7 +432,7 @@ footer {
 
 .link_sites a:hover {
     color:rgba(225,0,152);
-    font-size: 110%;
+    font-size: 100%;
 }
 
 
@@ -831,7 +831,7 @@ body.dark-theme footer {
 
 .link_sites a:hover {
     color:rgba(225,0,152);
-    font-size: 140%;
+    font-size: 100%;
     
 
 }
@@ -1343,7 +1343,7 @@ footer {
 
 .link_sites a:hover {
     color:rgba(225,0,152);
-    font-size: 110%;
+    font-size: 100%;
 }
 
 
@@ -2168,4 +2168,133 @@ body.gerando-pdf .no-print,
 body.gerando-pdf .button-group,
 body.gerando-pdf footer {
     display: none !important;
+}
+
+.investment-table .coluna-remover-parcela {
+    width: 110px;
+    text-align: center;
+}
+
+.investment-table .numero-parcela {
+    text-align: center;
+    font-weight: bold;
+    cursor: default;
+}
+
+.investment-table .valor-parcela,
+.investment-table .valor-pagamento {
+    text-align: right;
+}
+
+
+
+#adicionarLinhaInvestimento {
+    padding: 8px 16px;
+    border: 1px solid #c4007a;
+    border-radius: 6px;
+    background-color: #c4007a;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#adicionarLinhaInvestimento:hover {
+    background-color: #a50066;
+}
+
+body.gerando-pdf .coluna-remover-parcela {
+    display: none !important;
+}
+
+@media print {
+
+    .coluna-remover-parcela {
+        display: none !important;
+    }
+
+}
+
+/* ==========================================
+   TABELA DE PARCELAS
+   ========================================== */
+
+.investment-table-container {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 10px 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+.investment-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border-collapse: collapse;
+    table-layout: fixed;
+    box-sizing: border-box;
+}
+
+.investment-table th,
+.investment-table td {
+    padding: 8px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    text-align: center;
+    overflow: hidden;
+}
+
+.investment-table th {
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+/* .investment-table td input {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 8px;
+    box-sizing: border-box;
+} */
+
+/* Numeração automática */
+.investment-table .numero-parcela {
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Valores monetários */
+.investment-table .valor-parcela,
+.investment-table .valor-pagamento {
+    text-align: right;
+}
+
+/* Coluna e botão de remoção */
+.investment-table .coluna-remover-parcela {
+    text-align: center;
+}
+
+.investment-table .remover-parcela {
+    display: block;
+    width: 100%;
+    max-width: 140px;
+    margin: 0 auto;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    border: 1px solid #c4007a;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #c4007a;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.investment-table .remover-parcela:hover {
+    background-color: #c4007a;
+    color: #ffffff;
 }

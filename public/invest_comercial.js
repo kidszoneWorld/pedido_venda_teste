@@ -147,7 +147,30 @@ function moedaBRParaNumero(valor){
             .replace(',', '.');
 
     const numero =
-        Number(normalizado);
+        Number(
+            normalizado
+        );
+
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+
+}
+
+function percentualBRParaNumero(valor){
+
+    if(!valor){
+        return 0;
+    }
+
+    const numero =
+        Number(
+            String(valor)
+                .replace('%', '')
+                .replace(/\./g, '')
+                .replace(',', '.')
+                .trim()
+        );
 
     return Number.isFinite(numero)
         ? numero
@@ -309,93 +332,509 @@ function configurarValoresInvestimento(){
 
 }
 
+function atualizarNumeracaoParcelas(){
+
+    const linhas =
+        Array.from(
+            document.querySelectorAll(
+                '#investment-table-body .linha-parcela'
+            )
+        );
+
+    const totalLinhas =
+        linhas.length;
+
+    linhas.forEach(
+        (linha, indice) => {
+
+            const campoParcela =
+                linha.querySelector(
+                    '.numero-parcela'
+                );
+
+            if(!campoParcela){
+                return;
+            }
+
+            campoParcela.value =
+                `${indice + 1}/${totalLinhas}`;
+
+        }
+    );
+
+}
+
+function configurarCampoMoedaParcela(campo){
+
+    if(!campo){
+        return;
+    }
+
+    /*
+     * Evita registrar os mesmos eventos
+     * mais de uma vez no mesmo campo.
+     */
+    if(
+        campo.dataset.moedaConfigurada ===
+        'true'
+    ){
+        return;
+    }
+
+    campo.dataset.moedaConfigurada =
+        'true';
+
+    campo.inputMode =
+        'decimal';
+
+    campo.addEventListener(
+        'blur',
+        () => {
+
+            formatarCampoMoeda(
+                campo
+            );
+
+        }
+    );
+
+    campo.addEventListener(
+        'focus',
+        () => {
+
+            campo.select();
+
+        }
+    );
+
+}
+
+function removerLinhaParcela(linha){
+
+    const tbody =
+        document.getElementById(
+            'investment-table-body'
+        );
+
+    if(!tbody || !linha){
+        return;
+    }
+
+    const linhas =
+        tbody.querySelectorAll(
+            '.linha-parcela'
+        );
+
+    /*
+     * Sempre mantém pelo menos uma linha
+     * de parcela na tabela.
+     */
+    if(linhas.length === 1){
+
+        linha
+            .querySelectorAll(
+                'input'
+            )
+            .forEach(
+                (campo, indice) => {
+
+                    /*
+                     * O primeiro campo é a numeração
+                     * automática da parcela.
+                     */
+                    if(indice === 0){
+                        return;
+                    }
+
+                    campo.value =
+                        '';
+
+                }
+            );
+
+        atualizarNumeracaoParcelas();
+
+        return;
+
+    }
+
+    linha.remove();
+
+    atualizarNumeracaoParcelas();
+
+}
+
 function configurarLinhaParcela(linha){
 
     if(!linha){
         return;
     }
 
-    const inputs =
-        linha.querySelectorAll(
-            'input'
+    linha.classList.add(
+        'linha-parcela'
+    );
+
+    const campoNumeroParcela =
+        linha.querySelector(
+            '.numero-parcela'
         );
 
     const campoValorParcela =
-        inputs[1];
+        linha.querySelector(
+            '.valor-parcela'
+        );
 
     const campoValorPagamento =
-        inputs[2];
+        linha.querySelector(
+            '.valor-pagamento'
+        );
 
-    [
-        campoValorParcela,
+    const botaoRemover =
+        linha.querySelector(
+            '.remover-parcela'
+        );
+
+    if(campoNumeroParcela){
+
+        campoNumeroParcela.readOnly =
+            true;
+
+        campoNumeroParcela.tabIndex =
+            -1;
+
+    }
+
+    configurarCampoMoedaParcela(
+        campoValorParcela
+    );
+
+    configurarCampoMoedaParcela(
         campoValorPagamento
-    ].forEach(campo => {
+    );
 
-        if(!campo){
-            return;
-        }
+    if(
+        botaoRemover &&
+        botaoRemover.dataset.configurado !==
+            'true'
+    ){
 
-        campo.inputMode =
-            'decimal';
+        botaoRemover.dataset.configurado =
+            'true';
 
-        campo.addEventListener(
-            'blur',
-            () => {
-
-                formatarCampoMoeda(
-                    campo
-                );
-
-            }
-        );
-
-    });
-
-}
-
-function configurarTabelaParcelas(){
-
-    document
-        .querySelectorAll(
-            '#investment-table-body tr'
-        )
-        .forEach(
-            configurarLinhaParcela
-        );
-
-    const botaoAdicionar =
-        document.getElementById(
-            'adicionarLinhaInvestimento'
-        );
-
-    if(botaoAdicionar){
-
-        botaoAdicionar.addEventListener(
+        botaoRemover.addEventListener(
             'click',
             () => {
 
-                setTimeout(
-                    () => {
-
-                        const linhas =
-                            document.querySelectorAll(
-                                '#investment-table-body tr'
-                            );
-
-                        configurarLinhaParcela(
-                            linhas[
-                                linhas.length - 1
-                            ]
-                        );
-
-                    },
-                    0
+                removerLinhaParcela(
+                    linha
                 );
 
             }
         );
 
     }
+
+}
+
+function validarParcelasInvestimento(){
+
+    const linhas =
+        document.querySelectorAll(
+            '#investment-table-body .linha-parcela'
+        );
+
+    for(
+        let indice = 0;
+        indice < linhas.length;
+        indice++
+    ){
+
+        const linha =
+            linhas[indice];
+
+        const campoValorParcela =
+            linha.querySelector(
+                '.valor-parcela'
+            );
+
+        const campoValorPagamento =
+            linha.querySelector(
+                '.valor-pagamento'
+            );
+
+        const valorParcela =
+            moedaBRParaNumero(
+                campoValorParcela?.value
+            );
+
+        const valorPagamento =
+            moedaBRParaNumero(
+                campoValorPagamento?.value
+            );
+
+        if(
+            valorParcela <= 0 ||
+            valorPagamento <= 0
+        ){
+
+            alert(
+                `Preencha o valor e o pagamento da parcela ${indice + 1}.`
+            );
+
+            if(valorParcela <= 0){
+
+                campoValorParcela?.focus();
+
+            }else{
+
+                campoValorPagamento?.focus();
+
+            }
+
+            return false;
+
+        }
+
+    }
+
+    return true;
+
+}
+
+function criarLinhaParcela(){
+
+    const tbody =
+        document.getElementById(
+            'investment-table-body'
+        );
+
+    if(!tbody){
+
+        console.error(
+            'Tabela de parcelas não encontrada.'
+        );
+
+        return null;
+
+    }
+
+    const linha =
+        document.createElement(
+            'tr'
+        );
+
+    linha.classList.add(
+        'linha-parcela'
+    );
+
+    linha.innerHTML = `
+        <td class="parcela">
+            <input
+                type="text"
+                class="numero-parcela"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td class="valor">
+            <input
+                type="text"
+                class="valor-parcela"
+                placeholder="Valor"
+                inputmode="decimal"
+            >
+        </td>
+
+        <td class="valor-pago">
+            <input
+                type="text"
+                class="valor-pagamento"
+                placeholder="Pagamento"
+                inputmode="decimal"
+            >
+        </td>
+
+        <td class="coluna-remover-parcela no-print">
+            <button
+                type="button"
+                class="remover-parcela"
+            >
+                Remover
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(
+        linha
+    );
+
+    configurarLinhaParcela(
+        linha
+    );
+
+    atualizarNumeracaoParcelas();
+
+    const campoValor =
+        linha.querySelector(
+            '.valor-parcela'
+        );
+
+    campoValor?.focus();
+
+    return linha;
+
+}
+
+function configurarTabelaParcelas(){
+
+    const tbody =
+        document.getElementById(
+            'investment-table-body'
+        );
+
+    if(!tbody){
+
+        console.error(
+            'Elemento #investment-table-body não encontrado.'
+        );
+
+        return;
+
+    }
+
+    /*
+     * Compatibilidade com a primeira linha existente
+     * no HTML, mesmo que ainda não tenha as classes.
+     */
+    tbody
+        .querySelectorAll(
+            'tr'
+        )
+        .forEach(linha => {
+
+            linha.classList.add(
+                'linha-parcela'
+            );
+
+            const inputs =
+                linha.querySelectorAll(
+                    'input'
+                );
+
+            if(inputs[0]){
+
+                inputs[0].classList.add(
+                    'numero-parcela'
+                );
+
+                inputs[0].readOnly =
+                    true;
+
+                inputs[0].tabIndex =
+                    -1;
+
+            }
+
+            if(inputs[1]){
+
+                inputs[1].classList.add(
+                    'valor-parcela'
+                );
+
+            }
+
+            if(inputs[2]){
+
+                inputs[2].classList.add(
+                    'valor-pagamento'
+                );
+
+            }
+
+            /*
+             * Cria o botão da primeira linha caso
+             * ainda não exista no HTML.
+             */
+            let botaoRemover =
+                linha.querySelector(
+                    '.remover-parcela'
+                );
+
+            if(!botaoRemover){
+
+                const celulaRemover =
+                    document.createElement(
+                        'td'
+                    );
+
+                celulaRemover.classList.add(
+                    'coluna-remover-parcela',
+                    'no-print'
+                );
+
+                botaoRemover =
+                    document.createElement(
+                        'button'
+                    );
+
+                botaoRemover.type =
+                    'button';
+
+                botaoRemover.classList.add(
+                    'remover-parcela'
+                );
+
+                botaoRemover.textContent =
+                    'Remover';
+
+                celulaRemover.appendChild(
+                    botaoRemover
+                );
+
+                linha.appendChild(
+                    celulaRemover
+                );
+
+            }
+
+            configurarLinhaParcela(
+                linha
+            );
+
+        });
+
+    atualizarNumeracaoParcelas();
+
+    const botaoAdicionar =
+        document.getElementById(
+            'adicionarLinhaInvestimento'
+        );
+
+    if(!botaoAdicionar){
+
+        console.error(
+            'Botão #adicionarLinhaInvestimento não encontrado.'
+        );
+
+        return;
+
+    }
+
+    if(
+        botaoAdicionar.dataset.configurado ===
+        'true'
+    ){
+        return;
+    }
+
+    botaoAdicionar.dataset.configurado =
+        'true';
+
+    botaoAdicionar.addEventListener(
+        'click',
+        criarLinhaParcela
+    );
 
 }
 
@@ -406,31 +845,47 @@ function montarParcelasInvestimento(){
 
     document
         .querySelectorAll(
-            '#investment-table-body tr'
+            '#investment-table-body .linha-parcela'
         )
         .forEach(linha => {
 
-            const inputs =
-                linha.querySelectorAll(
-                    'input'
+            const campoParcela =
+                linha.querySelector(
+                    '.numero-parcela'
+                );
+
+            const campoValorParcela =
+                linha.querySelector(
+                    '.valor-parcela'
+                );
+
+            const campoValorPagamento =
+                linha.querySelector(
+                    '.valor-pagamento'
                 );
 
             const parcela =
-                inputs[0]?.value.trim() ||
-                '';
+                campoParcela
+                    ?.value
+                    .trim() || '';
 
             const valorParcela =
                 moedaBRParaNumero(
-                    inputs[1]?.value
+                    campoValorParcela
+                        ?.value
                 );
 
             const valorPagamento =
                 moedaBRParaNumero(
-                    inputs[2]?.value
+                    campoValorPagamento
+                        ?.value
                 );
 
+            /*
+             * A numeração 1/1, 1/2 etc. não deve
+             * fazer uma linha vazia ser enviada.
+             */
             const linhaPreenchida =
-                parcela ||
                 valorParcela > 0 ||
                 valorPagamento > 0;
 
@@ -569,7 +1024,9 @@ window.montarDadosInvestimentoComercial =
 
 window.validarDadosInvestimentoComercial =
     function(dados){
-
+        if(!validarParcelasInvestimento()){
+            return false;
+        }
         if(!dados.razaoSocialInvestimento){
 
             alert(
@@ -643,7 +1100,9 @@ window.validarDadosInvestimentoComercial =
             return false;
 
         }
-
+        if(!validarParcelasInvestimento()){
+            return false;
+        }
         return true;
 
     };

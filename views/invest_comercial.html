@@ -172,13 +172,15 @@
                 </div>
                 <div></div> <!-- Div vazia para ocupar a terceira coluna -->
             </div>
-
+            <div class="form-grid">
             <div class="action-table-container">
+                <label for="cliente">Tipo de Investimento:</label>
                 <select name="tipoInvestimento" id="tipoInvestimento" class="tipoInvestimento">
                     <option value=""></option>
                     <option value="Bonificacao">Bonificação</option>
                     <option value="Abatimento">Abatimento</option>
                 </select>
+                <label for="cliente">Descrição de investimento:</label>
                 <select name="descricaoInvestimento" id="descricaoInvestimento" class="tipoInvestimento">
                     <option value=""></option>
                     <option value="Ambientação">Ambientação</option>
@@ -189,33 +191,113 @@
                     <option value="Introdução">Introdução</option>
                     <option value="Outros">Outros</option>
                 </select>
-                <input type="text" id="observacaoDescricaoInvestimento" placeholder="Descrição do Investimento" class="text">
+                <label for="cliente">Observação de Investimento:</label>
+                <input type="text" id="observacaoDescricaoInvestimento" placeholder="Observação de Investimento" class="text">
             </div>
         </div>
-
+        </div>
         <div class="section">
+            
+                <div class="no-print">      
+                <button
+                    type="button"
+                    id="adicionarLinhaInvestimento"
+                >
+                    Adicionar parcela
+                </button>
+                </div>
+
             <div class="investment-table-container">
-                <table class="investment-table" border="1">
+
+                <table
+                    class="investment-table"
+                    border="1"
+                >
+                    <colgroup>
+                        <col class="col-parcela">
+                        <col class="col-valor">
+                        <col class="col-pagamento">
+                        <col class="col-acao">
+                    </colgroup>
+
                     <thead>
                         <tr>
-                            <th class="parcela">Parcela</th>
-                            <th class="valor">Valor</th>
-                            <th class="valor-pago">Pagamento</th>
+                            <th class="parcela">
+                                Parcela
+                            </th>
+
+                            <th class="valor">
+                                Valor
+                            </th>
+
+                            <th class="valor-pago">
+                                Pagamento
+                            </th>
+
+                            <th class="coluna-remover-parcela no-print">
+                                Ação
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody id="investment-table-body">
-                        <tr>
-                            <td class="parcela"><input type="text" placeholder="Parcela"></td>
-                            <td class="valor" id="valor"><input type="text" placeholder="Valor"></td>
-                            <td class="valor-pago"><input type="text" placeholder="Valor Pago"></td>
+
+                        <tr class="linha-parcela">
+
+                            <td class="parcela">
+
+                                <input
+                                    type="text"
+                                    class="numero-parcela"
+                                    value="1/1"
+                                    readonly
+                                    tabindex="-1"
+                                >
+
+                            </td>
+
+                            <td class="valor">
+
+                                <input
+                                    type="text"
+                                    class="valor-parcela"
+                                    placeholder="Valor"
+                                    inputmode="decimal"
+                                >
+
+                            </td>
+
+                            <td class="valor-pago">
+
+                                <input
+                                    type="text"
+                                    class="valor-pagamento"
+                                    placeholder="Pagamento"
+                                    inputmode="decimal"
+                                >
+
+                            </td>
+
+                            <td class="coluna-remover-parcela no-print">
+
+                                <button
+                                    type="button"
+                                    class="remover-parcela"
+                                >
+                                    Remover
+                                </button>
+
+                            </td>
+
                         </tr>
+
                     </tbody>
+
                 </table>
+
             </div>
-            <div class="no-print">
-                <button type="button" id="adicionarLinhaInvestimento">Adicionar Linha</button>
-                <button type="button" id="excluirLinhaInvestimento">Remover Linha</button>
-            </div>
+
+
             <div class="payment-conditions">
                 <label for="valor_investimento">Valor do Investimento:</label>
                 <input type="text" id="valor_investimento" >
