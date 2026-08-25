@@ -317,6 +317,8 @@ function montarDestinatariosNotificacao(
     const emailFinanceiro = 
         'financeiro.kz@kidszoneworld.com.br'
 
+    const emailFinanceiro2 =
+        'financeiro01@kidszoneworld.com.br '
     
 
     if(status === 'aprovacao_comercial'){
@@ -331,7 +333,8 @@ function montarDestinatariosNotificacao(
 
         return removerEmailsDuplicados([
             emailComercial,
-            emailFinanceiro
+            emailFinanceiro,
+            emailFinanceiro2
         ]);
 
     }
@@ -344,6 +347,7 @@ function montarDestinatariosNotificacao(
         return removerEmailsDuplicados([
             emailComercial,
             emailFinanceiro,
+            emailFinanceiro2,
             emailRepresentante
         ]);
 
