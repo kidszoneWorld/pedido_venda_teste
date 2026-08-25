@@ -614,8 +614,10 @@ function renderizarInvestimentos(lista){
             <select
                 class="select-status-investimento"
                 data-id="${investimento.codigoInvestimento}"
+                data-status-anterior="${status}"
                 ${controlesDesabilitados}
             >
+
                 <option
                     value="pendente"
                     ${status === 'pendente' ? 'selected' : ''}
@@ -783,17 +785,33 @@ async function salvarStatusInvestimento(
             'tr'
         );
 
+    if(!linha){
+
+        alert(
+            'Não foi possível localizar a linha do investimento.'
+        );
+
+        return;
+
+    }
+
     const selectStatus =
         linha.querySelector(
             '.select-status-investimento'
         );
 
+    if(!selectStatus){
+
+        alert(
+            'Não foi possível localizar o campo de status.'
+        );
+
+        return;
+
+    }
+
     const statusSelecionado =
-    
-        linha.querySelector(
-            `input[name="status-investimento-${codigoInvestimento}"]:checked`
-        )
-        ?.value;
+        selectStatus.value;
 
     if(!statusSelecionado){
 
@@ -801,11 +819,20 @@ async function salvarStatusInvestimento(
             'Selecione um status.'
         );
 
+        selectStatus.focus();
+
         return;
 
     }
 
+    const statusAnterior =
+        selectStatus.dataset.statusAnterior ||
+        '';
+
     botao.disabled =
+        true;
+
+    selectStatus.disabled =
         true;
 
     try{
@@ -814,18 +841,48 @@ async function salvarStatusInvestimento(
             await fetch(
                 `/api/investimentos-comerciais/${codigoInvestimento}/status`,
                 {
-                    method: 'PUT',
-                    credentials: 'same-origin',
+                    method:
+                        'PUT',
+
+                    credentials:
+                        'same-origin',
+
                     headers: {
                         'Content-Type':
+                            'application/json',
+
+                        Accept:
                             'application/json'
                     },
-                    body: JSON.stringify({
-                        status:
-                            statusSelecionado
-                    })
+
+                    body:
+                        JSON.stringify({
+                            status:
+                                statusSelecionado
+                        })
                 }
             );
+
+        const contentType =
+            response.headers.get(
+                'content-type'
+            ) || '';
+
+        if(
+            !contentType.includes(
+                'application/json'
+            )
+        ){
+
+            const respostaTexto =
+                await response.text();
+
+            throw new Error(
+                respostaTexto ||
+                'O servidor não retornou uma resposta JSON.'
+            );
+
+        }
 
         const resultado =
             await response.json();
@@ -835,16 +892,59 @@ async function salvarStatusInvestimento(
             throw new Error(
                 resultado.mensagem ||
                 resultado.error ||
-                'Erro ao atualizar investimento.'
+                'Erro ao atualizar o investimento.'
             );
+
+        }
+
+        selectStatus.dataset.statusAnterior =
+            statusSelecionado;
+
+        const statusAtual =
+            linha.querySelector(
+                '.status-atual-investimento'
+            );
+
+        if(statusAtual){
+
+            statusAtual.textContent =
+                formatarStatusInvestimento(
+                    statusSelecionado
+                );
+
+        }
+
+        aplicarCorStatus(
+            linha,
+            statusSelecionado
+        );
+
+        const investimentoLocal =
+            investimentosOriginais.find(
+                investimento => {
+
+                    return (
+                        Number(
+                            investimento.codigoInvestimento
+                        ) ===
+                        Number(
+                            codigoInvestimento
+                        )
+                    );
+
+                }
+            );
+
+        if(investimentoLocal){
+
+            investimentoLocal.status =
+                statusSelecionado;
 
         }
 
         alert(
             'Status atualizado com sucesso.'
         );
-
-        await carregarInvestimentos();
 
     }catch(error){
 
@@ -853,8 +953,16 @@ async function salvarStatusInvestimento(
             error
         );
 
+        if(statusAnterior){
+
+            selectStatus.value =
+                statusAnterior;
+
+        }
+
         alert(
-            error.message
+            error.message ||
+            'Erro ao atualizar o investimento.'
         );
 
     }finally{
@@ -862,9 +970,17 @@ async function salvarStatusInvestimento(
         botao.disabled =
             false;
 
+        if(!window.isRepresentante){
+
+            selectStatus.disabled =
+                false;
+
+        }
+
     }
 
 }
+
 
 function exportarInvestimentosExcel(){
 
