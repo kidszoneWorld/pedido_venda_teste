@@ -38,7 +38,14 @@ function numeroOuZero(valor){
 exports.sendPdf =
     async (req, res) => {
 
-       if(
+        const {
+            pdfBase64,
+            razaoSocial,
+            codCliente,
+            dadosInvestimento
+        } = req.body || {};
+
+        if(
             !pdfBase64 ||
             !razaoSocial ||
             !codCliente ||
@@ -48,9 +55,7 @@ exports.sendPdf =
             return res
                 .status(400)
                 .json({
-                    sucesso:
-                        false,
-
+                    sucesso: false,
                     mensagem:
                         'Dados incompletos para salvar e enviar o PDF.'
                 });
@@ -58,7 +63,7 @@ exports.sendPdf =
         }
 
         const usuarioSessao =
-         req.session?.user || {};
+            req.session?.user || {};
 
         const numeroRepresentante =
             usuarioSessao.numero ||
@@ -73,7 +78,7 @@ exports.sendPdf =
         const representanteDigitado =
             textoOuNull(
                 dadosInvestimento
-                    ?.representanteInvestimento
+                    .representanteInvestimento
             );
 
         let representanteResponsavel =
@@ -98,9 +103,7 @@ exports.sendPdf =
             return res
                 .status(400)
                 .json({
-                    sucesso:
-                        false,
-
+                    sucesso: false,
                     mensagem:
                         'Representante responsável não informado.'
                 });
@@ -282,25 +285,7 @@ exports.sendPdf =
                     ? dadosInvestimento.parcelas
                     : [];
 
-                const diagnosticoParcelas =
-    await client.query(`
-        SELECT
-            current_database() AS banco,
-            current_schema() AS schema,
-            c.column_name,
-            c.data_type,
-            c.udt_name,
-            c.character_maximum_length
-        FROM information_schema.columns c
-        WHERE c.table_schema = 'public'
-          AND c.table_name = 'TbParcelaInvestimentoComercial'
-        ORDER BY c.ordinal_position
-    `);
 
-console.log(
-    'Estrutura da tabela de parcelas vista pelo Node.js:',
-    diagnosticoParcelas.rows
-);
 
             for(const parcela of parcelas){
 

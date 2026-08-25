@@ -28,7 +28,7 @@ const redesDistribuidorController = require('../controllers/redesDistribuidorCon
 const displayDistribuidorController = require('../controllers/displayDistribuidorController');
 const sellOutDistribuidorController = require('../controllers/sellOutDistribuidorController');
 const sellInDistribuidorController = require('../controllers/sellInDistribuidorController');
-
+const investPanelController = require('../controllers/investPanelController');
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -252,6 +252,23 @@ router.get(
 );
 
 router.get(
+    '/investDetalhe.html',
+    authMiddleware,
+    (req, res) => {
+
+        return res.sendFile(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'investDetalhe.html'
+            )
+        );
+
+    }
+);
+
+router.get(
     '/devolucaoEditar.html',
     authMiddleware,
     (req, res) => {
@@ -266,10 +283,30 @@ router.get(
     }
 );
 
+router.get(
+    '/api/investimentos-comerciais',
+    authMiddleware,
+    investPanelController.listarInvestimentos
+);
+
+router.get(
+    '/api/investimentos-comerciais/:id',
+    authMiddleware,
+    investPanelController.buscarInvestimentoPorId
+);
+
+router.put(
+    '/api/investimentos-comerciais/:id/status',
+    authMiddleware,
+    investPanelController.atualizarStatusInvestimento
+);
+
+
 // Rota para a página de eficiencia cliente (eficiencia.html)
 router.get('/eficiencia',authMiddleware,(req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'eficiencia.html'));
 });
+
 
 // Rota para a página de eficiencia cliente (sellOutMenu.html)
 router.get('/sellOutMenu',authMiddleware,(req, res) => {
@@ -305,6 +342,10 @@ router.get('/logistica03', authMiddleware, (req, res) => {
 
 router.get('/logistica02', authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'logisticaJoao.html'));
+});
+
+router.get('/PainelInvestimento',authMiddleware,(req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'investPanel.html'));
 });
 
 

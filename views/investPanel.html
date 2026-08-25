@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE - Solicitação de Investimento Comercial</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/stylesDevPanel.css?v=1787056278975">
+    <link rel="stylesheet" href="/css/distribuidores.css">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1787056278975">
+    <style>
+        /* Estilos aplicados diretamente para garantir a quebra de linha e expansão no container */
+        #acaoSolicita {
+            width: 100%;
+            box-sizing: border-box;
+            resize: none;
+            overflow-y: hidden;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: inherit;
+        }
+    </style>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+</head>
+<body id="corpo">
+        <footer>
+            
+            <div class="link_sites">
+                <label class="theme-switch" id="seletor">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+           <button id="logoutButton2">Sair</button>
+           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
+           <a href="/">Pedido de Venda</a>
+           <a href="/devolucao">Devolução</a>
+           <a href="/rebaixa">Solicitação de Rebaixa</a>
+           <a href="/comercial">Área Comercial</a>
+           <a href="/logistica03">Área logística</a>
+           <a href="/detalhesProdutos">Detalhes do Produto</a>
+           <a href="/cadastroCliente">Cadastrar Cliente</a>
+           <a href="/investComercial">Investimento</a>
+           <a href="/distribuidores">Distribuidores</a>
+           </div>
+      </footer>
+
+    <main class="container">
+
+        <h2 class="h2">
+            Painel de Investimentos Comerciais
+        </h2>
+
+        <div class="painel-acoes">
+
+            <button
+                type="button"
+                class="button"
+                id="botaoExportarExcel"
+            >
+                Exportar Excel
+            </button>
+
+            <button
+                type="button"
+                class="button"
+                id="botaoAtualizar"
+            >
+                Atualizar
+            </button>
+
+        </div>
+
+        <div class="painel-filtros">
+
+            <input
+                type="text"
+                id="filtroInvestimento"
+                placeholder="Nº Investimento"
+            >
+
+            <input
+                type="text"
+                id="filtroCliente"
+                placeholder="Cliente ou CNPJ"
+            >
+
+            <input
+                type="text"
+                id="filtroRepresentante"
+                placeholder="Representante"
+            >
+
+            <select id="filtroTipo">
+
+                <option value="">
+                    Todos os tipos
+                </option>
+
+                <option value="Bonificacao">
+                    Bonificação
+                </option>
+
+                <option value="Abatimento">
+                    Abatimento
+                </option>
+
+            </select>
+
+            <select id="filtroStatus">
+
+                <option value="">
+                    Todos os status
+                </option>
+
+                <option value="pendente">
+                    Pendente
+                </option>
+
+                <option value="aprovacao_comercial">
+                    Aprovação Comercial
+                </option>
+
+                <option value="aprovacao_diretoria">
+                    Aprovação Diretoria
+                </option>
+
+                <option value="finalizado">
+                    Finalizado
+                </option>
+
+                <option value="reprovado">
+                    Reprovado
+                </option>
+
+            </select>
+
+            <input
+                type="text"
+                id="filtroVigencia"
+                placeholder="Vigência"
+            >
+
+        </div>
+
+        <div
+            id="mensagemPainel"
+            style="display: none;"
+        ></div>
+
+        <div class="table-container">
+
+            <table
+                class="table"
+                border="1"
+                width="100%"
+                id="tabelaInvestimentos"
+            >
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Cliente</th>
+                        <th>CNPJ</th>
+                        <th>Representante</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Vigência</th>
+                        <th>Investimento</th>
+                        <th>Compra</th>
+                        <th>Percentual</th>
+                        <th>Status atual</th>
+                        <th>Detalhes</th>
+                        <th>Alterar status</th>
+                        <th>Salvar</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+
+        </div>
+
+    </main>
+
+    <script src="/investPanel.js?v=1787056278975"></script>
+    <script src="/theme-toggle.js?v=1787056278975"></script>
+
+
+  </body> 
+</html>
+
+    <script>
+        document
+            .getElementById('logoutButton2')
+            .addEventListener(
+                'click',
+                async () => {
+
+                    sessionStorage.clear();
+                    localStorage.clear();
+
+                    await fetch(
+                        '/logout',
+                        {
+                            method: 'POST'
+                        }
+                    );
+
+                    window.location.href =
+                        '/login2';
+
+                }
+            );
+    </script>
+
+</body>
+
+</html>

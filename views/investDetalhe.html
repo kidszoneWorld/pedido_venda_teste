@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE - Solicitação de Investimento Comercial</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/stylesDevPanel.css?v=1787056278975">
+    <link rel="stylesheet" href="/css/distribuidores.css">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1787056278975">
+    <style>
+        /* Estilos aplicados diretamente para garantir a quebra de linha e expansão no container */
+        #acaoSolicita {
+            width: 100%;
+            box-sizing: border-box;
+            resize: none;
+            overflow-y: hidden;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: inherit;
+        }
+    </style>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+    <style>
+        .detalhes-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detalhe-campo {
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .detalhe-campo strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detalhe-largo {
+            grid-column: 1 / -1;
+        }
+
+        .tabela-parcelas {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .tabela-parcelas th,
+        .tabela-parcelas td {
+            padding: 10px;
+            border: 1px solid #cccccc;
+            text-align: center;
+        }
+
+        .acoes-detalhes {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .detalhes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detalhe-largo {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h2 class="h2">
+            Detalhes do Investimento Comercial
+        </h2>
+
+        <div class="acoes-detalhes">
+
+            <button
+                type="button"
+                class="button"
+                id="botaoFechar"
+            >
+                Fechar
+            </button>
+
+        </div>
+
+        <div
+            id="mensagemDetalhes"
+            style="display: none;"
+        ></div>
+
+        <section
+            id="conteudoDetalhes"
+            style="display: none;"
+        >
+
+            <div class="detalhes-grid">
+
+                <div class="detalhe-campo">
+                    <strong>Número</strong>
+                    <span id="detalheCodigo"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Status</strong>
+                    <span id="detalheStatus"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Representante</strong>
+                    <span id="detalheRepresentante"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Cliente</strong>
+                    <span id="detalheCliente"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>CNPJ</strong>
+                    <span id="detalheCnpj"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Telefone</strong>
+                    <span id="detalheTelefone"></span>
+                </div>
+
+                <div class="detalhe-campo detalhe-largo">
+                    <strong>Endereço</strong>
+                    <span id="detalheEndereco"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Responsável</strong>
+                    <span id="detalheResponsavel"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Cargo</strong>
+                    <span id="detalheCargo"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Tipo de investimento</strong>
+                    <span id="detalheTipo"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Descrição</strong>
+                    <span id="detalheDescricao"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Vigência inicial</strong>
+                    <span id="detalheVigenciaInicial"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Vigência final</strong>
+                    <span id="detalheVigenciaFinal"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Valor do investimento</strong>
+                    <span id="detalheValorInvestimento"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Valor da compra</strong>
+                    <span id="detalheValorCompra"></span>
+                </div>
+
+                <div class="detalhe-campo">
+                    <strong>Percentual</strong>
+                    <span id="detalhePercentual"></span>
+                </div>
+
+                <div class="detalhe-campo detalhe-largo">
+                    <strong>Resumo</strong>
+                    <span id="detalheResumo"></span>
+                </div>
+
+                <div class="detalhe-campo detalhe-largo">
+                    <strong>Observação da descrição</strong>
+                    <span id="detalheObservacaoDescricao"></span>
+                </div>
+
+                <div class="detalhe-campo detalhe-largo">
+                    <strong>Observações</strong>
+                    <span id="detalheObservacao"></span>
+                </div>
+
+            </div>
+
+            <h3>Parcelas</h3>
+
+            <div class="table-container">
+
+                <table
+                    class="tabela-parcelas"
+                    id="tabelaParcelasDetalhes"
+                >
+
+                    <thead>
+                        <tr>
+                            <th>Parcela</th>
+                            <th>Valor</th>
+                            <th>Pagamento</th>
+                        </tr>
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+        <script src="/investDetalhe.js?v=1787056278975"></script>
+    <script src="/theme-toggle.js?v=1787056278975"></script>
+
+    <script>
+        document
+            .getElementById('logoutButton2')
+            .addEventListener(
+                'click',
+                async () => {
+
+                    sessionStorage.clear();
+                    localStorage.clear();
+
+                    await fetch(
+                        '/logout',
+                        {
+                            method: 'POST'
+                        }
+                    );
+
+                    window.location.href =
+                        '/login2';
+
+                }
+            );
+    </script>
+
+</body>
+
+</html>

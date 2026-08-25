@@ -1305,3 +1305,38 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(26px);
 }
+
+.coluna-status-investimento {
+    min-width: 190px;
+    text-align: center;
+}
+
+.select-status-investimento {
+    display: block;
+    width: 100%;
+    min-width: 180px;
+    padding: 8px 10px;
+    border: 1px solid #bbbbbb;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #222222;
+    font-size: 14px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.select-status-investimento:focus {
+    border-color: #c4007a;
+    outline: 2px solid rgba(196, 0, 122, 0.15);
+}
+
+.select-status-investimento:disabled {
+    background-color: #e9ecef;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+.status-atual-investimento {
+    font-weight: 600;
+    text-align: center;
+}

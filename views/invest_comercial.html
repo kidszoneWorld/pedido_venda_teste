@@ -43,7 +43,7 @@
            <button id="logoutButton2">Sair</button>
            <!--<a target="_blank" href="/admin">Área T.I.</a>-->
            <a href="/">Pedido de Venda</a>
-           <a href="/devolucao">Pedido de Devolução</a>
+           <a href="/devolucao">Devolução</a>
            <a href="/rebaixa">Solicitação de Rebaixa</a>
            <a href="/comercial">Área Comercial</a>
            <a href="/logistica03">Área logística</a>
@@ -100,7 +100,7 @@
                 </div>
                 <div>
                     <label for="cnpj">CNPJ:</label>
-                    <input type="text" id="cnpj" >
+                    <input type="text" id="cnpj" maxlength="18" inputmode="numeric" autocomplete="off" placeholder="00.000.000/0000-00">
                 </div>
                 <div>
                     <label for="endereco">ENDEREÇO:</label>
@@ -345,7 +345,7 @@
             
         <div id="helpContainer">
             <div id="helpIcon" class="help-icon">
-                <a href="/devolucaoPanel"><button class="button button-group">Painel de Devoluções</button></a>
+                <a href="/PainelInvestimento"><button class="button button-group">Painel de Investimentos</button></a>
             </div>
         </div>
 
@@ -372,5 +372,29 @@
             });
         }
     </script>
+        <script>
+        document
+            .getElementById('logoutButton2')
+            .addEventListener(
+                'click',
+                async () => {
+
+                    sessionStorage.clear();
+                    localStorage.clear();
+
+                    await fetch(
+                        '/logout',
+                        {
+                            method: 'POST'
+                        }
+                    );
+
+                    window.location.href =
+                        '/login2';
+
+                }
+            );
+    </script>
+
   </body> 
 </html>

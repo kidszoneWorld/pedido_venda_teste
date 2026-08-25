@@ -4,9 +4,8 @@ let representanteCarregado =
 document.addEventListener(
     'DOMContentLoaded',
     async () => {
-        fetch('/session-data')
-            .then(response => response.json())
-            .then(console.log);
+
+        configurarCampoCNPJ();
 
         configurarValoresInvestimento();
 
@@ -16,7 +15,140 @@ document.addEventListener(
 
     }
 );
+function validarCNPJBasico(valor){
 
+    const numeros =
+        String(valor || '')
+            .replace(/\D/g, '');
+
+    if(numeros.length !== 14){
+        return false;
+    }
+
+    if(/^(\d)\1{13}$/.test(numeros)){
+        return false;
+    }
+
+    return true;
+
+}
+function formatarCNPJInvestimento(valor){
+
+    const numeros =
+        String(valor || '')
+            .replace(/\D/g, '')
+            .slice(0, 14);
+
+    let formatado =
+        numeros;
+
+    if(numeros.length > 2){
+
+        formatado =
+            numeros.replace(
+                /^(\d{2})(\d+)/,
+                '$1.$2'
+            );
+
+    }
+
+    if(numeros.length > 5){
+
+        formatado =
+            formatado.replace(
+                /^(\d{2})\.(\d{3})(\d+)/,
+                '$1.$2.$3'
+            );
+
+    }
+
+    if(numeros.length > 8){
+
+        formatado =
+            formatado.replace(
+                /^(\d{2})\.(\d{3})\.(\d{3})(\d+)/,
+                '$1.$2.$3/$4'
+            );
+
+    }
+
+    if(numeros.length > 12){
+
+        formatado =
+            formatado.replace(
+                /^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d+)/,
+                '$1.$2.$3/$4-$5'
+            );
+
+    }
+
+    return formatado;
+
+}
+
+function configurarCampoCNPJ(){
+
+    const campoCNPJ =
+        document.getElementById(
+            'cnpj'
+        );
+
+    if(!campoCNPJ){
+        return;
+    }
+
+    campoCNPJ.type =
+        'text';
+
+    campoCNPJ.inputMode =
+        'numeric';
+
+    campoCNPJ.maxLength =
+        18;
+
+    campoCNPJ.autocomplete =
+        'off';
+
+    campoCNPJ.addEventListener(
+        'input',
+        () => {
+
+            campoCNPJ.value =
+                formatarCNPJInvestimento(
+                    campoCNPJ.value
+                );
+
+        }
+    );
+
+    campoCNPJ.addEventListener(
+        'paste',
+        evento => {
+
+            evento.preventDefault();
+
+            const textoColado =
+                evento.clipboardData
+                    ?.getData('text') || '';
+
+            campoCNPJ.value =
+                formatarCNPJInvestimento(
+                    textoColado
+                );
+
+            campoCNPJ.dispatchEvent(
+                new Event(
+                    'input',
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+        }
+    );
+
+}
 function obterValorCampo(id){
 
     const campo =
@@ -1098,22 +1230,28 @@ window.validarDadosInvestimentoComercial =
 
         }
 
-        if(!dados.cnpjInvestimento){
+        if(
+        !validarCNPJBasico(
+                dados.cnpjInvestimento
+            )
+        ){
 
             alert(
-                'Informe o CNPJ.'
+                'Informe um CNPJ com 14 números.'
             );
 
-            document
-                .getElementById(
+            const campoCNPJ =
+                document.getElementById(
                     'cnpj'
-                )
-                ?.focus();
+                );
+
+            campoCNPJ?.focus();
+
+            campoCNPJ?.select();
 
             return false;
 
         }
-
         if(!dados.responsavelInvestimento){
 
             alert(
@@ -1167,9 +1305,6 @@ window.validarDadosInvestimentoComercial =
 
             return false;
 
-        }
-        if(!validarParcelasInvestimento()){
-            return false;
         }
         return true;
 
