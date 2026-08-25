@@ -1,7 +1,223 @@
+const nodemailer =
+    require(
+        'nodemailer'
+    );
+
 const pool =
     require(
         '../config/database'
     );
+
+function criarTransportadorEmail(){
+
+    if(
+        !process.env.GMAIL_USER ||
+        !process.env.GMAIL_APP_PASSWORD
+    ){
+
+        throw new Error(
+            'As credenciais de e-mail não foram configuradas.'
+        );
+
+    }
+
+    return nodemailer.createTransport({
+        service:
+            'gmail',
+
+        auth: {
+            user:
+                process.env.GMAIL_USER,
+
+            pass:
+                process.env.GMAIL_APP_PASSWORD
+        },
+
+        tls: {
+            rejectUnauthorized:
+                false
+        }
+    });
+
+}
+
+function removerEmailsDuplicados(emails){
+
+    return Array.from(
+        new Set(
+            emails
+                .filter(email => {
+
+                    return Boolean(
+                        email &&
+                        String(email).trim()
+                    );
+
+                })
+                .map(email => {
+
+                    return String(email)
+                        .trim()
+                        .toLowerCase();
+
+                })
+        )
+    );
+
+}
+
+function extrairNumeroRepresentante(representante){
+
+    const texto =
+        String(representante || '')
+            .trim();
+
+    if(!texto){
+        return '';
+    }
+
+    const numeroInicial =
+        texto.match(
+            /^\s*(\d+)/
+        );
+
+    if(numeroInicial){
+
+        return numeroInicial[1];
+
+    }
+
+    return '';
+
+}
+
+async function buscarEmailRepresentante(
+    client,
+    representante
+){
+
+    const textoRepresentante =
+        String(
+            representante || ''
+        )
+        .trim();
+
+    const numeroRepresentante =
+        extrairNumeroRepresentante(
+            textoRepresentante
+        );
+
+    console.log(
+        'Localizando e-mail do representante:',
+        {
+            representante:
+                textoRepresentante,
+
+            numeroExtraido:
+                numeroRepresentante
+        }
+    );
+
+    if(!numeroRepresentante){
+
+        console.error(
+            'Não foi possível extrair o número do representante.'
+        );
+
+        return null;
+
+    }
+
+    const resultado =
+        await client.query(
+            `
+                SELECT
+                    "UsuNumero",
+                    "UsuNome",
+                    "UsuEmail"
+                FROM public."TbUsuarios"
+                WHERE REGEXP_REPLACE(
+                    COALESCE(
+                        CAST("UsuNumero" AS text),
+                        ''
+                    ),
+                    '[^0-9]',
+                    '',
+                    'g'
+                ) = $1
+                LIMIT 1
+            `,
+            [
+                String(numeroRepresentante)
+                    .replace(/\D/g, '')
+            ]
+        );
+
+    console.log(
+        'Resultado da busca do representante:',
+        resultado.rows
+    );
+
+    if(resultado.rows.length === 0){
+
+        console.error(
+            `Nenhum usuário encontrado com o número ${numeroRepresentante}.`
+        );
+
+        return null;
+
+    }
+
+    const usuario =
+        resultado.rows[0];
+
+    const email =
+        String(
+            usuario.UsuEmail ||
+            usuario.usuemail ||
+            ''
+        )
+        .trim()
+        .toLowerCase();
+
+    if(!email){
+
+        console.error(
+            `O usuário ${numeroRepresentante} foi encontrado, mas não possui e-mail cadastrado.`
+        );
+
+        return null;
+
+    }
+
+    return email;
+
+}
+
+function formatarNomeStatusEmail(status){
+
+    const nomesStatus = {
+        pendente:
+            'Pendente',
+
+        aprovacao_comercial:
+            'Aprovação Comercial',
+
+        aprovacao_diretoria:
+            'Aprovação Diretoria',
+
+        finalizado:
+            'Finalizado',
+
+        reprovado:
+            'Reprovado'
+    };
+
+    return nomesStatus[status] ||
+        status ||
+        'Não informado';
+
+}
 
 exports.listarInvestimentos =
     async (req, res) => {
@@ -79,6 +295,74 @@ exports.listarInvestimentos =
         }
 
     };
+
+
+function montarDestinatariosNotificacao(
+    status,
+    emailRepresentante
+){
+
+    const emailLuis =
+        'luis.henrique@kidszoneworld.com.br';
+
+    const emailTi =
+        'ti.kz@kidszoneworld.com.br';
+
+    const emailComercial =
+        'comercial.kz@kidszoneworld.com.br';
+
+    const emailDiretor =
+        'marcos@kidszoneworld.com.br';
+    
+    const emailFinanceiro = 
+        'financeiro.kz@kidszoneworld.com.br'
+
+    
+
+    if(status === 'aprovacao_comercial'){
+
+        return removerEmailsDuplicados([
+            emailDiretor
+        ]);
+
+    }
+
+    if(status === 'aprovacao_diretoria'){
+
+        return removerEmailsDuplicados([
+            emailComercial,
+            emailFinanceiro
+        ]);
+
+    }
+
+    if(
+        status === 'finalizado' ||
+        status === 'reprovado'
+    ){
+
+        return removerEmailsDuplicados([
+            emailComercial,
+            emailFinanceiro,
+            emailRepresentante
+        ]);
+
+    }
+
+    return [];
+
+}
+
+function statusExigeEmailRepresentante(
+    status
+){
+
+    return (
+        status === 'finalizado' ||
+        status === 'reprovado'
+    );
+
+}
 
 exports.buscarInvestimentoPorId =
     async (req, res) => {
@@ -215,6 +499,10 @@ exports.buscarInvestimentoPorId =
 exports.atualizarStatusInvestimento =
     async (req, res) => {
 
+        let client;
+        let transacaoAberta =
+            false;
+
         try{
 
             const codigoInvestimento =
@@ -222,7 +510,7 @@ exports.atualizarStatusInvestimento =
                     req.params.id
                 );
 
-            const status =
+            const novoStatus =
                 String(
                     req.body?.status || ''
                 )
@@ -257,7 +545,7 @@ exports.atualizarStatusInvestimento =
 
             if(
                 !statusPermitidos.includes(
-                    status
+                    novoStatus
                 )
             ){
 
@@ -273,26 +561,46 @@ exports.atualizarStatusInvestimento =
 
             }
 
-            const resultado =
-                await pool.query(
+            client =
+                await pool.connect();
+
+            await client.query(
+                'BEGIN'
+            );
+
+            transacaoAberta =
+                true;
+
+            const resultadoInvestimento =
+                await client.query(
                     `
-                        UPDATE public."TbInvestimentoComercial"
-                        SET "StatusInvestimento" = $1
-                        WHERE "CodigoInvestimento" = $2
-                        RETURNING
+                        SELECT
                             "CodigoInvestimento",
+                            "CnpjInvestimento",
+                            "RazaoSocialInvestimento",
+                            "RepresentanteInvestimento",
+                            "ValorInvestimento",
                             "StatusInvestimento"
+                        FROM public."TbInvestimentoComercial"
+                        WHERE "CodigoInvestimento" = $1
+                        FOR UPDATE
                     `,
                     [
-                        status,
                         codigoInvestimento
                     ]
                 );
 
             if(
-                resultado.rows.length ===
+                resultadoInvestimento.rows.length ===
                 0
             ){
+
+                await client.query(
+                    'ROLLBACK'
+                );
+
+                transacaoAberta =
+                    false;
 
                 return res
                     .status(404)
@@ -306,21 +614,180 @@ exports.atualizarStatusInvestimento =
 
             }
 
+            const investimento =
+                resultadoInvestimento.rows[0];
+
+            const statusAnterior =
+                String(
+                    investimento.StatusInvestimento ||
+                    'pendente'
+                )
+                .trim()
+                .toLowerCase();
+
+            if(statusAnterior === novoStatus){
+
+                await client.query(
+                    'ROLLBACK'
+                );
+
+                transacaoAberta =
+                    false;
+
+                return res.json({
+                    success:
+                        true,
+
+                    emailEnviado:
+                        false,
+
+                    mensagem:
+                        'O investimento já possui o status selecionado.',
+
+                    data: {
+                        CodigoInvestimento:
+                            codigoInvestimento,
+
+                        StatusInvestimento:
+                            novoStatus
+                    }
+                });
+
+            }
+
+            let emailRepresentante =
+                null;
+
+            if(
+                statusExigeEmailRepresentante(
+                    novoStatus
+                )
+            ){
+
+                emailRepresentante =
+                    await buscarEmailRepresentante(
+                        client,
+                        investimento
+                            .RepresentanteInvestimento
+                    );
+
+                if(!emailRepresentante){
+
+                    await client.query(
+                        'ROLLBACK'
+                    );
+
+                    transacaoAberta =
+                        false;
+
+                    return res
+                        .status(400)
+                        .json({
+                            success:
+                                false,
+
+                            mensagem:
+                                'O e-mail do representante responsável não foi encontrado. O status não foi alterado.'
+                        });
+
+                }
+
+            }
+
+            const destinatarios =
+            montarDestinatariosNotificacao(
+                novoStatus,
+                emailRepresentante
+            );
+
+            const resultadoAtualizacao =
+                await client.query(
+                    `
+                        UPDATE public."TbInvestimentoComercial"
+                        SET "StatusInvestimento" = $1
+                        WHERE "CodigoInvestimento" = $2
+                        RETURNING
+                            "CodigoInvestimento",
+                            "StatusInvestimento"
+                    `,
+                    [
+                        novoStatus,
+                        codigoInvestimento
+                    ]
+                );
+
+            let emailEnviado =
+                false;
+
+            if(destinatarios.length > 0){
+
+                await enviarNotificacaoStatus({
+                    investimento:
+                        investimento,
+
+                    statusAnterior:
+                        statusAnterior,
+
+                    novoStatus:
+                        novoStatus,
+
+                    destinatarios:
+                        destinatarios
+                });
+
+                emailEnviado =
+                    true;
+
+            }
+
+            await client.query(
+                'COMMIT'
+            );
+
+            transacaoAberta =
+                false;
+
             return res.json({
                 success:
                     true,
 
+                emailEnviado:
+                    emailEnviado,
+
+                destinatarios:
+                    destinatarios,
+
                 mensagem:
-                    'Status atualizado com sucesso.',
+                    emailEnviado
+                        ? 'Status atualizado e notificação enviada com sucesso.'
+                        : 'Status atualizado com sucesso.',
 
                 data:
-                    resultado.rows[0]
+                    resultadoAtualizacao.rows[0]
             });
 
         }catch(error){
 
+            if(
+                client &&
+                transacaoAberta
+            ){
+
+                await client
+                    .query('ROLLBACK')
+                    .catch(rollbackError => {
+
+                        console.error(
+                            'Erro ao desfazer atualização:',
+                            rollbackError
+                        );
+
+                    });
+
+            }
+
             console.error(
-                'Erro ao atualizar status:',
+                'Erro ao atualizar status do investimento:',
                 error
             );
 
@@ -331,11 +798,22 @@ exports.atualizarStatusInvestimento =
                         false,
 
                     mensagem:
-                        'Erro ao atualizar status.',
+                        'Não foi possível atualizar o status ou enviar a notificação.',
 
                     error:
-                        error.message
+                        process.env.NODE_ENV ===
+                        'development'
+                            ? error.message
+                            : undefined
                 });
+
+        }finally{
+
+            if(client){
+
+                client.release();
+
+            }
 
         }
 
@@ -494,5 +972,109 @@ function montarInvestimento(
                     )
             }))
     };
+
+}
+async function enviarNotificacaoStatus({
+    investimento,
+    statusAnterior,
+    novoStatus,
+    destinatarios
+}){
+
+    if(destinatarios.length === 0){
+        return null;
+    }
+
+    const transportador =
+        criarTransportadorEmail();
+
+    const statusAnteriorFormatado =
+        formatarNomeStatusEmail(
+            statusAnterior
+        );
+
+    const novoStatusFormatado =
+        formatarNomeStatusEmail(
+            novoStatus
+        );
+
+    const valorInvestimento =
+        Number(
+            investimento.ValorInvestimento ||
+            0
+        )
+        .toLocaleString(
+            'pt-BR',
+            {
+                style: 'currency',
+                currency: 'BRL'
+            }
+        );
+
+    const assunto =
+        `Investimento comercial nº ${investimento.CodigoInvestimento} - ${novoStatusFormatado}`;
+
+    const texto = [
+        'Atualização de investimento comercial',
+        '',
+        `Número do investimento: ${investimento.CodigoInvestimento}`,
+        `Cliente: ${investimento.RazaoSocialInvestimento || 'Não informado'}`,
+        `CNPJ: ${investimento.CnpjInvestimento || 'Não informado'}`,
+        `Representante: ${investimento.RepresentanteInvestimento || 'Não informado'}`,
+        `Valor do investimento: ${valorInvestimento}`,
+        `Status anterior: ${statusAnteriorFormatado}`,
+        `Novo status: ${novoStatusFormatado}`,
+        '',
+        montarMensagemStatus(
+            novoStatus
+        ),
+        '',
+        'Esta é uma notificação automática do sistema.'
+    ]
+    .join('\n');
+
+    return transportador.sendMail({
+        from: 
+            `KidsZone Investimento Comercial <${process.env.GMAIL_USER}>`,
+
+        to:
+            destinatarios,
+
+        subject:
+            assunto,
+
+        text:
+            texto
+    });
+
+}
+
+function montarMensagemStatus(status){
+
+    if(status === 'aprovacao_comercial'){
+
+        return 'O investimento foi aprovado pelo setor comercial e aguarda a aprovação da diretoria.';
+
+    }
+
+    if(status === 'aprovacao_diretoria'){
+
+        return 'O investimento foi aprovado pela diretoria e pode seguir para finalização.';
+
+    }
+
+    if(status === 'finalizado'){
+
+        return 'O investimento foi finalizado.';
+
+    }
+
+    if(status === 'reprovado'){
+
+        return 'O investimento foi reprovado.';
+
+    }
+
+    return 'O status do investimento foi atualizado.';
 
 }
