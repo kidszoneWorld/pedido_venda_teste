@@ -276,7 +276,7 @@ async function carregarRepresentanteDaSessao(){
         representanteCarregado =
             true;
 
-        campoRepresentante.focus();
+        // campoRepresentante.focus();
 
         return true;
 
