@@ -5,6 +5,97 @@ const nodemailer =
 
 const pool = require('../config/database');
 
+let authToken = null;
+let tokenExpirationTime = null;
+
+async function ensureAuthenticated() {
+    if (
+        !authToken ||
+        !tokenExpirationTime ||
+        Date.now() >= tokenExpirationTime
+    ) {
+        await authenticate();
+    }
+}
+
+async function obterClientePorCnpj(cnpj) {
+    await ensureAuthenticated();
+
+    const documento = cnpj.replace(/\D/g, '');
+
+    const response = await fetch(
+        `${ngLink}/pessoa-service/cliente/documento/${documento}`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+                'Content-Type': 'application/json',
+                Origin: 'https://kidszone-ng.dbcorp.com.br'
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Erro ao consultar cliente: ${response.status}`
+        );
+    }
+
+    const cliente = await response.json();
+
+    const enderecoPrincipal =
+        cliente.enderecos?.[0];
+
+    return {
+        razaoSocial:
+            cliente.razaoSocial || '',
+
+        telefone:
+            cliente.telefone &&
+            cliente.telefone.numero
+                ? `(${cliente.telefone.ddd}) ${cliente.telefone.numero}`
+                : '',
+
+        endereco: enderecoPrincipal
+            ? `${enderecoPrincipal.logradouro}, ${enderecoPrincipal.numero}, ${enderecoPrincipal.bairro}, ${enderecoPrincipal.cidade?.nome}/${obterUf(enderecoPrincipal.cidade?.uf)}`
+            : ''
+    };
+}
+
+function obterUf(codigoUf) {
+    const ufs = {
+        11: 'RO',
+        12: 'AC',
+        13: 'AM',
+        14: 'RR',
+        15: 'PA',
+        16: 'AP',
+        17: 'TO',
+        21: 'MA',
+        22: 'PI',
+        23: 'CE',
+        24: 'RN',
+        25: 'PB',
+        26: 'PE',
+        27: 'AL',
+        28: 'SE',
+        29: 'BA',
+        31: 'MG',
+        32: 'ES',
+        33: 'RJ',
+        35: 'SP',
+        41: 'PR',
+        42: 'SC',
+        43: 'RS',
+        50: 'MS',
+        51: 'MT',
+        52: 'GO',
+        53: 'DF'
+    };
+
+    return ufs[codigoUf] || '';
+}
+
 const emailsRecentes =
     new Map();
 

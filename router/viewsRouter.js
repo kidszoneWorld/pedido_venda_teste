@@ -442,6 +442,54 @@ router.post(
     itemController.salvarItem
 );
 
+router.get('/cliente/:cnpj', async (req, res) => {
+
+    try {
+
+        const cliente =
+            await obterClientePorCnpj(
+                req.params.cnpj
+            );
+
+        const endereco =
+            cliente.enderecos?.[0];
+
+        const enderecoFormatado =
+            endereco
+                ? `${endereco.logradouro || ''}, ${endereco.numero || ''} - ${endereco.bairro || ''}, ${endereco.cidade?.nome || ''}`
+                : '';
+
+        const telefoneFormatado =
+            cliente.telefone?.numero
+                ? `(${cliente.telefone.ddd}) ${cliente.telefone.numero}`
+                : '';
+
+        res.json({
+            razaoSocial:
+                cliente.razaoSocial || '',
+
+            endereco:
+                enderecoFormatado,
+
+            telefone:
+                telefoneFormatado
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Erro ao consultar cliente:',
+            error
+        );
+
+        res.status(500).json({
+            erro: error.message
+        });
+    }
+
+});
+
+
 router.get(
     '/api/itens',
     authMiddleware,
@@ -763,6 +811,73 @@ router.put('/api/devolucoes/:id', devController.atualizarDevolucao);
 router.post('/api/rebaixas', rebController.salvarRebaixa);
 router.get('/api/rebaixas/:id', rebController.buscarRebaixaPorId);
 router.put('/api/rebaixas/:id', rebController.atualizarRebaixa);
+
+
+let authToken = null;
+let tokenExpirationTime = null;
+
+const ngLink = process.env.NG_LINK;
+const usuarioDbCorp = process.env.USUARIO_DBCORP;
+const senhabCorp = process.env.SENHA_DBCORP;
+
+async function authenticate() {
+    const response = await fetch(
+        `${ngLink}/identidade-service/autenticar`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Origin: 'https://kidszone-ng.dbcorp.com.br'
+            },
+            body: JSON.stringify({
+                usuario: usuarioDbCorp,
+                senha: senhabCorp,
+                origin: 'kidszone-ng'
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    authToken = data.tokenAcesso;
+    tokenExpirationTime =
+        Date.now() + (2 * 60 * 60 * 1000);
+}
+
+async function ensureAuthenticated() {
+    if (
+        !authToken ||
+        !tokenExpirationTime ||
+        Date.now() >= tokenExpirationTime
+    ) {
+        await authenticate();
+    }
+}
+
+async function obterClientePorCnpj(cnpj) {
+
+    await ensureAuthenticated();
+
+    const response = await fetch(
+        `${ngLink}/pessoa-service/cliente/documento/${cnpj}`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+                'Content-Type': 'application/json',
+                Origin: 'https://kidszone-ng.dbcorp.com.br'
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Erro ao consultar cliente: ${response.status}`
+        );
+    }
+
+    return await response.json();
+}
 
 
 module.exports = router;

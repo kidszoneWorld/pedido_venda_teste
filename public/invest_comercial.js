@@ -723,6 +723,61 @@ function configurarLinhaParcela(linha){
 
 }
 
+async function buscarDadosCliente() {
+    const campoCnpj =
+        document.getElementById('cnpj');
+
+    const cnpj =
+        campoCnpj.value.replace(/\D/g, '');
+
+    if (cnpj.length !== 14) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `/cliente/${cnpj}`
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                'Erro ao consultar cliente'
+            );
+        }
+
+        const cliente =
+            await response.json();
+
+        document.getElementById(
+            'cliente'
+        ).value =
+            cliente.razaoSocial || '';
+
+        document.getElementById(
+            'endereco'
+        ).value =
+            cliente.endereco || '';
+
+        document.getElementById(
+            'telefone'
+        ).value =
+            cliente.telefone || '';
+    } catch (error) {
+        console.error(
+            'Erro ao buscar cliente:',
+            error
+        );
+    }
+}
+
+document
+    .getElementById('cnpj')
+    .addEventListener(
+        'blur',
+        buscarDadosCliente
+    );
+``
+
 function validarParcelasInvestimento(){
 
     const linhas =

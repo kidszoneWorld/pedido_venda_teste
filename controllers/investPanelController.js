@@ -296,6 +296,7 @@ exports.listarInvestimentos =
 
     };
 
+    
 
 function montarDestinatariosNotificacao(
     status,
