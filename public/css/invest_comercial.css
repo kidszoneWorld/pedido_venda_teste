@@ -591,7 +591,7 @@ textarea:focus {
     }
 
     .payment-conditions input {
-        width: 50%;
+        width: 20%;
         padding: 5px;
     }
 }
@@ -741,7 +741,7 @@ textarea:focus {
     }
 
     .payment-conditions input {
-        flex: 2 1 120px;
+   
         padding: 5px;
     }
 }
@@ -1915,7 +1915,7 @@ label[for="referencia"]::after {
  }
  
  .payment-conditions input {
-    width: 50%;
+    width: 20%;
      padding: 5px;
   
  }
@@ -2108,7 +2108,7 @@ label[for="referencia"]::after {
 }
 
 .payment-conditions input {
-    flex: 2 1 120px; /* Define largura mínima */
+
     padding: 5px;
 }
 
