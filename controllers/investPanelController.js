@@ -201,10 +201,10 @@ function formatarNomeStatusEmail(status){
             'Pendente',
 
         aprovacao_comercial:
-            'Aprovação Comercial',
+            'Aprovado/Comercial',
 
         aprovacao_diretoria:
-            'Aprovação Diretoria',
+            'Aprovado/Diretoria',
 
         finalizado:
             'Finalizado',

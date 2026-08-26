@@ -25,6 +25,38 @@
     --button-hover-bg-dark: linear-gradient(90deg, rgba(225, 0, 152) 0%, #f18fc7 100%);
     --button-hover-text-dark: #fafcfa;
     --input-bg-dark:#141414;
+
+    --invest-pendente-bg-light: #cccccc;
+    --invest-pendente-text-light: #212529;
+
+    --invest-comercial-bg-light: #fff3cd;
+    --invest-comercial-text-light: #664d03;
+
+    --invest-diretoria-bg-light: #cfe2ff;
+    --invest-diretoria-text-light: #084298;
+
+    --invest-finalizado-bg-light: #d1e7dd;
+    --invest-finalizado-text-light: #0f5132;
+
+    --invest-reprovado-bg-light: #f8d7da;
+    --invest-reprovado-text-light: #842029;
+
+    --invest-pendente-bg-dark: #454545;
+    --invest-pendente-text-dark: #f2f2f2;
+
+    --invest-comercial-bg-dark: #5a4812;
+    --invest-comercial-text-dark: #fff3bf;
+
+    --invest-diretoria-bg-dark: #173f70;
+    --invest-diretoria-text-dark: #d7e8ff;
+
+    --invest-finalizado-bg-dark: #174c37;
+    --invest-finalizado-text-dark: #d1fae5;
+
+    --invest-reprovado-bg-dark: #65262c;
+    --invest-reprovado-text-dark: #ffe0e3;
+
+    
 }
 
 /* Tema claro (padrão) */
@@ -1603,3 +1635,188 @@ button:disabled {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+#tabelaInvestimentos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabelaInvestimentos th,
+#tabelaInvestimentos td {
+    border: 1px solid #dddddd;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+body.light-theme #tabelaInvestimentos thead th {
+    background-color: var(--table-header-bg-light);
+    color: var(--table-text-color-light);
+}
+
+body.dark-theme #tabelaInvestimentos thead th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-text-color-dark);
+    border-color: #555555;
+}
+
+body.light-theme #tabelaInvestimentos tbody tr td {
+    color: var(--text-color-light);
+}
+
+body.dark-theme #tabelaInvestimentos tbody tr td {
+    color: var(--table-text-color-dark);
+    border-color: #555555;
+}
+
+body.light-theme
+#tabelaInvestimentos
+tbody
+tr.status-pendente
+td {
+    background-color:
+        var(--invest-pendente-bg-light);
+    color:
+        var(--invest-pendente-text-light);
+}
+
+body.light-theme
+#tabelaInvestimentos
+tbody
+tr.status-aprovacao-comercial
+td {
+    background-color:
+        var(--invest-comercial-bg-light);
+    color:
+        var(--invest-comercial-text-light);
+}
+
+body.light-theme
+#tabelaInvestimentos
+tbody
+tr.status-aprovacao-diretoria
+td {
+    background-color:
+        var(--invest-diretoria-bg-light);
+    color:
+        var(--invest-diretoria-text-light);
+}
+
+body.light-theme
+#tabelaInvestimentos
+tbody
+tr.status-finalizado
+td {
+    background-color:
+        var(--invest-finalizado-bg-light);
+    color:
+        var(--invest-finalizado-text-light);
+}
+
+body.light-theme
+#tabelaInvestimentos
+tbody
+tr.status-reprovado
+td {
+    background-color:
+        var(--invest-reprovado-bg-light);
+    color:
+        var(--invest-reprovado-text-light);
+}
+
+body.dark-theme
+#tabelaInvestimentos
+tbody
+tr.status-pendente
+td {
+    background-color:
+        var(--invest-pendente-bg-dark);
+    color:
+        var(--invest-pendente-text-dark);
+}
+
+body.dark-theme
+#tabelaInvestimentos
+tbody
+tr.status-aprovacao-comercial
+td {
+    background-color:
+        var(--invest-comercial-bg-dark);
+    color:
+        var(--invest-comercial-text-dark);
+}
+
+body.dark-theme
+#tabelaInvestimentos
+tbody
+tr.status-aprovacao-diretoria
+td {
+    background-color:
+        var(--invest-diretoria-bg-dark);
+    color:
+        var(--invest-diretoria-text-dark);
+}
+
+body.dark-theme
+#tabelaInvestimentos
+tbody
+tr.status-finalizado
+td {
+    background-color:
+        var(--invest-finalizado-bg-dark);
+    color:
+        var(--invest-finalizado-text-dark);
+}
+
+body.dark-theme
+#tabelaInvestimentos
+tbody
+tr.status-reprovado
+td {
+    background-color:
+        var(--invest-reprovado-bg-dark);
+    color:
+        var(--invest-reprovado-text-dark);
+}
+
+.select-status-investimento {
+    display: block;
+    width: 100%;
+    min-width: 185px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+body.light-theme .select-status-investimento {
+    background-color: #ffffff;
+    color: var(--text-color-light);
+    border: 1px solid #777777;
+}
+
+body.dark-theme .select-status-investimento {
+    background-color: var(--input-bg-dark);
+    color: var(--table-text-color-dark);
+    border: 1px solid #666666;
+}
+
+body.dark-theme
+.select-status-investimento
+option {
+    background-color: var(--input-bg-dark);
+    color: var(--table-text-color-dark);
+}
+
+.select-status-investimento:focus {
+    border-color: rgba(225, 0, 152);
+    outline: none;
+    box-shadow:
+        0 0 5px rgba(225, 0, 152, 0.7);
+}
+
+.select-status-investimento:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+

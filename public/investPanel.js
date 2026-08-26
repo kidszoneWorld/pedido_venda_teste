@@ -629,14 +629,14 @@ function renderizarInvestimentos(lista){
                     value="aprovacao_comercial"
                     ${status === 'aprovacao_comercial' ? 'selected' : ''}
                 >
-                    Aprovação Comercial
+                    Aprovado/Comercial
                 </option>
 
                 <option
                     value="aprovacao_diretoria"
                     ${status === 'aprovacao_diretoria' ? 'selected' : ''}
                 >
-                    Aprovação Diretoria
+                    Aprovado/Diretoria
                 </option>
 
                 <option
@@ -718,10 +718,10 @@ function formatarStatusInvestimento(status){
             'Pendente',
 
         aprovacao_comercial:
-            'Aprovação Comercial',
+            'Aprovado/Comercial',
 
         aprovacao_diretoria:
-            'Aprovação Diretoria',
+            'Aprovado/Diretoria',
 
         finalizado:
             'Finalizado',
@@ -1130,7 +1130,7 @@ function aplicarCorStatus(
 
         linha.style.setProperty(
             'background-color',
-            'var(--tr-bg-cor-pen)'
+            '#CCCCCC'
         );
 
         return;

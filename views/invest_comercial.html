@@ -12,19 +12,7 @@
     <link rel="stylesheet" href="/css/invest_comercial.css?v=1787056278975">
     <link rel="stylesheet" href="/css/distribuidores.css">
     <link rel="stylesheet" href="/css/theme-toggle.css?v=1787056278975">
-    <style>
-        /* Estilos aplicados diretamente para garantir a quebra de linha e expansão no container */
-        #acaoSolicita {
-            width: 100%;
-            box-sizing: border-box;
-            resize: none;
-            overflow-y: hidden;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            font-family: inherit;
-            font-size: inherit;
-        }
-    </style>
+
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -96,7 +84,7 @@
             <div class="form-grid">
                 <div>
                     <label for="cliente">CLIENTE:</label>
-                    <input type="text" id="cliente" >
+                    <input type="text" id="cliente" placeholder="Razão Social" >
                 </div>
                 <div>
                     <label for="cnpj">CNPJ:</label>
@@ -104,19 +92,19 @@
                 </div>
                 <div>
                     <label for="endereco">ENDEREÇO:</label>
-                    <input type="text" id="endereco" >
+                    <input type="text" id="endereco" placeholder="AV.Alameda Santos, 2313, Cerqueira César">
                 </div>
                 <div>
                     <label for="telefone">TELEFONE:</label>
-                    <input type="text" id="telefone" >
+                    <input type="text" id="telefone" placeholder="(11) 3085-4372">
                 </div>
                 <div>
                     <label for="responsavel">RESPONSÁVEL:</label>
-                    <input type="text" id="responsavel" >
+                    <input type="text" id="responsavel" placeholder="Responsável Cliente">
                 </div>
                 <div>
                     <label for="cargo">CARGO:</label>
-                    <input type="text" id="cargo" >
+                    <input type="text" id="cargo" placeholder="Cargo do Responsável">
                 </div>
             </div>
 
@@ -153,9 +141,9 @@
         </div>
 
         <div class="acao-solicitada-container">
-            <label class="acao_solicita" for="acaoSolicita">RESUMO DA AÇÃO SOLICITADA:</label>
-            <!-- ALTERADO DE INPUT PARA TEXTAREA -->
-            <textarea id="acaoSolicita" rows="1"></textarea>
+            <label class="acao_solicita label" for="acaoSolicita">RESUMO DA AÇÃO SOLICITADA:</label>
+            
+            <textarea id="acaoSolicita" class="acaoSolicita" rows="1"></textarea>
         </div>
 
         <div class="section">
@@ -171,18 +159,23 @@
                     <input type="text" id="vigencia_final" placeholder="Agosto">
                 </div>
                 <div></div> <!-- Div vazia para ocupar a terceira coluna -->
-            </div>
+            </div>        </div>
+             <div class="section">
             <div class="form-grid">
-            <div class="action-table-container">
+
+            <div>
+                
                 <label for="cliente">Tipo de Investimento:</label>
                 <select name="tipoInvestimento" id="tipoInvestimento" class="tipoInvestimento">
-
+            
                     <option value="Bonificacao">Bonificação</option>
                     <option value="Abatimento">Abatimento</option>
                 </select>
+            </div>
+            <div>
                 <label for="cliente">Descrição de investimento:</label>
                 <select name="descricaoInvestimento" id="descricaoInvestimento" class="tipoInvestimento">
-
+            
                     <option value="Ambientação">Ambientação</option>
                     <option value="Aniversário da Loja">Aniversário da Loja</option>
                     <option value="Campanha de Incentivo">Campanha de Incentivo</option>
@@ -190,12 +183,18 @@
                     <option value="Inauguração">Inauguração</option>
                     <option value="Introdução">Introdução</option>
                     <option value="Outros">Outros</option>
-                </select>
-                <label for="cliente">Observação de Investimento:</label>
-                <input type="text" id="observacaoDescricaoInvestimento" placeholder="Observação de Investimento" class="text">
+                </select> <br><br>
             </div>
-        </div>
-        </div>
+            <div></div>
+            
+            </div>
+            </div>
+                <label for="cliente" class="label">Observação de Investimento:</label>
+                <textarea style="white-space: pre-wrap; overflow-wrap: break-word;" type="text" id="observacaoDescricaoInvestimento" placeholder="Observação de Investimento" class="text"></textarea>
+                
+   
+
+
         <div class="section">
 
                 <div class="no-print">      
@@ -235,7 +234,7 @@
                             </th>
 
                             <th class="coluna-remover-parcela no-print">
-                                Ação
+                                Excluir Linha
                             </th>
                         </tr>
                     </thead>

@@ -325,7 +325,9 @@ body.dark-theme .divText{
         /* Adicione outros estilos aqui, ex: background-color: blue; */
     }
 }
-
+.body.dark-theme strong{
+    color: var(--text-color-dark)
+}
 .section {
     margin-top: 20px;
 }

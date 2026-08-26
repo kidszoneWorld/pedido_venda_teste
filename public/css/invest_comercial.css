@@ -116,6 +116,13 @@ body.light-theme .form-grid select {
     width: 100%; /* Ajusta para ocupar toda a largura da célula */
     box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
 }
+body.light-theme textarea{
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 3px;
+    width: 100%; /* Ajusta para ocupar toda a largura da célula */
+    box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
+}
 
 body.dark-theme .form-grid {
     display: grid;
@@ -147,6 +154,13 @@ body.dark-theme .form-grid label {
     color: var(--button-hover-text-dark);
 }
 
+body.dark-theme label{
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 17px;
+    color: var(--button-hover-text-dark);
+}
+
 body.dark-theme .form-grid input,
 body.dark-theme .form-grid select {
     padding: 8px;
@@ -154,6 +168,15 @@ body.dark-theme .form-grid select {
     border-radius: 3px;
     width: 100%; /* Ajusta para ocupar toda a largura da célula */
     box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
+}
+
+body.dark-theme textarea{
+    padding: 8px;
+    border: 1px solid #242323;
+    border-radius: 3px;
+    width: 100%; /* Ajusta para ocupar toda a largura da célula */
+    box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho */
+    color: var(--background-color-dark);
 }
 
 body.dark-theme .form-grid {
@@ -977,6 +1000,31 @@ body.dark-theme input{
     color: var(--button-hover-text-dark);
 }
 
+
+.acaoSolicita{
+            width: 100%;
+            box-sizing: border-box;
+            resize: none;
+            overflow-y: hidden;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: inherit;
+      }
+
+
+
+.body.dark-theme .acaoSolicita{
+            color: var(--background-color-dark);
+            background-color: var(--input-bg-dark);
+}
+.body.light-theme .acaoSolicita{
+
+            color: var(--table-text-color-light);
+            background-color: var(--background-color-light);
+        }
+
+
 body.dark-theme ::placeholder{
     color:#3d3d3d;
 }
@@ -1352,8 +1400,6 @@ input:focus , textarea:focus{
     outline: none; /* Remove o contorno padrão do navegador */
     box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
 }
-
-
 
 
 #logoutButton2:hover{

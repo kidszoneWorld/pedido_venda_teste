@@ -145,7 +145,7 @@ function preencherDetalhesInvestimento(
 
     preencherTexto(
         'detalheStatus',
-        investimento.status
+        formatarNomeStatusEmail(investimento.status)
     );
 
     preencherTexto(
@@ -244,6 +244,19 @@ function preencherDetalhesInvestimento(
     preencherParcelasDetalhes(
         investimento.parcelas
     );
+
+}
+
+function formatarNomeStatusEmail(status){
+
+    if(status = 'aprovacao_comercial'){
+        return 'Aprovado/Comercial';
+    }
+    else if(status = 'aprovacao_diretoria'){
+        return 'Aprovado/Diretoria';
+    }
+
+    return status;
 
 }
 
