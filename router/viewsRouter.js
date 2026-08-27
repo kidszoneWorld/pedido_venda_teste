@@ -450,7 +450,7 @@ router.get('/cliente/:cnpj', async (req, res) => {
             await obterClientePorCnpj(
                 req.params.cnpj
             );
-
+            
         const endereco =
             cliente.enderecos?.[0];
 
@@ -463,7 +463,7 @@ router.get('/cliente/:cnpj', async (req, res) => {
             cliente.telefone?.numero
                 ? `(${cliente.telefone.ddd}) ${cliente.telefone.numero}`
                 : '';
-
+     
         res.json({
             razaoSocial:
                 cliente.razaoSocial || '',
