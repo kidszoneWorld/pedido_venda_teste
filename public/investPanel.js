@@ -574,7 +574,7 @@ function renderizarInvestimentos(lista){
                 ${escaparHtml(investimento.descricaoInvestimento)}
             </td>
 
-            <td>
+            <td hidden>
                 ${escaparHtml(investimento.vigenciaInicial)}
                 até
                 ${escaparHtml(investimento.vigenciaFinal)}
