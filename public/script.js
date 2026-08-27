@@ -253,7 +253,7 @@ cnpjInput1.addEventListener('blur', async function () {
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
-        setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
+        // setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
     } catch {
         alert("Cliente não encontrado, verificar com o financeiro.");
         hideFeedback();
@@ -313,7 +313,7 @@ codInput1.addEventListener('blur', async function () {
                 hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
-        setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
+        // setTimeout(() => document.querySelector('#dadosPedido tbody tr input')?.focus(), 0);
     } catch {
         alert("Cliente não encontrado, verificar com o financeiro.");
         hideFeedback();
@@ -392,10 +392,10 @@ function zerarCamposPedido() {
     garantirLinhaInicial();
 
 
-    setTimeout(() => {
-        const primeiraLinha = document.querySelector('#dadosPedido tbody tr');
-        primeiraLinha?.cells[0]?.querySelector('input')?.focus();
-    }, 0);
+    // setTimeout(() => {
+    //     const primeiraLinha = document.querySelector('#dadosPedido tbody tr');
+    //     primeiraLinha?.cells[0]?.querySelector('input')?.focus();
+    // }, 0);
 
     atualizarTotais();
 }
@@ -717,116 +717,289 @@ if (i === 0) {
 
         try {
 
-            const response = await fetch(
-                `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
-            );
+            const response =
+                await fetch(
+                    `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
+                );
 
-            if (!response.ok) {
+            if(!response.ok){
 
-                const erro = await response.json();
+                let mensagemErro =
+                    'Item não disponível.';
+
+                try{
+
+                    const erro =
+                        await response.json();
+
+                    mensagemErro =
+                        erro.message ||
+                        erro.mensagem ||
+                        mensagemErro;
+
+                }catch{
+
+                    const textoErro =
+                        await response.text()
+                            .catch(() => '');
+
+                    mensagemErro =
+                        textoErro ||
+                        mensagemErro;
+
+                }
 
                 throw new Error(
-                    erro.message || 'Item não disponível'
+                    mensagemErro
                 );
+
             }
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
-            console.log('RETORNO ITEM:', data);
-            console.log('É ARRAY?', Array.isArray(data));
+            if(
+                !Array.isArray(data) ||
+                data.length === 0
+            ){
 
-            if (!data.length) {
-                throw new Error('Item não encontrado');
+                throw new Error(
+                    'Item não encontrado.'
+                );
+
             }
 
-            const item = data[0];
-            let ipi = 0;
-            const preco = Number(item.PrecoVenda);
+            const item =
+                data[0];
 
-            //Verificação automática de IPI
-            console.log('Origem '+item.origem)
-            
-            if(item.origem == 2)
-                ipi = getIpi(item.classificacaoFiscal)
-            else
-                ipi = 0
-            const ipiMult = 1 + ipi;
+            const itemAtivo =
+                item.ATIVO ??
+                item.Ativo ??
+                item.ativo ??
+                true;
 
-            // UV
-            cells[2].value = 'CX';
+            const itemSuspenso =
+                item.SUSPENSO ??
+                item.Suspenso ??
+                item.suspenso ??
+                false;
 
-            // descrição
-            cells[3].value = item.ItemDescricao;
+            const ativoNormalizado =
+                String(itemAtivo)
+                    .trim()
+                    .toLowerCase();
 
-            // IPI
+            const suspensoNormalizado =
+                String(itemSuspenso)
+                    .trim()
+                    .toLowerCase();
+
+            if(
+                itemAtivo === false ||
+                itemAtivo === 0 ||
+                ativoNormalizado === '0' ||
+                ativoNormalizado === 'false' ||
+                ativoNormalizado === 'não' ||
+                ativoNormalizado === 'nao'
+            ){
+
+                throw new Error(
+                    'Item inativo.'
+                );
+
+            }
+
+            if(
+                itemSuspenso === true ||
+                itemSuspenso === 1 ||
+                suspensoNormalizado === '1' ||
+                suspensoNormalizado === 'true' ||
+                suspensoNormalizado === 'sim'
+            ){
+
+                throw new Error(
+                    'Item suspenso.'
+                );
+
+            }
+
+            const preco =
+                Number(
+                    item.PrecoVenda
+                );
+
+            if(
+                !Number.isFinite(preco) ||
+                preco <= 0
+            ){
+
+                throw new Error(
+                    'Preço do item inválido ou indisponível.'
+                );
+
+            }
+
+            let ipi =
+                0;
+
+            if(item.origem == 2){
+
+                ipi =
+                    getIpi(
+                        item.classificacaoFiscal
+                    );
+
+            }
+
+            const ipiMult =
+                1 + ipi;
+
+            cells[2].value =
+                'CX';
+
+            cells[3].value =
+                item.ItemDescricao || '';
+
             cells[4].value =
                 (ipi * 100).toFixed(2) + '%';
 
-            const precoComIpi = preco * ipiMult;
+            const precoComIpi =
+                preco * ipiMult;
 
-            // unitário
-            cells[5].value = preco.toLocaleString(
-                'pt-BR',
-                {
-                    style: 'currency',
-                    currency: 'BRL'
-                }
-            );
+            cells[5].value =
+                preco.toLocaleString(
+                    'pt-BR',
+                    {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }
+                );
 
-            // c/ ipi
-            cells[6].value = precoComIpi.toLocaleString(
-                'pt-BR',
-                {
-                    style: 'currency',
-                    currency: 'BRL'
-                }
-            );
+            cells[6].value =
+                precoComIpi.toLocaleString(
+                    'pt-BR',
+                    {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }
+                );
 
-            cells[1].readOnly = false;
+            cells[1].readOnly =
+                false;
 
-            cells[1].focus();
+            cells[1].oninput =
+                () => {
 
-            cells[1].oninput = () => {
+                    const qtd =
+                        parseFloat(
+                            cells[1].value.replace(
+                                ',',
+                                '.'
+                            )
+                        ) || 0;
 
-                const qtd =
-                    parseFloat(
-                        cells[1].value.replace(',', '.')
-                    ) || 0;
+                    const totalLinha =
+                        qtd * preco;
 
-                const totalLinha = qtd * preco;
+                    const totalComIpi =
+                        totalLinha * ipiMult;
 
-                const totalComIpi =
-                    totalLinha * ipiMult;
+                    cells[7].value =
+                        totalComIpi.toLocaleString(
+                            'pt-BR',
+                            {
+                                style: 'currency',
+                                currency: 'BRL'
+                            }
+                        );
 
-                // TOTAL
-                cells[7].value =
-                    totalComIpi.toLocaleString(
-                        'pt-BR',
-                        {
-                            style: 'currency',
-                            currency: 'BRL'
+                    atualizarTotais();
+
+                };
+
+            tr.dataset.itemId =
+                String(
+                    item.ItemId || ''
+                );
+
+            if(!tr.dataset.itemId){
+
+                throw new Error(
+                    'O item não possui identificador válido.'
+                );
+
+            }
+
+            tr.dispatchEvent(
+                new CustomEvent(
+                    'carregamento-item-finalizado',
+                    {
+                        detail: {
+                            sucesso: true,
+                            codigo: cod,
+                            mensagem: ''
                         }
-                    );
+                    }
+                )
+            );
 
-                tr.dataset.itemId = item.ItemId;
+        }catch(error){
 
-                atualizarTotais();
-            };
+            console.warn(
+                `Item ${cod} não foi carregado:`,
+                error
+            );
 
-        } catch (error) {
+            tr.dataset.itemId =
+                '';
 
-            alert(error.message);
+            cells[1].value =
+                '';
 
-            this.value = '';
+            cells[1].readOnly =
+                true;
 
-            this.focus();
+            cells[2].value =
+                '';
 
-        } finally {
+            cells[3].value =
+                '';
 
-            this.readOnly = false;
+            cells[4].value =
+                '';
+
+            cells[5].value =
+                '';
+
+            cells[6].value =
+                '';
+
+            cells[7].value =
+                '';
+
+            tr.dispatchEvent(
+                new CustomEvent(
+                    'carregamento-item-finalizado',
+                    {
+                        detail: {
+                            sucesso: false,
+                            codigo: cod,
+                            mensagem:
+                                error.message ||
+                                'Item suspenso, inativo ou indisponível.'
+                        }
+                    }
+                )
+            );
+
+        }finally{
+
+            this.readOnly =
+                false;
+
         }
-    });
-}
+            });
+        }
 
 
 
@@ -866,6 +1039,358 @@ function verificarCodigoDuplicado(codigo) {
     return contador > 1;
 }
 
+function aguardarCarregamentoItem(
+    linha,
+    tempoLimite = 15000
+){
+
+    return new Promise(resolve => {
+
+        let finalizado =
+            false;
+
+        const concluir =
+            resultado => {
+
+                if(finalizado){
+                    return;
+                }
+
+                finalizado =
+                    true;
+
+                clearTimeout(
+                    temporizador
+                );
+
+                linha.removeEventListener(
+                    'carregamento-item-finalizado',
+                    receberResultado
+                );
+
+                resolve(
+                    resultado
+                );
+
+            };
+
+        const receberResultado =
+            evento => {
+
+                concluir({
+                    sucesso:
+                        evento.detail?.sucesso ===
+                        true,
+
+                    codigo:
+                        evento.detail?.codigo ||
+                        '',
+
+                    mensagem:
+                        evento.detail?.mensagem ||
+                        ''
+                });
+
+            };
+
+        const temporizador =
+            setTimeout(
+                () => {
+
+                    concluir({
+                        sucesso: false,
+                        codigo: '',
+                        mensagem:
+                            'Tempo limite excedido ao carregar o item.'
+                    });
+
+                },
+                tempoLimite
+            );
+
+        linha.addEventListener(
+            'carregamento-item-finalizado',
+            receberResultado,
+            {
+                once: true
+            }
+        );
+
+    });
+
+}
+
+function exportarPedidoExcel(){
+
+    if(typeof XLSX === 'undefined'){
+
+        alert(
+            'A biblioteca de Excel não foi carregada.'
+        );
+
+        return;
+
+    }
+
+    const tableRows =
+        document.querySelectorAll(
+            '#dadosPedido tbody tr'
+        );
+
+    const requestBody = {
+        cnpj:
+            document.getElementById('cnpj')
+                ?.value || '',
+
+        ie:
+            document.getElementById('ie')
+                ?.value || '',
+
+        representante:
+            document.getElementById('representante')
+                ?.value || '',
+
+        tipoPedido:
+            document.getElementById('tipo_pedido')
+                ?.value || '',
+
+        razaoSocial:
+            document.getElementById('razao_social')
+                ?.value || '',
+
+        codClienteTexto:
+            document.getElementById('cod_cliente')
+                ?.value || '',
+
+        endereco:
+            document.getElementById('endereco')
+                ?.value || '',
+
+        bairro:
+            document.getElementById('bairro')
+                ?.value || '',
+
+        cidade:
+            document.getElementById('cidade')
+                ?.value || '',
+
+        uf:
+            document.getElementById('uf')
+                ?.value || '',
+
+        cep:
+            document.getElementById('cep')
+                ?.value || '',
+
+        telefone:
+            document.getElementById('telefone')
+                ?.value || '',
+
+        email:
+            document.getElementById('email')
+                ?.value || '',
+
+        emailFiscal:
+            document.getElementById('email_fiscal')
+                ?.value || '',
+
+        condicaoPagamentoTexto:
+            document.getElementById('pay')
+                ?.value || '',
+
+        transporte:
+            document.getElementById('transp')
+                ?.value || '',
+
+        tabelaTexto:
+            document.getElementById('group')
+                ?.value || '',
+
+        formaPagamentoTexto:
+            document.getElementById('formPagDescricao')
+                ?.value || '',
+
+        ListaPrecoId:
+            Number(
+                document.getElementById('codgroup')
+                    ?.value || 0
+            ),
+
+        CondicaoPagamentoId:
+            Number(
+                document.getElementById('condPagId')
+                    ?.value || 0
+            ),
+
+        FormaPagamentoId:
+            Number(
+                document.getElementById('formPagId')
+                    ?.value || 0
+            ),
+
+        ClienteId:
+            Number(
+                document.getElementById('cod_cliente')
+                    ?.value || 0
+            ),
+
+        ContatoClienteId:
+            Number(
+                document.getElementById('ContatoClienteId')
+                    ?.value || 0
+            ),
+
+        NumeroReferencia:
+            document.getElementById('referencia')
+                ?.value || '',
+
+        Observacao:
+            document.getElementById('observation')
+                ?.value || ''
+    };
+
+    const itensExcel =
+        Array.from(tableRows)
+            .map(row => {
+
+                const cells =
+                    row.querySelectorAll(
+                        'td input'
+                    );
+
+                const codigo =
+                    String(
+                        cells[0]?.value || ''
+                    )
+                    .trim();
+
+                const quantidade =
+                    Number(
+                        cells[1]?.value || 0
+                    );
+
+                const descricao =
+                    String(
+                        cells[3]?.value || ''
+                    )
+                    .trim();
+
+                const precoUnitario =
+                    String(
+                        cells[5]?.value || ''
+                    )
+                    .trim();
+
+                /*
+                 * Ignora apenas linhas vazias ou inválidas.
+                 * Isso não interrompe o processamento das
+                 * linhas seguintes.
+                 */
+                if(
+                    !codigo ||
+                    quantidade <= 0 ||
+                    !descricao ||
+                    !precoUnitario
+                ){
+                    return null;
+                }
+
+                return {
+                    Codigo:
+                        codigo,
+
+                    Quantidade:
+                        quantidade,
+
+                    Unidade:
+                        cells[2]?.value || '',
+
+                    Descricao:
+                        descricao,
+
+                    IPI:
+                        cells[4]?.value || '',
+
+                    PrecoUnitario:
+                        precoUnitario,
+
+                    PrecoComIPI:
+                        cells[6]?.value || '',
+
+                    Total:
+                        cells[7]?.value || ''
+                };
+
+            })
+            .filter(Boolean);
+
+    if(itensExcel.length === 0){
+
+        alert(
+            'Não existem itens válidos para exportar.'
+        );
+
+        return;
+
+    }
+
+    const workbook =
+        XLSX.utils.book_new();
+
+    /*
+     * Aba Pedido.
+     */
+    const pedidoSheet =
+        XLSX.utils.json_to_sheet([
+            requestBody
+        ]);
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        pedidoSheet,
+        'Pedido'
+    );
+
+    /*
+     * Aba Itens.
+     */
+    const itensSheet =
+        XLSX.utils.json_to_sheet(
+            itensExcel
+        );
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        itensSheet,
+        'Itens'
+    );
+
+    /*
+     * Remove caracteres inválidos do nome do arquivo.
+     */
+    const nomeCliente =
+        String(
+            requestBody.razaoSocial ||
+            'Pedido'
+        )
+        .replace(/[\\/:*?"<>|]/g, '')
+        .trim();
+
+    const dataHora =
+        new Date()
+            .toISOString()
+            .replace(/[:.]/g, '-');
+
+    const nomeArquivo =
+        `${nomeCliente || 'Pedido'} - ${dataHora}.xlsx`;
+
+    XLSX.writeFile(
+        workbook,
+        nomeArquivo
+    );
+
+}
+
 function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
@@ -899,365 +1424,6 @@ const confirmButton = document.getElementById('confirmButton');
 const cancelButton = document.getElementById('cancelButton');
 const cnpjInput = document.getElementById('cnpj');
 const btPdfGeneration = document.getElementById('button_pdf');
-
-document.getElementById('baixarJson').addEventListener('click', () => {
-
-        // Captura as linhas da tabela
-        const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
-
-        // Cria o array dinâmico para ItensPedidoVenda
-        const itensPedidoVenda = Array.from(tableRows)
-            .map(row => {
-                const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
-
-                // Verifica se a linha tem dados válidos antes de adicioná-la
-                const itemId = row.dataset.itemId || 0;
-                const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
-
-                // Só adiciona a linha se tiver um ItemId e Quantidade válidos
-                if (itemId > 0 && quantidade > 0) {
-                    return {
-                        ItemValorDesconto: 0,
-                        ItemPercentualDesconto: 0,
-
-                        EntregasItemPedidoVenda: [
-                            {
-                                Data: new Date().toISOString(),
-                                DataPrevista: new Date().toISOString(),
-                                Quantidade: quantidade,
-                            }
-                        ],
-
-                        ItemId: itemId,
-
-                        Codigo: cells[0]?.value || '',
-
-                        Quantidade: quantidade,
-                    };
-                }
-
-                return null; // Retorna null para linhas inválidas
-            })
-            .filter(item => item !== null); // Remove itens nulos do array
-
-        // Cria o corpo da requisição com base nos inputs
-        const requestBody = {
-
-    // =========================
-    // CLIENTE
-    // =========================
-    cnpj: document.getElementById('cnpj').value,
-    ie: document.getElementById('ie').value,
-    representante: document.getElementById('representante').value,
-    tipoPedido: document.getElementById('tipo_pedido').value,
-    razaoSocial: document.getElementById('razao_social').value,
-    codClienteTexto: document.getElementById('cod_cliente').value,
-    endereco: document.getElementById('endereco').value,
-    bairro: document.getElementById('bairro').value,
-    cidade: document.getElementById('cidade').value,
-    uf: document.getElementById('uf').value,
-    cep: document.getElementById('cep').value,
-    telefone: document.getElementById('telefone').value,
-    email: document.getElementById('email').value,
-    emailFiscal: document.getElementById('email_fiscal').value,
-    condicaoPagamentoTexto: document.getElementById('pay').value,
-    transporte: document.getElementById('transp').value,
-    tabelaTexto: document.getElementById('group').value,
-    formaPagamentoTexto: document.getElementById('formPagDescricao').value,
-
-    // =========================
-    // IDs SISTEMA
-    // =========================
-    ListaPrecoId: Number(document.getElementById('codgroup').value),
-    CondicaoPagamentoId: Number(document.getElementById('condPagId').value),
-    FormaPagamentoId: Number(document.getElementById('formPagId').value),
-
-    ValorDesconto: 0,
-    PercentualDesconto: 0,
-
-    ItensPedidoVenda: itensPedidoVenda,
-
-    RepresentantesPedidoVendas: [
-        {
-            RepresentanteId: Number(document.getElementById('representanteId').value),
-            RepresentantePrincipal: true,
-            PercentualComissaoItem: Number(document.getElementById('PercentualComissaoItem').value),
-            PercentualComissaoServico: Number(document.getElementById('PercentualComissaoServico').value),
-        }
-    ],
-
-    ClienteId: Number(document.getElementById('cod_cliente').value),
-
-    ContatoClienteId: Number(document.getElementById('ContatoClienteId').value || 0),
-
-    NumeroReferencia: document.getElementById('referencia').value,
-
-    Observacao: document.getElementById('observation').value,
-};
-
-   const workbook = XLSX.utils.book_new();
-
-// ======================
-// ABA PEDIDO
-// ======================
-
-const pedidoSheet = XLSX.utils.json_to_sheet([{
-    cnpj: requestBody.cnpj,
-    ie: requestBody.ie,
-    representante: requestBody.representante,
-    tipoPedido: requestBody.tipoPedido,
-    razaoSocial: requestBody.razaoSocial,
-    codClienteTexto: requestBody.codClienteTexto,
-    endereco: requestBody.endereco,
-    bairro: requestBody.bairro,
-    cidade: requestBody.cidade,
-    uf: requestBody.uf,
-    cep: requestBody.cep,
-    telefone: requestBody.telefone,
-    email: requestBody.email,
-    emailFiscal: requestBody.emailFiscal,
-    condicaoPagamentoTexto: requestBody.condicaoPagamentoTexto,
-    transporte: requestBody.transporte,
-    tabelaTexto: requestBody.tabelaTexto,
-    formaPagamentoTexto: requestBody.formaPagamentoTexto,
-    ListaPrecoId: requestBody.ListaPrecoId,
-    CondicaoPagamentoId: requestBody.CondicaoPagamentoId,
-    FormaPagamentoId: requestBody.FormaPagamentoId,
-    ClienteId: requestBody.ClienteId,
-    ContatoClienteId: requestBody.ContatoClienteId,
-    NumeroReferencia: requestBody.NumeroReferencia,
-    Observacao: requestBody.Observacao
-}]);
-
-XLSX.utils.book_append_sheet(
-    workbook,
-    pedidoSheet,
-    "Pedido"
-);
-// ======================
-// ABA ITENS
-// ======================
-
-const itensExcel = Array.from(tableRows)
-    .map(row => {
-
-        const cells = row.querySelectorAll('td input');
-
-        const quantidade =
-            Number(cells[1]?.value || 0);
-
-        const itemId =
-            row.dataset.itemId || 0;
-
-        if (itemId > 0 && quantidade > 0) {
-
-            return {
-                Codigo: cells[0]?.value || '',
-                Quantidade: quantidade,
-                Unidade: cells[2]?.value || '',
-                Descricao: cells[3]?.value || '',
-                IPI: cells[4]?.value || '',
-                PrecoUnitario: cells[5]?.value || '',
-                PrecoComIPI: cells[6]?.value || '',
-                Total: cells[7]?.value || ''
-            };
-        }
-
-        return null;
-
-    })
-    .filter(Boolean);
-
-const itensSheet =
-    XLSX.utils.json_to_sheet(itensExcel);
-
-XLSX.utils.book_append_sheet(
-    workbook,
-    itensSheet,
-    "Itens"
-);
-
-// DOWNLOAD
-
-const agora = new Date();
-
-const dataExportacao =
-    agora.toLocaleDateString('pt-BR') +
-    ' ' +
-    agora.toLocaleTimeString('pt-BR');
-const resumoSheet =
-    XLSX.utils.json_to_sheet([
-        {
-            DataExportacao: dataExportacao,
-            Cliente: requestBody.razaoSocial,
-            CodigoCliente: requestBody.codClienteTexto,
-            Representante: requestBody.representante,
-            TipoPedido: requestBody.tipoPedido,
-            Volumes: document.getElementById('volume').value,
-            TotalProdutos: document.getElementById('total').value,
-            TotalComIPI: document.getElementById('totalComIpi').value
-        }
-    ]);
-
-XLSX.utils.book_append_sheet(
-    workbook,
-    resumoSheet,
-    'Resumo'
-);
-XLSX.writeFile(
-    workbook,
-    `${requestBody.razaoSocial} ${document.getElementById('totalComIpi').value}.xlsx`
-);
-});
-
-
-
-//input via json
-
-const inputJsonButton = document.getElementById('inputJson');
-const jsonFileInput = document.getElementById('jsonFileInput');
-
-// abre seletor de arquivo ao clicar no botão
-inputJsonButton.addEventListener('click', () => {
-    jsonFileInput.click();
-});
-
-// Ao clicar no botão abre seletor de arquivo
-jsonFileInput.addEventListener('change', async (event) => {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    try {
-
-        const data =
-    await file.arrayBuffer();
-
-const workbook =
-    XLSX.read(data, {
-        type: 'array'
-    });
-
-const pedido =
-    XLSX.utils.sheet_to_json(
-        workbook.Sheets['Pedido']
-    )[0];
-
-const itens =
-    XLSX.utils.sheet_to_json(
-        workbook.Sheets['Itens']
-    );
-
-const requestBody = {
-    ...pedido,
-    ItensPedidoVenda: itens
-};
-        // =========================
-        // CARREGA CLIENTE APENAS PELO CNPJ
-        // =========================
-
-        const cnpjInput =
-            document.getElementById('cnpj');
-
-        cnpjInput.value =
-            requestBody.cnpj || '';
-
-        // dispara o mesmo evento que ocorre
-        // quando o usuário informa o CNPJ manualmente
-
-        cnpjInput.dispatchEvent(
-            new Event('blur')
-        );
-        await new Promise(resolve => {
-
-            const verificar = setInterval(() => {
-
-                const clienteId =
-                    document.getElementById('cod_cliente').value;
-
-                if (clienteId) {
-
-                    clearInterval(verificar);
-                    resolve();
-
-                }
-
-            }, 100);
-
-        });
-        document.getElementById('referencia').value =
-            requestBody.NumeroReferencia || '';
-
-        document.getElementById('observation').value =
-            requestBody.Observacao || '';
-
-        // =========================
-        // LIMPA TABELA
-        // =========================
-
-        const tbody = document.querySelector('#dadosPedido tbody');
-        tbody.innerHTML = '';
-
-        // =========================
-        // PREENCHE ITENS
-        // =========================
-
-        for (const item of itens) {
-
-            adicionarNovaLinha();
-
-            const tr = tbody.lastElementChild;
-            const cells = tr.querySelectorAll('td input');
-
-            // ItemId
-            // tr.dataset.itemId = item.ItemId;
-
-           // Código do item
-                cells[0].value = item.Codigo;
-
-                // dispara blur primeiro
-                cells[0].dispatchEvent(new Event('blur'));
-
-                // espera carregar o item
-                await new Promise(resolve => {
-
-                    const verificar = setInterval(() => {
-
-                        // preço carregado e quantidade liberada
-                        if (cells[5]?.value && !cells[1].readOnly) {
-
-                            clearInterval(verificar);
-
-                            // AGORA define a quantidade
-                            cells[1].value = item.Quantidade;
-
-                            // dispara cálculo
-                            cells[1].dispatchEvent(new Event('input'));
-
-                            resolve();
-                        }
-
-                    }, 100);
-
-                });
-        }
-
-        atualizarTotais();
-
-        alert("Pedido carregado na tela com sucesso!");
-
-    } catch (error) {
-
-        console.error("Erro ao importar Pedido:", error);
-
-        alert("Erro ao processar o arquivo Pedido.");
-    } finally {
-
-        jsonFileInput.value = '';
-    }
-});
-
 
 
 
@@ -1395,6 +1561,657 @@ function escaparHtml(valor){
         .replace(/'/g, '&#039;');
 
 }
+function iniciarBloqueioImportacao(
+    mensagem = 'Aguarde enquanto as informações são importadas.'
+){
+
+    const overlay =
+        document.getElementById(
+            'overlayImportacaoPedido'
+        );
+
+    const mensagemElemento =
+        document.getElementById(
+            'mensagemImportacaoPedido'
+        );
+
+    const progressoElemento =
+        document.getElementById(
+            'progressoImportacaoPedido'
+        );
+
+    if(mensagemElemento){
+
+        mensagemElemento.textContent =
+            mensagem;
+
+    }
+
+    if(progressoElemento){
+
+        progressoElemento.textContent =
+            '';
+
+    }
+
+    if(overlay){
+
+        overlay.classList.add(
+            'ativo'
+        );
+
+        overlay.setAttribute(
+            'aria-hidden',
+            'false'
+        );
+
+    }
+
+    document.body.classList.add(
+        'importando-pedido'
+    );
+
+}
+
+function atualizarProgressoImportacao(
+    mensagem
+){
+
+    const progressoElemento =
+        document.getElementById(
+            'progressoImportacaoPedido'
+        );
+
+    if(progressoElemento){
+
+        progressoElemento.textContent =
+            mensagem || '';
+
+    }
+
+}
+
+function finalizarBloqueioImportacao(){
+
+    const overlay =
+        document.getElementById(
+            'overlayImportacaoPedido'
+        );
+
+    if(overlay){
+
+        overlay.classList.remove(
+            'ativo'
+        );
+
+        overlay.setAttribute(
+            'aria-hidden',
+            'true'
+        );
+
+    }
+
+    document.body.classList.remove(
+        'importando-pedido'
+    );
+
+}
+async function importarPedidoExcel(event){
+    
+
+    const campoArquivo =
+        event.target;
+
+    const arquivo =
+        campoArquivo.files?.[0];
+
+    if(!arquivo){
+        return;
+    }
+
+    iniciarBloqueioImportacao(
+'Lendo o arquivo do pedido...'
+);
+
+    if(typeof XLSX === 'undefined'){
+        finalizarBloqueioImportacao()
+        alert(
+            'A biblioteca de Excel não foi carregada.'
+        );
+
+        campoArquivo.value =
+            '';
+
+        return;
+
+    }
+
+    try{
+
+        const dadosArquivo =
+            await arquivo.arrayBuffer();
+
+        const workbook =
+            XLSX.read(
+                dadosArquivo,
+                {
+                    type: 'array'
+                }
+            );
+
+        const planilhaPedido =
+            workbook.Sheets['Pedido'];
+
+        const planilhaItens =
+            workbook.Sheets['Itens'];
+
+        if(!planilhaPedido){
+
+            throw new Error(
+                'A planilha Pedido não foi encontrada.'
+            );
+
+        }
+
+        if(!planilhaItens){
+
+            throw new Error(
+                'A planilha Itens não foi encontrada.'
+            );
+
+        }
+
+        const pedido =
+            XLSX.utils.sheet_to_json(
+                planilhaPedido
+            )[0];
+
+        const itens =
+            XLSX.utils.sheet_to_json(
+                planilhaItens
+            );
+
+        if(!pedido){
+
+            throw new Error(
+                'A planilha Pedido está vazia.'
+            );
+
+        }
+
+        limparCamposCliente();
+        limparProdutos();
+
+        const campoCnpj =
+            document.getElementById(
+                'cnpj'
+            );
+
+        if(!campoCnpj){
+
+            throw new Error(
+                'Campo de CNPJ não encontrado.'
+            );
+
+        }
+
+        campoCnpj.value =
+            pedido.cnpj || '';
+        atualizarProgressoImportacao(
+    'Consultando os dados do cliente'
+    );
+        campoCnpj.dispatchEvent(
+            new Event(
+                'blur',
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+        await aguardarClienteImportacao();
+
+        document
+            .getElementById(
+                'referencia'
+            )
+            .value =
+                pedido.NumeroReferencia || '';
+
+        document
+            .getElementById(
+                'observation'
+            )
+            .value =
+                pedido.Observacao || '';
+
+        const tbody =
+            document.querySelector(
+                '#dadosPedido tbody'
+            );
+
+        if(!tbody){
+
+            throw new Error(
+                'Tabela do pedido não encontrada.'
+            );
+
+        }
+
+        tbody.innerHTML =
+            '';
+
+        const itensRemovidos =
+            [];
+
+        const totalItens =
+            itens.length;
+
+        let indiceItem =
+            0;
+
+        for(const item of itens){
+            indiceItem++;
+            const codigoItem =
+                String(
+                    item.Codigo || ''
+                )
+                .trim()
+                .toUpperCase();
+
+            const quantidadeItem =
+                Number(
+                    item.Quantidade || 0
+                );
+
+            if(!codigoItem){
+
+                itensRemovidos.push({
+                    codigo:
+                        'Sem código',
+
+                    motivo:
+                        'Código não informado.'
+                });
+
+                continue;
+
+            }
+
+            adicionarNovaLinha();
+
+            const linha =
+                tbody.lastElementChild;
+
+            if(!linha){
+
+                itensRemovidos.push({
+                    codigo:
+                        codigoItem,
+
+                    motivo:
+                        'Não foi possível criar a linha.'
+                });
+
+                continue;
+
+            }
+
+            const campos =
+                linha.querySelectorAll(
+                    'td input'
+                );
+
+            const campoCodigo =
+                campos[0];
+
+            const campoQuantidade =
+                campos[1];
+
+            if(
+                !campoCodigo ||
+                !campoQuantidade
+            ){
+
+                itensRemovidos.push({
+                    codigo:
+                        codigoItem,
+
+                    motivo:
+                        'A estrutura da linha está incompleta.'
+                });
+
+                linha.remove();
+
+                continue;
+
+            }
+
+            const resultadoPendente =
+                aguardarCarregamentoItem(
+                    linha
+                );
+
+            campoCodigo.value =
+                codigoItem;
+
+            campoCodigo.dispatchEvent(
+                new Event(
+                    'blur',
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+            const resultado =
+                await resultadoPendente;
+
+            if(!resultado.sucesso){
+
+                itensRemovidos.push({
+                    codigo:
+                        codigoItem,
+
+                    motivo:
+                        resultado.mensagem ||
+                        'Item suspenso, inativo ou indisponível.'
+                });
+
+                linha.remove();
+
+                continue;
+
+            }
+
+            if(!linha.isConnected){
+
+                itensRemovidos.push({
+                    codigo:
+                        codigoItem,
+
+                    motivo:
+                        'A linha foi removida durante o carregamento.'
+                });
+
+                continue;
+
+            }
+
+            campoQuantidade.value =
+                String(
+                    quantidadeItem
+                );
+
+            campoQuantidade.dispatchEvent(
+                new Event(
+                    'input',
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+        }
+
+        const linhasRestantes =
+            tbody.querySelectorAll(
+                'tr'
+            );
+
+        linhasRestantes.forEach(linha => {
+
+            const campos =
+                linha.querySelectorAll(
+                    'td input'
+                );
+
+            const codigo =
+                String(
+                    campos[0]?.value || ''
+                )
+                .trim();
+
+            const quantidade =
+                Number(
+                    campos[1]?.value || 0
+                );
+
+            const descricao =
+                String(
+                    campos[3]?.value || ''
+                )
+                .trim();
+
+            const preco =
+                String(
+                    campos[5]?.value || ''
+                )
+                .trim();
+
+            const linhaInvalida =
+                !codigo ||
+                quantidade <= 0 ||
+                !descricao ||
+                descricao === 'Carregando item...' ||
+                !preco ||
+                !linha.dataset.itemId;
+
+            if(linhaInvalida){
+
+                const codigoRemovido =
+                    codigo || 'Sem código';
+
+                const jaRegistrado =
+                    itensRemovidos.some(item => {
+
+                        return (
+                            item.codigo ===
+                            codigoRemovido
+                        );
+
+                    });
+
+                if(!jaRegistrado){
+
+                    itensRemovidos.push({
+                        codigo:
+                            codigoRemovido,
+
+                        motivo:
+                            'Item não pôde ser carregado.'
+                    });
+
+                }
+
+                linha.remove();
+
+            }
+
+        });
+
+        atualizarTotais();
+
+        if(!tbody.querySelector('tr')){
+
+            adicionarNovaLinha();
+
+        }
+
+        if(itensRemovidos.length > 0){
+
+            const detalhes =
+                itensRemovidos
+                    .map(item => {
+
+                        return (
+                            `${item.codigo}: ` +
+                            `${item.motivo}`
+                        );
+
+                    })
+                    .join('\n');
+
+            alert(
+                'Pedido importado. Os itens abaixo foram removidos:\n\n' +
+                detalhes
+            );
+
+        }else{
+
+            alert(
+                'Pedido carregado na tela com sucesso.'
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            'Erro ao importar pedido:',
+            error
+        );
+
+        alert(
+            error.message ||
+            'Erro ao processar o arquivo do pedido.'
+        );
+
+    }finally{
+        finalizarBloqueioImportacao();
+        campoArquivo.value =
+            '';
+
+    }
+
+}
+
+function aguardarClienteImportacao(
+    tempoLimite = 15000
+){
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const inicio =
+                Date.now();
+
+            const verificar =
+                setInterval(
+                    () => {
+
+                        const clienteId =
+                            document
+                                .getElementById(
+                                    'cod_cliente'
+                                )
+                                ?.value;
+
+                        if(clienteId){
+
+                            clearInterval(
+                                verificar
+                            );
+
+                            resolve();
+
+                            return;
+
+                        }
+
+                        if(
+                            Date.now() - inicio >=
+                            tempoLimite
+                        ){
+
+                            clearInterval(
+                                verificar
+                            );
+
+                            reject(
+                                new Error(
+                                    'Não foi possível carregar o cliente informado no arquivo.'
+                                )
+                            );
+
+                        }
+
+                    },
+                    100
+                );
+
+        }
+    );
+
+}
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        const botaoExportarPedido =
+            document.getElementById(
+                'baixarJson'
+            );
+
+        const botaoImportarPedido =
+            document.getElementById(
+                'inputJson'
+            );
+
+        const campoArquivoPedido =
+            document.getElementById(
+                'jsonFileInput'
+            );
+
+        if(!botaoExportarPedido){
+
+            console.error(
+                'Botão #baixarJson não encontrado.'
+            );
+
+        }
+
+        if(!botaoImportarPedido){
+
+            console.error(
+                'Botão #inputJson não encontrado.'
+            );
+
+        }
+
+        if(!campoArquivoPedido){
+
+            console.error(
+                'Campo #jsonFileInput não encontrado.'
+            );
+
+        }
+
+        botaoExportarPedido?.addEventListener(
+            'click',
+            exportarPedidoExcel
+        );
+
+        botaoImportarPedido?.addEventListener(
+            'click',
+            () => {
+
+                campoArquivoPedido.value =
+                    '';
+
+                campoArquivoPedido.click();
+
+            }
+        );
+
+        campoArquivoPedido?.addEventListener(
+            'change',
+            importarPedidoExcel
+        );
+
+    }
+);
 
 function criarHtmlPesquisavelDoPedido(){
 
@@ -1537,6 +2354,7 @@ function criarHtmlPesquisavelDoPedido(){
 
 }
 
+
 async function gerarPdfPesquisavelBlob(fileName){
 
     const html =
@@ -1583,6 +2401,9 @@ async function gerarPdfPesquisavelBlob(fileName){
     return await response.blob();
 
 }
+
+
+
 
 function baixarBlob(blob, fileName){
 
@@ -1840,7 +2661,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // Limpa os campos de totais ("VOLUMES", "TOTAL PRODUTOS", "TOTAL C/IMP")
         document.getElementById('volume').value = '';
         document.getElementById('total').value = '';
-        document.getElementById('total_imp').value = '';
+        const campoTotalComIpi =
+            document.getElementById(
+                'totalComIpi'
+            );
+
+        if(campoTotalComIpi){
+
+            campoTotalComIpi.value =
+                '';
+
+        }
 
         // Limpa o campo de observações
         document.getElementById('observation').value = '';

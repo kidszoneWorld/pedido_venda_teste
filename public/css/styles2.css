@@ -1304,3 +1304,100 @@ body.light-theme .button:hover {
     border-color: #c4007a;
 }
 
+.overlay-importacao-pedido {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(4px);
+
+    cursor: wait;
+    user-select: none;
+    touch-action: none;
+}
+
+.overlay-importacao-pedido.ativo {
+    display: flex;
+}
+
+.carregamento-importacao {
+    width: min(90%, 430px);
+    padding: 30px;
+
+    border: 1px solid #cccccc;
+    border-radius: 12px;
+
+    background-color: #ffffff;
+    color: #333333;
+
+    text-align: center;
+    box-sizing: border-box;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.35);
+}
+
+.carregamento-importacao h2 {
+    margin: 15px 0 10px;
+}
+
+.carregamento-importacao p {
+    margin: 8px 0;
+}
+
+.progresso-importacao {
+    min-height: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #c4007a;
+}
+
+.spinner-importacao {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto;
+
+    border: 6px solid #dddddd;
+    border-top-color: #c4007a;
+    border-radius: 50%;
+
+    animation:
+        girarImportacao 0.8s linear infinite;
+}
+
+body.dark-theme .carregamento-importacao {
+    background-color: var(--container-bg-dark);
+    color: var(--table-text-color-dark);
+    border-color: #555555;
+}
+
+body.dark-theme .spinner-importacao {
+    border-color: #555555;
+    border-top-color: #f18fc7;
+}
+
+body.dark-theme .progresso-importacao {
+    color: #f18fc7;
+}
+
+body.importando-pedido {
+    overflow: hidden;
+}
+
+@keyframes girarImportacao {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
