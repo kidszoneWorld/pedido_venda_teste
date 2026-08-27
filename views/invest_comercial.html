@@ -96,8 +96,18 @@
                     <input type="text" id="endereco" placeholder="AV.Alameda Santos, 2313, Cerqueira César" readonly>
                 </div>
                 <div>
-                    <label for="telefone">TELEFONE:</label>
-                    <input type="text" id="telefone" placeholder="(11) 3085-4372">
+                    <label for="telefone">
+                        TELEFONE:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="telefone"
+                        maxlength="15"
+                        inputmode="numeric"
+                        autocomplete="tel"
+                        placeholder="(00) 00000-0000"
+                    >
                 </div>
                 <div>
                     <label for="responsavel">RESPONSÁVEL:</label>
