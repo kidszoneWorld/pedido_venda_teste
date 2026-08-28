@@ -403,27 +403,6 @@ function formatarCampoMoeda(campo){
 
 }
 
-function percentualBRParaNumero(valor){
-
-    if(!valor){
-        return 0;
-    }
-
-    const numero =
-        Number(
-            String(valor)
-                .replace('%', '')
-                .replace(/\./g, '')
-                .replace(',', '.')
-                .trim()
-        );
-
-    return Number.isFinite(numero)
-        ? numero
-        : 0;
-
-}
-
 function calcularPercentualInvestimento(){
 
     const valorInvestimento =
@@ -480,36 +459,45 @@ function calcularPercentualInvestimento(){
 
 function configurarValoresInvestimento(){
 
-    const idsCampos = [
-        'valor_investimento',
-        'valor_total'
-    ];
+    const campoValorInvestimento =
+        document.getElementById(
+            'valor_investimento'
+        );
 
-    idsCampos.forEach(id => {
+    const campoValorCompra =
+        document.getElementById(
+            'valor_total'
+        );
 
-        const campo =
-            document.getElementById(
-                id
-            );
+    if(campoValorInvestimento){
 
-        if(!campo){
-            return;
-        }
+        campoValorInvestimento.readOnly =
+            true;
 
-        campo.inputMode =
+        campoValorInvestimento.tabIndex =
+            -1;
+
+        campoValorInvestimento.value =
+            numeroParaMoedaBR(0);
+
+    }
+
+    if(campoValorCompra){
+
+        campoValorCompra.inputMode =
             'decimal';
 
-        campo.addEventListener(
+        campoValorCompra.addEventListener(
             'input',
             calcularPercentualInvestimento
         );
 
-        campo.addEventListener(
+        campoValorCompra.addEventListener(
             'blur',
             () => {
 
                 formatarCampoMoeda(
-                    campo
+                    campoValorCompra
                 );
 
                 calcularPercentualInvestimento();
@@ -517,7 +505,7 @@ function configurarValoresInvestimento(){
             }
         );
 
-    });
+    }
 
 }
 
@@ -553,16 +541,49 @@ function atualizarNumeracaoParcelas(){
 
 }
 
+function atualizarValorInvestimentoPelasParcelas(){
+
+    const camposParcelas =
+        document.querySelectorAll(
+            '#investment-table-body .valor-parcela'
+        );
+
+    let valorTotalInvestimento =
+        0;
+
+    camposParcelas.forEach(campo => {
+
+        valorTotalInvestimento +=
+            moedaBRParaNumero(
+                campo.value
+            );
+
+    });
+
+    const campoValorInvestimento =
+        document.getElementById(
+            'valor_investimento'
+        );
+
+    if(!campoValorInvestimento){
+        return;
+    }
+
+    campoValorInvestimento.value =
+        numeroParaMoedaBR(
+            valorTotalInvestimento
+        );
+
+    calcularPercentualInvestimento();
+
+}
+
 function configurarCampoMoedaParcela(campo){
 
     if(!campo){
         return;
     }
 
-    /*
-     * Evita registrar os mesmos eventos
-     * mais de uma vez no mesmo campo.
-     */
     if(
         campo.dataset.moedaConfigurada ===
         'true'
@@ -577,12 +598,23 @@ function configurarCampoMoedaParcela(campo){
         'decimal';
 
     campo.addEventListener(
+        'input',
+        () => {
+
+            atualizarValorInvestimentoPelasParcelas();
+
+        }
+    );
+
+    campo.addEventListener(
         'blur',
         () => {
 
             formatarCampoMoeda(
                 campo
             );
+
+            atualizarValorInvestimentoPelasParcelas();
 
         }
     );
@@ -614,10 +646,6 @@ function removerLinhaParcela(linha){
             '.linha-parcela'
         );
 
-    /*
-     * Sempre mantém pelo menos uma linha
-     * de parcela na tabela.
-     */
     if(linhas.length === 1){
 
         linha
@@ -627,10 +655,6 @@ function removerLinhaParcela(linha){
             .forEach(
                 (campo, indice) => {
 
-                    /*
-                     * O primeiro campo é a numeração
-                     * automática da parcela.
-                     */
                     if(indice === 0){
                         return;
                     }
@@ -643,6 +667,8 @@ function removerLinhaParcela(linha){
 
         atualizarNumeracaoParcelas();
 
+        atualizarValorInvestimentoPelasParcelas();
+
         return;
 
     }
@@ -650,6 +676,8 @@ function removerLinhaParcela(linha){
     linha.remove();
 
     atualizarNumeracaoParcelas();
+
+    atualizarValorInvestimentoPelasParcelas();
 
 }
 
@@ -673,10 +701,7 @@ function configurarLinhaParcela(linha){
             '.valor-parcela'
         );
 
-    const campoValorPagamento =
-        linha.querySelector(
-            '.valor-pagamento'
-        );
+
 
     const botaoRemover =
         linha.querySelector(
@@ -697,9 +722,6 @@ function configurarLinhaParcela(linha){
         campoValorParcela
     );
 
-    configurarCampoMoedaParcela(
-        campoValorPagamento
-    );
 
     if(
         botaoRemover &&
@@ -801,37 +823,24 @@ function validarParcelasInvestimento(){
                 '.valor-parcela'
             );
 
-        const campoValorPagamento =
-            linha.querySelector(
-                '.valor-pagamento'
-            );
 
         const valorParcela =
             moedaBRParaNumero(
                 campoValorParcela?.value
             );
 
-        const valorPagamento =
-            moedaBRParaNumero(
-                campoValorPagamento?.value
-            );
 
         if(
-            valorParcela <= 0 ||
-            valorPagamento <= 0
+            valorParcela <= 0
         ){
 
             alert(
-                `Preencha o valor e o pagamento da parcela ${indice + 1}.`
+                `Preencha o valor da parcela ${indice + 1}.`
             );
 
             if(valorParcela <= 0){
 
                 campoValorParcela?.focus();
-
-            }else{
-
-                campoValorPagamento?.focus();
 
             }
 
@@ -999,14 +1008,7 @@ function criarLinhaParcela(){
             >
         </td>
 
-        <td class="valor-pago">
-            <input
-                type="text"
-                class="valor-pagamento"
-                placeholder="Pagamento"
-                inputmode="decimal"
-            >
-        </td>
+
 
         <td class="coluna-remover-parcela no-print">
             <button
@@ -1027,7 +1029,8 @@ function criarLinhaParcela(){
     );
 
     atualizarNumeracaoParcelas();
-
+    atualizarValorInvestimentoPelasParcelas();
+    
     const campoValor =
         linha.querySelector(
             '.valor-parcela'
@@ -1097,13 +1100,7 @@ function configurarTabelaParcelas(){
 
             }
 
-            if(inputs[2]){
 
-                inputs[2].classList.add(
-                    'valor-pagamento'
-                );
-
-            }
 
             /*
              * Cria o botão da primeira linha caso
@@ -1188,6 +1185,30 @@ function configurarTabelaParcelas(){
         'click',
         criarLinhaParcela
     );
+atualizarValorInvestimentoPelasParcelas();
+}
+
+function somarValoresParcelas(){
+
+    return Array
+        .from(
+            document.querySelectorAll(
+                '#investment-table-body .valor-parcela'
+            )
+        )
+        .reduce(
+            (total, campo) => {
+
+                return (
+                    total +
+                    moedaBRParaNumero(
+                        campo.value
+                    )
+                );
+
+            },
+            0
+        );
 
 }
 
@@ -1212,10 +1233,7 @@ function montarParcelasInvestimento(){
                     '.valor-parcela'
                 );
 
-            const campoValorPagamento =
-                linha.querySelector(
-                    '.valor-pagamento'
-                );
+
 
             const parcela =
                 campoParcela
@@ -1228,19 +1246,14 @@ function montarParcelasInvestimento(){
                         ?.value
                 );
 
-            const valorPagamento =
-                moedaBRParaNumero(
-                    campoValorPagamento
-                        ?.value
-                );
+
 
             /*
              * A numeração 1/1, 1/2 etc. não deve
              * fazer uma linha vazia ser enviada.
              */
             const linhaPreenchida =
-                valorParcela > 0 ||
-                valorPagamento > 0;
+                valorParcela > 0
 
             if(!linhaPreenchida){
                 return;
@@ -1253,9 +1266,6 @@ function montarParcelasInvestimento(){
 
                 valorParcela:
                     valorParcela,
-
-                valorPagamento:
-                    valorPagamento
 
             });
 
@@ -1331,11 +1341,7 @@ window.montarDadosInvestimentoComercial =
                 ),
 
             valorInvestimento:
-                moedaBRParaNumero(
-                    obterValorCampo(
-                        'valor_investimento'
-                    )
-                ),
+                somarValoresParcelas(),
 
             valorCompraInvestimento:
                 moedaBRParaNumero(

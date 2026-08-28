@@ -2215,7 +2215,7 @@ body.gerando-pdf .button-group,
 body.gerando-pdf footer {
     display: none !important;
 }
-
+/* 
 .investment-table .coluna-remover-parcela {
     width: 110px;
     text-align: center;
@@ -2230,7 +2230,7 @@ body.gerando-pdf footer {
 .investment-table .valor-parcela,
 .investment-table .valor-pagamento {
     text-align: right;
-}
+} */
 
 
 

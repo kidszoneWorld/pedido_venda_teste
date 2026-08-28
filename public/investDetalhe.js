@@ -320,10 +320,7 @@ function preencherParcelasDetalhes(
                 'td'
             );
 
-        const celulaPagamento =
-            document.createElement(
-                'td'
-            );
+  
 
         celulaNumero.textContent =
             parcela.parcela || '';
@@ -333,10 +330,6 @@ function preencherParcelasDetalhes(
                 parcela.valorParcela
             );
 
-        celulaPagamento.textContent =
-            formatarMoedaDetalhes(
-                parcela.valorPagamento
-            );
 
         linha.appendChild(
             celulaNumero
@@ -344,10 +337,6 @@ function preencherParcelasDetalhes(
 
         linha.appendChild(
             celulaValor
-        );
-
-        linha.appendChild(
-            celulaPagamento
         );
 
         tbody.appendChild(
