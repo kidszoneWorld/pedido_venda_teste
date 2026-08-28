@@ -7,7 +7,7 @@ let promocaoData;
 let foraDeLinhaData;
 let listaPrecosData;
 let icmsSTData;
-let listaPrecosIpiData;
+
 
 
 
@@ -17,11 +17,6 @@ const el = id => document.getElementById(id);
 // ======================================================================
 // 📦 CACHE / FETCH DE DADOS INICIAIS
 // ======================================================================
-
-fetch(`/data/Lista-precos.json?cacheBust=${timestamp}`)
-  .then(r => r.json())
-  .then(d => listaPrecosIpiData = d);
-
 fetch(`/data/cliente.json?cacheBust=${timestamp}`)
   .then(r => r.json())
   .then(d => clientesData = d);
@@ -323,8 +318,6 @@ codInput1.addEventListener('blur', async function () {
     }
 });
 
-
-
 function limparProdutos(){
         const tbody = document.querySelector('#dadosPedido tbody');
         tbody.innerHTML = '';
@@ -363,8 +356,6 @@ function preencherCliente(c) {
 // 📦 PEDIDO / TABELA
 // ======================================================================
 
-
-
 function atualizarTotais() {
     atualizarTotalProdutos();
     atualizarTotalVolumes();
@@ -399,8 +390,6 @@ function zerarCamposPedido() {
 
     atualizarTotais();
 }
-
-
 // Adiciona o evento para zerar os campos quando o tipo de pedido for alterado
 
 document.getElementById('tipo_pedido').addEventListener('change', function () {
@@ -410,11 +399,8 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
         document.getElementById('referencia').value = 'BONIFICAÇÃO';
     } else {
         document.getElementById('referencia').value = '';
-    }
+}
 });
-
-
-
 
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
 function atualizarTotalVolumes() {
@@ -435,9 +421,6 @@ function atualizarTotalVolumes() {
 
     document.getElementById('volume').value = totalVolumes;
 }
-
-
-
 
 // Função para atualizar o total de produtos (quantidade * valor unitário)
 function atualizarTotalProdutos() {
@@ -485,73 +468,66 @@ function totalComIpi(){
     return total;
 }
 
-
 //Buscar IPI pelo código do item
-function buscarIpiDoItem(codigoItem) {
-    if (!Array.isArray(listaPrecosIpiData) || listaPrecosIpiData.length < 2) {
-        return 0;
-    }
-
-    const header = listaPrecosIpiData[0];
-    const idxCodigo = header.indexOf("ITEM COD");
-    const idxIpi = header.indexOf("IPI");
-
-    if (idxCodigo === -1 || idxIpi === -1) {
-        console.warn('Coluna ITEM COD ou IPI não encontrada');
-        return 0;
-    }
-
-    const linha = listaPrecosIpiData.find(
-        (row, index) =>
-            index > 0 &&
-            String(row[idxCodigo]).trim().toUpperCase() ===
-            String(codigoItem).trim().toUpperCase()
-    );
-
-    if (!linha) return 0;
-
-    const ipi = Number(linha[idxIpi]);
-    return isNaN(ipi) ? 0 : ipi;
-}
-
 
 function getIpi(classificacao){
 
-      const classificacaoFiscal = [
-                [17041000 , 0.0325],
-                [17049020 , 0.0325],
-                [17049090 , 0.0325],
-                [18069000 , 0.0325],
-                [20079923 , 0],
-                [20079990 , 0],
-                [21069050 , 0],
-                [39201099 , 0],
-                [49019900 , 0],
-                [49111090 , 0],
-                [61091000 , 0],
-                [84729059 , 0],
-                [85061010 , 0],
-                [87120010 , 0],
-                [94033000 , 0],
-                [94037000 , 0],
-                [95030022 , 0.065],
-                [95030031 , 0],
-                [95030039 , 0.065],
-                [95030070 , 0.065],
-                [95030098 , 0.065],
-                [95030099 , 0.065],
-                [95049090 , 0],
-            ];
-            
-            const ipi = classificacaoFiscal.find(
-                row => row[0] == classificacao
-            )
+    const somenteNumeros =
+        String(classificacao || '')
+            .replace(/\D/g, '');
 
-            return ipi ? ipi[1] : 0;
-            
+    if(!somenteNumeros){
+        return null;
+    }
+
+    const classificacaoNormalizada =
+        Number(
+            somenteNumeros
+        );
+
+    const classificacoesFiscais = [
+        [17041000, 0.0325],
+        [17049020, 0.0325],
+        [17049090, 0.0325],
+        [18069000, 0.0325],
+        [20079923, 0],
+        [20079990, 0],
+        [21069050, 0],
+        [39201099, 0],
+        [49019900, 0],
+        [49111090, 0],
+        [61091000, 0],
+        [84729059, 0],
+        [85061010, 0],
+        [87120010, 0],
+        [94033000, 0],
+        [94037000, 0],
+        [95030022, 0.065],
+        [95030031, 0],
+        [95030039, 0.065],
+        [95030070, 0.065],
+        [95030098, 0.065],
+        [95030099, 0.065],
+        [95049090, 0]
+    ];
+
+    const registro =
+        classificacoesFiscais.find(
+            linha => {
+
+                return (
+                    linha[0] ===
+                    classificacaoNormalizada
+                );
+
+            }
+        );
+
+    return registro
+        ? registro[1]
+        : null;
+
 }
-
-
 
 // Função para adicionar uma nova linha à tabela
 function adicionarNovaLinha() {
@@ -838,18 +814,10 @@ if (i === 0) {
                 );
 
             }
-
-            let ipi =
-                0;
-
-            if(item.origem == 2){
-
-                ipi =
-                    getIpi(
-                        item.classificacaoFiscal
-                    );
-
-            }
+                const ipi =
+                obterIpiDoItem(
+                    item
+                );
 
             const ipiMult =
                 1 + ipi;
@@ -861,7 +829,14 @@ if (i === 0) {
                 item.ItemDescricao || '';
 
             cells[4].value =
-                (ipi * 100).toFixed(2) + '%';
+                (ipi * 100)
+                    .toLocaleString(
+                        'pt-BR',
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    ) + '%';
 
             const precoComIpi =
                 preco * ipiMult;
@@ -1117,6 +1092,69 @@ function aguardarCarregamentoItem(
         );
 
     });
+
+}
+
+function obterIpiDoItem(item){
+
+    const origem =
+        Number(
+            item.origem ??
+            item.Origem ??
+            0
+        );
+
+    const classificacaoFiscal =
+        item.classificacaoFiscal ??
+        item.ClassificacaoFiscal ??
+        item.NCM ??
+        item.ncm ??
+        null;
+
+    console.log(
+        'Buscando IPI com getIpi:',
+        {
+            ItemCodigo:
+                item.ItemCodigo,
+
+            origem:
+                origem,
+
+            classificacaoFiscal:
+                classificacaoFiscal
+        }
+    );
+
+    if(origem !== 2){
+        return 0;
+    }
+
+    if(
+        classificacaoFiscal === null ||
+        classificacaoFiscal === undefined ||
+        String(classificacaoFiscal).trim() === ''
+    ){
+
+        throw new Error(
+            `A API não retornou a classificação fiscal do item ${item.ItemCodigo || ''}.`
+        );
+
+    }
+
+    const ipi =
+        getIpi(
+            classificacaoFiscal
+        );
+
+    if(ipi === null){
+
+        throw new Error(
+            `A classificação fiscal ${classificacaoFiscal} não está cadastrada na função getIpi.`
+        );
+
+    }
+
+    return ipi;
 
 }
 
