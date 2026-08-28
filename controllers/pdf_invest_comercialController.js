@@ -473,13 +473,13 @@ exports.sendPdf =
                 from:
                     'KidsZone Investimento Comercial <kidzonekidszonemail@gmail.com>',
 
-                to: [
-                    'verbas@kidszoneworld.com.br'
-                ],
-
                 // to: [
-                //     'luis.henrique@kidszoneworld.com.br'
+                //     'verbas@kidszoneworld.com.br'
                 // ],
+
+                to: [
+                    'luis.henrique@kidszoneworld.com.br'
+                ],
 
                 subject:
                     subject,
