@@ -249,10 +249,10 @@ function preencherDetalhesInvestimento(
 
 function formatarNomeStatusEmail(status){
 
-    if(status = 'aprovacao_comercial'){
+    if(status == 'aprovacao_comercial'){
         return 'Aprovado/Comercial';
     }
-    else if(status = 'aprovacao_diretoria'){
+    else if(status == 'aprovacao_diretoria'){
         return 'Aprovado/Diretoria';
     }
 
