@@ -197,12 +197,12 @@ function preencherDetalhesInvestimento(
 
     preencherTexto(
         'detalheVigenciaInicial',
-        investimento.vigenciaInicial
+        formatarData(investimento.vigenciaInicial)
     );
 
     preencherTexto(
         'detalheVigenciaFinal',
-        investimento.vigenciaFinal
+        formatarData(investimento.vigenciaFinal)
     );
 
     preencherTexto(
@@ -345,6 +345,12 @@ function preencherParcelasDetalhes(
 
     });
 
+}
+
+function formatarData(dataISO) {
+  if (!dataISO) return '';
+  const [ano, mes, dia] = dataISO.split('-');
+  return `${dia}/${mes}/${ano}`;
 }
 
 function preencherTexto(
