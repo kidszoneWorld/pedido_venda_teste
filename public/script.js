@@ -53,8 +53,123 @@ console.log('script.js carregado');
 // ======================================================================
 // 🔧 FUNÇÕES UTILITÁRIAS
 // ======================================================================
-const formatarCNPJ = cnpj =>
-    cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+function formatarCNPJ(valor){
+
+    const numeros =
+        String(valor || '')
+            .replace(/\D/g, '')
+            .slice(0, 14);
+
+    if(numeros.length <= 2){
+        return numeros;
+    }
+
+    if(numeros.length <= 5){
+
+        return numeros.replace(
+            /^(\d{2})(\d+)/,
+            '$1.$2'
+        );
+
+    }
+
+    if(numeros.length <= 8){
+
+        return numeros.replace(
+            /^(\d{2})(\d{3})(\d+)/,
+            '$1.$2.$3'
+        );
+
+    }
+
+    if(numeros.length <= 12){
+
+        return numeros.replace(
+            /^(\d{2})(\d{3})(\d{3})(\d+)/,
+            '$1.$2.$3/$4'
+        );
+
+    }
+
+    return numeros.replace(
+        /^(\d{2})(\d{3})(\d{3})(\d{4})(\d+)/,
+        '$1.$2.$3/$4-$5'
+    );
+
+}
+
+function obterCNPJNumerico(valor){
+
+    return String(valor || '')
+        .replace(/\D/g, '')
+        .slice(0, 14);
+
+}
+
+function configurarMascaraCNPJ(){
+
+    const campoCNPJ =
+        document.getElementById(
+            'cnpj'
+        );
+
+    if(!campoCNPJ){
+        return;
+    }
+
+    campoCNPJ.type =
+        'text';
+
+    campoCNPJ.inputMode =
+        'numeric';
+
+    campoCNPJ.maxLength =
+        18;
+
+    campoCNPJ.autocomplete =
+        'off';
+
+    campoCNPJ.addEventListener(
+        'input',
+        () => {
+
+            campoCNPJ.value =
+                formatarCNPJ(
+                    campoCNPJ.value
+                );
+
+        }
+    );
+
+    campoCNPJ.addEventListener(
+        'paste',
+        evento => {
+
+            evento.preventDefault();
+
+            const textoColado =
+                evento.clipboardData
+                    ?.getData('text') || '';
+
+            campoCNPJ.value =
+                formatarCNPJ(
+                    textoColado
+                );
+
+            campoCNPJ.dispatchEvent(
+                new Event(
+                    'input',
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+        }
+    );
+
+}
+
 
 const formatarCEP = cep =>
     cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
@@ -200,10 +315,16 @@ cnpjInput1.addEventListener('focus', () => {
 // ======================================================================
 cnpjInput1.addEventListener('blur', async function () {
     limparProdutos();
-    let cnpj = this.value.replace(/\D/g, '');
-    if (!cnpj || cnpjInvalido(cnpj)) return alert("CNPJ inválido.");
+    let cnpj =
+    obterCNPJNumerico(
+        this.value
+    );
+    if (cnpj.length !== 14 || cnpjInvalido(cnpj)) {
+        alert("CNPJ inválido.");
+        this.focus();
+        return;
+    }
 
-    cnpj = ajustarCNPJ(cnpj);
     this.value = formatarCNPJ(cnpj);
 
     showFeedback('Carregando cliente...');
@@ -212,7 +333,7 @@ cnpjInput1.addEventListener('blur', async function () {
     let clienteApi;
 
     try {
-        const res = await fetch(`/api/cliente/${api}/${cnpj}`);
+        const res = await fetch(`/api/cliente/${api}/${encodeURIComponent(cnpj)}`);
         if (!res.ok) throw new Error();
         clienteApi = await res.json();
 
@@ -325,7 +446,8 @@ function limparProdutos(){
 }
 
 function preencherCliente(c) {
-    el('cnpj').value = formatarCNPJ(c[1].toString());
+    el('cnpj').value = formatarCNPJ(obterCNPJNumerico(c[1]));
+      
     el('razao_social').value = c[3];
     el('ie').value = c[2];
     el('representante').value = `${c[15]} - ${c[16]}`;
@@ -1177,8 +1299,10 @@ function exportarPedidoExcel(){
 
     const requestBody = {
         cnpj:
-            document.getElementById('cnpj')
-                ?.value || '',
+            obterCNPJNumerico(
+                document.getElementById('cnpj')
+                    ?.value
+            ),
 
         ie:
             document.getElementById('ie')
@@ -1794,7 +1918,11 @@ async function importarPedidoExcel(event){
         }
 
         campoCnpj.value =
-            pedido.cnpj || '';
+            formatarCNPJ(
+                obterCNPJNumerico(
+                    pedido.cnpj
+                )
+            );
         atualizarProgressoImportacao(
     'Consultando os dados do cliente'
     );
@@ -2186,7 +2314,7 @@ function aguardarClienteImportacao(
 document.addEventListener(
     'DOMContentLoaded',
     () => {
-
+        configurarMascaraCNPJ();
         const botaoExportarPedido =
             document.getElementById(
                 'baixarJson'

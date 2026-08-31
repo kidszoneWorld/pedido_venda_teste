@@ -159,11 +159,18 @@
                 <label for="cnpj" class="label-obrigatorio">CNPJ:
                     <span class="tooltip2">Campo Obrigatório</span>
                 </label> 
-                <input type="text" id="cnpj" placeholder="Digite o CNPJ" maxlength="14">
-
+                <input
+                    type="text"
+                    id="cnpj"
+                    placeholder="00.000.000/0000-00"
+                    maxlength="18"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    tabindex="-1"
+                >
 
                 <label for="cod_cliente" class="label-espaco-esquerda">CÓD CLIENTE:</label> 
-                <input type="text" id="cod_cliente" placeholder="Código Cliente">
+                <input type="text" id="cod_cliente" placeholder="Código Cliente" tabindex="-1">
 
                 
 
