@@ -290,7 +290,7 @@ div.acao-solicitada-container {
 }
 
 .investment-table {
-    width: 100%;
+    width: 90%;
     border-collapse: collapse;
     margin-top: 10px;
 }
@@ -308,17 +308,17 @@ div.acao-solicitada-container {
     font-size: 15px;
 }
 
-.investment-table td input {
+ .investment-table td input {
     width: 100%;
     border: none;
     background: transparent;
     text-align: center;
 }
-
+ 
 .investment-table .parcela {
     width: 11%;
 }
-
+/*
 .investment-table .valor {
     width: 39%;
 }
@@ -329,7 +329,7 @@ div.acao-solicitada-container {
 
 .investment-table .valor-pago {
     width: 39%;
-}
+} */
 
 .payment-conditions {
     margin-top: 20px;
@@ -2264,25 +2264,6 @@ body.gerando-pdf .coluna-remover-parcela {
    TABELA DE PARCELAS
    ========================================== */
 
-.investment-table-container {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    margin: 10px 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow-x: auto;
-}
-
-.investment-table {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    border-collapse: collapse;
-    table-layout: fixed;
-    box-sizing: border-box;
-}
 
 .investment-table th,
 .investment-table td {
@@ -2291,6 +2272,7 @@ body.gerando-pdf .coluna-remover-parcela {
     vertical-align: middle;
     text-align: center;
     overflow: hidden;
+    align-items: center;
 }
 
 .investment-table th {
@@ -2312,6 +2294,7 @@ body.gerando-pdf .coluna-remover-parcela {
 .investment-table .numero-parcela {
     text-align: center;
     font-weight: bold;
+
 }
 
 /* Valores monetários */
