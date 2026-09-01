@@ -99,11 +99,11 @@ function formatarCNPJ(valor){
 }
 
 function obterCNPJNumerico(valor){
-
-    return String(valor || '')
-        .replace(/\D/g, '')
-        .slice(0, 14);
-
+    return ajustarCNPJ(
+        String(valor || '')
+            .replace(/\D/g, '')
+            .slice(0, 14)
+    );
 }
 
 function configurarMascaraCNPJ(){
@@ -316,8 +316,10 @@ cnpjInput1.addEventListener('focus', () => {
 cnpjInput1.addEventListener('blur', async function () {
     limparProdutos();
     let cnpj =
-    obterCNPJNumerico(
-        this.value
+    ajustarCNPJ(
+        obterCNPJNumerico(
+            this.value
+        )
     );
     if (cnpj.length !== 14 || cnpjInvalido(cnpj)) {
         alert("CNPJ inválido.");
