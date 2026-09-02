@@ -1401,3 +1401,33 @@ body.importando-pedido {
         transform: rotate(360deg);
     }
 }
+
+.celula-foto-item {
+    width: 74px;
+    min-width: 74px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.foto-item-pedido {
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    object-fit: contain;
+    border: 1px solid #d5d5d5;
+    border-radius: 6px;
+    background-color: #ffffff;
+}
+
+.foto-item-pedido.sem-foto {
+    display: none;
+}
+
+.campo-codigo-item {
+    min-width: 90px;
+}
+
+.campo-descricao-item {
+    min-width: 250px;
+}

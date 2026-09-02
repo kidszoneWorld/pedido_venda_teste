@@ -880,4 +880,9 @@ async function obterClientePorCnpj(cnpj) {
 }
 
 
+router.get(
+    '/api/catalogo-cliente/:clienteCodigo',
+    productController.getCatalogoCliente
+);
+
 module.exports = router;
