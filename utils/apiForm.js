@@ -467,15 +467,477 @@ async function fetchClientWithPriceListItems(api, cnpj) {
 }
 
 
+async function fazerGetAutenticadoNg(endpoint){
 
+    await checkToken();
 
+    if(!authToken){
 
+        throw new Error(
+            'Não foi possível obter o token de autenticação.'
+        );
+
+    }
+
+    const response =
+        await fetch(
+            `${ngLink}${endpoint}`,
+            {
+                method:
+                    'GET',
+
+                headers: {
+                    Authorization:
+                        `Bearer ${authToken}`,
+
+                    Accept:
+                        'application/json',
+
+                    'Content-Type':
+                        'application/json',
+
+                    Origin:
+                        'https://kidszone-ng.dbcorp.com.br'
+                }
+            }
+        );
+
+    const texto =
+        await response.text();
+
+    let dados =
+        null;
+
+    if(texto){
+
+        try{
+
+            dados =
+                JSON.parse(
+                    texto
+                );
+
+        }catch{
+
+            throw new Error(
+                `A API retornou um JSON inválido. Endpoint: ${endpoint}`
+            );
+
+        }
+
+    }
+
+    if(!response.ok){
+
+        const mensagem =
+            dados?.message ||
+            dados?.mensagem ||
+            dados?.erro ||
+            `Erro HTTP ${response.status}`;
+
+        throw new Error(
+            `${mensagem}. Endpoint: ${endpoint}`
+        );
+
+    }
+
+    return dados;
+
+}
+
+async function fetchPriceListsByClient(
+    clienteCodigo
+){
+
+    const codigo =
+        String(
+            clienteCodigo || ''
+        )
+        .trim();
+
+    if(!codigo){
+
+        throw new Error(
+            'Código do cliente não informado.'
+        );
+
+    }
+
+    const endpoint =
+        `/vendas-service/lista-preco?ClienteCodigo=${encodeURIComponent(codigo)}`;
+
+    const resposta =
+        await fazerGetAutenticadoNg(
+            endpoint
+        );
+
+    const listas =
+        resposta?.dados;
+
+    if(
+        !Array.isArray(listas) ||
+        listas.length === 0
+    ){
+
+        throw new Error(
+            `Nenhuma lista de preço foi encontrada para o cliente ${codigo}.`
+        );
+
+    }
+
+    return listas;
+
+}
+
+async function fetchProductByItemId(
+    itemId
+){
+
+    const id =
+        String(
+            itemId || ''
+        )
+        .trim();
+
+    if(!id){
+
+        throw new Error(
+            'ItemId não informado.'
+        );
+
+    }
+
+    const endpoint =
+        `/produto-service/item/${encodeURIComponent(id)}`;
+
+    const produto =
+        await fazerGetAutenticadoNg(
+            endpoint
+        );
+
+    if(
+        !produto ||
+        typeof produto !== 'object'
+    ){
+
+        throw new Error(
+            `Dados inválidos para o itemId ${id}.`
+        );
+
+    }
+
+    return produto;
+
+}
+
+async function mapearComLimite(
+    valores,
+    limite,
+    processador
+){
+
+    const resultados =
+        new Array(
+            valores.length
+        );
+
+    let proximoIndice =
+        0;
+
+    async function trabalhador(){
+
+        while(true){
+
+            const indiceAtual =
+                proximoIndice++;
+
+            if(
+                indiceAtual >=
+                valores.length
+            ){
+                return;
+            }
+
+            try{
+
+                resultados[indiceAtual] =
+                    await processador(
+                        valores[indiceAtual],
+                        indiceAtual
+                    );
+
+            }catch(error){
+
+                resultados[indiceAtual] = {
+                    erro:
+                        true,
+
+                    mensagem:
+                        error.message,
+
+                    valor:
+                        valores[indiceAtual]
+                };
+
+            }
+
+        }
+
+    }
+
+    const quantidadeTrabalhadores =
+        Math.min(
+            limite,
+            valores.length
+        );
+
+    await Promise.all(
+        Array.from(
+            {
+                length:
+                    quantidadeTrabalhadores
+            },
+            trabalhador
+        )
+    );
+
+    return resultados;
+
+}
+
+async function fetchCatalogoCliente(
+    clienteCodigo,
+    listaCodigoSolicitada = null
+){
+
+    const listas =
+        await fetchPriceListsByClient(
+            clienteCodigo
+        );
+
+    /*
+     * Se o cliente possuir mais de uma lista:
+     * 1. tenta localizar a lista solicitada;
+     * 2. caso contrário, utiliza a primeira.
+     */
+    let listaSelecionada =
+        null;
+
+    if(listaCodigoSolicitada){
+
+        listaSelecionada =
+            listas.find(lista => {
+
+                return (
+                    String(lista.codigo) ===
+                    String(listaCodigoSolicitada)
+                );
+
+            });
+
+    }
+
+    if(!listaSelecionada){
+
+        listaSelecionada =
+            listas[0];
+
+    }
+
+    if(!listaSelecionada){
+
+        throw new Error(
+            `Nenhuma lista de preço foi encontrada para o cliente ${clienteCodigo}.`
+        );
+
+    }
+
+    const itensPreco =
+        Array.isArray(
+            listaSelecionada.itemListaPreco
+        )
+            ? listaSelecionada.itemListaPreco
+            : [];
+
+    if(itensPreco.length === 0){
+
+        throw new Error(
+            `A lista de preço ${listaSelecionada.codigo} não possui itens.`
+        );
+
+    }
+
+    const resultados =
+        await mapearComLimite(
+            itensPreco,
+            8,
+            async itemPreco => {
+
+                const produto =
+                    await fetchProductByItemId(
+                        itemPreco.itemId
+                    );
+
+                const itemEmpresaId =
+                    String(
+                        produto.itemEmpresaId || ''
+                    )
+                    .trim();
+
+                if(!itemEmpresaId){
+
+                    throw new Error(
+                        `O produto ${itemPreco.itemId} não possui itemEmpresaId.`
+                    );
+
+                }
+
+                return {
+                    itemListaPrecoId:
+                        itemPreco.itemListaPrecoId,
+
+                    listaPrecoId:
+                        itemPreco.listaPrecoId,
+
+                    itemId:
+                        itemPreco.itemId,
+
+                    itemEmpresaId:
+                        itemEmpresaId,
+
+                    preco:
+                        Number(
+                            itemPreco.precoVenda || 0
+                        ),
+
+                    descricao:
+                        produto.descricao ||
+                        produto.descricaoNotaFiscal ||
+                        '',
+
+                    descricaoNotaFiscal:
+                        produto.descricaoNotaFiscal ||
+                        '',
+
+                    classificacaoFiscal:
+                        produto.classificacaoFiscal
+                            ? String(
+                                produto.classificacaoFiscal
+                            )
+                            : null,
+
+                    origem:
+                        Number(
+                            produto.origem || 0
+                        ),
+
+                    unidade:
+                        produto.unidadeMedidaAbreviado ||
+                        'CX',
+
+                    foto:
+                        produto.foto ||
+                        null,
+
+                    ativo:
+                        produto.ativo === true,
+
+                    suspenso:
+                        produto.suspenso === true,
+
+                    foraLinha:
+                        produto.foraLinha === true,
+
+                    bloqueado:
+                        produto.bloqueado === true,
+
+                    exibeConsultasListaPreco:
+                        produto.exibeConsultasListaPreco !== false,
+
+                    percentualDescontoMaximo:
+                        Number(
+                            itemPreco.percentualDescontoMaximo || 0
+                        )
+                };
+
+            }
+        );
+
+    const itens =
+        resultados.filter(resultado => {
+
+            return (
+                resultado &&
+                resultado.erro !== true
+            );
+
+        });
+
+    const erros =
+        resultados
+            .filter(resultado => {
+
+                return (
+                    resultado &&
+                    resultado.erro === true
+                );
+
+            })
+            .map(resultado => {
+
+                return {
+                    itemId:
+                        resultado.valor?.itemId ||
+                        null,
+
+                    mensagem:
+                        resultado.mensagem
+                };
+
+            });
+
+    return {
+        listaPreco: {
+            codigo:
+                listaSelecionada.codigo,
+
+            descricao:
+                listaSelecionada.descricao,
+
+            moeda:
+                listaSelecionada.moeda,
+
+            ehLivre:
+                listaSelecionada.ehLivre,
+
+            descontoMaximo:
+                listaSelecionada.descontoMaximo
+        },
+
+        itens:
+            itens,
+
+        erros:
+            erros,
+
+        totalItensLista:
+            itensPreco.length,
+
+        totalItensCarregados:
+            itens.length,
+
+        totalErros:
+            erros.length
+    };
+
+}
 
 setInterval(checkToken, 60 * 60 * 1000);  // Verifica o token a cada 1 hora
 
 
 // Exportar as funções
-module.exports = {
+
+  module.exports = {
     authenticate,
     checkToken,
     fetchClientDetails,
@@ -485,6 +947,9 @@ module.exports = {
     fetchPaymentCondition,
     fetchPaymentMethod,
     fetchcontat,
-    fetchPriceListItems 
-  };
-  
+    fetchPriceListItems,
+    fazerGetAutenticadoNg,
+    fetchPriceListsByClient,
+    fetchProductByItemId,
+    fetchCatalogoCliente
+};
