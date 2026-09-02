@@ -5,8 +5,22 @@ const timestamp = Date.now();
 let clientesData;
 let promocaoData;
 let foraDeLinhaData;
-let listaPrecosData;
 let icmsSTData;
+
+let catalogoClienteData =
+    [];
+
+let catalogoClientePorCodigo =
+    new Map();
+
+let catalogoClienteCarregado =
+    false;
+
+let catalogoClienteCarregando =
+    false;
+
+let dadosListaPrecoAtual =
+    null;
 
 
 
@@ -44,7 +58,240 @@ async function carregarListaPrecos(listaId) {
     console.log('DADOS DA LISTA:', listaPrecosData);
 }
 
+async function carregarCatalogoCliente(
+    clienteCodigo,
+    listaCodigo = null
+){
+
+    const codigoCliente =
+        String(
+            clienteCodigo || ''
+        )
+        .trim();
+
+    if(!codigoCliente){
+
+        throw new Error(
+            'Código do cliente não disponível para carregar o catálogo.'
+        );
+
+    }
+
+    catalogoClienteCarregado =
+        false;
+
+    catalogoClienteCarregando =
+        true;
+
+    catalogoClienteData =
+        [];
+
+    catalogoClientePorCodigo =
+        new Map();
+
+    dadosListaPrecoAtual =
+        null;
+
+    showFeedback(
+        'Carregando lista de produtos do cliente...'
+    );
+
+    try{
+
+        const parametros =
+            new URLSearchParams();
+
+        if(listaCodigo){
+
+            parametros.set(
+                'listaCodigo',
+                listaCodigo
+            );
+
+        }
+
+        const queryString =
+            parametros.toString();
+
+        const url =
+            `/api/catalogo-cliente/${encodeURIComponent(codigoCliente)}` +
+            (
+                queryString
+                    ? `?${queryString}`
+                    : ''
+            );
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        'GET',
+
+                    headers: {
+                        Accept:
+                            'application/json'
+                    }
+                }
+            );
+
+        const resultado =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                resultado.mensagem ||
+                resultado.message ||
+                'Não foi possível carregar o catálogo do cliente.'
+            );
+
+        }
+
+        const itens =
+            Array.isArray(
+                resultado.itens
+            )
+                ? resultado.itens
+                : [];
+
+        catalogoClienteData =
+            itens;
+
+        dadosListaPrecoAtual =
+            resultado.listaPreco ||
+            null;
+
+        catalogoClientePorCodigo =
+            new Map();
+
+        itens.forEach(item => {
+
+            const codigoItem =
+                normalizarCodigoItem(
+                    item.itemEmpresaId
+                );
+
+            if(!codigoItem){
+                return;
+            }
+
+            catalogoClientePorCodigo.set(
+                codigoItem,
+                item
+            );
+
+        });
+
+        catalogoClienteCarregado =
+            true;
+
+        if(dadosListaPrecoAtual){
+
+            el('codgroup').value =
+                dadosListaPrecoAtual.codigo ||
+                '';
+
+            el('group').value =
+                dadosListaPrecoAtual.descricao ||
+                '';
+
+        }
+
+        console.log(
+            'Catálogo do cliente carregado:',
+            {
+                listaPreco:
+                    dadosListaPrecoAtual,
+
+                totalRecebido:
+                    catalogoClienteData.length,
+
+                totalIndexado:
+                    catalogoClientePorCodigo.size,
+
+                erros:
+                    resultado.erros || []
+            }
+        );
+
+        return resultado;
+
+    }finally{
+
+        catalogoClienteCarregando =
+            false;
+
+        hideFeedback();
+
+    }
+
+}
+
+function buscarItemNoCatalogo(
+    codigoDigitado
+){
+
+    const codigo =
+        normalizarCodigoItem(
+            codigoDigitado
+        );
+
+    if(!codigo){
+        return null;
+    }
+
+    return (
+        catalogoClientePorCodigo.get(
+            codigo
+        ) ||
+        null
+    );
+
+}
+
+function limparProdutos(){
+
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
+
+    tbody.innerHTML =
+        '';
+
+    catalogoClienteData =
+        [];
+
+    catalogoClientePorCodigo =
+        new Map();
+
+    catalogoClienteCarregado =
+        false;
+
+    catalogoClienteCarregando =
+        false;
+
+    dadosListaPrecoAtual =
+        null;
+
+    atualizarTotais();
+
+}
+
+function normalizarCodigoItem(
+    valor
+){
+
+    return String(valor || '')
+        .trim()
+        .toUpperCase();
+
+}
+
 console.log('script.js carregado');
+
+
 
 // limpar tudo ao atualizar page (run once)
  limparCamposCliente();
@@ -104,6 +351,376 @@ function obterCNPJNumerico(valor){
             .replace(/\D/g, '')
             .slice(0, 14)
     );
+}
+
+function montarSrcFotoItem(
+    foto
+){
+
+    const valor =
+        String(
+            foto || ''
+        )
+        .trim();
+
+    if(!valor){
+        return '';
+    }
+
+    if(
+        valor.startsWith(
+            'data:image/'
+        )
+    ){
+        return valor;
+    }
+
+    /*
+     * Ajuste o tipo se a API puder retornar JPEG/WebP.
+     * Pelo exemplo apresentado, a imagem começa com
+     * iVBOR, indicando PNG.
+     */
+    return (
+        `data:image/png;base64,${valor}`
+    );
+
+}
+
+function limparDadosLinhaItem(
+    tr,
+    manterCodigo = true
+){
+
+    if(!tr){
+        return;
+    }
+
+    const campoCodigo =
+        tr.querySelector(
+            '.campo-codigo-item'
+        );
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const camposLimpar = [
+        '.campo-unidade-item',
+        '.campo-descricao-item',
+        '.campo-ipi-item',
+        '.campo-preco-unitario-item',
+        '.campo-preco-com-ipi-item',
+        '.campo-total-item',
+        '.campo-item-id'
+    ];
+
+    if(
+        !manterCodigo &&
+        campoCodigo
+    ){
+
+        campoCodigo.value =
+            '';
+
+    }
+
+    if(campoQuantidade){
+
+        campoQuantidade.value =
+            '';
+
+        campoQuantidade.readOnly =
+            true;
+
+    }
+
+    camposLimpar.forEach(seletor => {
+
+        const campo =
+            tr.querySelector(
+                seletor
+            );
+
+        if(campo){
+
+            campo.value =
+                '';
+
+        }
+
+    });
+
+    const imagem =
+        tr.querySelector(
+            '.foto-item-pedido'
+        );
+
+    if(imagem){
+
+        imagem.removeAttribute(
+            'src'
+        );
+
+        imagem.alt =
+            'Foto do item';
+
+        imagem.classList.add(
+            'sem-foto'
+        );
+
+    }
+
+    tr.dataset.itemId =
+        '';
+
+    tr.dataset.itemEmpresaId =
+        '';
+
+    tr.dataset.preco =
+        '';
+
+    tr.dataset.ipi =
+        '';
+
+}
+
+function preencherLinhaComItem(
+    tr,
+    item
+){
+
+    const campoCodigo =
+        tr.querySelector(
+            '.campo-codigo-item'
+        );
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const campoUnidade =
+        tr.querySelector(
+            '.campo-unidade-item'
+        );
+
+    const campoDescricao =
+        tr.querySelector(
+            '.campo-descricao-item'
+        );
+
+    const campoIpi =
+        tr.querySelector(
+            '.campo-ipi-item'
+        );
+
+    const campoPreco =
+        tr.querySelector(
+            '.campo-preco-unitario-item'
+        );
+
+    const campoPrecoComIpi =
+        tr.querySelector(
+            '.campo-preco-com-ipi-item'
+        );
+
+    const campoItemId =
+        tr.querySelector(
+            '.campo-item-id'
+        );
+
+    const imagem =
+        tr.querySelector(
+            '.foto-item-pedido'
+        );
+
+    const preco =
+        Number(
+            item.preco || 0
+        );
+
+    if(
+        !Number.isFinite(preco) ||
+        preco <= 0
+    ){
+
+        throw new Error(
+            'Preço do item inválido ou indisponível.'
+        );
+
+    }
+
+    const ipi =
+        obterIpiDoItem(
+            item
+        );
+
+    const precoComIpi =
+        preco * (
+            1 + ipi
+        );
+
+    campoCodigo.value =
+        item.itemEmpresaId;
+
+    campoUnidade.value =
+        item.unidade ||
+        'CX';
+
+    campoDescricao.value =
+        item.descricao ||
+        '';
+
+    campoIpi.value =
+        (ipi * 100)
+            .toLocaleString(
+                'pt-BR',
+                {
+                    minimumFractionDigits:
+                        2,
+
+                    maximumFractionDigits:
+                        2
+                }
+            ) + '%';
+
+    campoPreco.value =
+        preco.toLocaleString(
+            'pt-BR',
+            {
+                style:
+                    'currency',
+
+                currency:
+                    'BRL'
+            }
+        );
+
+    campoPrecoComIpi.value =
+        precoComIpi.toLocaleString(
+            'pt-BR',
+            {
+                style:
+                    'currency',
+
+                currency:
+                    'BRL'
+            }
+        );
+
+    campoItemId.value =
+        String(
+            item.itemId || ''
+        );
+
+    tr.dataset.itemId =
+        String(
+            item.itemId || ''
+        );
+
+    tr.dataset.itemEmpresaId =
+        String(
+            item.itemEmpresaId || ''
+        );
+
+    tr.dataset.preco =
+        String(preco);
+
+    tr.dataset.ipi =
+        String(ipi);
+
+    const srcFoto =
+        montarSrcFotoItem(
+            item.foto
+        );
+
+    if(
+        imagem &&
+        srcFoto
+    ){
+
+        imagem.src =
+            srcFoto;
+
+        imagem.alt =
+            `Foto do item ${item.itemEmpresaId}`;
+
+        imagem.classList.remove(
+            'sem-foto'
+        );
+
+    }else if(imagem){
+
+        imagem.removeAttribute(
+            'src'
+        );
+
+        imagem.classList.add(
+            'sem-foto'
+        );
+
+    }
+
+    campoQuantidade.readOnly =
+        false;
+
+}
+
+function validarDisponibilidadeItem(
+    item
+){
+
+    if(!item){
+
+        throw new Error(
+            'Item não encontrado na lista de preços do cliente.'
+        );
+
+    }
+
+    if(item.ativo !== true){
+
+        throw new Error(
+            'Item inativo.'
+        );
+
+    }
+
+    if(item.suspenso === true){
+
+        throw new Error(
+            'Item suspenso.'
+        );
+
+    }
+
+    if(item.foraLinha === true){
+
+        throw new Error(
+            'Item fora de linha.'
+        );
+
+    }
+
+    if(item.bloqueado === true){
+
+        throw new Error(
+            'Item bloqueado.'
+        );
+
+    }
+
+    if(item.exibeConsultasListaPreco === false){
+
+        throw new Error(
+            'Item indisponível para consulta na lista de preços.'
+        );
+
+    }
+
+    return true;
+
 }
 
 function configurarMascaraCNPJ(){
@@ -196,39 +813,102 @@ function buscarCliente(cnpj) {
     return null;
 }
 
-function validarTabelaPedido() {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function validarTabelaPedido(){
 
-    if (!linhas.length) {
-        alert("Adicione pelo menos um item no pedido.");
+    const linhas =
+        Array.from(
+            document.querySelectorAll(
+                '#dadosPedido tbody .linha-item-pedido'
+            )
+        )
+        .filter(tr => {
+
+            return (
+                tr.querySelector(
+                    '.campo-codigo-item'
+                )
+                ?.value
+                .trim()
+            );
+
+        });
+
+    if(linhas.length === 0){
+
+        alert(
+            'Adicione pelo menos um item no pedido.'
+        );
+
         return false;
+
     }
 
-    for (let i = 0; i < linhas.length; i++) {
-        const tr = linhas[i];
-        const inputs = tr.querySelectorAll('input');
+    for(
+        let indice = 0;
+        indice < linhas.length;
+        indice++
+    ){
 
-        // Campos obrigatórios por índice da coluna:
-        // 0 = código
-        // 1 = quantidade
-        // 5 = valor unitário
-        // 6 = total
+        const tr =
+            linhas[indice];
 
-        const codigo = inputs[0]?.value.trim()
-        const quantidade = inputs[1]?.value.trim();
-        const valor = inputs[5]?.value.trim();
-        const total = inputs[6]?.value.trim();
+        const codigo =
+            tr.querySelector(
+                '.campo-codigo-item'
+            )
+            ?.value
+            .trim();
 
-        if (!codigo || !quantidade || !valor || !total || quantidade == 0 || isNaN(quantidade)) {
-            alert(`Preencha todos os campos da linha ${i + 1}`);
-            inputs[1]?.focus();
+        const campoQuantidade =
+            tr.querySelector(
+                '.campo-quantidade-item'
+            );
+
+        const quantidade =
+            Number(
+                String(
+                    campoQuantidade?.value || '0'
+                )
+                .replace(',', '.')
+            );
+
+        const descricao =
+            tr.querySelector(
+                '.campo-descricao-item'
+            )
+            ?.value
+            .trim();
+
+        const preco =
+            Number(
+                tr.dataset.preco || 0
+            );
+
+        if(
+            !codigo ||
+            !Number.isFinite(quantidade) ||
+            quantidade <= 0 ||
+            !descricao ||
+            !Number.isFinite(preco) ||
+            preco <= 0 ||
+            !tr.dataset.itemId
+        ){
+
+            alert(
+                `Preencha corretamente os dados da linha ${indice + 1}.`
+            );
+
+            campoQuantidade?.focus();
+
             return false;
+
         }
+
     }
 
     return true;
-}
 
+}
 
 function validarPedidoMinimo() {
 
@@ -365,9 +1045,28 @@ cnpjInput1.addEventListener('blur', async function () {
         const c = buscarCliente(cnpj);
         if (!c) return alert('Cliente não encontrado.');
 
-        preencherCliente(clientesData[1]);
+        preencherCliente(
+            clientesData[1]
+        );
 
-        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+        const clienteCodigo =
+            clienteApi.codigo ??
+            clienteApi.Codigo ??
+            clienteApi['COD CLIENTE 2'] ??
+            clienteApi['CODIGO'] ??
+            document.getElementById(
+                'cod_cliente'
+            )?.value;
+
+        const listaCodigoPreferida =
+            clienteApi.LISTA ??
+            clienteApi.listaPrecoCodigo ??
+            null;
+
+        await carregarCatalogoCliente(
+            clienteCodigo,
+            listaCodigoPreferida
+        );
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
@@ -427,7 +1126,24 @@ codInput1.addEventListener('blur', async function () {
             return alert('Cliente não encontrado.');
         }
         preencherCliente(clientesData[1]);
-        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+        const clienteCodigo =
+            clienteApi.codigo ??
+            clienteApi.Codigo ??
+            clienteApi['COD CLIENTE 2'] ??
+            clienteApi['CODIGO'] ??
+            document.getElementById(
+                'cod_cliente'
+            )?.value;
+
+        const listaCodigoPreferida =
+            clienteApi.LISTA ??
+            clienteApi.listaPrecoCodigo ??
+            null;
+
+        await carregarCatalogoCliente(
+            clienteCodigo,
+            listaCodigoPreferida
+        );
                 hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
@@ -527,46 +1243,103 @@ document.getElementById('tipo_pedido').addEventListener('change', function () {
 });
 
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
-function atualizarTotalVolumes() {
-    let totalVolumes = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function atualizarTotalVolumes(){
 
-    linhas.forEach(tr => {
-        const cell = tr.cells[1]?.querySelector('input');
-        if (cell && cell.value) {
-            const quantidade = parseFloat(cell.value.replace(",", "."));
-            if (!isNaN(quantidade)) {
-                totalVolumes += quantidade;
-                console.log('Quantidade adicionada:', quantidade);
-                console.log('Total de volumes até agora:', totalVolumes);
+    let totalVolumes =
+        0;
+
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody .linha-item-pedido'
+        )
+        .forEach(tr => {
+
+            const campoQuantidade =
+                tr.querySelector(
+                    '.campo-quantidade-item'
+                );
+
+            const quantidade =
+                Number(
+                    String(
+                        campoQuantidade?.value || '0'
+                    )
+                    .replace(',', '.')
+                );
+
+            if(Number.isFinite(quantidade)){
+
+                totalVolumes +=
+                    quantidade;
+
             }
-        }
-    });
 
-    document.getElementById('volume').value = totalVolumes;
+        });
+
+    document.getElementById(
+        'volume'
+    ).value =
+        totalVolumes;
+
 }
 
 // Função para atualizar o total de produtos (quantidade * valor unitário)
-function atualizarTotalProdutos() {
-    let totalProdutos = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function atualizarTotalProdutos(){
 
-    linhas.forEach(tr => {
-        const quantidadeCell = tr.cells[1]?.querySelector('input');
-        const valorUnitarioCell = tr.cells[6]?.querySelector('input');
-        console.log('Quantidade cell:', quantidadeCell);
-        console.log('Valor unitário cell:', valorUnitarioCell);
+    let totalProdutos =
+        0;
 
-        if (quantidadeCell && valorUnitarioCell && quantidadeCell.value && valorUnitarioCell.value) {
-            const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
-            const valorUnitario = parseFloat(valorUnitarioCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
-            if (!isNaN(quantidade) && !isNaN(valorUnitario)) {
-                totalProdutos += quantidade * valorUnitario;
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody .linha-item-pedido'
+        )
+        .forEach(tr => {
+
+            const campoQuantidade =
+                tr.querySelector(
+                    '.campo-quantidade-item'
+                );
+
+            const quantidade =
+                Number(
+                    String(
+                        campoQuantidade?.value || '0'
+                    )
+                    .replace(',', '.')
+                );
+
+            const preco =
+                Number(
+                    tr.dataset.preco || 0
+                );
+
+            if(
+                Number.isFinite(quantidade) &&
+                Number.isFinite(preco)
+            ){
+
+                totalProdutos +=
+                    quantidade *
+                    preco;
+
             }
-        }
-    });
 
-    document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        });
+
+    document.getElementById(
+        'total'
+    ).value =
+        totalProdutos.toLocaleString(
+            'pt-BR',
+            {
+                style:
+                    'currency',
+
+                currency:
+                    'BRL'
+            }
+        );
+
 }
 
 // Função para atualizar o total com imposto de todas as linhas
@@ -576,20 +1349,58 @@ function atualizarTotalComImposto() {
 }
 
 function totalComIpi(){
-       let total = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
-    
-    linhas.forEach(tr => {
-        const cell = tr.cells[8]?.querySelector('input');
-        if (cell && cell.value) {
-            const cellValue = cell.value.replace("R$", "").replace(/\./g, "").replace(",", ".");
-            const valor = parseFloat(cellValue);
-            if (!isNaN(valor)) {
-                total += valor;
+
+    let total =
+        0;
+
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody .linha-item-pedido'
+        )
+        .forEach(tr => {
+
+            const campoQuantidade =
+                tr.querySelector(
+                    '.campo-quantidade-item'
+                );
+
+            const quantidade =
+                Number(
+                    String(
+                        campoQuantidade?.value || '0'
+                    )
+                    .replace(',', '.')
+                );
+
+            const preco =
+                Number(
+                    tr.dataset.preco || 0
+                );
+
+            const ipi =
+                Number(
+                    tr.dataset.ipi || 0
+                );
+
+            if(
+                Number.isFinite(quantidade) &&
+                Number.isFinite(preco) &&
+                Number.isFinite(ipi)
+            ){
+
+                total +=
+                    quantidade *
+                    preco *
+                    (
+                        1 + ipi
+                    );
+
             }
-        }
-    });
+
+        });
+
     return total;
+
 }
 
 //Buscar IPI pelo código do item
@@ -654,457 +1465,130 @@ function getIpi(classificacao){
 }
 
 // Função para adicionar uma nova linha à tabela
-function adicionarNovaLinha() {
-    const tbody = document.querySelector('#dadosPedido tbody');
-    const tr = document.createElement('tr');
+function adicionarNovaLinha(){
+
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
+
+    const tr =
+        document.createElement(
+            'tr'
+        );
+
+    tr.classList.add(
+        'linha-item-pedido'
+    );
+
+    tr.innerHTML = `
+        <td class="celula-foto-item">
+            <img
+                class="foto-item-pedido sem-foto"
+                alt="Foto do item"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-codigo-item"
+                autocomplete="off"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-quantidade-item"
+                inputmode="decimal"
+                autocomplete="off"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-descricao-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-unidade-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-ipi-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-preco-unitario-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-preco-com-ipi-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-total-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
 
 
-
-    for (let i = 0; i < 10; i++) {
-        const td = document.createElement('td');
-
-        // coluna oculta (ItemId)
-        if (i === 9) {
-            td.style.display = 'none';
-        }
-
-        // 🗑 BOTÃO REMOVER LINHA
-        if (i === 3) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.classList.add('btn-remover-linha');
-            btn.textContent = 'REMOVER';
-
-
-                btn.gradient = 'linear-gradient(90deg,rgba(225,0,152) 0%,#f18fc7 100%)';
-                btn.color = '#fafcfa';
-            
-            btn.innerText = 'Excluir';
-            
-
-            btn.addEventListener('click', () => {
-                tr.remove();
-                atualizarTotais();
-                garantirLinhaInicial();
-            });
-             
-
-            td.appendChild(btn);
-            tr.appendChild(td);
-            continue; // ⬅️ CRÍTICO
-        }
-
-        // ✏️ INPUT NORMAL
-        const input = document.createElement('input');
-        input.type = 'text';
+        <td>
+            <button
+                type="button"
+                class="btn-remover-linha"
+                tabindex="-1"
+            >
+                Excluir
+            </button>
+        </td>
         
-        // TAB só código e quantidade
-        input.tabIndex = (i === 0 || i === 1) ? 0 : -1;
+        <td style="display: none;">
+            <input
+                type="hidden"
+                class="campo-item-id"
+            >
+        </td>
+    `;
+
+    tbody.appendChild(
+        tr
+    );
+
+    configurarLinhaItemPedido(
+        tr
+    );
+
+    return tr;
 
-        input.style.padding = '5px';
-        input.style.width = '100%';
-        input.style.boxSizing = 'border-box';
-
-        td.appendChild(input);
-        tr.appendChild(td);
-        
-        // =========================
-        // NAVEGAÇÃO ↑ ↓ TAB
-        // =========================
-        input.addEventListener('keydown', (e) => {
-            const linhas = Array.from(tbody.querySelectorAll('tr'));
-            const linhaAtual = linhas.indexOf(tr);
-
-            if (e.key === 'ArrowUp' && linhaAtual > 0) {
-                e.preventDefault();
-                linhas[linhaAtual - 1].cells[i]?.querySelector('input')?.focus();
-            }
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-
-                if (linhaAtual === linhas.length - 1 && i === 1) {
-                    adicionarNovaLinha();
-                    setTimeout(() => {
-                        tbody.lastChild.cells[0].querySelector('input').focus();
-                    }, 0);
-                } else {
-                    linhas[linhaAtual + 1]?.cells[i]?.querySelector('input')?.focus();
-                }
-            }
-
-            if (e.key === 'Tab' && !e.shiftKey && i === 1 && linhaAtual === linhas.length - 1) {
-                e.preventDefault();
-                setTimeout(() => {
-                    tbody.lastChild.cells[0].querySelector('input').focus();
-                }, 0);
-            }
-            //enter = tab
-            if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
-    e.preventDefault();
-
-    // se estiver na QUANTIDADE (coluna 1)
-    if (i === 1) {
-        if (linhaAtual === linhas.length - 1) {
-            // última linha → cria nova
-            adicionarNovaLinha();
-            setTimeout(() => {
-                tbody.lastChild.cells[0].querySelector('input')?.focus();
-            }, 0);
-        } else {
-            // próxima linha
-            linhas[linhaAtual + 1]?.cells[0]?.querySelector('input')?.focus();
-        }
-        
-    }
-
-    // se estiver no CÓDIGO (coluna 0)
-    if (i === 0) {
-        tr.cells[1]?.querySelector('input')?.focus();
-    }
-}
-
-
-        });
-
-        // =========================
-        // CÓDIGO DO ITEM
-        // =========================
-       // =========================
-
-if (i === 0) {
-
-    input.addEventListener('blur', async function () {
-
-        const cod = this.value.trim().toUpperCase();
-
-        if (!cod) return;
-
-        if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
-            alert('Este item já foi adicionado ao pedido.');
-            this.value = '';
-            this.focus();
-            return;
-        }
-
-        const listaId = document.getElementById('codgroup').value;
-
-        const cells = tr.querySelectorAll('td input');
-
-        this.readOnly = true;
-
-        // quantidade
-        cells[1].readOnly = true;
-        cells[1].value = '';
-
-        // UV
-        cells[2].value = '';
-
-        // descrição
-        cells[3].value = 'Carregando item...';
-
-        // IPI
-        cells[4].value = '';
-
-        // unitário
-        cells[5].value = '';
-
-        // c/ ipi
-        cells[6].value = '';
-
-        // total
-        cells[7].value = '';
-
-        try {
-
-            const response =
-                await fetch(
-                    `/api/lista-preco/${listaId}?codigo=${encodeURIComponent(cod)}`
-                );
-
-            if(!response.ok){
-
-                let mensagemErro =
-                    'Item não disponível.';
-
-                try{
-
-                    const erro =
-                        await response.json();
-
-                    mensagemErro =
-                        erro.message ||
-                        erro.mensagem ||
-                        mensagemErro;
-
-                }catch{
-
-                    const textoErro =
-                        await response.text()
-                            .catch(() => '');
-
-                    mensagemErro =
-                        textoErro ||
-                        mensagemErro;
-
-                }
-
-                throw new Error(
-                    mensagemErro
-                );
-
-            }
-
-            const data =
-                await response.json();
-
-            if(
-                !Array.isArray(data) ||
-                data.length === 0
-            ){
-
-                throw new Error(
-                    'Item não encontrado.'
-                );
-
-            }
-
-            const item =
-                data[0];
-
-            const itemAtivo =
-                item.ATIVO ??
-                item.Ativo ??
-                item.ativo ??
-                true;
-
-            const itemSuspenso =
-                item.SUSPENSO ??
-                item.Suspenso ??
-                item.suspenso ??
-                false;
-
-            const ativoNormalizado =
-                String(itemAtivo)
-                    .trim()
-                    .toLowerCase();
-
-            const suspensoNormalizado =
-                String(itemSuspenso)
-                    .trim()
-                    .toLowerCase();
-
-            if(
-                itemAtivo === false ||
-                itemAtivo === 0 ||
-                ativoNormalizado === '0' ||
-                ativoNormalizado === 'false' ||
-                ativoNormalizado === 'não' ||
-                ativoNormalizado === 'nao'
-            ){
-
-                throw new Error(
-                    'Item inativo.'
-                );
-
-            }
-
-            if(
-                itemSuspenso === true ||
-                itemSuspenso === 1 ||
-                suspensoNormalizado === '1' ||
-                suspensoNormalizado === 'true' ||
-                suspensoNormalizado === 'sim'
-            ){
-
-                throw new Error(
-                    'Item suspenso.'
-                );
-
-            }
-
-            const preco =
-                Number(
-                    item.PrecoVenda
-                );
-
-            if(
-                !Number.isFinite(preco) ||
-                preco <= 0
-            ){
-
-                throw new Error(
-                    'Preço do item inválido ou indisponível.'
-                );
-
-            }
-                const ipi =
-                obterIpiDoItem(
-                    item
-                );
-
-            const ipiMult =
-                1 + ipi;
-
-            cells[2].value =
-                'CX';
-
-            cells[3].value =
-                item.ItemDescricao || '';
-
-            cells[4].value =
-                (ipi * 100)
-                    .toLocaleString(
-                        'pt-BR',
-                        {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }
-                    ) + '%';
-
-            const precoComIpi =
-                preco * ipiMult;
-
-            cells[5].value =
-                preco.toLocaleString(
-                    'pt-BR',
-                    {
-                        style: 'currency',
-                        currency: 'BRL'
-                    }
-                );
-
-            cells[6].value =
-                precoComIpi.toLocaleString(
-                    'pt-BR',
-                    {
-                        style: 'currency',
-                        currency: 'BRL'
-                    }
-                );
-
-            cells[1].readOnly =
-                false;
-
-            cells[1].oninput =
-                () => {
-
-                    const qtd =
-                        parseFloat(
-                            cells[1].value.replace(
-                                ',',
-                                '.'
-                            )
-                        ) || 0;
-
-                    const totalLinha =
-                        qtd * preco;
-
-                    const totalComIpi =
-                        totalLinha * ipiMult;
-
-                    cells[7].value =
-                        totalComIpi.toLocaleString(
-                            'pt-BR',
-                            {
-                                style: 'currency',
-                                currency: 'BRL'
-                            }
-                        );
-
-                    atualizarTotais();
-
-                };
-
-            tr.dataset.itemId =
-                String(
-                    item.ItemId || ''
-                );
-
-            if(!tr.dataset.itemId){
-
-                throw new Error(
-                    'O item não possui identificador válido.'
-                );
-
-            }
-
-            tr.dispatchEvent(
-                new CustomEvent(
-                    'carregamento-item-finalizado',
-                    {
-                        detail: {
-                            sucesso: true,
-                            codigo: cod,
-                            mensagem: ''
-                        }
-                    }
-                )
-            );
-
-        }catch(error){
-
-            console.warn(
-                `Item ${cod} não foi carregado:`,
-                error
-            );
-
-            tr.dataset.itemId =
-                '';
-
-            cells[1].value =
-                '';
-
-            cells[1].readOnly =
-                true;
-
-            cells[2].value =
-                '';
-
-            cells[3].value =
-                '';
-
-            cells[4].value =
-                '';
-
-            cells[5].value =
-                '';
-
-            cells[6].value =
-                '';
-
-            cells[7].value =
-                '';
-
-            tr.dispatchEvent(
-                new CustomEvent(
-                    'carregamento-item-finalizado',
-                    {
-                        detail: {
-                            sucesso: false,
-                            codigo: cod,
-                            mensagem:
-                                error.message ||
-                                'Item suspenso, inativo ou indisponível.'
-                        }
-                    }
-                )
-            );
-
-        }finally{
-
-            this.readOnly =
-                false;
-
-        }
-            });
-        }
-
-
-
-    }
-
-    tbody.appendChild(tr);
 }
 
 
@@ -1219,48 +1703,33 @@ function aguardarCarregamentoItem(
 
 }
 
-function obterIpiDoItem(item){
+function obterIpiDoItem(
+    item
+){
 
     const origem =
         Number(
-            item.origem ??
-            item.Origem ??
-            0
+            item.origem || 0
         );
 
-    const classificacaoFiscal =
-        item.classificacaoFiscal ??
-        item.ClassificacaoFiscal ??
-        item.NCM ??
-        item.ncm ??
-        null;
-
-    console.log(
-        'Buscando IPI com getIpi:',
-        {
-            ItemCodigo:
-                item.ItemCodigo,
-
-            origem:
-                origem,
-
-            classificacaoFiscal:
-                classificacaoFiscal
-        }
-    );
-
+    /*
+     * Mantém a regra atual:
+     * somente origem 2 utiliza a tabela getIpi.
+     */
     if(origem !== 2){
         return 0;
     }
 
-    if(
-        classificacaoFiscal === null ||
-        classificacaoFiscal === undefined ||
-        String(classificacaoFiscal).trim() === ''
-    ){
+    const classificacaoFiscal =
+        String(
+            item.classificacaoFiscal || ''
+        )
+        .replace(/\D/g, '');
+
+    if(!classificacaoFiscal){
 
         throw new Error(
-            `A API não retornou a classificação fiscal do item ${item.ItemCodigo || ''}.`
+            `A classificação fiscal do item ${item.itemEmpresaId || ''} não foi informada.`
         );
 
     }
@@ -1279,6 +1748,542 @@ function obterIpiDoItem(item){
     }
 
     return ipi;
+
+}
+
+function atualizarTotalLinhaItem(
+    tr
+){
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const campoTotal =
+        tr.querySelector(
+            '.campo-total-item'
+        );
+
+    const quantidade =
+        Number(
+            String(
+                campoQuantidade?.value || '0'
+            )
+            .replace(',', '.')
+        );
+
+    const preco =
+        Number(
+            tr.dataset.preco || 0
+        );
+
+    const ipi =
+        Number(
+            tr.dataset.ipi || 0
+        );
+
+    const totalComIpi =
+        (
+            Number.isFinite(quantidade)
+                ? quantidade
+                : 0
+        ) *
+        preco *
+        (
+            1 + ipi
+        );
+
+    campoTotal.value =
+        totalComIpi.toLocaleString(
+            'pt-BR',
+            {
+                style:
+                    'currency',
+
+                currency:
+                    'BRL'
+            }
+        );
+
+    atualizarTotais();
+
+}
+
+function configurarLinhaItemPedido(
+    tr
+){
+
+    if(!tr){
+        return;
+    }
+
+    const tbody =
+        tr.closest(
+            'tbody'
+        );
+
+    const campoCodigo =
+        tr.querySelector(
+            '.campo-codigo-item'
+        );
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const botaoRemover =
+        tr.querySelector(
+            '.btn-remover-linha'
+        );
+
+    if(
+        !tbody ||
+        !campoCodigo ||
+        !campoQuantidade
+    ){
+
+        console.error(
+            'A estrutura da linha do pedido está incompleta.',
+            tr
+        );
+
+        return;
+
+    }
+
+    campoCodigo.tabIndex =
+        0;
+
+    campoQuantidade.tabIndex =
+        0;
+
+    campoQuantidade.readOnly =
+        true;
+
+    /*
+     * Controla se a linha está no meio
+     * do carregamento do item.
+     */
+    let carregandoItem =
+        false;
+
+    /*
+     * Impede executar o mesmo blur duas vezes
+     * quando Enter ou Tab forem pressionados.
+     */
+    let processandoCodigo =
+        false;
+
+    async function processarCodigoItem(){
+
+        if(processandoCodigo){
+            return false;
+        }
+
+        const codigo =
+            normalizarCodigoItem(
+                campoCodigo.value
+            );
+
+        if(!codigo){
+
+            limparDadosLinhaItem(
+                tr,
+                false
+            );
+
+            return false;
+
+        }
+
+        processandoCodigo =
+            true;
+
+        carregandoItem =
+            true;
+
+        campoCodigo.value =
+            codigo;
+
+        campoCodigo.readOnly =
+            true;
+
+        try{
+
+            if(
+                verificarCodigoDuplicadoNaTabela(
+                    codigo,
+                    tr
+                )
+            ){
+
+                throw new Error(
+                    'Este item já foi adicionado ao pedido.'
+                );
+
+            }
+
+            if(catalogoClienteCarregando){
+
+                throw new Error(
+                    'A lista de produtos ainda está sendo carregada. Aguarde.'
+                );
+
+            }
+
+            if(!catalogoClienteCarregado){
+
+                throw new Error(
+                    'Carregue um cliente antes de informar os itens.'
+                );
+
+            }
+
+            const item =
+                buscarItemNoCatalogo(
+                    codigo
+                );
+
+            /*
+             * Esta função gera o erro:
+             * Item não encontrado na lista de preços.
+             */
+            validarDisponibilidadeItem(
+                item
+            );
+
+            limparDadosLinhaItem(
+                tr,
+                true
+            );
+
+            preencherLinhaComItem(
+                tr,
+                item
+            );
+
+            tr.dispatchEvent(
+                new CustomEvent(
+                    'carregamento-item-finalizado',
+                    {
+                        detail: {
+                            sucesso:
+                                true,
+
+                            codigo:
+                                codigo,
+
+                            mensagem:
+                                ''
+                        }
+                    }
+                )
+            );
+
+            /*
+             * Aguarda o navegador concluir o blur
+             * antes de mover o foco.
+             */
+            setTimeout(
+                () => {
+
+                    campoQuantidade.focus();
+
+                    campoQuantidade.select();
+
+                },
+                0
+            );
+
+            return true;
+
+        }
+        catch(error){
+
+            const mensagem =
+                error.message ||
+                'Item indisponível.';
+
+            console.warn(
+                `Item ${codigo} não foi carregado:`,
+                error
+            );
+
+            /*
+            * false significa que o código digitado
+            * também será apagado.
+            */
+            limparDadosLinhaItem(
+                tr,
+                false
+            );
+
+            atualizarTotais();
+
+            tr.dispatchEvent(
+                new CustomEvent(
+                    'carregamento-item-finalizado',
+                    {
+                        detail: {
+                            sucesso:
+                                false,
+
+                            codigo:
+                                codigo,
+
+                            mensagem:
+                                mensagem
+                        }
+                    }
+                )
+            );
+
+            const importandoPedido =
+                document.body.classList.contains(
+                    'importando-pedido'
+                );
+
+            /*
+            * Na digitação manual, mostra o alerta.
+            * Na importação, o erro será apresentado
+            * no relatório final.
+            */
+            if(!importandoPedido){
+
+                alert(
+                    mensagem
+                );
+
+                setTimeout(
+                    () => {
+
+                        campoCodigo.focus();
+
+                    },
+                    0
+                );
+
+            }
+
+            return false;
+
+        }
+        finally{
+
+            campoCodigo.readOnly =
+                false;
+
+            carregandoItem =
+                false;
+
+            processandoCodigo =
+                false;
+
+        }
+
+    }
+
+    /*
+     * Processa quando o usuário sai normalmente
+     * do campo com clique ou outro comando.
+     */
+    campoCodigo.addEventListener(
+        'blur',
+        () => {
+
+            if(
+                !processandoCodigo &&
+                campoCodigo.value.trim()
+            ){
+
+                processarCodigoItem();
+
+            }
+
+        }
+    );
+
+    /*
+     * Código -> Quantidade
+     *
+     * É necessário impedir o comportamento padrão
+     * tanto do Tab quanto do Enter.
+     */
+    campoCodigo.addEventListener(
+        'keydown',
+        evento => {
+
+            if(
+                evento.key !== 'Tab' &&
+                evento.key !== 'Enter'
+            ){
+                return;
+            }
+
+            if(evento.shiftKey){
+                return;
+            }
+
+            /*
+             * Sem preventDefault, o navegador muda
+             * o foco novamente depois do código.
+             */
+            evento.preventDefault();
+
+            if(carregandoItem){
+                return;
+            }
+
+            processarCodigoItem();
+
+        }
+    );
+
+    campoQuantidade.addEventListener(
+        'input',
+        () => {
+
+            atualizarTotalLinhaItem(
+                tr
+            );
+
+        }
+    );
+
+    /*
+     * Quantidade -> Código da próxima linha
+     */
+    campoQuantidade.addEventListener(
+        'keydown',
+        evento => {
+
+            if(
+                evento.key !== 'Tab' &&
+                evento.key !== 'Enter'
+            ){
+                return;
+            }
+
+            if(evento.shiftKey){
+                return;
+            }
+
+            /*
+             * Também é necessário cancelar o Tab
+             * padrão no campo de quantidade.
+             */
+            evento.preventDefault();
+
+            const quantidade =
+                Number(
+                    String(
+                        campoQuantidade.value || '0'
+                    )
+                    .replace(',', '.')
+                );
+
+            if(
+                !Number.isFinite(quantidade) ||
+                quantidade <= 0
+            ){
+
+                alert(
+                    'Informe uma quantidade maior que zero.'
+                );
+
+                campoQuantidade.focus();
+
+                campoQuantidade.select();
+
+                return;
+
+            }
+
+            atualizarTotalLinhaItem(
+                tr
+            );
+
+            const linhas =
+                Array.from(
+                    tbody.querySelectorAll(
+                        '.linha-item-pedido'
+                    )
+                );
+
+            const indiceLinhaAtual =
+                linhas.indexOf(
+                    tr
+                );
+
+            let proximaLinha =
+                linhas[
+                    indiceLinhaAtual + 1
+                ];
+
+            if(!proximaLinha){
+
+                proximaLinha =
+                    adicionarNovaLinha();
+
+            }
+
+            const codigoProximaLinha =
+                proximaLinha?.querySelector(
+                    '.campo-codigo-item'
+                );
+
+            setTimeout(
+                () => {
+
+                    codigoProximaLinha?.focus();
+
+                    codigoProximaLinha?.select();
+
+                },
+                0
+            );
+
+        }
+    );
+
+    /*
+     * Shift + Tab na quantidade retorna ao código
+     * da mesma linha.
+     */
+    campoQuantidade.addEventListener(
+        'keydown',
+        evento => {
+
+            if(
+                evento.key === 'Tab' &&
+                evento.shiftKey
+            ){
+
+                evento.preventDefault();
+
+                campoCodigo.focus();
+
+                campoCodigo.select();
+
+            }
+
+        }
+    );
+
+    botaoRemover?.addEventListener(
+        'click',
+        () => {
+
+            tr.remove();
+
+            atualizarTotais();
+
+            garantirLinhaInicial();
+
+        }
+    );
 
 }
 
@@ -1414,79 +2419,86 @@ function exportarPedidoExcel(){
     };
 
     const itensExcel =
-        Array.from(tableRows)
-            .map(row => {
+    Array.from(tableRows)
+        .map(row => {
 
-                const cells =
-                    row.querySelectorAll(
-                        'td input'
-                    );
+            const codigo =
+                row.querySelector(
+                    '.campo-codigo-item'
+                )
+                ?.value
+                .trim() || '';
 
-                const codigo =
+            const quantidade =
+                Number(
                     String(
-                        cells[0]?.value || ''
+                        row.querySelector(
+                            '.campo-quantidade-item'
+                        )
+                        ?.value || '0'
                     )
-                    .trim();
+                    .replace(',', '.')
+                );
 
-                const quantidade =
-                    Number(
-                        cells[1]?.value || 0
-                    );
+            const descricao =
+                row.querySelector(
+                    '.campo-descricao-item'
+                )
+                ?.value
+                .trim() || '';
 
-                const descricao =
-                    String(
-                        cells[3]?.value || ''
+            if(
+                !codigo ||
+                quantidade <= 0 ||
+                !descricao ||
+                !row.dataset.itemId
+            ){
+                return null;
+            }
+
+            return {
+                Codigo:
+                    codigo,
+
+                Quantidade:
+                    quantidade,
+
+                Unidade:
+                    row.querySelector(
+                        '.campo-unidade-item'
                     )
-                    .trim();
+                    ?.value || '',
 
-                const precoUnitario =
-                    String(
-                        cells[5]?.value || ''
+                Descricao:
+                    descricao,
+
+                IPI:
+                    row.querySelector(
+                        '.campo-ipi-item'
                     )
-                    .trim();
+                    ?.value || '',
 
-                /*
-                 * Ignora apenas linhas vazias ou inválidas.
-                 * Isso não interrompe o processamento das
-                 * linhas seguintes.
-                 */
-                if(
-                    !codigo ||
-                    quantidade <= 0 ||
-                    !descricao ||
-                    !precoUnitario
-                ){
-                    return null;
-                }
+                PrecoUnitario:
+                    row.querySelector(
+                        '.campo-preco-unitario-item'
+                    )
+                    ?.value || '',
 
-                return {
-                    Codigo:
-                        codigo,
+                PrecoComIPI:
+                    row.querySelector(
+                        '.campo-preco-com-ipi-item'
+                    )
+                    ?.value || '',
 
-                    Quantidade:
-                        quantidade,
+                Total:
+                    row.querySelector(
+                        '.campo-total-item'
+                    )
+                    ?.value || ''
+            };
 
-                    Unidade:
-                        cells[2]?.value || '',
-
-                    Descricao:
-                        descricao,
-
-                    IPI:
-                        cells[4]?.value || '',
-
-                    PrecoUnitario:
-                        precoUnitario,
-
-                    PrecoComIPI:
-                        cells[6]?.value || '',
-
-                    Total:
-                        cells[7]?.value || ''
-                };
-
-            })
-            .filter(Boolean);
+        })
+        .filter(Boolean);
 
     if(itensExcel.length === 0){
 
@@ -1555,22 +2567,46 @@ function exportarPedidoExcel(){
 
 }
 
-function verificarCodigoDuplicadoNaTabela(codigo, linhaAtual) {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+function verificarCodigoDuplicadoNaTabela(
+    codigo,
+    linhaAtual
+){
 
-    for (const tr of linhas) {
-        if (tr === linhaAtual) continue; // ignora a própria linha
+    const codigoNormalizado =
+        normalizarCodigoItem(
+            codigo
+        );
 
-        const inputCodigo = tr.cells[0]?.querySelector('input');
-        if (inputCodigo && inputCodigo.value.trim().toUpperCase() === codigo) {
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody .linha-item-pedido'
+        );
+
+    for(const tr of linhas){
+
+        if(tr === linhaAtual){
+            continue;
+        }
+
+        const campoCodigo =
+            tr.querySelector(
+                '.campo-codigo-item'
+            );
+
+        if(
+            normalizarCodigoItem(
+                campoCodigo?.value
+            ) ===
+            codigoNormalizado
+        ){
             return true;
         }
+
     }
+
     return false;
+
 }
-
-
-
 
 
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
@@ -1629,35 +2665,74 @@ confirmButton.addEventListener("click", async () => {
         const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
 
         // Cria o array dinâmico para ItensPedidoVenda
-        const itensPedidoVenda = Array.from(tableRows)
-            .map(row => {
-                const cells = row.querySelectorAll('td input'); // Captura os inputs da linha
+ 
+        const itensPedidoVenda =
+    Array.from(tableRows)
+        .map(row => {
 
-                // Verifica se a linha tem dados válidos antes de adicioná-la
-                const itemId = row.dataset.itemId || 0;
-                const quantidade = Number(cells[1]?.value || 0); // Quantidade na segunda célula
+            const itemId =
+                Number(
+                    row.dataset.itemId || 0
+                );
 
-                // Só adiciona a linha se tiver um ItemId e Quantidade válidos
-                if (itemId > 0 && quantidade > 0) {
-                    return {
-                        ItemValorDesconto: 0,
-                        ItemPercentualDesconto: 0,
-                        EntregasItemPedidoVenda: [
-                            {
-                                Data: new Date().toISOString(), 
-                                DataPrevista: new Date().toISOString(),
-                                Quantidade: quantidade,
-                            }
-                        ],
-                        ItemId: itemId,
-                        Codigo: cells[0]?.value || '',
-                        Quantidade: quantidade,
-                    };
-                }
+            const codigo =
+                row.querySelector(
+                    '.campo-codigo-item'
+                )
+                ?.value || '';
 
-                return null; // Retorna null para linhas inválidas
-            })
-            .filter(item => item !== null); // Remove itens nulos do array
+            const quantidade =
+                Number(
+                    String(
+                        row.querySelector(
+                            '.campo-quantidade-item'
+                        )
+                        ?.value || '0'
+                    )
+                    .replace(',', '.')
+                );
+
+            if(
+                itemId <= 0 ||
+                quantidade <= 0
+            ){
+                return null;
+            }
+
+            return {
+                ItemValorDesconto:
+                    0,
+
+                ItemPercentualDesconto:
+                    0,
+
+                EntregasItemPedidoVenda: [
+                    {
+                        Data:
+                            new Date()
+                                .toISOString(),
+
+                        DataPrevista:
+                            new Date()
+                                .toISOString(),
+
+                        Quantidade:
+                            quantidade
+                    }
+                ],
+
+                ItemId:
+                    itemId,
+
+                Codigo:
+                    codigo,
+
+                Quantidade:
+                    quantidade
+            };
+
+        })
+        .filter(Boolean);
 
         // Cria o corpo da requisição com base nos inputs
         const requestBody = {
@@ -2025,16 +3100,15 @@ async function importarPedidoExcel(event){
 
             }
 
-            const campos =
-                linha.querySelectorAll(
-                    'td input'
+            const campoCodigo =
+                linha.querySelector(
+                    '.campo-codigo-item'
                 );
 
-            const campoCodigo =
-                campos[0];
-
             const campoQuantidade =
-                campos[1];
+                linha.querySelector(
+                    '.campo-quantidade-item'
+                );
 
             if(
                 !campoCodigo ||
@@ -2129,40 +3203,41 @@ async function importarPedidoExcel(event){
 
         linhasRestantes.forEach(linha => {
 
-            const campos =
-                linha.querySelectorAll(
-                    'td input'
-                );
-
             const codigo =
-                String(
-                    campos[0]?.value || ''
+                linha.querySelector(
+                    '.campo-codigo-item'
                 )
-                .trim();
+                ?.value
+                .trim() || '';
 
             const quantidade =
                 Number(
-                    campos[1]?.value || 0
+                    String(
+                        linha.querySelector(
+                            '.campo-quantidade-item'
+                        )
+                        ?.value || '0'
+                    )
+                    .replace(',', '.')
                 );
 
             const descricao =
-                String(
-                    campos[3]?.value || ''
+                linha.querySelector(
+                    '.campo-descricao-item'
                 )
-                .trim();
+                ?.value
+                .trim() || '';
 
             const preco =
-                String(
-                    campos[5]?.value || ''
-                )
-                .trim();
+                Number(
+                    linha.dataset.preco || 0
+                );
 
             const linhaInvalida =
                 !codigo ||
                 quantidade <= 0 ||
                 !descricao ||
-                descricao === 'Carregando item...' ||
-                !preco ||
+                preco <= 0 ||
                 !linha.dataset.itemId;
 
             if(linhaInvalida){
@@ -2255,7 +3330,7 @@ async function importarPedidoExcel(event){
 }
 
 function aguardarClienteImportacao(
-    tempoLimite = 15000
+    tempoLimite = 120000
 ){
 
     return new Promise(
@@ -2275,7 +3350,11 @@ function aguardarClienteImportacao(
                                 )
                                 ?.value;
 
-                        if(clienteId){
+                        if(
+                            clienteId &&
+                            catalogoClienteCarregado &&
+                            !catalogoClienteCarregando
+                        ){
 
                             clearInterval(
                                 verificar
@@ -2298,14 +3377,14 @@ function aguardarClienteImportacao(
 
                             reject(
                                 new Error(
-                                    'Não foi possível carregar o cliente informado no arquivo.'
+                                    'Não foi possível carregar o cliente e o catálogo de produtos.'
                                 )
                             );
 
                         }
 
                     },
-                    100
+                    200
                 );
 
         }
@@ -2383,182 +3462,687 @@ document.addEventListener(
 
 function criarHtmlPesquisavelDoPedido(){
 
-    const clone =
-        document
-        .querySelector(
+    const containerOriginal =
+        document.querySelector(
             '.container'
-        )
-        .cloneNode(
+        );
+
+    if(!containerOriginal){
+
+        throw new Error(
+            'O conteúdo do pedido não foi encontrado.'
+        );
+
+    }
+
+    const clone =
+        containerOriginal.cloneNode(
             true
         );
 
+    /*
+     * Identifica o tema atual para reproduzir
+     * corretamente no HTML enviado ao servidor.
+     */
+    const temaAtual =
+        document.body.classList.contains(
+            'dark-theme'
+        )
+            ? 'dark-theme'
+            : 'light-theme';
+
+    /*
+     * Remove elementos que não podem aparecer no PDF.
+     */
     clone
-    .querySelectorAll(
-        '.no-print, .button-group, #helpContainer, #overlay, #helpModal, #customModal, #customModal1'
-    )
-    .forEach(elemento => {
+        .querySelectorAll([
+            '.no-print',
+            '.button-group',
+            '.btn-remover-linha',
+            '#helpContainer',
+            '#overlay',
+            '#overlayImportacaoPedido',
+            '#helpModal',
+            '#customModal',
+            '#customModal1',
+            '.modal',
+            '.modal1',
+            '.overlay',
+            '.overlay-importacao-pedido',
+            '#excluirLinha',
+            '#adicionarLinha',
+            '#baixarJson',
+            '#inputJson',
+            '#jsonFileInput',
+            '#button_pdf',
+            '#button_sistema'
+        ].join(','))
+        .forEach(elemento => {
 
-        elemento.remove();
+            elemento.remove();
 
-    });
+        });
 
+    /*
+     * Remove campos internos e ocultos.
+     * Isso evita que ItemId, IDs auxiliares e
+     * campos técnicos apareçam no documento.
+     */
     clone
-    .querySelectorAll(
-        'input, textarea, select'
-    )
-    .forEach(campo => {
+        .querySelectorAll(
+            'input[type="hidden"], [hidden], .esconder, #esconder'
+        )
+        .forEach(elemento => {
 
-        const valor =
-            campo.tagName === 'SELECT'
-            ? campo.options[campo.selectedIndex]?.text || campo.value
-            : campo.value;
+            const celula =
+                elemento.closest(
+                    'td'
+                );
 
-        const span =
-            document.createElement(
-                'span'
-            );
+            if(
+                celula &&
+                celula.querySelector(
+                    '.campo-item-id'
+                )
+            ){
 
-        span.textContent =
-            valor || '';
+                celula.remove();
 
-        span.className =
-            campo.className || '';
+                return;
 
-        span.style.display =
-            'inline-block';
+            }
 
-        span.style.minHeight =
-            '18px';
+            elemento.remove();
 
-        span.style.width =
-            campo.style.width || '100%';
+        });
 
-        span.style.boxSizing =
-            'border-box';
+    /*
+     * Remove o cabeçalho ItemId.
+     * Recomendado adicionar a classe
+     * cabecalho-item-id no HTML.
+     */
+    clone
+        .querySelectorAll(
+            '.cabecalho-item-id'
+        )
+        .forEach(elemento => {
 
-        span.style.padding =
-            campo.style.padding || '5px';
+            elemento.remove();
 
-        span.style.border =
-            '1px solid #999';
+        });
 
-        span.style.backgroundColor =
-            '#fff';
-
-        span.style.color =
-            '#000';
-
-        if(campo.tagName === 'TEXTAREA'){
-
-            span.style.whiteSpace =
-                'pre-wrap';
-
-            span.style.minHeight =
-                '60px';
-
-        }
-
-        campo.replaceWith(
-            span
+    /*
+     * Segurança adicional para o cabeçalho ItemId,
+     * caso ainda não tenha a classe.
+     */
+    const tabelaPedido =
+        clone.querySelector(
+            '#dadosPedido'
         );
 
-    });
+    if(tabelaPedido){
 
-    const estilos =
-        Array
-        .from(
-            document.querySelectorAll(
-                'link[rel="stylesheet"], style'
+        tabelaPedido
+            .querySelectorAll(
+                'thead th'
             )
+            .forEach(cabecalho => {
+
+                const texto =
+                    String(
+                        cabecalho.textContent || ''
+                    )
+                    .trim()
+                    .toLowerCase();
+
+                if(
+                    texto === 'itemid' ||
+                    texto === 'item id' ||
+                    texto === 'excluir'
+                ){
+
+                    const indice =
+                        Array.from(
+                            cabecalho.parentElement.children
+                        )
+                        .indexOf(
+                            cabecalho
+                        );
+
+                    cabecalho.remove();
+
+                    tabelaPedido
+                        .querySelectorAll(
+                            'tbody tr'
+                        )
+                        .forEach(linha => {
+
+                            linha.children[
+                                indice
+                            ]?.remove();
+
+                        });
+
+                }
+
+            });
+
+    }
+
+    /*
+     * Converte inputs, selects e textareas
+     * visíveis para texto pesquisável.
+     */
+    clone
+        .querySelectorAll(
+            'input:not([type="hidden"]), textarea, select'
         )
-        .map(elemento => elemento.outerHTML)
+        .forEach(campo => {
+
+            const valor =
+                campo.tagName === 'SELECT'
+                    ? (
+                        campo.options[
+                            campo.selectedIndex
+                        ]?.text ||
+                        campo.value
+                    )
+                    : campo.value;
+
+            const span =
+                document.createElement(
+                    campo.tagName === 'TEXTAREA'
+                        ? 'div'
+                        : 'span'
+                );
+
+            span.textContent =
+                valor || '';
+
+            span.className =
+                campo.className || '';
+
+            span.classList.add(
+                'valor-pdf'
+            );
+
+            if(
+                campo.classList.contains(
+                    'campo-descricao-item'
+                )
+            ){
+
+                span.classList.add(
+                    'descricao-item-pdf'
+                );
+
+            }
+
+            if(
+                campo.tagName === 'TEXTAREA'
+            ){
+
+                span.classList.add(
+                    'textarea-pdf'
+                );
+
+            }
+
+            campo.replaceWith(
+                span
+            );
+
+        });
+
+    /*
+     * Remove linhas completamente vazias.
+     */
+    clone
+        .querySelectorAll(
+            '#dadosPedido tbody tr'
+        )
+        .forEach(linha => {
+
+            const codigo =
+                linha.querySelector(
+                    '.campo-codigo-item'
+                )?.textContent?.trim();
+
+            if(!codigo){
+
+                linha.remove();
+
+            }
+
+        });
+
+    /*
+     * Captura as regras CSS já carregadas pelo navegador
+     * e as incorpora diretamente no HTML.
+     *
+     * Isso evita depender de links relativos no Puppeteer.
+     */
+    const cssIncorporado =
+        Array.from(
+            document.styleSheets
+        )
+        .map(styleSheet => {
+
+            try{
+
+                return Array.from(
+                    styleSheet.cssRules ||
+                    []
+                )
+                .map(regra => {
+
+                    return regra.cssText;
+
+                })
+                .join('\n');
+
+            }catch(error){
+
+                console.warn(
+                    'Uma folha de estilo externa não pôde ser incorporada:',
+                    styleSheet.href
+                );
+
+                return '';
+
+            }
+
+        })
         .join('\n');
 
     return `
         <!DOCTYPE html>
+
         <html lang="pt-BR">
+
         <head>
+
             <meta charset="UTF-8">
-            ${estilos}
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <title>Pedido de Venda</title>
+
             <style>
+
+                ${cssIncorporado}
+
                 @page {
                     size: A4 landscape;
-                    margin: 0;
+                    margin: 5mm;
                 }
 
+                * {
+                    box-sizing: border-box;
+                }
+
+                html,
                 body {
+                    width: 100%;
                     margin: 0;
                     padding: 0;
-                    background: #ffffff;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    font-family: Arial, sans-serif;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
 
+                body {
+                    padding: 0;
+                }
+
                 .container {
-                    width: 100%;
-                    box-sizing: border-box;
+                    width: 100% !important;
+                    max-width: none !important;
+                    min-width: 0 !important;
+                    margin: 0 !important;
+                    padding: 4mm !important;
+                    border: none !important;
+                    border-radius: 0 !important;
+                    background: #ffffff !important;
+                    page-break-inside: auto;
                 }
 
-                table {
-                    border-collapse: collapse;
+                .header {
+                    padding: 4px 0 !important;
                 }
 
-                th,
-                td {
-                    page-break-inside: avoid;
+                .header img {
+                    width: 110px !important;
+                    height: auto !important;
                 }
 
-                span {
-                    font-family: Arial, sans-serif;
-                    font-size: inherit;
+                .section {
+                    margin-top: 8px !important;
                 }
+
+                .section-title {
+                    padding: 4px !important;
+                    font-size: 12px !important;
+                }
+
+                .form-group {
+                    display: grid !important;
+                    grid-template-columns:
+                        repeat(4, minmax(0, 1fr)) !important;
+                    gap: 4px 10px !important;
+                    padding: 6px !important;
+                    width: 100% !important;
+                }
+
+                .form-group label {
+                    margin: 0 !important;
+                    font-size: 9px !important;
+                }
+
+                .form-group .valor-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    min-height: 19px !important;
+                    margin: 0 !important;
+                    padding: 3px 4px !important;
+                    border: 1px solid #777777 !important;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    font-size: 9px !important;
+                    overflow-wrap: anywhere;
+                }
+
+                .table-container {
+                    width: 100% !important;
+                    overflow: visible !important;
+                }
+
+                #dadosPedido,
+                .table {
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    table-layout: fixed !important;
+                    border-collapse: collapse !important;
+                    margin-top: 5px !important;
+                }
+
+                #dadosPedido thead {
+                    display: table-header-group;
+                }
+
+                #dadosPedido tr {
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                #dadosPedido th,
+                #dadosPedido td {
+                    padding: 3px !important;
+                    border: 1px solid #777777 !important;
+                    vertical-align: middle !important;
+                    text-align: center !important;
+                    font-size: 8px !important;
+                    overflow-wrap: anywhere;
+                }
+
+                #dadosPedido th {
+                    background: #333333 !important;
+                    color: #ffffff !important;
+                    font-weight: bold !important;
+                }
+
+                #dadosPedido td {
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                }
+
+                #dadosPedido .valor-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    min-height: 14px !important;
+                    margin: 0 !important;
+                    padding: 1px !important;
+                    border: none !important;
+                    background: transparent !important;
+                    color: #000000 !important;
+                    font-size: 8px !important;
+                    text-align: center !important;
+                }
+
+                #dadosPedido .descricao-item-pdf {
+                    text-align: left !important;
+                }
+
+                #dadosPedido th:nth-child(1),
+                #dadosPedido td:nth-child(1) {
+                    width: 8% !important;
+                }
+
+                #dadosPedido th:nth-child(2),
+                #dadosPedido td:nth-child(2) {
+                    width: 8% !important;
+                }
+
+                #dadosPedido th:nth-child(3),
+                #dadosPedido td:nth-child(3) {
+                    width: 7% !important;
+                }
+
+                #dadosPedido th:nth-child(4),
+                #dadosPedido td:nth-child(4) {
+                    width: 25% !important;
+                }
+
+                #dadosPedido th:nth-child(5),
+                #dadosPedido td:nth-child(5) {
+                    width: 6% !important;
+                }
+
+                #dadosPedido th:nth-child(6),
+                #dadosPedido td:nth-child(6) {
+                    width: 7% !important;
+                }
+
+                #dadosPedido th:nth-child(7),
+                #dadosPedido td:nth-child(7),
+                #dadosPedido th:nth-child(8),
+                #dadosPedido td:nth-child(8),
+                #dadosPedido th:nth-child(9),
+                #dadosPedido td:nth-child(9) {
+                    width: 13% !important;
+                }
+
+                .celula-foto-item {
+                    padding: 2px !important;
+                    text-align: center !important;
+                }
+
+                .foto-item-pedido {
+                    display: block !important;
+                    width: 38px !important;
+                    height: 38px !important;
+                    margin: 0 auto !important;
+                    object-fit: contain !important;
+                    border: none !important;
+                    background: #ffffff !important;
+                }
+
+                .foto-item-pedido.sem-foto {
+                    display: none !important;
+                }
+
+                .payment-conditions {
+                    display: grid !important;
+                    grid-template-columns:
+                        repeat(6, minmax(0, 1fr)) !important;
+                    gap: 4px !important;
+                    width: 100% !important;
+                    margin-top: 7px !important;
+                    padding: 6px !important;
+                }
+
+                .payment-conditions label {
+                    width: auto !important;
+                    min-width: 0 !important;
+                    padding: 3px !important;
+                    font-size: 8px !important;
+                }
+
+                .payment-conditions .valor-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    padding: 3px !important;
+                    border: 1px solid #777777 !important;
+                    font-size: 8px !important;
+                }
+
+                .observations {
+                    margin-top: 7px !important;
+                }
+
+                .textarea-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-height: 45px !important;
+                    padding: 5px !important;
+                    border: 1px solid #777777 !important;
+                    white-space: pre-wrap !important;
+                    overflow-wrap: anywhere !important;
+                    font-size: 9px !important;
+                }
+
+                footer,
+                .no-print,
+                .button-group,
+                .btn-remover-linha,
+                .modal,
+                .modal1,
+                .overlay,
+                .overlay-importacao-pedido,
+                #helpContainer,
+                #helpModal,
+                #customModal,
+                #customModal1,
+                #overlay,
+                #overlayImportacaoPedido {
+                    display: none !important;
+                }
+
             </style>
+
         </head>
-        <body>
+
+        <body class="${temaAtual}">
+
             ${clone.outerHTML}
+
         </body>
+
         </html>
     `;
 
 }
 
-
-async function gerarPdfPesquisavelBlob(fileName){
+async function gerarPdfPesquisavelBlob(
+    fileName
+){
 
     const html =
         criarHtmlPesquisavelDoPedido();
+
+    console.log(
+        'Tamanho aproximado do HTML enviado ao PDF:',
+        `${(
+            new Blob([html]).size /
+            1024 /
+            1024
+        ).toFixed(2)} MB`
+    );
 
     const response =
         await fetch(
             '/api/pedido-venda/pdf-pesquisavel',
             {
-                method: 'POST',
+                method:
+                    'POST',
+
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type':
+                        'application/json',
+
+                    Accept:
+                        'application/pdf, application/json, text/plain'
                 },
-                body: JSON.stringify({
-                    html,
-                    fileName
-                })
+
+                body:
+                    JSON.stringify({
+                        html:
+                            html,
+
+                        fileName:
+                            fileName
+                    })
             }
         );
 
     if(!response.ok){
 
+        const contentType =
+            response.headers.get(
+                'content-type'
+            ) || '';
+
         let mensagem =
-            'Erro ao gerar PDF pesquisável.';
+            `Erro ao gerar PDF pesquisável. HTTP ${response.status}.`;
 
-        try {
+        try{
 
-            const erro =
-                await response.json();
+            if(
+                contentType.includes(
+                    'application/json'
+                )
+            ){
 
-            mensagem =
-                erro.erro ||
-                erro.error ||
-                mensagem;
+                const erro =
+                    await response.json();
 
-        } catch {}
+                mensagem =
+                    erro.mensagem ||
+                    erro.erro ||
+                    erro.error ||
+                    erro.message ||
+                    mensagem;
+
+            }else{
+
+                const texto =
+                    await response.text();
+
+                if(texto.trim()){
+
+                    mensagem =
+                        `${mensagem} ${texto}`;
+
+                }
+
+            }
+
+        }catch(erroLeitura){
+
+            console.error(
+                'Não foi possível ler a resposta de erro do PDF:',
+                erroLeitura
+            );
+
+        }
 
         throw new Error(
             mensagem
@@ -2566,11 +4150,23 @@ async function gerarPdfPesquisavelBlob(fileName){
 
     }
 
-    return await response.blob();
+    const blob =
+        await response.blob();
+
+    if(
+        !blob ||
+        blob.size === 0
+    ){
+
+        throw new Error(
+            'O servidor retornou um PDF vazio.'
+        );
+
+    }
+
+    return blob;
 
 }
-
-
 
 
 function baixarBlob(blob, fileName){
@@ -2654,8 +4250,8 @@ document.addEventListener("DOMContentLoaded", () => {
         for (const row of tableRows) {
             // Garante que a linha tenha células e pelo menos 9 colunas (índices 0 a 8)
             if (row.cells.length >= 9) {
-                const cell0 = row.cells[0];
-                const cell1 = row.cells[1];
+                const cell0 = row.cells[1];
+                const cell1 = row.cells[2];
                 const cell8 = row.cells[8];
 
                 // Verifica se os inputs existem antes de acessá-los

@@ -43,6 +43,77 @@ async function checkToken() {
   }
 }    
 
+async function getCatalogoCliente(
+    req,
+    res
+){
+
+    try{
+
+        const clienteCodigo =
+            String(
+                req.params.clienteCodigo || ''
+            )
+            .trim();
+
+        const listaCodigo =
+            req.query.listaCodigo
+                ? String(
+                    req.query.listaCodigo
+                ).trim()
+                : null;
+
+        if(!clienteCodigo){
+
+            return res
+                .status(400)
+                .json({
+                    sucesso:
+                        false,
+
+                    mensagem:
+                        'Código do cliente não informado.'
+                });
+
+        }
+
+        const catalogo =
+            await apiForm.fetchCatalogoCliente(
+                clienteCodigo,
+                listaCodigo
+            );
+
+        return res
+            .status(200)
+            .json({
+                sucesso:
+                    true,
+
+                ...catalogo
+            });
+
+    }catch(error){
+
+        console.error(
+            'Erro ao carregar catálogo do cliente:',
+            error
+        );
+
+        return res
+            .status(500)
+            .json({
+                sucesso:
+                    false,
+
+                mensagem:
+                    error.message ||
+                    'Erro ao carregar o catálogo do cliente.'
+            });
+
+    }
+
+}
+
 async function verificarStatusItem(
     itemEmpresaId
 ){
@@ -646,5 +717,6 @@ function formatProductsFromPriceList(products) {
 module.exports = {
     getProductsDetails,
     getListaPreco,
-    getListaPrecoSemVerificar
+    getListaPrecoSemVerificar,
+    getCatalogoCliente
 };

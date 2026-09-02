@@ -1,5 +1,10 @@
 require('dotenv').config();
 
+const pdfController =
+    require(
+        './controllers/pdfController'
+    );
+
 const express = require('express');
 const session = require('express-session');
 const RedisStore = require('connect-redis').default;
@@ -22,12 +27,32 @@ const PORT = process.env.PORT || 3000;
 
 app.set('trust proxy', 1);
 
-app.use(express.json({ limit: '50mb' }));
+app.use(
+    express.json({
+        limit:
+            '50mb'
+    })
+);
 
-app.use(express.urlencoded({
-    limit: '50mb',
-    extended: true
-}));
+app.use(
+    express.urlencoded({
+        extended:
+            true,
+
+        limit:
+            '50mb'
+    })
+);
+
+app.post(
+    '/send-pdf',
+    pdfController.sendPdf
+);
+
+app.post(
+    '/api/pedido-venda/pdf-pesquisavel',
+    pdfController.gerarPdfPesquisavel
+);
 
 app.use(cookieParser());
 

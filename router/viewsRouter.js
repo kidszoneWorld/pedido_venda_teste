@@ -880,4 +880,14 @@ async function obterClientePorCnpj(cnpj) {
 }
 
 
+router.get(
+    '/api/catalogo-cliente/:clienteCodigo',
+    productController.getCatalogoCliente
+);
+
+router.post(
+    '/api/pedido-venda/pdf-pesquisavel',
+    pdfController.gerarPdfPesquisavel
+);
+
 module.exports = router;

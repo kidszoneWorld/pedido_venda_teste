@@ -51,3 +51,308 @@ exports.sendPdf = async (req, res) => {
         setTimeout(() => emailsRecentes.delete(emailKey), 10000); // Aumenta para 10 segundos
     }
 };
+
+exports.gerarPdfPesquisavel = async (
+    req,
+    res
+) => {
+
+    let browser =
+        null;
+
+    try {
+
+        const {
+            html,
+            fileName
+        } =
+            req.body;
+
+        if (
+            typeof html !== 'string' ||
+            !html.trim()
+        ) {
+
+            return res
+                .status(400)
+                .json({
+                    sucesso:
+                        false,
+
+                    mensagem:
+                        'O HTML do pedido não foi informado.'
+                });
+
+        }
+
+        const tamanhoHtmlMB =
+            (
+                Buffer.byteLength(
+                    html,
+                    'utf8'
+                ) /
+                1024 /
+                1024
+            ).toFixed(2);
+
+        console.log(
+            'Gerando PDF pesquisável:',
+            {
+                fileName:
+                    fileName,
+
+                tamanhoHtmlMB:
+                    tamanhoHtmlMB
+            }
+        );
+
+        browser =
+            await puppeteer.launch({
+                headless:
+                    true,
+
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage'
+                ]
+            });
+
+        const page =
+            await browser.newPage();
+
+        await page.setViewport({
+            width:
+                1600,
+
+            height:
+                900,
+
+            deviceScaleFactor:
+                1
+        });
+
+        await page.setContent(
+            html,
+            {
+                waitUntil:
+                    'networkidle0',
+
+                timeout:
+                    120000
+            }
+        );
+        await page.emulateMediaType(
+    'print'
+);
+
+    await page.evaluate(
+        () => {
+
+            document.body.classList.remove(
+                'dark-theme'
+            );
+
+            document.body.classList.add(
+                'light-theme'
+            );
+
+            window.scrollTo(
+                0,
+                0
+            );
+
+        }
+    );
+
+        /*
+         * Aguarda fontes e imagens antes de gerar o PDF.
+         */
+        await page.evaluate(
+            async () => {
+
+                if (document.fonts?.ready) {
+
+                    await document.fonts.ready;
+
+                }
+
+                const imagens =
+                    Array.from(
+                        document.images
+                    );
+
+                await Promise.all(
+                    imagens.map(imagem => {
+
+                        if (
+                            imagem.complete &&
+                            imagem.naturalWidth > 0
+                        ) {
+
+                            return Promise.resolve();
+
+                        }
+
+                        return new Promise(resolve => {
+
+                            const finalizar =
+                                () => resolve();
+
+                            imagem.addEventListener(
+                                'load',
+                                finalizar,
+                                {
+                                    once:
+                                        true
+                                }
+                            );
+
+                            imagem.addEventListener(
+                                'error',
+                                finalizar,
+                                {
+                                    once:
+                                        true
+                                }
+                            );
+
+                            /*
+                             * Evita espera indefinida caso uma
+                             * imagem não consiga carregar.
+                             */
+                            setTimeout(
+                                finalizar,
+                                10000
+                            );
+
+                        });
+
+                    })
+                );
+
+            }
+        );
+
+        await page.emulateMediaType(
+            'print'
+        );
+
+    const pdf =
+        await page.pdf({
+            format:
+                'A4',
+
+            landscape:
+                true,
+
+            printBackground:
+                true,
+
+            preferCSSPageSize:
+                true,
+
+            margin: {
+                top:
+                    '5mm',
+
+                right:
+                    '5mm',
+
+                bottom:
+                    '5mm',
+
+                left:
+                    '5mm'
+            }
+        });
+
+        if (
+            !pdf ||
+            pdf.length === 0
+        ) {
+
+            throw new Error(
+                'O Puppeteer gerou um arquivo PDF vazio.'
+            );
+
+        }
+
+        const nomeSeguro =
+            String(
+                fileName ||
+                'pedido-de-venda.pdf'
+            )
+            .replace(
+                /[\r\n"]/g,
+                ''
+            )
+            .trim();
+
+        res.setHeader(
+            'Content-Type',
+            'application/pdf'
+        );
+
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${nomeSeguro}"`
+        );
+
+        res.setHeader(
+            'Content-Length',
+            pdf.length
+        );
+
+        return res
+            .status(200)
+            .send(pdf);
+
+    } catch (error) {
+
+        console.error(
+            'Erro ao gerar PDF pesquisável:',
+            {
+                mensagem:
+                    error.message,
+
+                stack:
+                    error.stack
+            }
+        );
+
+        if (!res.headersSent) {
+
+            return res
+                .status(500)
+                .json({
+                    sucesso:
+                        false,
+
+                    mensagem:
+                        error.message ||
+                        'Erro interno ao gerar o PDF pesquisável.'
+                });
+
+        }
+
+    } finally {
+
+        if (browser) {
+
+            await browser
+                .close()
+                .catch(error => {
+
+                    console.error(
+                        'Erro ao fechar o navegador do PDF:',
+                        error
+                    );
+
+                });
+
+        }
+
+    }
+
+};
