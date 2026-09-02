@@ -885,4 +885,9 @@ router.get(
     productController.getCatalogoCliente
 );
 
+router.post(
+    '/api/pedido-venda/pdf-pesquisavel',
+    pdfController.gerarPdfPesquisavel
+);
+
 module.exports = router;

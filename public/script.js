@@ -391,6 +391,10 @@ function limparDadosLinhaItem(
     manterCodigo = true
 ){
 
+    if(!tr){
+        return;
+    }
+
     const campoCodigo =
         tr.querySelector(
             '.campo-codigo-item'
@@ -411,7 +415,10 @@ function limparDadosLinhaItem(
         '.campo-item-id'
     ];
 
-    if(!manterCodigo && campoCodigo){
+    if(
+        !manterCodigo &&
+        campoCodigo
+    ){
 
         campoCodigo.value =
             '';
@@ -454,6 +461,9 @@ function limparDadosLinhaItem(
         imagem.removeAttribute(
             'src'
         );
+
+        imagem.alt =
+            'Foto do item';
 
         imagem.classList.add(
             'sem-foto'
@@ -1472,18 +1482,18 @@ function adicionarNovaLinha(){
     );
 
     tr.innerHTML = `
+        <td class="celula-foto-item">
+            <img
+                class="foto-item-pedido sem-foto"
+                alt="Foto do item"
+            >
+        </td>
+
         <td>
             <input
                 type="text"
                 class="campo-codigo-item"
                 autocomplete="off"
-            >
-        </td>
-
-        <td class="celula-foto-item">
-            <img
-                class="foto-item-pedido sem-foto"
-                alt="Foto do item"
             >
         </td>
 
@@ -1499,25 +1509,16 @@ function adicionarNovaLinha(){
         <td>
             <input
                 type="text"
-                class="campo-unidade-item"
+                class="campo-descricao-item"
                 readonly
                 tabindex="-1"
             >
         </td>
 
         <td>
-            <button
-                type="button"
-                class="btn-remover-linha"
-            >
-                Excluir
-            </button>
-        </td>
-
-        <td>
             <input
                 type="text"
-                class="campo-descricao-item"
+                class="campo-unidade-item"
                 readonly
                 tabindex="-1"
             >
@@ -1559,6 +1560,17 @@ function adicionarNovaLinha(){
             >
         </td>
 
+
+        <td>
+            <button
+                type="button"
+                class="btn-remover-linha"
+                tabindex="-1"
+            >
+                Excluir
+            </button>
+        </td>
+        
         <td style="display: none;">
             <input
                 type="hidden"
@@ -1802,6 +1814,10 @@ function configurarLinhaItemPedido(
     tr
 ){
 
+    if(!tr){
+        return;
+    }
+
     const tbody =
         tr.closest(
             'tbody'
@@ -1822,24 +1838,79 @@ function configurarLinhaItemPedido(
             '.btn-remover-linha'
         );
 
+    if(
+        !tbody ||
+        !campoCodigo ||
+        !campoQuantidade
+    ){
+
+        console.error(
+            'A estrutura da linha do pedido está incompleta.',
+            tr
+        );
+
+        return;
+
+    }
+
+    campoCodigo.tabIndex =
+        0;
+
+    campoQuantidade.tabIndex =
+        0;
+
     campoQuantidade.readOnly =
         true;
 
-    campoCodigo.addEventListener(
-        'blur',
-        function(){
+    /*
+     * Controla se a linha está no meio
+     * do carregamento do item.
+     */
+    let carregandoItem =
+        false;
 
-            const codigo =
-                normalizarCodigoItem(
-                    this.value
-                );
+    /*
+     * Impede executar o mesmo blur duas vezes
+     * quando Enter ou Tab forem pressionados.
+     */
+    let processandoCodigo =
+        false;
 
-            if(!codigo){
-                return;
-            }
+    async function processarCodigoItem(){
 
-            this.value =
-                codigo;
+        if(processandoCodigo){
+            return false;
+        }
+
+        const codigo =
+            normalizarCodigoItem(
+                campoCodigo.value
+            );
+
+        if(!codigo){
+
+            limparDadosLinhaItem(
+                tr,
+                false
+            );
+
+            return false;
+
+        }
+
+        processandoCodigo =
+            true;
+
+        carregandoItem =
+            true;
+
+        campoCodigo.value =
+            codigo;
+
+        campoCodigo.readOnly =
+            true;
+
+        try{
 
             if(
                 verificarCodigoDuplicadoNaTabela(
@@ -1848,114 +1919,224 @@ function configurarLinhaItemPedido(
                 )
             ){
 
-                alert(
+                throw new Error(
                     'Este item já foi adicionado ao pedido.'
                 );
 
-                limparDadosLinhaItem(
-                    tr,
-                    false
+            }
+
+            if(catalogoClienteCarregando){
+
+                throw new Error(
+                    'A lista de produtos ainda está sendo carregada. Aguarde.'
                 );
 
-                this.focus();
+            }
 
+            if(!catalogoClienteCarregado){
+
+                throw new Error(
+                    'Carregue um cliente antes de informar os itens.'
+                );
+
+            }
+
+            const item =
+                buscarItemNoCatalogo(
+                    codigo
+                );
+
+            /*
+             * Esta função gera o erro:
+             * Item não encontrado na lista de preços.
+             */
+            validarDisponibilidadeItem(
+                item
+            );
+
+            limparDadosLinhaItem(
+                tr,
+                true
+            );
+
+            preencherLinhaComItem(
+                tr,
+                item
+            );
+
+            tr.dispatchEvent(
+                new CustomEvent(
+                    'carregamento-item-finalizado',
+                    {
+                        detail: {
+                            sucesso:
+                                true,
+
+                            codigo:
+                                codigo,
+
+                            mensagem:
+                                ''
+                        }
+                    }
+                )
+            );
+
+            /*
+             * Aguarda o navegador concluir o blur
+             * antes de mover o foco.
+             */
+            setTimeout(
+                () => {
+
+                    campoQuantidade.focus();
+
+                    campoQuantidade.select();
+
+                },
+                0
+            );
+
+            return true;
+
+        }
+        catch(error){
+
+            const mensagem =
+                error.message ||
+                'Item indisponível.';
+
+            console.warn(
+                `Item ${codigo} não foi carregado:`,
+                error
+            );
+
+            /*
+            * false significa que o código digitado
+            * também será apagado.
+            */
+            limparDadosLinhaItem(
+                tr,
+                false
+            );
+
+            atualizarTotais();
+
+            tr.dispatchEvent(
+                new CustomEvent(
+                    'carregamento-item-finalizado',
+                    {
+                        detail: {
+                            sucesso:
+                                false,
+
+                            codigo:
+                                codigo,
+
+                            mensagem:
+                                mensagem
+                        }
+                    }
+                )
+            );
+
+            const importandoPedido =
+                document.body.classList.contains(
+                    'importando-pedido'
+                );
+
+            /*
+            * Na digitação manual, mostra o alerta.
+            * Na importação, o erro será apresentado
+            * no relatório final.
+            */
+            if(!importandoPedido){
+
+                alert(
+                    mensagem
+                );
+
+                setTimeout(
+                    () => {
+
+                        campoCodigo.focus();
+
+                    },
+                    0
+                );
+
+            }
+
+            return false;
+
+        }
+        finally{
+
+            campoCodigo.readOnly =
+                false;
+
+            carregandoItem =
+                false;
+
+            processandoCodigo =
+                false;
+
+        }
+
+    }
+
+    /*
+     * Processa quando o usuário sai normalmente
+     * do campo com clique ou outro comando.
+     */
+    campoCodigo.addEventListener(
+        'blur',
+        () => {
+
+            if(
+                !processandoCodigo &&
+                campoCodigo.value.trim()
+            ){
+
+                processarCodigoItem();
+
+            }
+
+        }
+    );
+
+    /*
+     * Código -> Quantidade
+     *
+     * É necessário impedir o comportamento padrão
+     * tanto do Tab quanto do Enter.
+     */
+    campoCodigo.addEventListener(
+        'keydown',
+        evento => {
+
+            if(
+                evento.key !== 'Tab' &&
+                evento.key !== 'Enter'
+            ){
                 return;
-
             }
 
-            try{
-
-                if(
-                    catalogoClienteCarregando
-                ){
-
-                    throw new Error(
-                        'A lista de produtos ainda está sendo carregada. Aguarde.'
-                    );
-
-                }
-
-                if(
-                    !catalogoClienteCarregado
-                ){
-
-                    throw new Error(
-                        'Carregue um cliente antes de informar os itens.'
-                    );
-
-                }
-
-                const item =
-                    buscarItemNoCatalogo(
-                        codigo
-                    );
-
-                validarDisponibilidadeItem(
-                    item
-                );
-
-                limparDadosLinhaItem(
-                    tr,
-                    true
-                );
-
-                preencherLinhaComItem(
-                    tr,
-                    item
-                );
-
-                tr.dispatchEvent(
-                    new CustomEvent(
-                        'carregamento-item-finalizado',
-                        {
-                            detail: {
-                                sucesso:
-                                    true,
-
-                                codigo:
-                                    codigo,
-
-                                mensagem:
-                                    ''
-                            }
-                        }
-                    )
-                );
-
-                campoQuantidade.focus();
-
-            }catch(error){
-
-                console.warn(
-                    `Item ${codigo} não foi carregado:`,
-                    error
-                );
-
-                limparDadosLinhaItem(
-                    tr,
-                    true
-                );
-
-                tr.dispatchEvent(
-                    new CustomEvent(
-                        'carregamento-item-finalizado',
-                        {
-                            detail: {
-                                sucesso:
-                                    false,
-
-                                codigo:
-                                    codigo,
-
-                                mensagem:
-                                    error.message ||
-                                    'Item indisponível.'
-                            }
-                        }
-                    )
-                );
-
+            if(evento.shiftKey){
+                return;
             }
+
+            /*
+             * Sem preventDefault, o navegador muda
+             * o foco novamente depois do código.
+             */
+            evento.preventDefault();
+
+            if(carregandoItem){
+                return;
+            }
+
+            processarCodigoItem();
 
         }
     );
@@ -1971,59 +2152,58 @@ function configurarLinhaItemPedido(
         }
     );
 
-    botaoRemover.addEventListener(
-        'click',
-        () => {
-
-            tr.remove();
-
-            atualizarTotais();
-
-            garantirLinhaInicial();
-
-        }
-    );
-
-    campoCodigo.addEventListener(
-        'keydown',
-        evento => {
-
-            if(
-                evento.key === 'Enter' ||
-                evento.key === 'Tab'
-            ){
-
-                if(
-                    evento.key === 'Enter'
-                ){
-
-                    evento.preventDefault();
-
-                }
-
-                campoQuantidade.focus();
-
-            }
-
-        }
-    );
-
+    /*
+     * Quantidade -> Código da próxima linha
+     */
     campoQuantidade.addEventListener(
         'keydown',
         evento => {
 
             if(
-                evento.key !== 'Enter' &&
-                evento.key !== 'Tab'
+                evento.key !== 'Tab' &&
+                evento.key !== 'Enter'
             ){
                 return;
             }
 
-            if(evento.key === 'Enter'){
+            if(evento.shiftKey){
+                return;
+            }
 
-                evento.preventDefault();
+            /*
+             * Também é necessário cancelar o Tab
+             * padrão no campo de quantidade.
+             */
+            evento.preventDefault();
+
+            const quantidade =
+                Number(
+                    String(
+                        campoQuantidade.value || '0'
+                    )
+                    .replace(',', '.')
+                );
+
+            if(
+                !Number.isFinite(quantidade) ||
+                quantidade <= 0
+            ){
+
+                alert(
+                    'Informe uma quantidade maior que zero.'
+                );
+
+                campoQuantidade.focus();
+
+                campoQuantidade.select();
+
+                return;
 
             }
+
+            atualizarTotalLinhaItem(
+                tr
+            );
 
             const linhas =
                 Array.from(
@@ -2032,13 +2212,15 @@ function configurarLinhaItemPedido(
                     )
                 );
 
-            const indice =
+            const indiceLinhaAtual =
                 linhas.indexOf(
                     tr
                 );
 
             let proximaLinha =
-                linhas[indice + 1];
+                linhas[
+                    indiceLinhaAtual + 1
+                ];
 
             if(!proximaLinha){
 
@@ -2047,11 +2229,58 @@ function configurarLinhaItemPedido(
 
             }
 
-            proximaLinha
-                .querySelector(
+            const codigoProximaLinha =
+                proximaLinha?.querySelector(
                     '.campo-codigo-item'
-                )
-                ?.focus();
+                );
+
+            setTimeout(
+                () => {
+
+                    codigoProximaLinha?.focus();
+
+                    codigoProximaLinha?.select();
+
+                },
+                0
+            );
+
+        }
+    );
+
+    /*
+     * Shift + Tab na quantidade retorna ao código
+     * da mesma linha.
+     */
+    campoQuantidade.addEventListener(
+        'keydown',
+        evento => {
+
+            if(
+                evento.key === 'Tab' &&
+                evento.shiftKey
+            ){
+
+                evento.preventDefault();
+
+                campoCodigo.focus();
+
+                campoCodigo.select();
+
+            }
+
+        }
+    );
+
+    botaoRemover?.addEventListener(
+        'click',
+        () => {
+
+            tr.remove();
+
+            atualizarTotais();
+
+            garantirLinhaInicial();
 
         }
     );
@@ -3233,182 +3462,687 @@ document.addEventListener(
 
 function criarHtmlPesquisavelDoPedido(){
 
-    const clone =
-        document
-        .querySelector(
+    const containerOriginal =
+        document.querySelector(
             '.container'
-        )
-        .cloneNode(
+        );
+
+    if(!containerOriginal){
+
+        throw new Error(
+            'O conteúdo do pedido não foi encontrado.'
+        );
+
+    }
+
+    const clone =
+        containerOriginal.cloneNode(
             true
         );
 
+    /*
+     * Identifica o tema atual para reproduzir
+     * corretamente no HTML enviado ao servidor.
+     */
+    const temaAtual =
+        document.body.classList.contains(
+            'dark-theme'
+        )
+            ? 'dark-theme'
+            : 'light-theme';
+
+    /*
+     * Remove elementos que não podem aparecer no PDF.
+     */
     clone
-    .querySelectorAll(
-        '.no-print, .button-group, #helpContainer, #overlay, #helpModal, #customModal, #customModal1'
-    )
-    .forEach(elemento => {
+        .querySelectorAll([
+            '.no-print',
+            '.button-group',
+            '.btn-remover-linha',
+            '#helpContainer',
+            '#overlay',
+            '#overlayImportacaoPedido',
+            '#helpModal',
+            '#customModal',
+            '#customModal1',
+            '.modal',
+            '.modal1',
+            '.overlay',
+            '.overlay-importacao-pedido',
+            '#excluirLinha',
+            '#adicionarLinha',
+            '#baixarJson',
+            '#inputJson',
+            '#jsonFileInput',
+            '#button_pdf',
+            '#button_sistema'
+        ].join(','))
+        .forEach(elemento => {
 
-        elemento.remove();
+            elemento.remove();
 
-    });
+        });
 
+    /*
+     * Remove campos internos e ocultos.
+     * Isso evita que ItemId, IDs auxiliares e
+     * campos técnicos apareçam no documento.
+     */
     clone
-    .querySelectorAll(
-        'input, textarea, select'
-    )
-    .forEach(campo => {
+        .querySelectorAll(
+            'input[type="hidden"], [hidden], .esconder, #esconder'
+        )
+        .forEach(elemento => {
 
-        const valor =
-            campo.tagName === 'SELECT'
-            ? campo.options[campo.selectedIndex]?.text || campo.value
-            : campo.value;
+            const celula =
+                elemento.closest(
+                    'td'
+                );
 
-        const span =
-            document.createElement(
-                'span'
-            );
+            if(
+                celula &&
+                celula.querySelector(
+                    '.campo-item-id'
+                )
+            ){
 
-        span.textContent =
-            valor || '';
+                celula.remove();
 
-        span.className =
-            campo.className || '';
+                return;
 
-        span.style.display =
-            'inline-block';
+            }
 
-        span.style.minHeight =
-            '18px';
+            elemento.remove();
 
-        span.style.width =
-            campo.style.width || '100%';
+        });
 
-        span.style.boxSizing =
-            'border-box';
+    /*
+     * Remove o cabeçalho ItemId.
+     * Recomendado adicionar a classe
+     * cabecalho-item-id no HTML.
+     */
+    clone
+        .querySelectorAll(
+            '.cabecalho-item-id'
+        )
+        .forEach(elemento => {
 
-        span.style.padding =
-            campo.style.padding || '5px';
+            elemento.remove();
 
-        span.style.border =
-            '1px solid #999';
+        });
 
-        span.style.backgroundColor =
-            '#fff';
-
-        span.style.color =
-            '#000';
-
-        if(campo.tagName === 'TEXTAREA'){
-
-            span.style.whiteSpace =
-                'pre-wrap';
-
-            span.style.minHeight =
-                '60px';
-
-        }
-
-        campo.replaceWith(
-            span
+    /*
+     * Segurança adicional para o cabeçalho ItemId,
+     * caso ainda não tenha a classe.
+     */
+    const tabelaPedido =
+        clone.querySelector(
+            '#dadosPedido'
         );
 
-    });
+    if(tabelaPedido){
 
-    const estilos =
-        Array
-        .from(
-            document.querySelectorAll(
-                'link[rel="stylesheet"], style'
+        tabelaPedido
+            .querySelectorAll(
+                'thead th'
             )
+            .forEach(cabecalho => {
+
+                const texto =
+                    String(
+                        cabecalho.textContent || ''
+                    )
+                    .trim()
+                    .toLowerCase();
+
+                if(
+                    texto === 'itemid' ||
+                    texto === 'item id' ||
+                    texto === 'excluir'
+                ){
+
+                    const indice =
+                        Array.from(
+                            cabecalho.parentElement.children
+                        )
+                        .indexOf(
+                            cabecalho
+                        );
+
+                    cabecalho.remove();
+
+                    tabelaPedido
+                        .querySelectorAll(
+                            'tbody tr'
+                        )
+                        .forEach(linha => {
+
+                            linha.children[
+                                indice
+                            ]?.remove();
+
+                        });
+
+                }
+
+            });
+
+    }
+
+    /*
+     * Converte inputs, selects e textareas
+     * visíveis para texto pesquisável.
+     */
+    clone
+        .querySelectorAll(
+            'input:not([type="hidden"]), textarea, select'
         )
-        .map(elemento => elemento.outerHTML)
+        .forEach(campo => {
+
+            const valor =
+                campo.tagName === 'SELECT'
+                    ? (
+                        campo.options[
+                            campo.selectedIndex
+                        ]?.text ||
+                        campo.value
+                    )
+                    : campo.value;
+
+            const span =
+                document.createElement(
+                    campo.tagName === 'TEXTAREA'
+                        ? 'div'
+                        : 'span'
+                );
+
+            span.textContent =
+                valor || '';
+
+            span.className =
+                campo.className || '';
+
+            span.classList.add(
+                'valor-pdf'
+            );
+
+            if(
+                campo.classList.contains(
+                    'campo-descricao-item'
+                )
+            ){
+
+                span.classList.add(
+                    'descricao-item-pdf'
+                );
+
+            }
+
+            if(
+                campo.tagName === 'TEXTAREA'
+            ){
+
+                span.classList.add(
+                    'textarea-pdf'
+                );
+
+            }
+
+            campo.replaceWith(
+                span
+            );
+
+        });
+
+    /*
+     * Remove linhas completamente vazias.
+     */
+    clone
+        .querySelectorAll(
+            '#dadosPedido tbody tr'
+        )
+        .forEach(linha => {
+
+            const codigo =
+                linha.querySelector(
+                    '.campo-codigo-item'
+                )?.textContent?.trim();
+
+            if(!codigo){
+
+                linha.remove();
+
+            }
+
+        });
+
+    /*
+     * Captura as regras CSS já carregadas pelo navegador
+     * e as incorpora diretamente no HTML.
+     *
+     * Isso evita depender de links relativos no Puppeteer.
+     */
+    const cssIncorporado =
+        Array.from(
+            document.styleSheets
+        )
+        .map(styleSheet => {
+
+            try{
+
+                return Array.from(
+                    styleSheet.cssRules ||
+                    []
+                )
+                .map(regra => {
+
+                    return regra.cssText;
+
+                })
+                .join('\n');
+
+            }catch(error){
+
+                console.warn(
+                    'Uma folha de estilo externa não pôde ser incorporada:',
+                    styleSheet.href
+                );
+
+                return '';
+
+            }
+
+        })
         .join('\n');
 
     return `
         <!DOCTYPE html>
+
         <html lang="pt-BR">
+
         <head>
+
             <meta charset="UTF-8">
-            ${estilos}
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <title>Pedido de Venda</title>
+
             <style>
+
+                ${cssIncorporado}
+
                 @page {
                     size: A4 landscape;
-                    margin: 0;
+                    margin: 5mm;
                 }
 
+                * {
+                    box-sizing: border-box;
+                }
+
+                html,
                 body {
+                    width: 100%;
                     margin: 0;
                     padding: 0;
-                    background: #ffffff;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    font-family: Arial, sans-serif;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
 
+                body {
+                    padding: 0;
+                }
+
                 .container {
-                    width: 100%;
-                    box-sizing: border-box;
+                    width: 100% !important;
+                    max-width: none !important;
+                    min-width: 0 !important;
+                    margin: 0 !important;
+                    padding: 4mm !important;
+                    border: none !important;
+                    border-radius: 0 !important;
+                    background: #ffffff !important;
+                    page-break-inside: auto;
                 }
 
-                table {
-                    border-collapse: collapse;
+                .header {
+                    padding: 4px 0 !important;
                 }
 
-                th,
-                td {
-                    page-break-inside: avoid;
+                .header img {
+                    width: 110px !important;
+                    height: auto !important;
                 }
 
-                span {
-                    font-family: Arial, sans-serif;
-                    font-size: inherit;
+                .section {
+                    margin-top: 8px !important;
                 }
+
+                .section-title {
+                    padding: 4px !important;
+                    font-size: 12px !important;
+                }
+
+                .form-group {
+                    display: grid !important;
+                    grid-template-columns:
+                        repeat(4, minmax(0, 1fr)) !important;
+                    gap: 4px 10px !important;
+                    padding: 6px !important;
+                    width: 100% !important;
+                }
+
+                .form-group label {
+                    margin: 0 !important;
+                    font-size: 9px !important;
+                }
+
+                .form-group .valor-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    min-height: 19px !important;
+                    margin: 0 !important;
+                    padding: 3px 4px !important;
+                    border: 1px solid #777777 !important;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    font-size: 9px !important;
+                    overflow-wrap: anywhere;
+                }
+
+                .table-container {
+                    width: 100% !important;
+                    overflow: visible !important;
+                }
+
+                #dadosPedido,
+                .table {
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    table-layout: fixed !important;
+                    border-collapse: collapse !important;
+                    margin-top: 5px !important;
+                }
+
+                #dadosPedido thead {
+                    display: table-header-group;
+                }
+
+                #dadosPedido tr {
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                #dadosPedido th,
+                #dadosPedido td {
+                    padding: 3px !important;
+                    border: 1px solid #777777 !important;
+                    vertical-align: middle !important;
+                    text-align: center !important;
+                    font-size: 8px !important;
+                    overflow-wrap: anywhere;
+                }
+
+                #dadosPedido th {
+                    background: #333333 !important;
+                    color: #ffffff !important;
+                    font-weight: bold !important;
+                }
+
+                #dadosPedido td {
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                }
+
+                #dadosPedido .valor-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    min-height: 14px !important;
+                    margin: 0 !important;
+                    padding: 1px !important;
+                    border: none !important;
+                    background: transparent !important;
+                    color: #000000 !important;
+                    font-size: 8px !important;
+                    text-align: center !important;
+                }
+
+                #dadosPedido .descricao-item-pdf {
+                    text-align: left !important;
+                }
+
+                #dadosPedido th:nth-child(1),
+                #dadosPedido td:nth-child(1) {
+                    width: 8% !important;
+                }
+
+                #dadosPedido th:nth-child(2),
+                #dadosPedido td:nth-child(2) {
+                    width: 8% !important;
+                }
+
+                #dadosPedido th:nth-child(3),
+                #dadosPedido td:nth-child(3) {
+                    width: 7% !important;
+                }
+
+                #dadosPedido th:nth-child(4),
+                #dadosPedido td:nth-child(4) {
+                    width: 25% !important;
+                }
+
+                #dadosPedido th:nth-child(5),
+                #dadosPedido td:nth-child(5) {
+                    width: 6% !important;
+                }
+
+                #dadosPedido th:nth-child(6),
+                #dadosPedido td:nth-child(6) {
+                    width: 7% !important;
+                }
+
+                #dadosPedido th:nth-child(7),
+                #dadosPedido td:nth-child(7),
+                #dadosPedido th:nth-child(8),
+                #dadosPedido td:nth-child(8),
+                #dadosPedido th:nth-child(9),
+                #dadosPedido td:nth-child(9) {
+                    width: 13% !important;
+                }
+
+                .celula-foto-item {
+                    padding: 2px !important;
+                    text-align: center !important;
+                }
+
+                .foto-item-pedido {
+                    display: block !important;
+                    width: 38px !important;
+                    height: 38px !important;
+                    margin: 0 auto !important;
+                    object-fit: contain !important;
+                    border: none !important;
+                    background: #ffffff !important;
+                }
+
+                .foto-item-pedido.sem-foto {
+                    display: none !important;
+                }
+
+                .payment-conditions {
+                    display: grid !important;
+                    grid-template-columns:
+                        repeat(6, minmax(0, 1fr)) !important;
+                    gap: 4px !important;
+                    width: 100% !important;
+                    margin-top: 7px !important;
+                    padding: 6px !important;
+                }
+
+                .payment-conditions label {
+                    width: auto !important;
+                    min-width: 0 !important;
+                    padding: 3px !important;
+                    font-size: 8px !important;
+                }
+
+                .payment-conditions .valor-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    padding: 3px !important;
+                    border: 1px solid #777777 !important;
+                    font-size: 8px !important;
+                }
+
+                .observations {
+                    margin-top: 7px !important;
+                }
+
+                .textarea-pdf {
+                    display: block !important;
+                    width: 100% !important;
+                    min-height: 45px !important;
+                    padding: 5px !important;
+                    border: 1px solid #777777 !important;
+                    white-space: pre-wrap !important;
+                    overflow-wrap: anywhere !important;
+                    font-size: 9px !important;
+                }
+
+                footer,
+                .no-print,
+                .button-group,
+                .btn-remover-linha,
+                .modal,
+                .modal1,
+                .overlay,
+                .overlay-importacao-pedido,
+                #helpContainer,
+                #helpModal,
+                #customModal,
+                #customModal1,
+                #overlay,
+                #overlayImportacaoPedido {
+                    display: none !important;
+                }
+
             </style>
+
         </head>
-        <body>
+
+        <body class="${temaAtual}">
+
             ${clone.outerHTML}
+
         </body>
+
         </html>
     `;
 
 }
 
-
-async function gerarPdfPesquisavelBlob(fileName){
+async function gerarPdfPesquisavelBlob(
+    fileName
+){
 
     const html =
         criarHtmlPesquisavelDoPedido();
+
+    console.log(
+        'Tamanho aproximado do HTML enviado ao PDF:',
+        `${(
+            new Blob([html]).size /
+            1024 /
+            1024
+        ).toFixed(2)} MB`
+    );
 
     const response =
         await fetch(
             '/api/pedido-venda/pdf-pesquisavel',
             {
-                method: 'POST',
+                method:
+                    'POST',
+
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type':
+                        'application/json',
+
+                    Accept:
+                        'application/pdf, application/json, text/plain'
                 },
-                body: JSON.stringify({
-                    html,
-                    fileName
-                })
+
+                body:
+                    JSON.stringify({
+                        html:
+                            html,
+
+                        fileName:
+                            fileName
+                    })
             }
         );
 
     if(!response.ok){
 
+        const contentType =
+            response.headers.get(
+                'content-type'
+            ) || '';
+
         let mensagem =
-            'Erro ao gerar PDF pesquisável.';
+            `Erro ao gerar PDF pesquisável. HTTP ${response.status}.`;
 
-        try {
+        try{
 
-            const erro =
-                await response.json();
+            if(
+                contentType.includes(
+                    'application/json'
+                )
+            ){
 
-            mensagem =
-                erro.erro ||
-                erro.error ||
-                mensagem;
+                const erro =
+                    await response.json();
 
-        } catch {}
+                mensagem =
+                    erro.mensagem ||
+                    erro.erro ||
+                    erro.error ||
+                    erro.message ||
+                    mensagem;
+
+            }else{
+
+                const texto =
+                    await response.text();
+
+                if(texto.trim()){
+
+                    mensagem =
+                        `${mensagem} ${texto}`;
+
+                }
+
+            }
+
+        }catch(erroLeitura){
+
+            console.error(
+                'Não foi possível ler a resposta de erro do PDF:',
+                erroLeitura
+            );
+
+        }
 
         throw new Error(
             mensagem
@@ -3416,11 +4150,23 @@ async function gerarPdfPesquisavelBlob(fileName){
 
     }
 
-    return await response.blob();
+    const blob =
+        await response.blob();
+
+    if(
+        !blob ||
+        blob.size === 0
+    ){
+
+        throw new Error(
+            'O servidor retornou um PDF vazio.'
+        );
+
+    }
+
+    return blob;
 
 }
-
-
 
 
 function baixarBlob(blob, fileName){
@@ -3504,8 +4250,8 @@ document.addEventListener("DOMContentLoaded", () => {
         for (const row of tableRows) {
             // Garante que a linha tenha células e pelo menos 9 colunas (índices 0 a 8)
             if (row.cells.length >= 9) {
-                const cell0 = row.cells[0];
-                const cell1 = row.cells[1];
+                const cell0 = row.cells[1];
+                const cell1 = row.cells[2];
                 const cell8 = row.cells[8];
 
                 // Verifica se os inputs existem antes de acessá-los
