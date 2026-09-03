@@ -1157,11 +1157,7 @@ codInput1.addEventListener('blur', async function () {
     }
 });
 
-function limparProdutos(){
-        const tbody = document.querySelector('#dadosPedido tbody');
-        tbody.innerHTML = '';
-        atualizarTotais();
-}
+
 
 function preencherCliente(c) {
     el('cnpj').value = formatarCNPJ(obterCNPJNumerico(c[1]));
