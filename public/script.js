@@ -500,16 +500,16 @@ function montarSrcFotoItem(
 
 function limparDadosLinhaItem(
     tr,
-    manterCodigo = true
+    manterPesquisa = true
 ){
 
     if(!tr){
         return;
     }
 
-    const campoCodigo =
+    const campoPesquisa =
         tr.querySelector(
-            '.campo-codigo-item'
+            '.campo-item-pesquisa'
         );
 
     const campoQuantidade =
@@ -519,7 +519,6 @@ function limparDadosLinhaItem(
 
     const camposLimpar = [
         '.campo-unidade-item',
-        '.campo-descricao-item',
         '.campo-ipi-item',
         '.campo-preco-unitario-item',
         '.campo-preco-com-ipi-item',
@@ -528,11 +527,11 @@ function limparDadosLinhaItem(
     ];
 
     if(
-        !manterCodigo &&
-        campoCodigo
+        !manterPesquisa &&
+        campoPesquisa
     ){
 
-        campoCodigo.value =
+        campoPesquisa.value =
             '';
 
     }
@@ -589,6 +588,9 @@ function limparDadosLinhaItem(
     tr.dataset.itemEmpresaId =
         '';
 
+    tr.dataset.descricao =
+        '';
+
     tr.dataset.preco =
         '';
 
@@ -602,9 +604,9 @@ function preencherLinhaComItem(
     item
 ){
 
-    const campoCodigo =
+    const campoPesquisa =
         tr.querySelector(
-            '.campo-codigo-item'
+            '.campo-item-pesquisa'
         );
 
     const campoQuantidade =
@@ -615,11 +617,6 @@ function preencherLinhaComItem(
     const campoUnidade =
         tr.querySelector(
             '.campo-unidade-item'
-        );
-
-    const campoDescricao =
-        tr.querySelector(
-            '.campo-descricao-item'
         );
 
     const campoIpi =
@@ -669,42 +666,47 @@ function preencherLinhaComItem(
         );
 
     const precoComIpi =
-        preco * (
+        preco *
+        (
             1 + ipi
         );
 
-    campoCodigo.value =
-        item.itemEmpresaId;
+    const codigo =
+        String(
+            item.itemEmpresaId || ''
+        )
+        .trim();
+
+    const descricao =
+        String(
+            item.descricao || ''
+        )
+        .trim();
+
+    campoPesquisa.value =
+        `${codigo} - ${descricao}`;
 
     campoUnidade.value =
         item.unidade ||
         'CX';
-
-    campoDescricao.value =
-    `${item.itemEmpresaId} - ${item.descricao}`;
 
     campoIpi.value =
         (ipi * 100)
             .toLocaleString(
                 'pt-BR',
                 {
-                    minimumFractionDigits:
-                        2,
-
-                    maximumFractionDigits:
-                        2
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 }
-            ) + '%';
+            ) +
+        '%';
 
     campoPreco.value =
         preco.toLocaleString(
             'pt-BR',
             {
-                style:
-                    'currency',
-
-                currency:
-                    'BRL'
+                style: 'currency',
+                currency: 'BRL'
             }
         );
 
@@ -712,11 +714,8 @@ function preencherLinhaComItem(
         precoComIpi.toLocaleString(
             'pt-BR',
             {
-                style:
-                    'currency',
-
-                currency:
-                    'BRL'
+                style: 'currency',
+                currency: 'BRL'
             }
         );
 
@@ -731,15 +730,20 @@ function preencherLinhaComItem(
         );
 
     tr.dataset.itemEmpresaId =
-        String(
-            item.itemEmpresaId || ''
-        );
+        codigo;
+
+    tr.dataset.descricao =
+        descricao;
 
     tr.dataset.preco =
-        String(preco);
+        String(
+            preco
+        );
 
     tr.dataset.ipi =
-        String(ipi);
+        String(
+            ipi
+        );
 
     const srcFoto =
         montarSrcFotoItem(
@@ -755,7 +759,7 @@ function preencherLinhaComItem(
             srcFoto;
 
         imagem.alt =
-            `Foto do item ${item.itemEmpresaId}`;
+            `Foto do item ${codigo}`;
 
         imagem.classList.remove(
             'sem-foto'
@@ -934,12 +938,8 @@ function validarTabelaPedido(){
         )
         .filter(tr => {
 
-            return (
-                tr.querySelector(
-                    '.campo-codigo-item'
-                )
-                ?.value
-                .trim()
+            return Boolean(
+                tr.dataset.itemEmpresaId
             );
 
         });
@@ -963,13 +963,6 @@ function validarTabelaPedido(){
         const tr =
             linhas[indice];
 
-        const codigo =
-            tr.querySelector(
-                '.campo-codigo-item'
-            )
-            ?.value
-            .trim();
-
         const campoQuantidade =
             tr.querySelector(
                 '.campo-quantidade-item'
@@ -983,11 +976,16 @@ function validarTabelaPedido(){
                 .replace(',', '.')
             );
 
-        const descricao =
-            tr.querySelector(
-                '.campo-descricao-item'
+        const codigo =
+            String(
+                tr.dataset.itemEmpresaId || ''
             )
-            ?.value
+            .trim();
+
+        const descricao =
+            String(
+                tr.dataset.descricao || ''
+            )
             .trim();
 
         const preco =
@@ -997,9 +995,9 @@ function validarTabelaPedido(){
 
         if(
             !codigo ||
+            !descricao ||
             !Number.isFinite(quantidade) ||
             quantidade <= 0 ||
-            !descricao ||
             !Number.isFinite(preco) ||
             preco <= 0 ||
             !tr.dataset.itemId
@@ -1633,8 +1631,9 @@ function adicionarNovaLinha(){
         <td>
             <input
                 type="text"
-                class="campo-codigo-item"
+                class="campo-item-pesquisa"
                 list="lista-produtos-cliente"
+                placeholder="Digite o código ou a descrição"
                 autocomplete="off"
             >
         </td>
@@ -1645,15 +1644,6 @@ function adicionarNovaLinha(){
                 class="campo-quantidade-item"
                 inputmode="decimal"
                 autocomplete="off"
-            >
-        </td>
-
-        <td>
-            <input
-                type="text"
-                class="campo-descricao-item"
-                readonly
-                tabindex="-1"
             >
         </td>
 
@@ -1702,7 +1692,7 @@ function adicionarNovaLinha(){
             >
         </td>
 
-        <td>
+        <td class="celula-excluir-item">
             <button
                 type="button"
                 class="btn-remover-linha"
@@ -1712,7 +1702,7 @@ function adicionarNovaLinha(){
             </button>
         </td>
 
-        <td style="display:none;">
+        <td style="display: none;">
             <input
                 type="hidden"
                 class="campo-item-id"
@@ -1731,7 +1721,6 @@ function adicionarNovaLinha(){
     return tr;
 
 }
-
 
 // Função para remover a última linha da tabela
 document.getElementById('excluirLinha').addEventListener('click', function () {
@@ -1951,6 +1940,85 @@ function atualizarTotalLinhaItem(
 
 }
 
+function buscarItemPorPesquisa(
+    valorDigitado
+){
+
+    const texto =
+        String(
+            valorDigitado || ''
+        )
+        .trim();
+
+    if(!texto){
+        return null;
+    }
+
+    const separador =
+        texto.indexOf(
+            ' - '
+        );
+
+    if(separador >= 0){
+
+        const codigoExtraido =
+            normalizarCodigoItem(
+                texto.substring(
+                    0,
+                    separador
+                )
+            );
+
+        const itemPorCodigoExtraido =
+            buscarItemNoCatalogo(
+                codigoExtraido
+            );
+
+        if(itemPorCodigoExtraido){
+            return itemPorCodigoExtraido;
+        }
+
+    }
+
+    const codigoDireto =
+        normalizarCodigoItem(
+            texto
+        );
+
+    const itemPorCodigo =
+        buscarItemNoCatalogo(
+            codigoDireto
+        );
+
+    if(itemPorCodigo){
+        return itemPorCodigo;
+    }
+
+    const pesquisa =
+        texto.toUpperCase();
+
+    const correspondenciasExatas =
+        catalogoClienteData.filter(item => {
+
+            const descricao =
+                String(
+                    item.descricao || ''
+                )
+                .trim()
+                .toUpperCase();
+
+            return descricao === pesquisa;
+
+        });
+
+    if(correspondenciasExatas.length === 1){
+        return correspondenciasExatas[0];
+    }
+
+    return null;
+
+}
+
 function configurarLinhaItemPedido(
     tr
 ){
@@ -1964,9 +2032,9 @@ function configurarLinhaItemPedido(
             'tbody'
         );
 
-    const campoCodigo =
+    const campoPesquisa =
         tr.querySelector(
-            '.campo-codigo-item'
+            '.campo-item-pesquisa'
         );
 
     const campoQuantidade =
@@ -1981,7 +2049,7 @@ function configurarLinhaItemPedido(
 
     if(
         !tbody ||
-        !campoCodigo ||
+        !campoPesquisa ||
         !campoQuantidade
     ){
 
@@ -1994,7 +2062,7 @@ function configurarLinhaItemPedido(
 
     }
 
-    campoCodigo.tabIndex =
+    campoPesquisa.tabIndex =
         0;
 
     campoQuantidade.tabIndex =
@@ -2003,37 +2071,25 @@ function configurarLinhaItemPedido(
     campoQuantidade.readOnly =
         true;
 
-    /*
-     * Controla se a linha está no meio
-     * do carregamento do item.
-     */
     let carregandoItem =
         false;
 
-    /*
-     * Impede executar o mesmo blur duas vezes
-     * quando Enter ou Tab forem pressionados.
-     */
-    let processandoCodigo =
+    let processandoItem =
         false;
 
-    async function processarCodigoItem(){
+    let ultimoItemCarregado =
+        '';
 
-        if(processandoCodigo){
+    async function processarItemSelecionado(){
+
+        if(processandoItem){
             return false;
         }
 
-        const textoDigitado = campoCodigo.value.trim();
+        const valorDigitado =
+            campoPesquisa.value.trim();
 
-        let codigo = textoDigitado;
-
-        if (textoDigitado.includes(' - ')) {
-            codigo = textoDigitado.split(' - ')[0].trim();
-        }
-
-        codigo = normalizarCodigoItem(codigo);
-
-        if(!codigo){
+        if(!valorDigitado){
 
             limparDadosLinhaItem(
                 tr,
@@ -2044,32 +2100,16 @@ function configurarLinhaItemPedido(
 
         }
 
-        processandoCodigo =
+        processandoItem =
             true;
 
         carregandoItem =
             true;
 
-        campoCodigo.value =
-            codigo;
-
-        campoCodigo.readOnly =
+        campoPesquisa.readOnly =
             true;
 
         try{
-
-            if(
-                verificarCodigoDuplicadoNaTabela(
-                    codigo,
-                    tr
-                )
-            ){
-
-                throw new Error(
-                    'Este item já foi adicionado ao pedido.'
-                );
-
-            }
 
             if(catalogoClienteCarregando){
 
@@ -2088,17 +2128,31 @@ function configurarLinhaItemPedido(
             }
 
             const item =
-                buscarItemNoCatalogo(
-                    codigo
+                buscarItemPorPesquisa(
+                    valorDigitado
                 );
 
-            /*
-             * Esta função gera o erro:
-             * Item não encontrado na lista de preços.
-             */
             validarDisponibilidadeItem(
                 item
             );
+
+            const codigo =
+                normalizarCodigoItem(
+                    item.itemEmpresaId
+                );
+
+            if(
+                verificarCodigoDuplicadoNaTabela(
+                    codigo,
+                    tr
+                )
+            ){
+
+                throw new Error(
+                    'Este item já foi adicionado ao pedido.'
+                );
+
+            }
 
             limparDadosLinhaItem(
                 tr,
@@ -2110,28 +2164,22 @@ function configurarLinhaItemPedido(
                 item
             );
 
+            ultimoItemCarregado =
+                codigo;
+
             tr.dispatchEvent(
                 new CustomEvent(
                     'carregamento-item-finalizado',
                     {
                         detail: {
-                            sucesso:
-                                true,
-
-                            codigo:
-                                codigo,
-
-                            mensagem:
-                                ''
+                            sucesso: true,
+                            codigo: codigo,
+                            mensagem: ''
                         }
                     }
                 )
             );
 
-            /*
-             * Aguarda o navegador concluir o blur
-             * antes de mover o foco.
-             */
             setTimeout(
                 () => {
 
@@ -2145,22 +2193,20 @@ function configurarLinhaItemPedido(
 
             return true;
 
-        }
-        catch(error){
+        }catch(error){
 
             const mensagem =
                 error.message ||
                 'Item indisponível.';
 
             console.warn(
-                `Item ${codigo} não foi carregado:`,
+                'O item não foi carregado:',
                 error
             );
 
-            /*
-            * false significa que o código digitado
-            * também será apagado.
-            */
+            ultimoItemCarregado =
+                '';
+
             limparDadosLinhaItem(
                 tr,
                 false
@@ -2173,14 +2219,9 @@ function configurarLinhaItemPedido(
                     'carregamento-item-finalizado',
                     {
                         detail: {
-                            sucesso:
-                                false,
-
-                            codigo:
-                                codigo,
-
-                            mensagem:
-                                mensagem
+                            sucesso: false,
+                            codigo: '',
+                            mensagem: mensagem
                         }
                     }
                 )
@@ -2191,11 +2232,6 @@ function configurarLinhaItemPedido(
                     'importando-pedido'
                 );
 
-            /*
-            * Na digitação manual, mostra o alerta.
-            * Na importação, o erro será apresentado
-            * no relatório final.
-            */
             if(!importandoPedido){
 
                 alert(
@@ -2205,7 +2241,7 @@ function configurarLinhaItemPedido(
                 setTimeout(
                     () => {
 
-                        campoCodigo.focus();
+                        campoPesquisa.focus();
 
                     },
                     0
@@ -2215,49 +2251,86 @@ function configurarLinhaItemPedido(
 
             return false;
 
-        }
-        finally{
+        }finally{
 
-            campoCodigo.readOnly =
+            campoPesquisa.readOnly =
                 false;
 
             carregandoItem =
                 false;
 
-            processandoCodigo =
+            processandoItem =
                 false;
 
         }
 
     }
 
-    /*
-     * Processa quando o usuário sai normalmente
-     * do campo com clique ou outro comando.
-     */
-    campoCodigo.addEventListener(
-        'blur',
+    campoPesquisa.addEventListener(
+        'input',
         () => {
 
+            const item =
+                buscarItemPorPesquisa(
+                    campoPesquisa.value
+                );
+
+            if(!item){
+                return;
+            }
+
+            const codigo =
+                normalizarCodigoItem(
+                    item.itemEmpresaId
+                );
+
             if(
-                !processandoCodigo &&
-                campoCodigo.value.trim()
+                codigo &&
+                codigo !== ultimoItemCarregado &&
+                !processandoItem
             ){
 
-                processarCodigoItem();
+                processarItemSelecionado();
 
             }
 
         }
     );
 
-    /*
-     * Código -> Quantidade
-     *
-     * É necessário impedir o comportamento padrão
-     * tanto do Tab quanto do Enter.
-     */
-    campoCodigo.addEventListener(
+    campoPesquisa.addEventListener(
+        'change',
+        () => {
+
+            if(
+                campoPesquisa.value.trim() &&
+                !processandoItem
+            ){
+
+                processarItemSelecionado();
+
+            }
+
+        }
+    );
+
+    campoPesquisa.addEventListener(
+        'blur',
+        () => {
+
+            if(
+                campoPesquisa.value.trim() &&
+                !tr.dataset.itemId &&
+                !processandoItem
+            ){
+
+                processarItemSelecionado();
+
+            }
+
+        }
+    );
+
+    campoPesquisa.addEventListener(
         'keydown',
         evento => {
 
@@ -2272,17 +2345,13 @@ function configurarLinhaItemPedido(
                 return;
             }
 
-            /*
-             * Sem preventDefault, o navegador muda
-             * o foco novamente depois do código.
-             */
             evento.preventDefault();
 
             if(carregandoItem){
                 return;
             }
 
-            processarCodigoItem();
+            processarItemSelecionado();
 
         }
     );
@@ -2298,9 +2367,6 @@ function configurarLinhaItemPedido(
         }
     );
 
-    /*
-     * Quantidade -> Código da próxima linha
-     */
     campoQuantidade.addEventListener(
         'keydown',
         evento => {
@@ -2316,10 +2382,6 @@ function configurarLinhaItemPedido(
                 return;
             }
 
-            /*
-             * Também é necessário cancelar o Tab
-             * padrão no campo de quantidade.
-             */
             evento.preventDefault();
 
             const quantidade =
@@ -2375,17 +2437,17 @@ function configurarLinhaItemPedido(
 
             }
 
-            const codigoProximaLinha =
+            const campoProximoItem =
                 proximaLinha?.querySelector(
-                    '.campo-codigo-item'
+                    '.campo-item-pesquisa'
                 );
 
             setTimeout(
                 () => {
 
-                    codigoProximaLinha?.focus();
+                    campoProximoItem?.focus();
 
-                    codigoProximaLinha?.select();
+                    campoProximoItem?.select();
 
                 },
                 0
@@ -2394,10 +2456,6 @@ function configurarLinhaItemPedido(
         }
     );
 
-    /*
-     * Shift + Tab na quantidade retorna ao código
-     * da mesma linha.
-     */
     campoQuantidade.addEventListener(
         'keydown',
         evento => {
@@ -2409,9 +2467,9 @@ function configurarLinhaItemPedido(
 
                 evento.preventDefault();
 
-                campoCodigo.focus();
+                campoPesquisa.focus();
 
-                campoCodigo.select();
+                campoPesquisa.select();
 
             }
 
@@ -2569,11 +2627,16 @@ function exportarPedidoExcel(){
         .map(row => {
 
             const codigo =
-                row.querySelector(
-                    '.campo-codigo-item'
+                String(
+                    row.dataset.itemEmpresaId || ''
                 )
-                ?.value
-                .trim() || '';
+                .trim();
+
+            const descricao =
+                String(
+                    row.dataset.descricao || ''
+                )
+                .trim();
 
             const quantidade =
                 Number(
@@ -2586,12 +2649,6 @@ function exportarPedidoExcel(){
                     .replace(',', '.')
                 );
 
-            const descricao =
-                row.querySelector(
-                    '.campo-descricao-item'
-                )
-                ?.value
-                .trim() || '';
 
             if(
                 !codigo ||
@@ -2713,46 +2770,7 @@ function exportarPedidoExcel(){
 
 }
 
-function verificarCodigoDuplicadoNaTabela(
-    codigo,
-    linhaAtual
-){
 
-    const codigoNormalizado =
-        normalizarCodigoItem(
-            codigo
-        );
-
-    const linhas =
-        document.querySelectorAll(
-            '#dadosPedido tbody .linha-item-pedido'
-        );
-
-    for(const tr of linhas){
-
-        if(tr === linhaAtual){
-            continue;
-        }
-
-        const campoCodigo =
-            tr.querySelector(
-                '.campo-codigo-item'
-            );
-
-        if(
-            normalizarCodigoItem(
-                campoCodigo?.value
-            ) ===
-            codigoNormalizado
-        ){
-            return true;
-        }
-
-    }
-
-    return false;
-
-}
 
 
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
@@ -2821,16 +2839,11 @@ confirmButton.addEventListener("click", async () => {
                     row.dataset.itemId || 0
                 );
 
-            const codigoCompleto =
-                row.querySelector(
-                    '.campo-codigo-item'
-                )
-                ?.value || '';
-
             const codigo =
-                codigoCompleto.includes(' - ')
-                    ? codigoCompleto.split(' - ')[0].trim()
-                    : codigoCompleto.trim();
+                String(
+                    row.dataset.itemEmpresaId || ''
+                )
+                .trim();
 
             const quantidade =
                 Number(
@@ -3253,7 +3266,7 @@ async function importarPedidoExcel(event){
 
             const campoCodigo =
                 linha.querySelector(
-                    '.campo-codigo-item'
+                    '.campo-item-pesquisa'
                 );
 
             const campoQuantidade =
@@ -3348,81 +3361,82 @@ async function importarPedidoExcel(event){
         }
 
         const linhasRestantes =
-            tbody.querySelectorAll(
-                'tr'
-            );
+    tbody.querySelectorAll(
+        'tr'
+    );
 
-        linhasRestantes.forEach(linha => {
+linhasRestantes.forEach(linha => {
 
-            const codigo =
+    const codigo =
+        String(
+            linha.dataset.itemEmpresaId || ''
+        )
+        .trim();
+
+    const descricao =
+        String(
+            linha.dataset.descricao || ''
+        )
+        .trim();
+
+    const quantidade =
+        Number(
+            String(
                 linha.querySelector(
-                    '.campo-codigo-item'
+                    '.campo-quantidade-item'
                 )
-                ?.value
-                .trim() || '';
+                ?.value || '0'
+            )
+            .replace(',', '.')
+        );
 
-            const quantidade =
-                Number(
-                    String(
-                        linha.querySelector(
-                            '.campo-quantidade-item'
-                        )
-                        ?.value || '0'
-                    )
-                    .replace(',', '.')
+    const preco =
+        Number(
+            linha.dataset.preco || 0
+        );
+
+    const linhaInvalida =
+        !codigo ||
+        !Number.isFinite(quantidade) ||
+        quantidade <= 0 ||
+        !descricao ||
+        !Number.isFinite(preco) ||
+        preco <= 0 ||
+        !linha.dataset.itemId;
+
+    if(linhaInvalida){
+
+        const codigoRemovido =
+            codigo ||
+            'Sem código';
+
+        const jaRegistrado =
+            itensRemovidos.some(item => {
+
+                return (
+                    item.codigo ===
+                    codigoRemovido
                 );
 
-            const descricao =
-                linha.querySelector(
-                    '.campo-descricao-item'
-                )
-                ?.value
-                .trim() || '';
+            });
 
-            const preco =
-                Number(
-                    linha.dataset.preco || 0
-                );
+        if(!jaRegistrado){
 
-            const linhaInvalida =
-                !codigo ||
-                quantidade <= 0 ||
-                !descricao ||
-                preco <= 0 ||
-                !linha.dataset.itemId;
+            itensRemovidos.push({
+                codigo:
+                    codigoRemovido,
 
-            if(linhaInvalida){
+                motivo:
+                    'Item não pôde ser carregado.'
+            });
 
-                const codigoRemovido =
-                    codigo || 'Sem código';
+        }
 
-                const jaRegistrado =
-                    itensRemovidos.some(item => {
+        linha.remove();
 
-                        return (
-                            item.codigo ===
-                            codigoRemovido
-                        );
+    }
 
-                    });
-
-                if(!jaRegistrado){
-
-                    itensRemovidos.push({
-                        codigo:
-                            codigoRemovido,
-
-                        motivo:
-                            'Item não pôde ser carregado.'
-                    });
-
-                }
-
-                linha.remove();
-
-            }
-
-        });
+});
 
         atualizarTotais();
 
@@ -3477,6 +3491,47 @@ async function importarPedidoExcel(event){
             '';
 
     }
+
+}
+
+function verificarCodigoDuplicadoNaTabela(
+    codigo,
+    linhaAtual
+){
+
+    const codigoNormalizado =
+        normalizarCodigoItem(
+            codigo
+        );
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody .linha-item-pedido'
+        );
+
+    for(const tr of linhas){
+
+        if(tr === linhaAtual){
+            continue;
+        }
+
+        const codigoLinha =
+            normalizarCodigoItem(
+                tr.dataset.itemEmpresaId
+            );
+
+        if(
+            codigoLinha ===
+            codigoNormalizado
+        ){
+
+            return true;
+
+        }
+
+    }
+
+    return false;
 
 }
 
@@ -3856,7 +3911,7 @@ function criarHtmlPesquisavelDoPedido(){
 
             const codigo =
                 linha.querySelector(
-                    '.campo-codigo-item'
+                    '.campo-item-pesquisa'
                 )?.textContent?.trim();
 
             if(!codigo){
@@ -4403,7 +4458,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (row.cells.length >= 9) {
                 const cell0 = row.cells[1];
                 const cell1 = row.cells[2];
-                const cell8 = row.cells[8];
+                const cell8 = row.cells[7];
 
                 // Verifica se os inputs existem antes de acessá-los
                 const input0 = cell0.querySelector('input');

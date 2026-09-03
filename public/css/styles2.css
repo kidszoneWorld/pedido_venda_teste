@@ -1424,9 +1424,7 @@ body.importando-pedido {
     display: none;
 }
 
-.campo-codigo-item {
-    min-width: 90px;
-}
+
 
 .campo-descricao-item {
     min-width: 250px;
@@ -1489,7 +1487,7 @@ body.importando-pedido {
 /*
  * Campos editáveis.
  */
-#dadosPedido tbody .campo-codigo-item,
+
 #dadosPedido tbody .campo-quantidade-item {
     cursor: text;
 }
@@ -1497,7 +1495,7 @@ body.importando-pedido {
 /*
  * Campos automáticos.
  */
-#dadosPedido tbody .campo-descricao-item,
+
 #dadosPedido tbody .campo-unidade-item,
 #dadosPedido tbody .campo-ipi-item,
 #dadosPedido tbody .campo-preco-unitario-item,
@@ -1509,10 +1507,7 @@ body.importando-pedido {
 /*
  * Descrição alinhada à esquerda.
  */
-#dadosPedido tbody .campo-descricao-item {
-    text-align: left;
-    min-width: 0;
-}
+
 
 /*
  * Campos monetários sem quebra de linha.
@@ -1595,66 +1590,69 @@ body.dark-theme #dadosPedido tbody .linha-item-pedido inputfocus {
 }
 
 
+.campo-item-pesquisa {
+    width: 100%;
+    min-width: 300px;
+    text-align: left;
+    padding-left: 8px;
+    box-sizing: border-box;
+}
+
+.codigo-descricao {
+    width: 34%;
+}
+
+body.dark-theme .campo-item-pesquisa {
+    background-color: var(--table-bg-dark);
+    color: var(--button-hover-text-dark);
+}
+
 /* ==============================================================
    LARGURAS DAS COLUNAS
    ============================================================== */
 
-/* Foto */
-#dadosPedido th:nth-child(1),
+   #dadosPedido th:nth-child(1),
 #dadosPedido td:nth-child(1) {
     width: 8%;
 }
 
-/* Código */
 #dadosPedido th:nth-child(2),
 #dadosPedido td:nth-child(2) {
-    width: 8%;
+    width: 34%;
 }
 
-/* Quantidade */
 #dadosPedido th:nth-child(3),
 #dadosPedido td:nth-child(3) {
     width: 7%;
 }
 
-/* Descrição */
 #dadosPedido th:nth-child(4),
 #dadosPedido td:nth-child(4) {
-    width: 24%;
-}
-
-/* Unidade */
-#dadosPedido th:nth-child(5),
-#dadosPedido td:nth-child(5) {
     width: 6%;
 }
 
-/* IPI */
-#dadosPedido th:nth-child(6),
-#dadosPedido td:nth-child(6) {
+#dadosPedido th:nth-child(5),
+#dadosPedido td:nth-child(5) {
     width: 7%;
 }
 
-/* Valor unitário */
+#dadosPedido th:nth-child(6),
+#dadosPedido td:nth-child(6) {
+    width: 11%;
+}
+
 #dadosPedido th:nth-child(7),
 #dadosPedido td:nth-child(7) {
     width: 11%;
 }
 
-/* Valor com IPI */
 #dadosPedido th:nth-child(8),
 #dadosPedido td:nth-child(8) {
     width: 11%;
 }
 
-/* Total */
 #dadosPedido th:nth-child(9),
 #dadosPedido td:nth-child(9) {
-    width: 11%;
-}
-
-/* Excluir */
-#dadosPedido th:nth-child(10),
-#dadosPedido td:nth-child(10) {
     width: 9%;
 }
+
