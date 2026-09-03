@@ -151,6 +151,113 @@ async function carregarListaPrecos(listaId) {
     console.log('DADOS DA LISTA:', listaPrecosData);
 }
 
+function converterParaBooleano(
+    valor
+){
+
+    if(valor === true){
+        return true;
+    }
+
+    if(valor === false){
+        return false;
+    }
+
+    if(valor === 1){
+        return true;
+    }
+
+    if(valor === 0){
+        return false;
+    }
+
+    const texto =
+        String(
+            valor ?? ''
+        )
+        .trim()
+        .toLowerCase();
+
+    return (
+        texto === 'true' ||
+        texto === '1' ||
+        texto === 'sim' ||
+        texto === 's' ||
+        texto === 'ativo'
+    );
+
+}
+
+function itemPodeAparecerNaLista(
+    item
+){
+
+    if(!item){
+        return false;
+    }
+
+    const ativo =
+        converterParaBooleano(
+            item.ativo
+        );
+
+    const suspenso =
+        converterParaBooleano(
+            item.suspenso
+        );
+
+    const foraLinha =
+        converterParaBooleano(
+            item.foraLinha
+        );
+
+    const bloqueado =
+        converterParaBooleano(
+            item.bloqueado
+        );
+
+    const exibeConsultas =
+        item.exibeConsultasListaPreco === undefined ||
+        item.exibeConsultasListaPreco === null
+            ? true
+            : converterParaBooleano(
+                item.exibeConsultasListaPreco
+            );
+
+    const descricao =
+        String(
+            item.descricao || ''
+        )
+        .normalize(
+            'NFD'
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ''
+        )
+        .trim()
+        .toLowerCase();
+
+    const possuiNomeNaoPermitido =
+        descricao.includes(
+            'display'
+        ) ||
+        descricao.includes(
+            'bobina'
+        );
+
+    return (
+        ativo &&
+        !suspenso &&
+        !foraLinha &&
+        !bloqueado &&
+        exibeConsultas &&
+        !possuiNomeNaoPermitido
+    );
+
+}
+
+
 async function carregarCatalogoCliente(
     clienteCodigo,
     listaCodigo = null
@@ -241,15 +348,20 @@ async function carregarCatalogoCliente(
 
         }
 
-        const itens =
+        const itensRecebidos =
             Array.isArray(
                 resultado.itens
             )
                 ? resultado.itens
                 : [];
 
+        const itensDisponiveis =
+            itensRecebidos.filter(
+                itemPodeAparecerNaLista
+            );
+
         catalogoClienteData =
-            itens;
+            itensDisponiveis;
 
         dadosListaPrecoAtual =
             resultado.listaPreco ||
@@ -258,7 +370,7 @@ async function carregarCatalogoCliente(
         catalogoClientePorCodigo =
             new Map();
 
-        itens.forEach(item => {
+        itensDisponiveis.forEach(item => {
 
             const codigoItem =
                 normalizarCodigoItem(
@@ -290,24 +402,29 @@ async function carregarCatalogoCliente(
                 '';
 
         }
+    console.log(
+        'Catálogo do cliente carregado:',
+        {
+            listaPreco:
+                dadosListaPrecoAtual,
 
-        console.log(
-            'Catálogo do cliente carregado:',
-            {
-                listaPreco:
-                    dadosListaPrecoAtual,
+            totalRecebido:
+                itensRecebidos.length,
 
-                totalRecebido:
-                    catalogoClienteData.length,
+            totalDisponivel:
+                itensDisponiveis.length,
 
-                totalIndexado:
-                    catalogoClientePorCodigo.size,
+            totalRemovido:
+                itensRecebidos.length -
+                itensDisponiveis.length,
 
-                erros:
-                    resultado.erros || []
-            }
-        );
+            totalIndexado:
+                catalogoClientePorCodigo.size,
 
+            erros:
+                resultado.erros || []
+        }
+    );
         return resultado;
 
     }finally{
@@ -793,8 +910,37 @@ function validarDisponibilidadeItem(
         );
 
     }
+    
+    const descricao =
+        String(
+            item.descricao || ''
+        )
+        .normalize(
+            'NFD'
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ''
+        )
+        .trim()
+        .toLowerCase();
 
-    if(item.ativo !== true){
+    if(
+        descricao.includes('display') ||
+        descricao.includes('bobina')
+    ){
+
+        throw new Error(
+            'Itens com descrição contendo DISPLAY ou BOBINA não podem ser adicionados ao pedido.'
+        );
+
+    }
+
+    if(
+        !converterParaBooleano(
+            item.ativo
+        )
+    ){
 
         throw new Error(
             'Item inativo.'
@@ -802,7 +948,11 @@ function validarDisponibilidadeItem(
 
     }
 
-    if(item.suspenso === true){
+    if(
+        converterParaBooleano(
+            item.suspenso
+        )
+    ){
 
         throw new Error(
             'Item suspenso.'
@@ -810,7 +960,11 @@ function validarDisponibilidadeItem(
 
     }
 
-    if(item.foraLinha === true){
+    if(
+        converterParaBooleano(
+            item.foraLinha
+        )
+    ){
 
         throw new Error(
             'Item fora de linha.'
@@ -818,7 +972,11 @@ function validarDisponibilidadeItem(
 
     }
 
-    if(item.bloqueado === true){
+    if(
+        converterParaBooleano(
+            item.bloqueado
+        )
+    ){
 
         throw new Error(
             'Item bloqueado.'
@@ -826,7 +984,13 @@ function validarDisponibilidadeItem(
 
     }
 
-    if(item.exibeConsultasListaPreco === false){
+    if(
+        item.exibeConsultasListaPreco !== undefined &&
+        item.exibeConsultasListaPreco !== null &&
+        !converterParaBooleano(
+            item.exibeConsultasListaPreco
+        )
+    ){
 
         throw new Error(
             'Item indisponível para consulta na lista de preços.'
