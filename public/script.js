@@ -22,6 +22,99 @@ let catalogoClienteCarregando =
 let dadosListaPrecoAtual =
     null;
 
+function valorBooleanoAtivo(
+    valor
+){
+
+    if(valor === true){
+        return true;
+    }
+
+    if(valor === false){
+        return false;
+    }
+
+    const valorNormalizado =
+        String(
+            valor ?? ''
+        )
+        .trim()
+        .toLowerCase();
+
+    return (
+        valorNormalizado === 'true' ||
+        valorNormalizado === '1' ||
+        valorNormalizado === 'sim' ||
+        valorNormalizado === 's' ||
+        valorNormalizado === 'ativo'
+    );
+
+}
+
+function verificarClienteInativoOuSuspenso(
+    clienteApi
+){
+
+    const clienteAtivo =
+        valorBooleanoAtivo(
+            clienteApi.ATIVO
+        );
+
+    const clienteSuspenso =
+        valorBooleanoAtivo(
+            clienteApi.SUSPENSO
+        );
+
+    if(
+        clienteAtivo &&
+        !clienteSuspenso
+    ){
+
+        return true;
+
+    }
+
+    const motivos =
+        [];
+
+    if(!clienteAtivo){
+
+        motivos.push(
+            'inativo'
+        );
+
+    }
+
+    if(clienteSuspenso){
+
+        motivos.push(
+            'suspenso'
+        );
+
+    }
+
+    const mensagem =
+        'Atenção: o cliente está ' +
+        motivos.join(' e ') +
+        '.\n\n' +
+        'Deseja continuar com o pedido mesmo assim?';
+
+    const desejaContinuar =
+        window.confirm(
+            mensagem
+        );
+
+    if(!desejaContinuar){
+
+        window.location.reload();
+
+        return false;
+
+    }
+
+    return true;
+
+}
 
 
 
@@ -221,6 +314,25 @@ async function carregarCatalogoCliente(
 
         catalogoClienteCarregando =
             false;
+
+            let datalist = document.getElementById('lista-produtos-cliente');
+
+        if (!datalist) {
+            datalist = document.createElement('datalist');
+            datalist.id = 'lista-produtos-cliente';
+            document.body.appendChild(datalist);
+        }
+
+        datalist.innerHTML = '';
+
+        catalogoClienteData.forEach(item => {
+            const option = document.createElement('option');
+
+            option.value =
+                `${item.itemEmpresaId} - ${item.descricao}`;
+
+            datalist.appendChild(option);
+        });
 
         hideFeedback();
 
@@ -569,8 +681,7 @@ function preencherLinhaComItem(
         'CX';
 
     campoDescricao.value =
-        item.descricao ||
-        '';
+    `${item.itemEmpresaId} - ${item.descricao}`;
 
     campoIpi.value =
         (ipi * 100)
@@ -910,6 +1021,22 @@ function validarTabelaPedido(){
 
 }
 
+function buscarItemPorDescricao(texto) {
+    const pesquisa = String(texto || '')
+        .trim()
+        .toUpperCase();
+
+    if (!pesquisa) {
+        return null;
+    }
+
+    return catalogoClienteData.find(item =>
+        String(item.descricao || '')
+            .toUpperCase()
+            .includes(pesquisa)
+    ) || null;
+}
+
 function validarPedidoMinimo() {
 
     totalComIpiPed = totalComIpi();
@@ -1019,10 +1146,22 @@ cnpjInput1.addEventListener('blur', async function () {
         if (!res.ok) throw new Error();
         clienteApi = await res.json();
 
-        if (!clienteApi.ATIVO || clienteApi.SUSPENSO) {
-            alert('Cliente inativo ou suspenso.');
-            return limparCamposCliente();
+        const podeContinuar =
+            verificarClienteInativoOuSuspenso(
+                clienteApi
+            );
+
+        if(!podeContinuar){
+
+            return;
+
         }
+
+        console.log(
+            'LISTA:',
+            clienteApi["LISTA"]
+        );
+
         console.log('LISTA:', clienteApi["LISTA"]);
         console.log('LISTA NOME1:', clienteApi["LISTA NOME1"]);
         clientesData = [null, [
@@ -1097,9 +1236,15 @@ codInput1.addEventListener('blur', async function () {
         if (!res.ok) throw new Error();
         clienteApi = await res.json();
 
-        if (!clienteApi.ATIVO || clienteApi.SUSPENSO) {
-            alert('Cliente inativo ou suspenso.');
-            return limparCamposCliente();
+        const podeContinuar =
+            verificarClienteInativoOuSuspenso(
+                clienteApi
+            );
+
+        if(!podeContinuar){
+
+            return;
+
         }
         console.log('LISTA:', clienteApi["LISTA"]);
         console.log('LISTA NOME1:', clienteApi["LISTA NOME1"]);
@@ -1489,6 +1634,7 @@ function adicionarNovaLinha(){
             <input
                 type="text"
                 class="campo-codigo-item"
+                list="lista-produtos-cliente"
                 autocomplete="off"
             >
         </td>
@@ -1556,7 +1702,6 @@ function adicionarNovaLinha(){
             >
         </td>
 
-
         <td>
             <button
                 type="button"
@@ -1566,8 +1711,8 @@ function adicionarNovaLinha(){
                 Excluir
             </button>
         </td>
-        
-        <td style="display: none;">
+
+        <td style="display:none;">
             <input
                 type="hidden"
                 class="campo-item-id"
@@ -1878,10 +2023,15 @@ function configurarLinhaItemPedido(
             return false;
         }
 
-        const codigo =
-            normalizarCodigoItem(
-                campoCodigo.value
-            );
+        const textoDigitado = campoCodigo.value.trim();
+
+        let codigo = textoDigitado;
+
+        if (textoDigitado.includes(' - ')) {
+            codigo = textoDigitado.split(' - ')[0].trim();
+        }
+
+        codigo = normalizarCodigoItem(codigo);
 
         if(!codigo){
 
@@ -2671,11 +2821,16 @@ confirmButton.addEventListener("click", async () => {
                     row.dataset.itemId || 0
                 );
 
-            const codigo =
+            const codigoCompleto =
                 row.querySelector(
                     '.campo-codigo-item'
                 )
                 ?.value || '';
+
+            const codigo =
+                codigoCompleto.includes(' - ')
+                    ? codigoCompleto.split(' - ')[0].trim()
+                    : codigoCompleto.trim();
 
             const quantidade =
                 Number(
