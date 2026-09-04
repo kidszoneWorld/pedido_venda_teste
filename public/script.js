@@ -140,437 +140,196 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
   .then(r => r.json())
   .then(d => icmsSTData = d);
 
-
-async function gerarPdfNoNavegador(
-    elemento,
-    nomeArquivo
-){
-
-    if(typeof html2canvas === 'undefined'){
-
-        throw new Error(
-            'A biblioteca html2canvas não foi carregada.'
-        );
-
+async function gerarPdfNoNavegador(elemento, nomeArquivo) {
+    if (typeof window.html2canvas !== 'function') {
+        throw new Error('A biblioteca html2canvas não foi carregada.');
     }
 
-    if(
-        typeof window.jspdf === 'undefined' ||
-        typeof window.jspdf.jsPDF === 'undefined'
-    ){
-
-        throw new Error(
-            'A biblioteca jsPDF não foi carregada.'
-        );
-
+    if (typeof window.jspdf?.jsPDF !== 'function') {
+        throw new Error('A biblioteca jsPDF não foi carregada.');
     }
 
-    if(!elemento){
-
-        throw new Error(
-            'O elemento para geração do PDF não foi informado.'
-        );
-
+    if (!elemento) {
+        throw new Error('O elemento para geração do PDF não foi informado.');
     }
 
-    /*
-     * Aguarda o navegador concluir o layout do clone.
-     */
-    await new Promise(resolve => {
-
-        requestAnimationFrame(() => {
-
-            requestAnimationFrame(
-                resolve
-            );
-
-        });
-
+    await new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
     });
 
-    /*
-     * Aguarda o carregamento das imagens.
-     */
-    const imagens =
-        Array.from(
-            elemento.querySelectorAll(
-                'img'
-            )
-        );
+    if (document.fonts?.ready) {
+        await document.fonts.ready;
+    }
+
+    const imagens = Array.from(elemento.querySelectorAll('img'));
 
     await Promise.all(
-        imagens.map(imagem => {
-
-            if(
-                imagem.complete &&
-                imagem.naturalWidth > 0
-            ){
-
+        imagens.map((imagem) => {
+            if (imagem.complete) {
                 return Promise.resolve();
-
             }
 
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
+                let terminou = false;
 
-                let concluido =
-                    false;
+                const finalizar = () => {
+                    if (terminou) return;
+                    terminou = true;
+                    resolve();
+                };
 
-                const finalizar =
-                    () => {
-
-                        if(concluido){
-                            return;
-                        }
-
-                        concluido =
-                            true;
-
-                        resolve();
-
-                    };
-
-                imagem.addEventListener(
-                    'load',
-                    finalizar,
-                    {
-                        once:
-                            true
-                    }
-                );
-
-                imagem.addEventListener(
-                    'error',
-                    finalizar,
-                    {
-                        once:
-                            true
-                    }
-                );
-
-                setTimeout(
-                    finalizar,
-                    5000
-                );
-
+                imagem.addEventListener('load', finalizar, { once: true });
+                imagem.addEventListener('error', finalizar, { once: true });
+                setTimeout(finalizar, 5000);
             });
-
         })
     );
 
-    /*
-     * Obtém as dimensões reais do conteúdo.
-     */
-    const largura =
-        Math.ceil(
-            elemento
-                .getBoundingClientRect()
-                .width
-        );
-
-    const altura =
-        Math.ceil(
-            elemento.scrollHeight
-        );
-
-    console.log(
-        'Dimensões do conteúdo do PDF:',
-        {
-            largura:
-                largura,
-
-            altura:
-                altura,
-
-            filhos:
-                elemento.children.length
-        }
+    const retangulo = elemento.getBoundingClientRect();
+    const largura = Math.ceil(
+        Math.max(retangulo.width, elemento.scrollWidth, elemento.offsetWidth)
+    );
+    const altura = Math.ceil(
+        Math.max(retangulo.height, elemento.scrollHeight, elemento.offsetHeight)
     );
 
-    if(
-        largura <= 0 ||
-        altura <= 1
-    ){
-
-        throw new Error(
-            'O conteúdo preparado para o PDF está vazio.'
-        );
-
+    if (largura <= 0 || altura <= 1) {
+        throw new Error('O conteúdo preparado para o PDF está vazio.');
     }
 
-    /*
-     * Captura o conteúdo completo em um canvas.
-     */
-    const canvas =
-        await html2canvas(
-            elemento,
-            {
-                scale:
-                    1.5,
+    console.log('Capturando conteúdo igual ao site:', { largura, altura });
 
-                useCORS:
-                    true,
+    const canvas = await window.html2canvas(elemento, {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        logging: false,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        width: largura,
+        height: altura,
+        windowWidth: Math.max(document.documentElement.clientWidth, largura),
+        windowHeight: Math.max(document.documentElement.clientHeight, altura),
+        onclone: (documentoClonado) => {
+            const containerPdf = documentoClonado.querySelector('.container-pdf');
+            if (!containerPdf) return;
 
-                allowTaint:
-                    false,
+            containerPdf.style.setProperty('visibility', 'visible', 'important');
+            containerPdf.style.setProperty('opacity', '1', 'important');
+            containerPdf.style.setProperty('display', 'block', 'important');
+            containerPdf.style.setProperty('transform', 'none', 'important');
 
-                backgroundColor:
-                    '#ffffff',
-
-                logging:
-                    false,
-
-                scrollX:
-                    0,
-
-                scrollY:
-                    0,
-
-                width:
-                    largura,
-
-                height:
-                    altura,
-
-                windowWidth:
-                    largura,
-
-                windowHeight:
-                    altura,
-
-                removeContainer:
-                    true
+            const observacao = containerPdf.querySelector('#observation');
+            if (observacao) {
+                observacao.style.setProperty('white-space', 'pre-wrap', 'important');
+                observacao.style.setProperty('overflow-wrap', 'break-word', 'important');
+                observacao.style.setProperty('overflow', 'hidden', 'important');
+                observacao.style.setProperty(
+                    'height',
+                    `${Math.max(observacao.scrollHeight, 100)}px`,
+                    'important'
+                );
             }
-        );
-
-    console.log(
-        'Canvas gerado:',
-        {
-            largura:
-                canvas.width,
-
-            altura:
-                canvas.height
         }
+    });
+
+    if (canvas.width <= 0 || canvas.height <= 0) {
+        throw new Error('O canvas do PDF foi gerado vazio.');
+    }
+
+    console.log('Canvas gerado:', {
+        largura: canvas.width,
+        altura: canvas.height
+    });
+
+    const jsPDF = window.jspdf.jsPDF;
+    const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+    });
+
+    const margem = 5;
+    const larguraPagina = pdf.internal.pageSize.getWidth();
+    const alturaPagina = pdf.internal.pageSize.getHeight();
+    const larguraUtil = larguraPagina - margem * 2;
+    const alturaUtil = alturaPagina - margem * 2;
+    const escalaPdf = larguraUtil / canvas.width;
+    const alturaPaginaPixels = Math.max(
+        1,
+        Math.floor(alturaUtil / escalaPdf)
     );
 
-    if(
-        canvas.width <= 0 ||
-        canvas.height <= 0
-    ){
+    let posicaoY = 0;
+    let pagina = 0;
 
-        throw new Error(
-            'O canvas do PDF foi gerado vazio.'
+    while (posicaoY < canvas.height) {
+        const alturaParte = Math.min(
+            alturaPaginaPixels,
+            canvas.height - posicaoY
         );
 
-    }
+        const canvasPagina = document.createElement('canvas');
+        canvasPagina.width = canvas.width;
+        canvasPagina.height = alturaParte;
 
-    const {
-        jsPDF
-    } =
-        window.jspdf;
-
-    const pdf =
-        new jsPDF({
-            orientation:
-                'landscape',
-
-            unit:
-                'mm',
-
-            format:
-                'a4',
-
-            compress:
-                true
-        });
-
-    /*
-     * Dimensões do PDF A4 em paisagem.
-     */
-    const margem =
-        5;
-
-    const larguraPagina =
-        pdf.internal.pageSize.getWidth();
-
-    const alturaPagina =
-        pdf.internal.pageSize.getHeight();
-
-    const larguraUtil =
-        larguraPagina -
-        margem * 2;
-
-    const alturaUtil =
-        alturaPagina -
-        margem * 2;
-
-    /*
-     * Converte a largura do canvas para a largura útil
-     * da página e calcula quantos pixels cabem na altura.
-     */
-    const proporcao =
-        larguraUtil /
-        canvas.width;
-
-    const alturaPaginaEmPixels =
-        Math.floor(
-            alturaUtil /
-            proporcao
-        );
-
-    if(alturaPaginaEmPixels <= 0){
-
-        throw new Error(
-            'Não foi possível calcular o tamanho das páginas do PDF.'
-        );
-
-    }
-
-    let posicaoY =
-        0;
-
-    let numeroPagina =
-        0;
-
-    /*
-     * Divide verticalmente o canvas em páginas.
-     */
-    while(posicaoY < canvas.height){
-
-        const alturaRecorte =
-            Math.min(
-                alturaPaginaEmPixels,
-                canvas.height - posicaoY
-            );
-
-        const canvasPagina =
-            document.createElement(
-                'canvas'
-            );
-
-        canvasPagina.width =
-            canvas.width;
-
-        canvasPagina.height =
-            alturaRecorte;
-
-        const contexto =
-            canvasPagina.getContext(
-                '2d'
-            );
-
-        if(!contexto){
-
-            throw new Error(
-                'Não foi possível criar a página do PDF.'
-            );
-
+        const contexto = canvasPagina.getContext('2d');
+        if (!contexto) {
+            throw new Error('Não foi possível preparar uma página do PDF.');
         }
 
-        /*
-         * Fundo branco da página.
-         */
-        contexto.fillStyle =
-            '#ffffff';
-
-        contexto.fillRect(
-            0,
-            0,
-            canvasPagina.width,
-            canvasPagina.height
-        );
-
-        /*
-         * Copia o trecho correspondente do canvas principal.
-         */
+        contexto.fillStyle = '#ffffff';
+        contexto.fillRect(0, 0, canvasPagina.width, canvasPagina.height);
         contexto.drawImage(
             canvas,
             0,
             posicaoY,
             canvas.width,
-            alturaRecorte,
+            alturaParte,
             0,
             0,
             canvas.width,
-            alturaRecorte
+            alturaParte
         );
 
-        const imagemPagina =
-            canvasPagina.toDataURL(
-                'image/jpeg',
-                0.92
-            );
+        const imagem = canvasPagina.toDataURL('image/jpeg', 0.95);
 
-        const alturaImagemNoPdf =
-            alturaRecorte *
-            proporcao;
-
-        /*
-         * A primeira página já foi criada pelo jsPDF.
-         */
-        if(numeroPagina > 0){
-
-            pdf.addPage(
-                'a4',
-                'landscape'
-            );
-
+        if (pagina > 0) {
+            pdf.addPage('a4', 'landscape');
         }
 
         pdf.addImage(
-            imagemPagina,
+            imagem,
             'JPEG',
             margem,
             margem,
             larguraUtil,
-            alturaImagemNoPdf,
+            alturaParte * escalaPdf,
             undefined,
             'FAST'
         );
 
-        posicaoY +=
-            alturaRecorte;
-
-        numeroPagina++;
-
+        posicaoY += alturaParte;
+        pagina += 1;
     }
 
-    const pdfBlob =
-        pdf.output(
-            'blob'
-        );
+    const pdfBlob = pdf.output('blob');
 
-    if(
-        !pdfBlob ||
-        pdfBlob.size === 0
-    ){
-
-        throw new Error(
-            'O PDF gerado está vazio.'
-        );
-
+    if (!pdfBlob || pdfBlob.size === 0) {
+        throw new Error('O PDF gerado está vazio.');
     }
 
-    console.log(
-        'PDF gerado com sucesso:',
-        {
-            paginas:
-                numeroPagina,
-
-            tamanho:
-                pdfBlob.size,
-
-            tipo:
-                pdfBlob.type,
-
-            nomeArquivo:
-                nomeArquivo
-        }
-    );
+    console.log('PDF concluído:', {
+        nomeArquivo,
+        paginas: pagina,
+        tamanho: pdfBlob.size
+    });
 
     return pdfBlob;
-
 }
+
 
 async function carregarListaPrecos(listaId) {
     const response = await fetch(`/api/lista-preco/${listaId}`);
@@ -4317,8 +4076,6 @@ function blobParaDataUri(blob){
 
 }
 
-
-
 function prepararPedidoParaPdf(){
 
     const containerOriginal =
@@ -4344,9 +4101,8 @@ function prepararPedidoParaPdf(){
     );
 
     /*
-     * Copia os valores atuais dos campos.
-     * cloneNode não garante que o valor digitado
-     * seja transportado corretamente.
+     * Copia os valores atuais dos inputs,
+     * selects e textareas para o clone.
      */
     const camposOriginais =
         containerOriginal.querySelectorAll(
@@ -4379,10 +4135,25 @@ function prepararPedidoParaPdf(){
                 campoClone.checked =
                     campoOriginal.checked;
 
-            }else{
+                return;
 
-                campoClone.value =
+            }
+
+            campoClone.value =
+                campoOriginal.value;
+
+            campoClone.setAttribute(
+                'value',
+                campoOriginal.value
+            );
+
+            if(campoOriginal.tagName === 'TEXTAREA'){
+
+                campoClone.textContent =
                     campoOriginal.value;
+
+                campoClone.style.whiteSpace =
+                    'pre-wrap';
 
             }
 
@@ -4391,13 +4162,30 @@ function prepararPedidoParaPdf(){
                 campoClone.selectedIndex =
                     campoOriginal.selectedIndex;
 
+                Array.from(
+                    campoClone.options
+                )
+                .forEach(
+                    (
+                        opcao,
+                        indiceOpcao
+                    ) => {
+
+                        opcao.selected =
+                            indiceOpcao ===
+                            campoOriginal.selectedIndex;
+
+                    }
+                );
+
             }
 
         }
     );
 
     /*
-     * Remove elementos que não devem aparecer.
+     * Remove apenas elementos de interação
+     * que não devem aparecer no PDF.
      */
     clone
         .querySelectorAll([
@@ -4425,7 +4213,11 @@ function prepararPedidoParaPdf(){
             '#baixarJson',
             '#inputJson',
             '#jsonFileInput',
-            '#feedback1'
+            '#feedback1',
+            '#excluirLinha',
+            '#adicionarLinha',
+            '#button_pdf',
+            '#button_sistema'
         ].join(','))
         .forEach(elemento => {
 
@@ -4434,7 +4226,7 @@ function prepararPedidoParaPdf(){
         });
 
     /*
-     * Remove as colunas Excluir e ItemId.
+     * Remove colunas técnicas da tabela.
      */
     const tabela =
         clone.querySelector(
@@ -4503,9 +4295,14 @@ function prepararPedidoParaPdf(){
                 )
                 .forEach(linha => {
 
-                    linha.children[
-                        indice
-                    ]?.remove();
+                    const celula =
+                        linha.children[indice];
+
+                    if(celula){
+
+                        celula.remove();
+
+                    }
 
                 });
 
@@ -4514,7 +4311,7 @@ function prepararPedidoParaPdf(){
     }
 
     /*
-     * Remove linhas de produto vazias.
+     * Remove somente linhas vazias.
      */
     clone
         .querySelectorAll(
@@ -4541,140 +4338,139 @@ function prepararPedidoParaPdf(){
         });
 
     /*
-     * Converte inputs e selects em texto.
-     * Isso evita cortes nos valores dentro do PDF.
+     * Mantém a mesma largura visual que o site
+     * apresenta no momento da geração.
      */
-    clone
-        .querySelectorAll(
-            'input:not([type="hidden"]), select'
-        )
-        .forEach(campo => {
+    const larguraOriginal =
+        Math.ceil(
+            containerOriginal
+                .getBoundingClientRect()
+                .width
+        );
 
-            let valor =
-                '';
+    clone.style.setProperty(
+        'position',
+        'absolute',
+        'important'
+    );
 
-            if(campo.tagName === 'SELECT'){
+    clone.style.setProperty(
+        'top',
+        `${window.scrollY}px`,
+        'important'
+    );
 
-                valor =
-                    campo.options[
-                        campo.selectedIndex
-                    ]?.text ||
-                    campo.value ||
-                    '';
+    clone.style.setProperty(
+        'left',
+        '0',
+        'important'
+    );
 
-            }else{
+    clone.style.setProperty(
+        'width',
+        `${larguraOriginal}px`,
+        'important'
+    );
 
-                valor =
-                    campo.value ||
-                    '';
+    clone.style.setProperty(
+        'max-width',
+        'none',
+        'important'
+    );
 
-            }
+    clone.style.setProperty(
+        'min-width',
+        '0',
+        'important'
+    );
 
-            const span =
-                document.createElement(
-                    'span'
-                );
+    clone.style.setProperty(
+        'margin',
+        '0',
+        'important'
+    );
 
-            span.textContent =
-                valor;
+    clone.style.setProperty(
+        'display',
+        'block',
+        'important'
+    );
 
-            span.className =
-                campo.className ||
-                '';
+    clone.style.setProperty(
+        'visibility',
+        'visible',
+        'important'
+    );
 
-            span.classList.add(
-                'valor-campo-pdf'
-            );
+    clone.style.setProperty(
+        'opacity',
+        '1',
+        'important'
+    );
 
-            campo.replaceWith(
-                span
-            );
+    clone.style.setProperty(
+        'overflow',
+        'visible',
+        'important'
+    );
 
-        });
+    clone.style.setProperty(
+        'transform',
+        'none',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'z-index',
+        '999999',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'pointer-events',
+        'none',
+        'important'
+    );
 
     /*
-     * Converte o textarea da observação em div.
-     * textContent + white-space: pre-wrap preserva
-     * as quebras feitas com Enter.
-     */
-    clone
-        .querySelectorAll(
-            'textarea'
-        )
-        .forEach(campo => {
+ * Substitui somente a observação no clone.
+ * O div preserva as quebras feitas com Enter.
+ */
+const observacaoOriginal =
+    containerOriginal.querySelector(
+        '#observation'
+    );
 
-            const div =
-                document.createElement(
-                    'div'
-                );
+const observacaoClone =
+    clone.querySelector(
+        '#observation'
+    );
 
-            div.textContent =
-                campo.value ||
-                '';
+    if(
+        observacaoOriginal &&
+        observacaoClone
+    ){
 
-            div.className =
-                campo.className ||
-                '';
-
-            div.classList.add(
-                'observacao-conteudo-pdf'
+        const observacaoPdf =
+            document.createElement(
+                'div'
             );
 
-            campo.replaceWith(
-                div
-            );
+        observacaoPdf.id =
+            'observation-pdf';
 
-        });
+        observacaoPdf.className =
+            'observacao-pdf';
 
-    /*
-     * Dimensões controladas para A4 paisagem.
-     */
-    clone.style.position =
-    'fixed';
+        observacaoPdf.textContent =
+            observacaoOriginal.value ||
+            '';
 
-    clone.style.left =
-        '0';
+        observacaoClone.replaceWith(
+            observacaoPdf
+        );
 
-    clone.style.top =
-        '0';
-    clone.style.display =
-    'block';
-
-    clone.style.overflow =
-        'visible';
-
-    clone.style.transform =
-        'none';
-
-    clone.style.width =
-        '1120px';
-
-    clone.style.maxWidth =
-        '1120px';
-
-    clone.style.margin =
-        '0';
-
-    clone.style.padding =
-        '12px';
-
-    clone.style.backgroundColor =
-        '#ffffff';
-
-    clone.style.color =
-        '#000000';
-
-    clone.style.zIndex =
-        '999999';
-
-    clone.style.visibility =
-        'visible';
-
-    clone.style.opacity =
-        '1';
-
-    clone.style.pointerEvents =
-        'none';
+    }
 
     document.body.appendChild(
         clone
