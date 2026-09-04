@@ -185,12 +185,16 @@ async function gerarPdfNoNavegador(elemento, nomeArquivo) {
         })
     );
 
-    const retangulo = elemento.getBoundingClientRect();
-    const largura = Math.ceil(
-        Math.max(retangulo.width, elemento.scrollWidth, elemento.offsetWidth)
-    );
+    const larguraPadraoPdf = 1120;
+
+    const largura = larguraPadraoPdf;
+
     const altura = Math.ceil(
-        Math.max(retangulo.height, elemento.scrollHeight, elemento.offsetHeight)
+        Math.max(
+            elemento.scrollHeight,
+            elemento.offsetHeight,
+            elemento.getBoundingClientRect().height
+        )
     );
 
     if (largura <= 0 || altura <= 1) {
@@ -199,40 +203,80 @@ async function gerarPdfNoNavegador(elemento, nomeArquivo) {
 
     console.log('Capturando conteúdo igual ao site:', { largura, altura });
 
-    const canvas = await window.html2canvas(elemento, {
+    const canvas = await window.html2canvas(
+    elemento,
+    {
         scale: 1.5,
         useCORS: true,
         allowTaint: false,
         backgroundColor: '#ffffff',
         logging: false,
+
         scrollX: 0,
-        scrollY: -window.scrollY,
-        width: largura,
+        scrollY: 0,
+
+        width: larguraPadraoPdf,
         height: altura,
-        windowWidth: Math.max(document.documentElement.clientWidth, largura),
-        windowHeight: Math.max(document.documentElement.clientHeight, altura),
+
+        windowWidth: larguraPadraoPdf,
+        windowHeight: altura,
+
         onclone: (documentoClonado) => {
-            const containerPdf = documentoClonado.querySelector('.container-pdf');
-            if (!containerPdf) return;
 
-            containerPdf.style.setProperty('visibility', 'visible', 'important');
-            containerPdf.style.setProperty('opacity', '1', 'important');
-            containerPdf.style.setProperty('display', 'block', 'important');
-            containerPdf.style.setProperty('transform', 'none', 'important');
-
-            const observacao = containerPdf.querySelector('#observation');
-            if (observacao) {
-                observacao.style.setProperty('white-space', 'pre-wrap', 'important');
-                observacao.style.setProperty('overflow-wrap', 'break-word', 'important');
-                observacao.style.setProperty('overflow', 'hidden', 'important');
-                observacao.style.setProperty(
-                    'height',
-                    `${Math.max(observacao.scrollHeight, 100)}px`,
-                    'important'
+            const containerPdf =
+                documentoClonado.querySelector(
+                    '.container-pdf'
                 );
+
+            if(!containerPdf){
+                return;
             }
+
+            containerPdf.style.setProperty(
+                'display',
+                'block',
+                'important'
+            );
+
+            containerPdf.style.setProperty(
+                'visibility',
+                'visible',
+                'important'
+            );
+
+            containerPdf.style.setProperty(
+                'opacity',
+                '1',
+                'important'
+            );
+
+            containerPdf.style.setProperty(
+                'width',
+                '1120px',
+                'important'
+            );
+
+            containerPdf.style.setProperty(
+                'min-width',
+                '1120px',
+                'important'
+            );
+
+            containerPdf.style.setProperty(
+                'max-width',
+                '1120px',
+                'important'
+            );
+
+            containerPdf.style.setProperty(
+                'transform',
+                'none',
+                'important'
+            );
+
         }
-    });
+    }
+);
 
     if (canvas.width <= 0 || canvas.height <= 0) {
         throw new Error('O canvas do PDF foi gerado vazio.');
@@ -4096,10 +4140,13 @@ function prepararPedidoParaPdf(){
             true
         );
 
-    clone.classList.add(
-        'container-pdf'
-    );
+        clone.classList.add(
+            'container-pdf'
+        );
 
+        clone.classList.add(
+            'layout-pdf-desktop'
+        );
     /*
      * Copia os valores atuais dos inputs,
      * selects e textareas para o clone.
@@ -4341,12 +4388,27 @@ function prepararPedidoParaPdf(){
      * Mantém a mesma largura visual que o site
      * apresenta no momento da geração.
      */
-    const larguraOriginal =
-        Math.ceil(
-            containerOriginal
-                .getBoundingClientRect()
-                .width
-        );
+
+    const larguraPadraoPdf =
+        1120;
+
+    clone.style.setProperty(
+        'width',
+        `${larguraPadraoPdf}px`,
+        'important'
+    );
+
+    clone.style.setProperty(
+        'min-width',
+        `${larguraPadraoPdf}px`,
+        'important'
+    );
+
+    clone.style.setProperty(
+        'max-width',
+        `${larguraPadraoPdf}px`,
+        'important'
+    );
 
     clone.style.setProperty(
         'position',
@@ -4356,30 +4418,12 @@ function prepararPedidoParaPdf(){
 
     clone.style.setProperty(
         'top',
-        `${window.scrollY}px`,
-        'important'
-    );
-
-    clone.style.setProperty(
-        'left',
         '0',
         'important'
     );
 
     clone.style.setProperty(
-        'width',
-        `${larguraOriginal}px`,
-        'important'
-    );
-
-    clone.style.setProperty(
-        'max-width',
-        'none',
-        'important'
-    );
-
-    clone.style.setProperty(
-        'min-width',
+        'left',
         '0',
         'important'
     );
