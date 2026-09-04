@@ -3908,31 +3908,44 @@ async function gerarPdfNoNavegador(
 
     }
 
+    /*
+     * Espera o navegador calcular o layout.
+     */
+    await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+            requestAnimationFrame(
+                resolve
+            );
+
+        });
+
+    });
+
     const largura =
-        Math.max(
-            elemento.scrollWidth,
-            elemento.offsetWidth,
-            1500
-        );
+        elemento
+            .getBoundingClientRect()
+            .width;
 
     const altura =
-        Math.max(
-            elemento.scrollHeight,
-            elemento.offsetHeight,
-            1
-        );
+        elemento.scrollHeight;
 
     console.log(
         'Dimensões do conteúdo do PDF:',
         {
-            largura,
-            altura,
-            filhos:
-                elemento.children.length
+            largura:
+                largura,
+
+            altura:
+                altura
         }
     );
 
-    if(altura <= 1){
+    if(
+        largura <= 0 ||
+        altura <= 1
+    ){
 
         throw new Error(
             'O conteúdo preparado para o PDF está vazio.'
@@ -3942,7 +3955,7 @@ async function gerarPdfNoNavegador(
 
     const opcoes = {
         margin:
-            [3, 3, 3, 3],
+            [5, 5, 5, 5],
 
         filename:
             nomeArquivo,
@@ -3966,7 +3979,7 @@ async function gerarPdfNoNavegador(
                 false,
 
             logging:
-                true,
+                false,
 
             backgroundColor:
                 '#ffffff',
@@ -3977,17 +3990,8 @@ async function gerarPdfNoNavegador(
             scrollY:
                 0,
 
-            width:
-                largura,
-
             windowWidth:
-                largura,
-
-            height:
-                altura,
-
-            windowHeight:
-                altura
+                1120
         },
 
         jsPDF: {
@@ -4013,24 +4017,11 @@ async function gerarPdfNoNavegador(
             avoid: [
                 'tr',
                 '.section-title',
-                '.payment-conditions'
+                '.payment-conditions',
+                '.observations'
             ]
         }
     };
-
-    await new Promise(resolve => {
-
-        requestAnimationFrame(
-            () => {
-
-                requestAnimationFrame(
-                    resolve
-                );
-
-            }
-        );
-
-    });
 
     const worker =
         html2pdf()
@@ -4064,7 +4055,7 @@ async function gerarPdfNoNavegador(
     }
 
     console.log(
-        'PDF gerado no navegador:',
+        'PDF gerado com sucesso:',
         {
             tamanho:
                 pdfBlob.size,
@@ -4102,6 +4093,11 @@ function prepararPedidoParaPdf(){
         'container-pdf'
     );
 
+    /*
+     * Copia os valores atuais dos campos.
+     * cloneNode não garante que o valor digitado
+     * seja transportado corretamente.
+     */
     const camposOriginais =
         containerOriginal.querySelectorAll(
             'input, textarea, select'
@@ -4140,9 +4136,7 @@ function prepararPedidoParaPdf(){
 
             }
 
-            if(
-                campoOriginal.tagName === 'SELECT'
-            ){
+            if(campoOriginal.tagName === 'SELECT'){
 
                 campoClone.selectedIndex =
                     campoOriginal.selectedIndex;
@@ -4152,6 +4146,9 @@ function prepararPedidoParaPdf(){
         }
     );
 
+    /*
+     * Remove elementos que não devem aparecer.
+     */
     clone
         .querySelectorAll([
             '.no-print',
@@ -4186,6 +4183,9 @@ function prepararPedidoParaPdf(){
 
         });
 
+    /*
+     * Remove as colunas Excluir e ItemId.
+     */
     const tabela =
         clone.querySelector(
             '#dadosPedido'
@@ -4253,14 +4253,9 @@ function prepararPedidoParaPdf(){
                 )
                 .forEach(linha => {
 
-                    const celula =
-                        linha.children[indice];
-
-                    if(celula){
-
-                        celula.remove();
-
-                    }
+                    linha.children[
+                        indice
+                    ]?.remove();
 
                 });
 
@@ -4268,6 +4263,9 @@ function prepararPedidoParaPdf(){
 
     }
 
+    /*
+     * Remove linhas de produto vazias.
+     */
     clone
         .querySelectorAll(
             '#dadosPedido tbody tr'
@@ -4292,6 +4290,95 @@ function prepararPedidoParaPdf(){
 
         });
 
+    /*
+     * Converte inputs e selects em texto.
+     * Isso evita cortes nos valores dentro do PDF.
+     */
+    clone
+        .querySelectorAll(
+            'input:not([type="hidden"]), select'
+        )
+        .forEach(campo => {
+
+            let valor =
+                '';
+
+            if(campo.tagName === 'SELECT'){
+
+                valor =
+                    campo.options[
+                        campo.selectedIndex
+                    ]?.text ||
+                    campo.value ||
+                    '';
+
+            }else{
+
+                valor =
+                    campo.value ||
+                    '';
+
+            }
+
+            const span =
+                document.createElement(
+                    'span'
+                );
+
+            span.textContent =
+                valor;
+
+            span.className =
+                campo.className ||
+                '';
+
+            span.classList.add(
+                'valor-campo-pdf'
+            );
+
+            campo.replaceWith(
+                span
+            );
+
+        });
+
+    /*
+     * Converte o textarea da observação em div.
+     * textContent + white-space: pre-wrap preserva
+     * as quebras feitas com Enter.
+     */
+    clone
+        .querySelectorAll(
+            'textarea'
+        )
+        .forEach(campo => {
+
+            const div =
+                document.createElement(
+                    'div'
+                );
+
+            div.textContent =
+                campo.value ||
+                '';
+
+            div.className =
+                campo.className ||
+                '';
+
+            div.classList.add(
+                'observacao-conteudo-pdf'
+            );
+
+            campo.replaceWith(
+                div
+            );
+
+        });
+
+    /*
+     * Dimensões controladas para A4 paisagem.
+     */
     clone.style.position =
         'absolute';
 
@@ -4302,13 +4389,16 @@ function prepararPedidoParaPdf(){
         '0';
 
     clone.style.width =
-        '1500px';
+        '1120px';
 
     clone.style.maxWidth =
-        'none';
+        '1120px';
 
     clone.style.margin =
         '0';
+
+    clone.style.padding =
+        '12px';
 
     clone.style.backgroundColor =
         '#ffffff';

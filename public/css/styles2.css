@@ -1607,6 +1607,10 @@ body.dark-theme .campo-item-pesquisa {
     color: var(--button-hover-text-dark);
 }
 
+/* ==============================================================
+   CONTEÚDO EXCLUSIVO DO PDF
+   ============================================================== */
+
 .container-pdf {
     position: absolute !important;
     top: 0 !important;
@@ -1617,11 +1621,12 @@ body.dark-theme .campo-item-pesquisa {
     visibility: visible !important;
     opacity: 1 !important;
 
-    width: 1500px !important;
-    max-width: none !important;
+    width: 1120px !important;
+    max-width: 1120px !important;
+    min-width: 0 !important;
 
     margin: 0 !important;
-    padding: 15px !important;
+    padding: 12px !important;
 
     background-color: #ffffff !important;
     color: #000000 !important;
@@ -1631,17 +1636,131 @@ body.dark-theme .campo-item-pesquisa {
 
     box-sizing: border-box !important;
     pointer-events: none !important;
-}
-
-.container-pdf .table-container {
-    width: 100% !important;
     overflow: visible !important;
 }
 
-.container-pdf #dadosPedido {
+.container-pdf,
+.container-pdf * {
+    box-sizing: border-box !important;
+}
+
+/*
+ * Impede que as regras normais width: 120%
+ * e margin-left: -60px estourem a página.
+ */
+.container-pdf .form-group input,
+.container-pdf .form-group select,
+.container-pdf .valor-campo-pdf {
     width: 100% !important;
+    max-width: 100% !important;
     min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 4px !important;
+}
+
+/*
+ * Campos convertidos para texto no clone.
+ */
+.container-pdf .valor-campo-pdf {
+    display: block !important;
+
+    min-height: 22px !important;
+
+    border: 1px solid #777777 !important;
+    border-radius: 2px !important;
+
+    background-color: #ffffff !important;
+    color: #000000 !important;
+
+    font-family: Arial, sans-serif !important;
+    font-size: 9px !important;
+    line-height: 1.25 !important;
+
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+
+/*
+ * Dados do cliente em quatro colunas.
+ */
+.container-pdf .form-group {
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr)) !important;
+
+    gap: 4px 8px !important;
+
+    width: 100% !important;
+
+    margin: 0 !important;
+    padding: 6px !important;
+}
+
+.container-pdf .form-group label {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+
+    font-size: 9px !important;
+}
+
+/*
+ * Tabela de produtos.
+ */
+.container-pdf .table-container {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+
+    overflow: visible !important;
+}
+
+.container-pdf #dadosPedido,
+.container-pdf .table {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    margin: 5px 0 0 !important;
+
     table-layout: fixed !important;
+    border-collapse: collapse !important;
+}
+
+.container-pdf #dadosPedido th,
+.container-pdf #dadosPedido td {
+    padding: 3px !important;
+
+    font-size: 8px !important;
+
+    overflow: hidden !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+
+.container-pdf #dadosPedido .valor-campo-pdf {
+    min-height: 16px !important;
+
+    padding: 1px 2px !important;
+
+    border: none !important;
+
+    font-size: 8px !important;
+    text-align: center !important;
+}
+
+.container-pdf #dadosPedido .campo-item-pesquisa {
+    min-width: 0 !important;
+
+    text-align: left !important;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
 }
 
 .container-pdf #dadosPedido tr {
@@ -1649,6 +1768,107 @@ body.dark-theme .campo-item-pesquisa {
     break-inside: avoid !important;
 }
 
+/*
+ * Larguras depois que Excluir e ItemId são removidos.
+ * Restam oito colunas.
+ */
+.container-pdf #dadosPedido th:nth-child(1),
+.container-pdf #dadosPedido td:nth-child(1) {
+    width: 8% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(2),
+.container-pdf #dadosPedido td:nth-child(2) {
+    width: 36% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(3),
+.container-pdf #dadosPedido td:nth-child(3) {
+    width: 7% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(4),
+.container-pdf #dadosPedido td:nth-child(4) {
+    width: 6% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(5),
+.container-pdf #dadosPedido td:nth-child(5) {
+    width: 7% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(6),
+.container-pdf #dadosPedido td:nth-child(6) {
+    width: 12% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(7),
+.container-pdf #dadosPedido td:nth-child(7) {
+    width: 12% !important;
+}
+
+.container-pdf #dadosPedido th:nth-child(8),
+.container-pdf #dadosPedido td:nth-child(8) {
+    width: 12% !important;
+}
+
+/*
+ * Totais.
+ */
+.container-pdf .payment-conditions {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 8px 0 0 !important;
+    padding: 6px !important;
+
+    overflow: hidden !important;
+}
+
+/*
+ * Observação com quebra de linha preservada.
+ */
+.container-pdf .observations {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin-top: 8px !important;
+
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+.container-pdf .observacao-conteudo-pdf {
+    display: block !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 70px !important;
+
+    margin-top: 5px !important;
+    padding: 8px !important;
+
+    border: 1px solid #777777 !important;
+    border-radius: 3px !important;
+
+    background-color: #ffffff !important;
+    color: #000000 !important;
+
+    font-family: Arial, sans-serif !important;
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+
+    box-sizing: border-box !important;
+}
+
+/*
+ * Elementos retirados do PDF.
+ */
 .container-pdf .no-print,
 .container-pdf .button-group,
 .container-pdf .modal,
@@ -1661,7 +1881,6 @@ body.dark-theme .campo-item-pesquisa {
 .container-pdf .celula-excluir-item {
     display: none !important;
 }
-
 
 /* ==============================================================
    LARGURAS DAS COLUNAS
