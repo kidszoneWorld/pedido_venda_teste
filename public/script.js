@@ -141,6 +141,436 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
   .then(d => icmsSTData = d);
 
 
+async function gerarPdfNoNavegador(
+    elemento,
+    nomeArquivo
+){
+
+    if(typeof html2canvas === 'undefined'){
+
+        throw new Error(
+            'A biblioteca html2canvas não foi carregada.'
+        );
+
+    }
+
+    if(
+        typeof window.jspdf === 'undefined' ||
+        typeof window.jspdf.jsPDF === 'undefined'
+    ){
+
+        throw new Error(
+            'A biblioteca jsPDF não foi carregada.'
+        );
+
+    }
+
+    if(!elemento){
+
+        throw new Error(
+            'O elemento para geração do PDF não foi informado.'
+        );
+
+    }
+
+    /*
+     * Aguarda o navegador concluir o layout do clone.
+     */
+    await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+            requestAnimationFrame(
+                resolve
+            );
+
+        });
+
+    });
+
+    /*
+     * Aguarda o carregamento das imagens.
+     */
+    const imagens =
+        Array.from(
+            elemento.querySelectorAll(
+                'img'
+            )
+        );
+
+    await Promise.all(
+        imagens.map(imagem => {
+
+            if(
+                imagem.complete &&
+                imagem.naturalWidth > 0
+            ){
+
+                return Promise.resolve();
+
+            }
+
+            return new Promise(resolve => {
+
+                let concluido =
+                    false;
+
+                const finalizar =
+                    () => {
+
+                        if(concluido){
+                            return;
+                        }
+
+                        concluido =
+                            true;
+
+                        resolve();
+
+                    };
+
+                imagem.addEventListener(
+                    'load',
+                    finalizar,
+                    {
+                        once:
+                            true
+                    }
+                );
+
+                imagem.addEventListener(
+                    'error',
+                    finalizar,
+                    {
+                        once:
+                            true
+                    }
+                );
+
+                setTimeout(
+                    finalizar,
+                    5000
+                );
+
+            });
+
+        })
+    );
+
+    /*
+     * Obtém as dimensões reais do conteúdo.
+     */
+    const largura =
+        Math.ceil(
+            elemento
+                .getBoundingClientRect()
+                .width
+        );
+
+    const altura =
+        Math.ceil(
+            elemento.scrollHeight
+        );
+
+    console.log(
+        'Dimensões do conteúdo do PDF:',
+        {
+            largura:
+                largura,
+
+            altura:
+                altura,
+
+            filhos:
+                elemento.children.length
+        }
+    );
+
+    if(
+        largura <= 0 ||
+        altura <= 1
+    ){
+
+        throw new Error(
+            'O conteúdo preparado para o PDF está vazio.'
+        );
+
+    }
+
+    /*
+     * Captura o conteúdo completo em um canvas.
+     */
+    const canvas =
+        await html2canvas(
+            elemento,
+            {
+                scale:
+                    1.5,
+
+                useCORS:
+                    true,
+
+                allowTaint:
+                    false,
+
+                backgroundColor:
+                    '#ffffff',
+
+                logging:
+                    false,
+
+                scrollX:
+                    0,
+
+                scrollY:
+                    0,
+
+                width:
+                    largura,
+
+                height:
+                    altura,
+
+                windowWidth:
+                    largura,
+
+                windowHeight:
+                    altura,
+
+                removeContainer:
+                    true
+            }
+        );
+
+    console.log(
+        'Canvas gerado:',
+        {
+            largura:
+                canvas.width,
+
+            altura:
+                canvas.height
+        }
+    );
+
+    if(
+        canvas.width <= 0 ||
+        canvas.height <= 0
+    ){
+
+        throw new Error(
+            'O canvas do PDF foi gerado vazio.'
+        );
+
+    }
+
+    const {
+        jsPDF
+    } =
+        window.jspdf;
+
+    const pdf =
+        new jsPDF({
+            orientation:
+                'landscape',
+
+            unit:
+                'mm',
+
+            format:
+                'a4',
+
+            compress:
+                true
+        });
+
+    /*
+     * Dimensões do PDF A4 em paisagem.
+     */
+    const margem =
+        5;
+
+    const larguraPagina =
+        pdf.internal.pageSize.getWidth();
+
+    const alturaPagina =
+        pdf.internal.pageSize.getHeight();
+
+    const larguraUtil =
+        larguraPagina -
+        margem * 2;
+
+    const alturaUtil =
+        alturaPagina -
+        margem * 2;
+
+    /*
+     * Converte a largura do canvas para a largura útil
+     * da página e calcula quantos pixels cabem na altura.
+     */
+    const proporcao =
+        larguraUtil /
+        canvas.width;
+
+    const alturaPaginaEmPixels =
+        Math.floor(
+            alturaUtil /
+            proporcao
+        );
+
+    if(alturaPaginaEmPixels <= 0){
+
+        throw new Error(
+            'Não foi possível calcular o tamanho das páginas do PDF.'
+        );
+
+    }
+
+    let posicaoY =
+        0;
+
+    let numeroPagina =
+        0;
+
+    /*
+     * Divide verticalmente o canvas em páginas.
+     */
+    while(posicaoY < canvas.height){
+
+        const alturaRecorte =
+            Math.min(
+                alturaPaginaEmPixels,
+                canvas.height - posicaoY
+            );
+
+        const canvasPagina =
+            document.createElement(
+                'canvas'
+            );
+
+        canvasPagina.width =
+            canvas.width;
+
+        canvasPagina.height =
+            alturaRecorte;
+
+        const contexto =
+            canvasPagina.getContext(
+                '2d'
+            );
+
+        if(!contexto){
+
+            throw new Error(
+                'Não foi possível criar a página do PDF.'
+            );
+
+        }
+
+        /*
+         * Fundo branco da página.
+         */
+        contexto.fillStyle =
+            '#ffffff';
+
+        contexto.fillRect(
+            0,
+            0,
+            canvasPagina.width,
+            canvasPagina.height
+        );
+
+        /*
+         * Copia o trecho correspondente do canvas principal.
+         */
+        contexto.drawImage(
+            canvas,
+            0,
+            posicaoY,
+            canvas.width,
+            alturaRecorte,
+            0,
+            0,
+            canvas.width,
+            alturaRecorte
+        );
+
+        const imagemPagina =
+            canvasPagina.toDataURL(
+                'image/jpeg',
+                0.92
+            );
+
+        const alturaImagemNoPdf =
+            alturaRecorte *
+            proporcao;
+
+        /*
+         * A primeira página já foi criada pelo jsPDF.
+         */
+        if(numeroPagina > 0){
+
+            pdf.addPage(
+                'a4',
+                'landscape'
+            );
+
+        }
+
+        pdf.addImage(
+            imagemPagina,
+            'JPEG',
+            margem,
+            margem,
+            larguraUtil,
+            alturaImagemNoPdf,
+            undefined,
+            'FAST'
+        );
+
+        posicaoY +=
+            alturaRecorte;
+
+        numeroPagina++;
+
+    }
+
+    const pdfBlob =
+        pdf.output(
+            'blob'
+        );
+
+    if(
+        !pdfBlob ||
+        pdfBlob.size === 0
+    ){
+
+        throw new Error(
+            'O PDF gerado está vazio.'
+        );
+
+    }
+
+    console.log(
+        'PDF gerado com sucesso:',
+        {
+            paginas:
+                numeroPagina,
+
+            tamanho:
+                pdfBlob.size,
+
+            tipo:
+                pdfBlob.type,
+
+            nomeArquivo:
+                nomeArquivo
+        }
+    );
+
+    return pdfBlob;
+
+}
 
 async function carregarListaPrecos(listaId) {
     const response = await fetch(`/api/lista-preco/${listaId}`);
@@ -3887,187 +4317,7 @@ function blobParaDataUri(blob){
 
 }
 
-async function gerarPdfNoNavegador(
-    elemento,
-    nomeArquivo
-){
 
-    if(typeof html2pdf === 'undefined'){
-
-        throw new Error(
-            'A biblioteca html2pdf.js não foi carregada.'
-        );
-
-    }
-
-    if(!elemento){
-
-        throw new Error(
-            'O elemento para geração do PDF não foi informado.'
-        );
-
-    }
-
-    /*
-     * Espera o navegador calcular o layout.
-     */
-    await new Promise(resolve => {
-
-        requestAnimationFrame(() => {
-
-            requestAnimationFrame(
-                resolve
-            );
-
-        });
-
-    });
-
-    const largura =
-        elemento
-            .getBoundingClientRect()
-            .width;
-
-    const altura =
-        elemento.scrollHeight;
-
-    console.log(
-        'Dimensões do conteúdo do PDF:',
-        {
-            largura:
-                largura,
-
-            altura:
-                altura
-        }
-    );
-
-    if(
-        largura <= 0 ||
-        altura <= 1
-    ){
-
-        throw new Error(
-            'O conteúdo preparado para o PDF está vazio.'
-        );
-
-    }
-
-    const opcoes = {
-        margin:
-            [5, 5, 5, 5],
-
-        filename:
-            nomeArquivo,
-
-        image: {
-            type:
-                'jpeg',
-
-            quality:
-                0.92
-        },
-
-        html2canvas: {
-            scale:
-                1.5,
-
-            useCORS:
-                true,
-
-            allowTaint:
-                false,
-
-            logging:
-                false,
-
-            backgroundColor:
-                '#ffffff',
-
-            scrollX:
-                0,
-
-            scrollY:
-                0,
-
-            windowWidth:
-                1120
-        },
-
-        jsPDF: {
-            unit:
-                'mm',
-
-            format:
-                'a4',
-
-            orientation:
-                'landscape',
-
-            compress:
-                true
-        },
-
-        pagebreak: {
-            mode: [
-                'css',
-                'legacy'
-            ],
-
-            avoid: [
-                'tr',
-                '.section-title',
-                '.payment-conditions',
-                '.observations'
-            ]
-        }
-    };
-
-    const worker =
-        html2pdf()
-            .set(
-                opcoes
-            )
-            .from(
-                elemento
-            )
-            .toPdf();
-
-    const pdf =
-        await worker.get(
-            'pdf'
-        );
-
-    const pdfBlob =
-        pdf.output(
-            'blob'
-        );
-
-    if(
-        !pdfBlob ||
-        pdfBlob.size === 0
-    ){
-
-        throw new Error(
-            'O PDF gerado está vazio.'
-        );
-
-    }
-
-    console.log(
-        'PDF gerado com sucesso:',
-        {
-            tamanho:
-                pdfBlob.size,
-
-            tipo:
-                pdfBlob.type
-        }
-    );
-
-    return pdfBlob;
-
-}
 
 function prepararPedidoParaPdf(){
 
@@ -4380,13 +4630,21 @@ function prepararPedidoParaPdf(){
      * Dimensões controladas para A4 paisagem.
      */
     clone.style.position =
-        'absolute';
+    'fixed';
 
     clone.style.left =
         '0';
 
     clone.style.top =
         '0';
+    clone.style.display =
+    'block';
+
+    clone.style.overflow =
+        'visible';
+
+    clone.style.transform =
+        'none';
 
     clone.style.width =
         '1120px';
