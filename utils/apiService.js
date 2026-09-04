@@ -8,6 +8,86 @@ const NgLink = process.env.NG_LINK
 const PcrLink = process.env.PCR_LINK
 const usuarioDbCorp = process.env.USUARIO_DBCORP
 const senhabCorp = process.env.SENHA_DBCORP
+
+function aguardar(tempo) {
+    return new Promise(resolve => {
+        setTimeout(
+            resolve,
+            tempo
+        );
+    });
+}
+
+async function executarFetchComRetentativa(
+    url,
+    opcoes,
+    limiteTentativas = 5
+) {
+    let tentativa = 1;
+
+    while (tentativa <= limiteTentativas) {
+        const response =
+            await fetch(
+                url,
+                opcoes
+            );
+
+        if (response.status !== 429) {
+            return response;
+        }
+
+        const retryAfter =
+            response.headers.get(
+                'retry-after'
+            );
+
+        const segundosInformados =
+            Number(
+                retryAfter
+            );
+
+        const tempoEspera =
+            Number.isFinite(
+                segundosInformados
+            ) &&
+            segundosInformados > 0
+                ? segundosInformados * 1000
+                : tentativa * 1500;
+
+        console.warn(
+            `Limite da API atingido. Aguardando ${tempoEspera} ms. ` +
+            `Tentativa ${tentativa} de ${limiteTentativas}.`
+        );
+
+        // await aguardar(
+        //     tempoEspera
+        // );
+
+        tentativa += 1;
+    }
+
+    throw new Error(
+        'A API permaneceu limitada após várias tentativas.'
+    );
+}
+function criarOpcoesGet() {
+    return {
+        method:
+            'GET',
+
+        headers: {
+            Authorization:
+                `Bearer ${authToken}`,
+
+            'Content-Type':
+                'application/json',
+
+            Origin:
+                'https://kidszone-ng.dbcorp.com.br'
+        }
+    };
+}
+
 // Função para autenticar e obter o token
 async function authenticate() {
   try {
@@ -96,13 +176,11 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
         url += `&ClienteCodigo=${usercodCliente}`;
       }
 
-      const response = await fetch(`${NgLink}${url}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response =
+        await executarFetchComRetentativa(
+            `${NgLink}${url}`,
+            criarOpcoesGet()
+        );
 
       if (!response.ok) {
         throw new Error(`Erro ao buscar pedidos: ${response.statusText}`);
@@ -114,93 +192,136 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
       console.log(`Recebidos ${pageData.length} pedidos da página ${currentPage}`);
       
       // 2. Para cada pedido na página, buscar todos os detalhes relacionados
-      const enrichedOrders = await Promise.all(pageData.map(async (order) => {
-        try {
-          // 2.1 Buscar representante
-          let representante = null;
+      const enrichedOrders = [];
+
+      for (const order of pageData) {
+          let representante =
+              null;
+
+          let detalhes =
+              null;
+
+          let detalhesTransporte =
+              null;
+
+          let notasFiscais =
+              null;
+
           try {
-            const repResponse = await fetch(`${NgLink}${representativeEndpoint}${order.cliente.codigo}`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
+              const repResponse =
+                  await executarFetchComRetentativa(
+                      `${NgLink}${representativeEndpoint}${order.cliente.codigo}`,
+                      criarOpcoesGet()
+                  );
+
+              if (repResponse.ok) {
+                  const repData =
+                      await repResponse.json();
+
+                  representante =
+                      repData.dados?.[0] ||
+                      null;
               }
-            });
-            if (repResponse.ok) {
-              const repData = await repResponse.json();
-              representante = repData.dados[0] || null;
-            }
           } catch (error) {
-            console.error(`Erro ao buscar representante para cliente ${order.cliente.codigo}:`, error);
+              console.error(
+                  `Erro ao buscar representante do cliente ${order.cliente.codigo}:`,
+                  error
+              );
           }
-          // 2.2 Buscar detalhes do pedido
-          let detalhes = null;
+
+
+
           try {
-            const detailsResponse = await fetch(`${NgLink}${orderDetailsEndpoint}${order.id}`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
+              const detailsResponse =
+                  await executarFetchComRetentativa(
+                      `${NgLink}${orderDetailsEndpoint}${order.id}`,
+                      criarOpcoesGet()
+                  );
+
+              if (detailsResponse.ok) {
+                  detalhes =
+                      await detailsResponse.json();
               }
-            });
-            if (detailsResponse.ok) {
-              detalhes = await detailsResponse.json();
-            }
           } catch (error) {
-            console.error(`Erro ao buscar detalhes para o pedido com ID ${order.id}:`, error);
+              console.error(
+                  `Erro ao buscar detalhes do pedido ${order.codigo}:`,
+                  error
+              );
           }
-          
-          // 2.3 Buscar detalhes da transportadora
-          let detalhes_transporte = null;
+
+
+
+          if (order.transportadoraCodigo) {
+              try {
+                  const transportResponse =
+                      await executarFetchComRetentativa(
+                          `${NgLink}${transportEndpoint}${order.transportadoraCodigo}`,
+                          criarOpcoesGet()
+                      );
+
+                  if (transportResponse.ok) {
+                      detalhesTransporte =
+                          await transportResponse.json();
+                  }
+              } catch (error) {
+                  console.error(
+                      `Erro ao buscar transportadora do pedido ${order.codigo}:`,
+                      error
+                  );
+              }
+          }
+
+
+
           try {
-            const transportResponse = await fetch(`${NgLink}${transportEndpoint}${order.transportadoraCodigo}`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
+              const invoiceResponse =
+                  await executarFetchComRetentativa(
+                      `${NgLink}${invoiceEndpoint}${order.codigo}`,
+                      criarOpcoesGet()
+                  );
+
+              if (invoiceResponse.ok) {
+                  notasFiscais =
+                      await invoiceResponse.json();
+              } else {
+                  console.warn(
+                      `Não foi possível carregar as notas do pedido ${order.codigo}. ` +
+                      `Status HTTP: ${invoiceResponse.status}.`
+                  );
               }
-            });
-            if (transportResponse.ok) {
-              detalhes_transporte = await transportResponse.json();
-            }
           } catch (error) {
-            console.error(`Erro ao buscar detalhes da transportadora ${order.transportadoraCodigo}:`, error);
+              console.error(
+                  `Erro ao buscar notas fiscais do pedido ${order.codigo}:`,
+                  error
+              );
           }
-          
-          // 2.4 Buscar notas fiscais
-          let notas_fiscais = null;
-          try {
-            const invoiceResponse = await fetch(`${NgLink}${invoiceEndpoint}${order.codigo}`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
-              }
-            });
-            if (invoiceResponse.ok) {
-              notas_fiscais = await invoiceResponse.json();
-            }
-          } catch (error) {
-            console.error(`Erro ao buscar detalhes da NF ${order.codigo}:`, error);
-          }
-          
-          // Retornar o pedido com todos os detalhes
-          return {
-            ...order,
-            representante,
-            detalhes,
-            detalhes_transporte,
-            notas_fiscais
-          };
-        } catch (error) {
-          console.error(`Erro ao processar pedido:`, error);
-          return order; // Retorna o pedido original em caso de erro
-        }
-      }));
+
+          enrichedOrders.push({
+              ...order,
+
+              representante:
+                  representante,
+
+              detalhes:
+                  detalhes,
+
+              detalhes_transporte:
+                  detalhesTransporte,
+
+              notas_fiscais:
+                  notasFiscais
+          });
+
+          await aguardar(
+              150
+          );
+      }
       
       // Adiciona os pedidos enriquecidos desta página ao array acumulado
       allOrders = [...allOrders, ...enrichedOrders];
-      
+
+
+            
       // Verifica se há mais páginas para buscar
       if (pageData.length < pageSize) {
         // Se recebemos menos registros que o tamanho da página, não há mais dados
@@ -220,14 +341,23 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
       }
       
     } catch (error) {
-      console.error(`Erro ao buscar página ${currentPage}:`, error);
-      hasMoreData = false; // Para o loop em caso de erro
+        console.error(
+            `Erro ao buscar página ${currentPage}:`,
+            error
+        );
+
+        throw new Error(
+            `Não foi possível concluir a consulta. ` +
+            `Falha ao carregar a página ${currentPage}. ` +
+            `${error.message}`
+        );
     }
   }
 
   console.log(`Total de pedidos recuperados e enriquecidos: ${allOrders.length}`);
   return allOrders;
 }
+
 
 
 async function fetchOrderDetailsEndpoint(CodPedido) {

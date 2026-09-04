@@ -4,6 +4,8 @@ let currentFilters = {
     representante: '',
     clienteCNPJ: '',
     ClienteCodigo: '',
+    codigoPedido: '',
+    numeroNota: '',
     status: '',
     dataInicio: '',
     dataFim: '',
@@ -95,14 +97,37 @@ async function loadOrderDetails(status = currentFilters.status) {
     currentFilters.status = status;
 
     const queryParams = new URLSearchParams({
-        status: currentFilters.status,
-        codRep: currentFilters.representante || '',
-        clienteCNPJ: currentFilters.clienteCNPJ || '',
-        ClienteCodigo: currentFilters.ClienteCodigo || '',
-        DataPedidoInicio: formatDate(currentFilters.dataInicio) || '',
-        DataPedidoFim: formatDate(currentFilters.dataFim) || '',
-        statusSeparacao: currentFilters.statusSeparacao || ''
-    });
+    status:
+        currentFilters.status || '',
+
+    codRep:
+        currentFilters.representante || '',
+
+    clienteCNPJ:
+        currentFilters.clienteCNPJ || '',
+
+    ClienteCodigo:
+        currentFilters.ClienteCodigo || '',
+
+    codigoPedido:
+        currentFilters.codigoPedido || '',
+
+    numeroNota:
+        currentFilters.numeroNota || '',
+
+    DataPedidoInicio:
+        formatDate(
+            currentFilters.dataInicio
+        ) || '',
+
+    DataPedidoFim:
+        formatDate(
+            currentFilters.dataFim
+        ) || '',
+
+    statusSeparacao:
+        currentFilters.statusSeparacao || ''
+});
 
     showFeedback("Carregando pedidos, aguarde...");
 
@@ -197,6 +222,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 currentFilters.representante = userNumero; // Atualiza o filtro global
             }
 
+            sincronizarStatusSeparacao();
+
+
             // Simula o clique no botão "Aplicar Filtros" para carregar os dados filtrados automaticamente
             await applyFilters();
             //await loadOrderDetails(this.value);
@@ -211,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 async function applyFilters() {
-
+    sincronizarStatusSeparacao();
     // Atualizar filtros globais com valores do DOM
     currentFilters.representante = document.getElementById('representanteFilter').value.trim();
     currentFilters.clienteCNPJ = document.getElementById('clienteCNPJFilter').value.trim();
@@ -220,6 +248,21 @@ async function applyFilters() {
     currentFilters.dataInicio = document.getElementById('dataPedidoInicioFilter').value;
     currentFilters.dataFim = document.getElementById('dataPedidoFimFilter').value;
     currentFilters.statusSeparacao = document.getElementById('statusSeparacaoFilter').value;
+    currentFilters.codigoPedido =
+        document
+            .getElementById(
+                'codigoPedidoFilter'
+            )
+            .value
+            .trim();
+
+    currentFilters.numeroNota =
+        document
+            .getElementById(
+                'numeroNotaFilter'
+            )
+            .value
+            .trim();
 
     await loadOrderDetails(currentFilters.status);
 }
@@ -240,58 +283,78 @@ async function clearFilters() {
     document.getElementById('dataPedidoInicioFilter').value = '';
     document.getElementById('dataPedidoFimFilter').value = '';
     document.getElementById('statusFilter').value = '3';
-    document.getElementById('statusSeparacaoFilter').value = '';
+    document.getElementById(
+        'statusSeparacaoFilter'
+    ).value = '0';
+    document.getElementById(
+        'codigoPedidoFilter'
+    ).value = '';
 
+    document.getElementById(
+        'numeroNotaFilter'
+    ).value = '';
 
 
     // Limpar o estado global de filtros
     currentFilters = {
-        representante: isRep ? currentFilters.representante : '', // Mantém para REP, limpa para outros usuários
-        clienteCNPJ: '',
-        ClienteCodigo: '',
-        status: '',
-        dataInicio: '',
-        dataFim: '',
-        statusSeparacao: ''
+        representante:
+            isRep
+                ? document
+                    .getElementById(
+                        'representanteFilter'
+                    )
+                    .value
+                    .trim()
+                : '',
+
+        clienteCNPJ:
+            '',
+
+        ClienteCodigo:
+            '',
+
+        codigoPedido:
+            '',
+
+        numeroNota:
+            '',
+
+        status:
+            '3',
+
+        dataInicio:
+            '',
+
+        dataFim:
+            '',
+
+        statusSeparacao:
+            ''
     };
 
     await loadOrderDetails(currentFilters.status);
 }
 
+
+
+
 // Verificar se os filtros estão aplicados
-async function areFiltersApplied() {
-    currentFilters.representante = document.getElementById('representanteFilter').value.trim();
-    currentFilters.clienteCNPJ = document.getElementById('clienteCNPJFilter').value.trim();
-    currentFilters.ClienteCodigo = document.getElementById('codClientFilter').value;
-    currentFilters.status = document.getElementById('statusFilter').value;
-    currentFilters.dataInicio = document.getElementById('dataPedidoInicioFilter').value;
-    currentFilters.dataFim = document.getElementById('dataPedidoFimFilter').value;
-    currentFilters.statusSeparacao = document.getElementById('statusSeparacaoFilter').value;
+function areFiltersApplied(){
 
-    return (
-        currentFilters.representante !== '' ||
-        currentFilters.clienteCNPJ  !== '' ||
-        currentFilters.ClienteCodigo !== '' ||
-        currentFilters.status !== '' ||
-        currentFilters.dataInicio !== '' ||
-        currentFilters.dataFim !== '' ||
-        currentFilters.statusSeparacao !== '3'
+    return Boolean(
+        currentFilters.representante ||
+        currentFilters.clienteCNPJ ||
+        currentFilters.ClienteCodigo ||
+        currentFilters.codigoPedido ||
+        currentFilters.numeroNota ||
+        currentFilters.status ||
+        currentFilters.dataInicio ||
+        currentFilters.dataFim ||
+        currentFilters.statusSeparacao
     );
-}
 
+}
 // Verificar se os filtros estão aplicados and return the data to export
-async function areFiltersApplied() {
-    currentFilters.representante = document.getElementById('representanteFilter').value.trim();
-    currentFilters.clienteCNPJ = document.getElementById('clienteCNPJFilter').value.trim();
-    currentFilters.ClienteCodigo = document.getElementById('codClientFilter').value;
-    currentFilters.status = document.getElementById('statusFilter').value;
-    currentFilters.dataInicio = document.getElementById('dataPedidoInicioFilter').value;
-    currentFilters.dataFim = document.getElementById('dataPedidoFimFilter').value;
-    currentFilters.statusSeparacao = document.getElementById('statusSeparacaoFilter').value;
-
-    // Since ordersData is already updated by applyFilters/loadOrderDetails, return it
-    return ordersData;
-}
 
 // Exportar para Excel (com ou sem filtros)
 document.getElementById('exportExcel1').addEventListener('click', async () => {
@@ -301,7 +364,8 @@ document.getElementById('exportExcel1').addEventListener('click', async () => {
     }
 
     // Get the data to export
-    const dataToExport = await areFiltersApplied();
+    const dataToExport =
+        ordersData;
 
     if (dataToExport.length === 0) {
         showFeedback("Nenhum dado para exportar com os filtros aplicados.");
@@ -311,6 +375,49 @@ document.getElementById('exportExcel1').addEventListener('click', async () => {
     exportToExcel(dataToExport);
 });
 
+function sincronizarStatusSeparacao() {
+    const campoStatus =
+        document.getElementById(
+            'statusFilter'
+        );
+
+    const campoSeparacao =
+        document.getElementById(
+            'statusSeparacaoFilter'
+        );
+
+    if (!campoStatus || !campoSeparacao) {
+        return;
+    }
+
+    const status =
+        String(
+            campoStatus.value
+        );
+
+    if (status === '5') {
+        campoSeparacao.value = '2';
+    } else if (status === '4') {
+        campoSeparacao.value = '1';
+    } else if (status === '3') {
+        campoSeparacao.value = '0';
+    }
+
+    currentFilters.statusSeparacao =
+        campoSeparacao.value;
+}
+
+const campoStatusPedido =
+    document.getElementById(
+        'statusFilter'
+    );
+
+if (campoStatusPedido) {
+    campoStatusPedido.addEventListener(
+        'change',
+        sincronizarStatusSeparacao
+    );
+}
 
 // Eventos dos botões de filtro
 document.getElementById('applyFilters').addEventListener('click', applyFilters);
