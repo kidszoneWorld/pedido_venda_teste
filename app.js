@@ -49,11 +49,6 @@ app.post(
     pdfController.sendPdf
 );
 
-app.post(
-    '/api/pedido-venda/pdf-pesquisavel',
-    pdfController.gerarPdfPesquisavel
-);
-
 app.use(cookieParser());
 
 app.use(express.static(

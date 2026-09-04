@@ -3900,6 +3900,46 @@ async function gerarPdfNoNavegador(
 
     }
 
+    if(!elemento){
+
+        throw new Error(
+            'O elemento para geração do PDF não foi informado.'
+        );
+
+    }
+
+    const largura =
+        Math.max(
+            elemento.scrollWidth,
+            elemento.offsetWidth,
+            1500
+        );
+
+    const altura =
+        Math.max(
+            elemento.scrollHeight,
+            elemento.offsetHeight,
+            1
+        );
+
+    console.log(
+        'Dimensões do conteúdo do PDF:',
+        {
+            largura,
+            altura,
+            filhos:
+                elemento.children.length
+        }
+    );
+
+    if(altura <= 1){
+
+        throw new Error(
+            'O conteúdo preparado para o PDF está vazio.'
+        );
+
+    }
+
     const opcoes = {
         margin:
             [3, 3, 3, 3],
@@ -3912,12 +3952,12 @@ async function gerarPdfNoNavegador(
                 'jpeg',
 
             quality:
-                0.98
+                0.92
         },
 
         html2canvas: {
             scale:
-                2,
+                1.5,
 
             useCORS:
                 true,
@@ -3926,7 +3966,7 @@ async function gerarPdfNoNavegador(
                 false,
 
             logging:
-                false,
+                true,
 
             backgroundColor:
                 '#ffffff',
@@ -3937,8 +3977,17 @@ async function gerarPdfNoNavegador(
             scrollY:
                 0,
 
+            width:
+                largura,
+
             windowWidth:
-                elemento.scrollWidth
+                largura,
+
+            height:
+                altura,
+
+            windowHeight:
+                altura
         },
 
         jsPDF: {
@@ -3964,11 +4013,24 @@ async function gerarPdfNoNavegador(
             avoid: [
                 'tr',
                 '.section-title',
-                '.payment-conditions',
-                '.observations'
+                '.payment-conditions'
             ]
         }
     };
+
+    await new Promise(resolve => {
+
+        requestAnimationFrame(
+            () => {
+
+                requestAnimationFrame(
+                    resolve
+                );
+
+            }
+        );
+
+    });
 
     const worker =
         html2pdf()
@@ -3977,13 +4039,18 @@ async function gerarPdfNoNavegador(
             )
             .from(
                 elemento
-            );
+            )
+            .toPdf();
+
+    const pdf =
+        await worker.get(
+            'pdf'
+        );
 
     const pdfBlob =
-        await worker
-            .outputPdf(
-                'blob'
-            );
+        pdf.output(
+            'blob'
+        );
 
     if(
         !pdfBlob ||
@@ -3995,6 +4062,17 @@ async function gerarPdfNoNavegador(
         );
 
     }
+
+    console.log(
+        'PDF gerado no navegador:',
+        {
+            tamanho:
+                pdfBlob.size,
+
+            tipo:
+                pdfBlob.type
+        }
+    );
 
     return pdfBlob;
 
@@ -4022,6 +4100,56 @@ function prepararPedidoParaPdf(){
 
     clone.classList.add(
         'container-pdf'
+    );
+
+    const camposOriginais =
+        containerOriginal.querySelectorAll(
+            'input, textarea, select'
+        );
+
+    const camposClone =
+        clone.querySelectorAll(
+            'input, textarea, select'
+        );
+
+    camposOriginais.forEach(
+        (
+            campoOriginal,
+            indice
+        ) => {
+
+            const campoClone =
+                camposClone[indice];
+
+            if(!campoClone){
+                return;
+            }
+
+            if(
+                campoOriginal.type === 'checkbox' ||
+                campoOriginal.type === 'radio'
+            ){
+
+                campoClone.checked =
+                    campoOriginal.checked;
+
+            }else{
+
+                campoClone.value =
+                    campoOriginal.value;
+
+            }
+
+            if(
+                campoOriginal.tagName === 'SELECT'
+            ){
+
+                campoClone.selectedIndex =
+                    campoOriginal.selectedIndex;
+
+            }
+
+        }
     );
 
     clone
@@ -4153,7 +4281,9 @@ function prepararPedidoParaPdf(){
 
             if(
                 !campoItem ||
-                !campoItem.value.trim()
+                !String(
+                    campoItem.value || ''
+                ).trim()
             ){
 
                 linha.remove();
@@ -4161,6 +4291,42 @@ function prepararPedidoParaPdf(){
             }
 
         });
+
+    clone.style.position =
+        'absolute';
+
+    clone.style.left =
+        '0';
+
+    clone.style.top =
+        '0';
+
+    clone.style.width =
+        '1500px';
+
+    clone.style.maxWidth =
+        'none';
+
+    clone.style.margin =
+        '0';
+
+    clone.style.backgroundColor =
+        '#ffffff';
+
+    clone.style.color =
+        '#000000';
+
+    clone.style.zIndex =
+        '999999';
+
+    clone.style.visibility =
+        'visible';
+
+    clone.style.opacity =
+        '1';
+
+    clone.style.pointerEvents =
+        'none';
 
     document.body.appendChild(
         clone

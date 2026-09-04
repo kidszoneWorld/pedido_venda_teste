@@ -1607,43 +1607,46 @@ body.dark-theme .campo-item-pesquisa {
     color: var(--button-hover-text-dark);
 }
 
-
 .container-pdf {
-    position: fixed;
-    top: 0;
-    left: -20000px;
-    z-index: -1;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 999999 !important;
 
-    width: 1500px;
-    max-width: none;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 
-    margin: 0;
-    padding: 15px;
+    width: 1500px !important;
+    max-width: none !important;
 
-    background-color: #ffffff;
-    color: #333333;
+    margin: 0 !important;
+    padding: 15px !important;
 
-    border: none;
-    border-radius: 0;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 
-    box-sizing: border-box;
+    border: none !important;
+    border-radius: 0 !important;
+
+    box-sizing: border-box !important;
+    pointer-events: none !important;
 }
 
 .container-pdf .table-container {
-    width: 100%;
-    overflow: visible;
+    width: 100% !important;
+    overflow: visible !important;
 }
 
 .container-pdf #dadosPedido {
-    width: 100%;
-    min-width: 0;
-
-    table-layout: fixed;
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
 }
 
 .container-pdf #dadosPedido tr {
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
 }
 
 .container-pdf .no-print,
