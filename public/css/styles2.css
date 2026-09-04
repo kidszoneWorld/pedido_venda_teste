@@ -1607,6 +1607,59 @@ body.dark-theme .campo-item-pesquisa {
     color: var(--button-hover-text-dark);
 }
 
+
+.container-pdf {
+    position: fixed;
+    top: 0;
+    left: -20000px;
+    z-index: -1;
+
+    width: 1500px;
+    max-width: none;
+
+    margin: 0;
+    padding: 15px;
+
+    background-color: #ffffff;
+    color: #333333;
+
+    border: none;
+    border-radius: 0;
+
+    box-sizing: border-box;
+}
+
+.container-pdf .table-container {
+    width: 100%;
+    overflow: visible;
+}
+
+.container-pdf #dadosPedido {
+    width: 100%;
+    min-width: 0;
+
+    table-layout: fixed;
+}
+
+.container-pdf #dadosPedido tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.container-pdf .no-print,
+.container-pdf .button-group,
+.container-pdf .modal,
+.container-pdf .modal1,
+.container-pdf .overlay,
+.container-pdf .overlay-importacao-pedido,
+.container-pdf .btn-remover-linha,
+.container-pdf .cabecalho-item-id,
+.container-pdf .cabecalho-excluir-item,
+.container-pdf .celula-excluir-item {
+    display: none !important;
+}
+
+
 /* ==============================================================
    LARGURAS DAS COLUNAS
    ============================================================== */

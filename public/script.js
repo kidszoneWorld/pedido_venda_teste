@@ -4421,124 +4421,6 @@ function criarHtmlPesquisavelDoPedido(){
 
 }
 
-async function gerarPdfPesquisavelBlob(
-    fileName
-){
-
-    const html =
-        criarHtmlPesquisavelDoPedido();
-
-    console.log(
-        'Tamanho aproximado do HTML enviado ao PDF:',
-        `${(
-            new Blob([html]).size /
-            1024 /
-            1024
-        ).toFixed(2)} MB`
-    );
-
-    const response =
-        await fetch(
-            '/api/pedido-venda/pdf-pesquisavel',
-            {
-                method:
-                    'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    Accept:
-                        'application/pdf, application/json, text/plain'
-                },
-
-                body:
-                    JSON.stringify({
-                        html:
-                            html,
-
-                        fileName:
-                            fileName
-                    })
-            }
-        );
-
-    if(!response.ok){
-
-        const contentType =
-            response.headers.get(
-                'content-type'
-            ) || '';
-
-        let mensagem =
-            `Erro ao gerar PDF pesquisável. HTTP ${response.status}.`;
-
-        try{
-
-            if(
-                contentType.includes(
-                    'application/json'
-                )
-            ){
-
-                const erro =
-                    await response.json();
-
-                mensagem =
-                    erro.mensagem ||
-                    erro.erro ||
-                    erro.error ||
-                    erro.message ||
-                    mensagem;
-
-            }else{
-
-                const texto =
-                    await response.text();
-
-                if(texto.trim()){
-
-                    mensagem =
-                        `${mensagem} ${texto}`;
-
-                }
-
-            }
-
-        }catch(erroLeitura){
-
-            console.error(
-                'Não foi possível ler a resposta de erro do PDF:',
-                erroLeitura
-            );
-
-        }
-
-        throw new Error(
-            mensagem
-        );
-
-    }
-
-    const blob =
-        await response.blob();
-
-    if(
-        !blob ||
-        blob.size === 0
-    ){
-
-        throw new Error(
-            'O servidor retornou um PDF vazio.'
-        );
-
-    }
-
-    return blob;
-
-}
-
-
 function baixarBlob(blob, fileName){
 
     const pdfURL =
@@ -4596,6 +4478,289 @@ function blobParaDataUri(blob){
 
 }
 
+async function gerarPdfNoNavegador(
+    elemento,
+    nomeArquivo
+){
+
+    if(typeof html2pdf === 'undefined'){
+
+        throw new Error(
+            'A biblioteca html2pdf.js não foi carregada.'
+        );
+
+    }
+
+    const opcoes = {
+        margin:
+            [3, 3, 3, 3],
+
+        filename:
+            nomeArquivo,
+
+        image: {
+            type:
+                'jpeg',
+
+            quality:
+                0.98
+        },
+
+        html2canvas: {
+            scale:
+                2,
+
+            useCORS:
+                true,
+
+            allowTaint:
+                false,
+
+            logging:
+                false,
+
+            backgroundColor:
+                '#ffffff',
+
+            scrollX:
+                0,
+
+            scrollY:
+                0,
+
+            windowWidth:
+                elemento.scrollWidth
+        },
+
+        jsPDF: {
+            unit:
+                'mm',
+
+            format:
+                'a4',
+
+            orientation:
+                'landscape',
+
+            compress:
+                true
+        },
+
+        pagebreak: {
+            mode: [
+                'css',
+                'legacy'
+            ],
+
+            avoid: [
+                'tr',
+                '.section-title',
+                '.payment-conditions',
+                '.observations'
+            ]
+        }
+    };
+
+    const worker =
+        html2pdf()
+            .set(
+                opcoes
+            )
+            .from(
+                elemento
+            );
+
+    const pdfBlob =
+        await worker
+            .outputPdf(
+                'blob'
+            );
+
+    if(
+        !pdfBlob ||
+        pdfBlob.size === 0
+    ){
+
+        throw new Error(
+            'O PDF gerado está vazio.'
+        );
+
+    }
+
+    return pdfBlob;
+
+}
+
+function prepararPedidoParaPdf(){
+
+    const containerOriginal =
+        document.querySelector(
+            '.container'
+        );
+
+    if(!containerOriginal){
+
+        throw new Error(
+            'O conteúdo do pedido não foi encontrado.'
+        );
+
+    }
+
+    const clone =
+        containerOriginal.cloneNode(
+            true
+        );
+
+    clone.classList.add(
+        'container-pdf'
+    );
+
+    clone
+        .querySelectorAll([
+            '.no-print',
+            '.button-group',
+            '.btn-remover-linha',
+            '.celula-excluir-item',
+            '.cabecalho-excluir-item',
+            '.cabecalho-item-id',
+            '.esconder',
+            '#esconder',
+            '[hidden]',
+            'input[type="hidden"]',
+            '#helpContainer',
+            '#overlay',
+            '#overlayImportacaoPedido',
+            '#helpModal',
+            '#customModal',
+            '#customModal1',
+            '#blockModal',
+            '.modal',
+            '.modal1',
+            '.overlay',
+            '.overlay-importacao-pedido',
+            '#baixarJson',
+            '#inputJson',
+            '#jsonFileInput',
+            '#feedback1'
+        ].join(','))
+        .forEach(elemento => {
+
+            elemento.remove();
+
+        });
+
+    const tabela =
+        clone.querySelector(
+            '#dadosPedido'
+        );
+
+    if(tabela){
+
+        const cabecalhos =
+            Array.from(
+                tabela.querySelectorAll(
+                    'thead th'
+                )
+            );
+
+        const indicesRemover =
+            cabecalhos
+                .map(
+                    (
+                        cabecalho,
+                        indice
+                    ) => {
+
+                        const texto =
+                            String(
+                                cabecalho.textContent || ''
+                            )
+                            .trim()
+                            .toLowerCase();
+
+                        if(
+                            texto === 'excluir' ||
+                            texto === 'itemid' ||
+                            texto === 'item id'
+                        ){
+
+                            return indice;
+
+                        }
+
+                        return -1;
+
+                    }
+                )
+                .filter(indice => {
+
+                    return indice >= 0;
+
+                })
+                .sort(
+                    (
+                        primeiro,
+                        segundo
+                    ) => {
+
+                        return segundo - primeiro;
+
+                    }
+                );
+
+        indicesRemover.forEach(indice => {
+
+            tabela
+                .querySelectorAll(
+                    'tr'
+                )
+                .forEach(linha => {
+
+                    const celula =
+                        linha.children[indice];
+
+                    if(celula){
+
+                        celula.remove();
+
+                    }
+
+                });
+
+        });
+
+    }
+
+    clone
+        .querySelectorAll(
+            '#dadosPedido tbody tr'
+        )
+        .forEach(linha => {
+
+            const campoItem =
+                linha.querySelector(
+                    '.campo-item-pesquisa'
+                );
+
+            if(
+                !campoItem ||
+                !campoItem.value.trim()
+            ){
+
+                linha.remove();
+
+            }
+
+        });
+
+    document.body.appendChild(
+        clone
+    );
+
+    return clone;
+
+}
+
 //--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -4609,166 +4774,237 @@ document.addEventListener("DOMContentLoaded", () => {
     const feedbackDiv = document.getElementById('feedback1');
     const cnpjInput = document.getElementById('cnpj');
 
-    async function gerarEEnviarPDF() {
-        console.log('Botão de PDF clicado');
+async function gerarEEnviarPDF(){
 
-        // Validação das linhas da tabela
-        let itemsToCheck = [];
-        const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
+    console.log(
+        'Botão de PDF clicado'
+    );
 
-        // Verifica cada linha da tabela
-        for (const row of tableRows) {
-            // Garante que a linha tenha células e pelo menos 9 colunas (índices 0 a 8)
-            if (row.cells.length >= 9) {
-                const cell0 = row.cells[1];
-                const cell1 = row.cells[2];
-                const cell8 = row.cells[7];
+    const razaoSocial =
+        document.getElementById(
+            'razao_social'
+        ).value;
 
-                // Verifica se os inputs existem antes de acessá-los
-                const input0 = cell0.querySelector('input');
-                const input1 = cell1.querySelector('input');
-                const input8 = cell8.querySelector('input');
+    const codCliente =
+        document.getElementById(
+            'cod_cliente'
+        ).value;
 
-                if (input0 && input1 && input8) {
-                    const code = parseInt(input0.value);
-                    const quantity = input1.value;
-                    const total = input8.value;
+    const representante =
+        document.getElementById(
+            'representante'
+        ).value;
 
-                    // Verifica se o código é maior que 0 e se a quantidade é 0 ou o total está vazio
-                    if (!isNaN(code) && code > 0 && (quantity === '0' || total === '')) {
-                        itemsToCheck.push(input0.value);
-                    }
-                }
-            }
-        }
+    const emailRep =
+        document.getElementById(
+            'email_rep'
+        ).value;
 
-        // Se houver itens problemáticos, exibe o alerta e interrompe o processo
-        if (itemsToCheck.length > 0) {
-            const message = "Por favor, digite a quantidade dos seguintes itens: " + itemsToCheck.join(', ');
-            alert(message);
-            return;
-        }
+    const dataHora =
+        new Date()
+            .toISOString()
+            .replace(
+                /[:.]/g,
+                '-'
+            );
 
-        const elementsToHide = document.querySelectorAll('.no-print');
-        const elementsToHide1 = document.querySelectorAll('.button-group');
+    const filename =
+        `Pedido de Venda ${razaoSocial} - ${codCliente} e Rep ${representante} - ${dataHora}.pdf`;
 
-        elementsToHide.forEach(el => el.style.display = 'none');
-        elementsToHide1.forEach(el1 => el1.style.display = 'none');
-        helpWhats.style.display = 'none';
+    let pdfBlob =
+        null;
 
-        const content = document.querySelector('.container');
-        const razaoSocial = document.getElementById('razao_social').value;
-        const codCliente = document.getElementById('cod_cliente').value;
-        const representante = document.getElementById('representante').value;
-        const emailRep = document.getElementById('email_rep').value;
+    let clonePdf =
+        null;
 
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `Pedido de Venda ${razaoSocial} - ${codCliente} e Rep ${representante} - ${timestamp}.pdf`;
-        const options = {
-            margin: [0, 0, 0, 0],
-            filename: filename,
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
-            pagebreak: {
-                mode: ['css', 'legacy']
-            }
-        };
+    try{
 
-        try {
-            btPdfGeneration.disabled = true;
-            console.log('Iniciando geração do PDF...');
+        btPdfGeneration.disabled =
+            true;
 
-            const pdfBlob =
-                await gerarPdfPesquisavelBlob(
-                    filename
-                );
+        feedbackDiv.textContent =
+            'Gerando PDF, aguarde...';
 
-            baixarBlob(
-                pdfBlob,
+        feedbackDiv.style.display =
+            'block';
+
+        clonePdf =
+            prepararPedidoParaPdf();
+
+        pdfBlob =
+            await gerarPdfNoNavegador(
+                clonePdf,
                 filename
             );
 
-            console.log('PDF baixado com sucesso.');
-            alert('PDF criado e salvo nos downloads.');
+        baixarBlob(
+            pdfBlob,
+            filename
+        );
 
-            if (!modal1) {
-                throw new Error('Modal1 não encontrado no DOM.');
-            }
-            console.log('Exibindo modal de confirmação...');
-            modal1.style.display = "block";
+        alert(
+            'PDF criado e salvo nos downloads.'
+        );
 
-            function fecharModal() {
-                console.log('Fechando modal...');
-                modal1.style.display = "none";
-                elementsToHide.forEach(el => el.style.display = 'block');
-                elementsToHide1.forEach(el1 => el1.style.display = 'flex');
-                helpWhats.style.display = 'block';
-            }
+        if(!modal1){
 
-            closeButton1.onclick = fecharModal;
-            cancelButton1.onclick = fecharModal;
+            throw new Error(
+                'Modal de confirmação não encontrado.'
+            );
 
-            const currentConfirmButton = document.getElementById('confirmButton1');
-            currentConfirmButton.onclick = async () => {
-                console.log('Confirmação de envio clicada.');
-                modal1.style.display = "none";
-                feedbackDiv.textContent = 'Aguarde, estamos enviando o e-mail...';
-                feedbackDiv.style.display = 'block';
-                helpWhats.style.display = 'none';
-                elementsToHide.forEach(el => el.style.display = 'none');
-                cnpjInput.readOnly = true;
-
-                try {
-                    // Oculta a mensagem de feedback antes de gerar o PDF para envio
-                    feedbackDiv.style.display = 'none';
-                    
-                    // Reexibe os elementos antes de gerar o PDF para envio
-                    elementsToHide1.forEach(el1 => el1.style.display = 'none');
-
-                    const pdfBlobEnvio =
-                        await gerarPdfPesquisavelBlob(
-                            filename
-                        );
-
-                    const pdfBase64 =
-                        await blobParaDataUri(
-                            pdfBlobEnvio
-                        );
-
-                    console.log(
-                        'PDF pesquisável gerado para envio, iniciando requisição...'
-                    );
-
-                    const response = await fetch('/send-pdf', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ pdfBase64, razaoSocial, codCliente, representante, emailRep })
-                    });
-
-                    const result = await response.text();
-                    console.log('Resposta do servidor:', result);
-                    alert(result);
-                } catch (error) {
-                    console.error('Erro ao enviar o e-mail:', error);
-                    alert('Erro ao enviar o e-mail.');
-                } finally {
-                    // Agora restauramos a visibilidade de todos os elementos, incluindo elementsToHide1 e feedbackDiv
-                    feedbackDiv.style.display = 'none';
-                    elementsToHide.forEach(el => el.style.display = 'block');
-                    elementsToHide1.forEach(el1 => el1.style.display = 'flex');
-                    helpWhats.style.display = 'block';
-                }
-            };
-        } catch (error) {
-            console.error('Erro ao salvar ou enviar o PDF:', error);
-            alert('Erro no processo: ' + error.message);
-        } finally {
-            btPdfGeneration.disabled = false;
-            elementsToHide.forEach(el => el.style.display = 'block');
-            elementsToHide1.forEach(el1 => el1.style.display = 'flex');
-            helpWhats.style.display = 'block';
         }
+
+        modal1.style.display =
+            'block';
+
+        const fecharModal =
+            () => {
+
+                modal1.style.display =
+                    'none';
+
+            };
+
+        if(closeButton1){
+
+            closeButton1.onclick =
+                fecharModal;
+
+        }
+
+        if(cancelButton1){
+
+            cancelButton1.onclick =
+                fecharModal;
+
+        }
+
+        const botaoConfirmar =
+            document.getElementById(
+                'confirmButton1'
+            );
+
+        if(botaoConfirmar){
+
+            botaoConfirmar.onclick =
+                async () => {
+
+                    modal1.style.display =
+                        'none';
+
+                    feedbackDiv.textContent =
+                        'Aguarde, enviando o e-mail...';
+
+                    feedbackDiv.style.display =
+                        'block';
+
+                    try{
+
+                        const pdfBase64 =
+                            await blobParaDataUri(
+                                pdfBlob
+                            );
+
+                        const response =
+                            await fetch(
+                                '/send-pdf',
+                                {
+                                    method:
+                                        'POST',
+
+                                    headers: {
+                                        'Content-Type':
+                                            'application/json'
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+                                            pdfBase64:
+                                                pdfBase64,
+
+                                            razaoSocial:
+                                                razaoSocial,
+
+                                            codCliente:
+                                                codCliente,
+
+                                            representante:
+                                                representante,
+
+                                            emailRep:
+                                                emailRep
+                                        })
+                                }
+                            );
+
+                        const resultado =
+                            await response.text();
+
+                        if(!response.ok){
+
+                            throw new Error(
+                                resultado ||
+                                'Erro ao enviar o PDF.'
+                            );
+
+                        }
+
+                        alert(
+                            resultado
+                        );
+
+                    }catch(error){
+
+                        console.error(
+                            'Erro ao enviar o e-mail:',
+                            error
+                        );
+
+                        alert(
+                            error.message ||
+                            'Erro ao enviar o e-mail.'
+                        );
+
+                    }finally{
+
+                        feedbackDiv.style.display =
+                            'none';
+
+                    }
+
+                };
+
+        }
+
+    }catch(error){
+
+        console.error(
+            'Erro ao gerar o PDF:',
+            error
+        );
+
+        alert(
+            'Erro no processo: ' +
+            error.message
+        );
+
+    }finally{
+
+        if(clonePdf){
+
+            clonePdf.remove();
+
+        }
+
+        feedbackDiv.style.display =
+            'none';
+
+        btPdfGeneration.disabled =
+            false;
+
     }
+
+}
 
     function resetForm(excludeCnpj = false) {
         if (cnpjInput.readOnly) {
