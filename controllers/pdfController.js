@@ -1,5 +1,23 @@
 const nodemailer = require('nodemailer');
-const puppeteer = require('puppeteer');
+const puppeteer =
+    require(
+        'puppeteer-core'
+    );
+
+const chromium =
+    require(
+        '@sparticuz/chromium'
+    );
+
+const fs =
+    require(
+        'fs'
+    );
+
+const path =
+    require(
+        'path'
+    );
 
 let emailsRecentes = new Map();
 
@@ -106,16 +124,38 @@ exports.gerarPdfPesquisavel = async (
             }
         );
 
+      const executandoNaVercel =
+            Boolean(
+                process.env.VERCEL
+            );
+
+        const executablePath =
+            executandoNaVercel
+                ? await chromium.executablePath()
+                : (
+                    process.env.CHROME_EXECUTABLE_PATH ||
+                    undefined
+                );
+
         browser =
             await puppeteer.launch({
-                headless:
-                    true,
+                args:
+                    executandoNaVercel
+                        ? chromium.args
+                        : [
+                            '--no-sandbox',
+                            '--disable-setuid-sandbox',
+                            '--disable-dev-shm-usage'
+                        ],
 
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage'
-                ]
+                defaultViewport:
+                    chromium.defaultViewport,
+
+                executablePath:
+                    executablePath,
+
+                headless:
+                    true
             });
 
         const page =
@@ -356,3 +396,53 @@ exports.gerarPdfPesquisavel = async (
     }
 
 };
+
+function encontrarChromeLocal(){
+
+    const caminhosPossiveis = [
+        process.env.CHROME_EXECUTABLE_PATH,
+
+        process.env.PROGRAMFILES
+            ? path.join(
+                process.env.PROGRAMFILES,
+                'Google',
+                'Chrome',
+                'Application',
+                'chrome.exe'
+            )
+            : null,
+
+        process.env['PROGRAMFILES(X86)']
+            ? path.join(
+                process.env['PROGRAMFILES(X86)'],
+                'Google',
+                'Chrome',
+                'Application',
+                'chrome.exe'
+            )
+            : null,
+
+        process.env.LOCALAPPDATA
+            ? path.join(
+                process.env.LOCALAPPDATA,
+                'Google',
+                'Chrome',
+                'Application',
+                'chrome.exe'
+            )
+            : null
+    ]
+    .filter(Boolean);
+
+    return (
+        caminhosPossiveis.find(caminho => {
+
+            return fs.existsSync(
+                caminho
+            );
+
+        }) ||
+        null
+    );
+
+}
