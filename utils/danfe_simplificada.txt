@@ -1,6 +1,5 @@
 const { getSpreadsheetData } = require('../utils/apiLogisticaFernando');
 const Danfe = require('danfe-simplificada');
-const puppeteer = require('puppeteer');
 
 
 // Função para converter data no formato Excel para JavaScript Date

@@ -3,13 +3,13 @@ const nodemailer =
         'nodemailer'
     );
 
-let emailsRecentes =
+const emailsRecentes =
     new Map();
 
-exports.sendPdf = async (
+exports.sendPdf = async function(
     req,
     res
-) => {
+){
 
     const {
         pdfBase64,
@@ -18,7 +18,7 @@ exports.sendPdf = async (
         representante,
         emailRep
     } =
-        req.body;
+        req.body || {};
 
     if(
         !pdfBase64 ||
@@ -37,7 +37,12 @@ exports.sendPdf = async (
     }
 
     const emailKey =
-        `${razaoSocial}-${codCliente}-${representante}-${emailRep}`;
+        [
+            razaoSocial,
+            codCliente,
+            representante,
+            emailRep
+        ].join('-');
 
     if(emailsRecentes.has(emailKey)){
 
@@ -56,6 +61,23 @@ exports.sendPdf = async (
             Date.now()
         );
 
+        const usuarioGmail =
+            process.env.GMAIL_USER;
+
+        const senhaGmail =
+            process.env.GMAIL_APP_PASSWORD;
+
+        if(
+            !usuarioGmail ||
+            !senhaGmail
+        ){
+
+            throw new Error(
+                'As credenciais de e-mail não foram configuradas.'
+            );
+
+        }
+
         const transporter =
             nodemailer.createTransport({
                 service:
@@ -63,46 +85,62 @@ exports.sendPdf = async (
 
                 auth: {
                     user:
-                        process.env.GMAIL_USER,
+                        usuarioGmail,
 
                     pass:
-                        process.env.GMAIL_APP_PASSWORD
-                },
-
-                tls: {
-                    rejectUnauthorized:
-                        false
+                        senhaGmail
                 }
             });
 
-        const subject =
-            `Pedido de Venda ${razaoSocial} - ${codCliente}`;
-
-        const fileName =
-            `Pedido de Venda ${razaoSocial} - ${codCliente} e Rep ${representante}.pdf`;
-
         const conteudoBase64 =
-            pdfBase64.includes(',')
-                ? pdfBase64.split(',')[1]
-                : pdfBase64;
+            String(
+                pdfBase64
+            )
+            .replace(
+                /^data:application\/pdf;base64,/,
+                ''
+            );
+
+        if(!conteudoBase64){
+
+            throw new Error(
+                'O conteúdo do PDF está vazio.'
+            );
+
+        }
+
+        const nomeArquivo =
+            [
+                'Pedido de Venda',
+                razaoSocial,
+                codCliente,
+                'Rep',
+                representante
+            ]
+            .join(' - ')
+            .replace(
+                /[\\/:?"<>|]/g,
+                ''
+            ) +
+            '.pdf';
 
         await transporter.sendMail({
             from:
-                'KidsZone Pedidos <pedidoskidszone@gmail.com>',
+                `"KidsZone Pedidos" <${usuarioGmail}>`,
 
             to:
-                [emailRep],
+                emailRep,
 
             subject:
-                subject,
+                `Pedido de Venda ${razaoSocial} - ${codCliente}`,
 
             text:
-                `Segue em anexo o PDF gerado para o cliente ${razaoSocial} - ${codCliente}, representante ${representante}.`,
+                `Segue em anexo o PDF do pedido do cliente ${razaoSocial} - ${codCliente}.`,
 
             attachments: [
                 {
                     filename:
-                        fileName,
+                        nomeArquivo,
 
                     content:
                         conteudoBase64,
@@ -119,26 +157,33 @@ exports.sendPdf = async (
         return res
             .status(200)
             .send(
-                'E-mail enviado com sucesso!'
+                'E-mail enviado com sucesso.'
             );
 
     }catch(error){
 
         console.error(
-            'Erro ao enviar o e-mail:',
-            error
+            'Erro ao enviar PDF por e-mail:',
+            {
+                mensagem:
+                    error.message,
+
+                stack:
+                    error.stack
+            }
         );
 
         return res
             .status(500)
             .send(
-                'Erro ao enviar o e-mail.'
+                error.message ||
+                'Erro ao enviar o PDF por e-mail.'
             );
 
     }finally{
 
         setTimeout(
-            () => {
+            function(){
 
                 emailsRecentes.delete(
                     emailKey
