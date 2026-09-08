@@ -1,71 +1,158 @@
 const apiService = require('../utils/apiService');
 
-function normalizarNumero(valor){
-
+function normalizarNumero(valor) {
     return String(
         valor ?? ''
-    )
-    .replace(
+    ).replace(
         /\D/g,
         ''
     );
-
 }
 
-async function getOrderDetails(
-    req,
-    res
-){
-
+async function getOrderDetails(req, res) {
     const status =
         req.query.status || 3;
 
     const codRep =
-        req.query.codRep || null;
+        String(
+            req.query.codRep || ''
+        ).trim();
 
     const cnpj =
-        req.query.clienteCNPJ || null;
+        String(
+            req.query.clienteCNPJ || ''
+        ).trim();
+
+    const codigoClienteTexto =
+        String(
+            req.query.ClienteCodigo || ''
+        ).trim();
 
     const codCliente =
-        req.query.ClienteCodigo
+        codigoClienteTexto
             ? Number(
-                req.query.ClienteCodigo
+                codigoClienteTexto
             )
             : null;
 
     const codigoPedido =
         String(
             req.query.codigoPedido || ''
-        )
-        .trim();
+        ).trim();
 
     const numeroNota =
         String(
             req.query.numeroNota || ''
-        )
-        .trim();
+        ).trim();
 
     const dataInicio =
-        req.query.DataPedidoInicio
-            ? new Date(
-                req.query.DataPedidoInicio
-            )
-            : null;
+        String(
+            req.query.DataPedidoInicio || ''
+        ).trim() || null;
 
     const dataFim =
-        req.query.DataPedidoFim
-            ? new Date(
-                req.query.DataPedidoFim
+        String(
+            req.query.DataPedidoFim || ''
+        ).trim() || null;
+
+    const statusSeparacaoTexto =
+        String(
+            req.query.statusSeparacao ?? ''
+        ).trim();
+
+    const statusSeparacao =
+        statusSeparacaoTexto !== ''
+            ? Number(
+                statusSeparacaoTexto
             )
             : null;
 
-    const statusSeparacao =
-        req.query.statusSeparacao !== undefined &&
-        req.query.statusSeparacao !== ''
-            ? Number(
-                req.query.statusSeparacao
+    if (
+        codigoClienteTexto &&
+        !Number.isFinite(
+            codCliente
+        )
+    ) {
+        return res
+            .status(400)
+            .json({
+                mensagem:
+                    'O código do cliente informado é inválido.'
+            });
+    }
+
+    if (
+        statusSeparacao !== null &&
+        !Number.isFinite(
+            statusSeparacao
+        )
+    ) {
+        return res
+            .status(400)
+            .json({
+                mensagem:
+                    'O status de separação informado é inválido.'
+            });
+    }
+
+    let dataInicioFiltro =
+        null;
+
+    let dataFimFiltro =
+        null;
+
+    if (dataInicio) {
+        dataInicioFiltro =
+            new Date(
+                `${dataInicio}T00:00:00`
+            );
+
+        if (
+            Number.isNaN(
+                dataInicioFiltro.getTime()
             )
-            : null;
+        ) {
+            return res
+                .status(400)
+                .json({
+                    mensagem:
+                        'A data inicial informada é inválida.'
+                });
+        }
+    }
+
+    if (dataFim) {
+        dataFimFiltro =
+            new Date(
+                `${dataFim}T23:59:59.999`
+            );
+
+        if (
+            Number.isNaN(
+                dataFimFiltro.getTime()
+            )
+        ) {
+            return res
+                .status(400)
+                .json({
+                    mensagem:
+                        'A data final informada é inválida.'
+                });
+        }
+    }
+
+    if (
+        dataInicioFiltro &&
+        dataFimFiltro &&
+        dataInicioFiltro > dataFimFiltro
+    ) {
+        return res
+            .status(400)
+            .json({
+                mensagem:
+                    'A data inicial não pode ser maior que a data final.'
+            });
+    }
 
     console.log(
         'Filtros recebidos:',
@@ -82,56 +169,105 @@ async function getOrderDetails(
         }
     );
 
-    try{
+    try {
+        const possuiBuscaDireta =
+    Boolean(
+        codigoPedido ||
+        numeroNota
+    );
 
-        const orders =
-            await apiService.fetchOrderDetails(
-                status,
-                dataInicio,
-                dataFim,
-                statusSeparacao,
-                codCliente
+        let orders;
+
+        if (codigoPedido) {
+            orders =
+                await apiService.fetchOrdersByCode(
+                    codigoPedido,
+                    codCliente
+                );
+        } else if (numeroNota) {
+            orders =
+                await apiService.fetchOrdersByInvoice(
+                    numeroNota,
+                    codCliente
+                );
+        } else {
+            orders =
+                await apiService.fetchOrderDetails(
+                    status,
+                    dataInicio,
+                    dataFim,
+                    statusSeparacao,
+                    codCliente
+                );
+        }
+
+        if (!Array.isArray(orders)) {
+            console.error(
+                'A consulta não retornou uma lista de pedidos:',
+                orders
             );
+
+            throw new Error(
+                'A consulta retornou um formato inválido.'
+            );
+        }
 
         const numeroNotaNormalizado =
             normalizarNumero(
                 numeroNota
             );
 
+        const cnpjNormalizado =
+            normalizarNumero(
+                cnpj
+            );
+
         const filteredOrders =
             orders.filter(order => {
+                if (!order) {
+                    return false;
+                }
+
+                const codigoRepresentante =
+                    String(
+                        order.representante?.codigo ?? ''
+                    ).trim();
 
                 const matchRep =
                     !codRep ||
-                    String(
-                        order.representante?.codigo ?? ''
-                    ) ===
-                    String(
-                        codRep
+                    codigoRepresentante === codRep;
+
+                const documentoCliente =
+                    normalizarNumero(
+                        order.cliente
+                            ?.documento
+                            ?.numeroTexto
                     );
 
                 const matchCNPJ =
-                    !cnpj ||
-                    normalizarNumero(
-                        order.cliente?.documento?.numeroTexto
-                    ) ===
-                    normalizarNumero(
-                        cnpj
+                    possuiBuscaDireta ||
+                    !cnpjNormalizado ||
+                    documentoCliente === cnpjNormalizado;
+
+                const codigoClientePedido =
+                    Number(
+                        order.cliente?.codigo
                     );
 
                 const matchCodCliente =
-                    !codCliente ||
-                    Number(
-                        order.cliente?.codigo
-                    ) ===
-                    codCliente;
+                    possuiBuscaDireta ||
+                    codCliente === null ||
+                    codigoClientePedido === codCliente;
+
+                const codigoAtualPedido =
+                    String(
+                        order.codigo ?? ''
+                    ).trim();
 
                 const matchCodigoPedido =
                     !codigoPedido ||
-                    String(
-                        order.codigo ?? ''
-                    ).trim() ===
-                    codigoPedido;
+                    codigoAtualPedido ===
+                        codigoPedido;
 
                 const notasFiscais =
                     Array.isArray(
@@ -143,36 +279,53 @@ async function getOrderDetails(
                 const matchNumeroNota =
                     !numeroNotaNormalizado ||
                     notasFiscais.some(nota => {
-
-                        return (
+                        const numeroAtual =
                             normalizarNumero(
                                 nota?.numero
-                            ) ===
+                            );
+
+                        return (
+                            numeroAtual ===
                             numeroNotaNormalizado
                         );
-
                     });
 
+                const dataPedido =
+                    order.dataPedido
+                        ? new Date(
+                            order.dataPedido
+                        )
+                        : null;
+
+                const dataPedidoValida =
+                    dataPedido &&
+                    !Number.isNaN(
+                        dataPedido.getTime()
+                    );
+
                 const matchDataInicio =
-                    !dataInicio ||
-                    new Date(
-                        order.dataPedido
-                    ) >=
-                    dataInicio;
+                    possuiBuscaDireta ||
+                    !dataInicioFiltro ||
+                    (
+                        dataPedidoValida &&
+                        dataPedido >=
+                            dataInicioFiltro
+                    );
 
                 const matchDataFim =
-                    !dataFim ||
-                    new Date(
-                        order.dataPedido
-                    ) <=
-                    dataFim;
-
+                    possuiBuscaDireta ||
+                    !dataFimFiltro ||
+                    (
+                        dataPedidoValida &&
+                        dataPedido <=
+                            dataFimFiltro
+                    );
                 const matchStatusSeparacao =
+                    possuiBuscaDireta ||
                     statusSeparacao === null ||
                     Number(
                         order.statusSeparacao
-                    ) ===
-                    statusSeparacao;
+                    ) === statusSeparacao;
 
                 return (
                     matchRep &&
@@ -184,21 +337,19 @@ async function getOrderDetails(
                     matchDataFim &&
                     matchStatusSeparacao
                 );
-
             });
 
-        if(filteredOrders.length === 0){
-
+        if (filteredOrders.length === 0) {
             console.warn(
                 'Nenhum pedido encontrado com os filtros aplicados.'
             );
 
             return res
                 .status(404)
-                .send(
-                    'Nenhum pedido encontrado.'
-                );
-
+                .json({
+                    mensagem:
+                        'Nenhum pedido encontrado com os filtros aplicados.'
+                });
         }
 
         return res
@@ -206,46 +357,47 @@ async function getOrderDetails(
             .json(
                 filteredOrders
             );
+    } catch (error) {
+        console.error(
+            'Erro ao obter detalhes dos pedidos:',
+            error
+        );
 
-    }catch (error) {
-      console.error(
-          'Erro ao obter detalhes dos pedidos:',
-          error
-      );
+        const mensagem =
+            String(
+                error.message ||
+                ''
+            );
 
-      const mensagem =
-          String(
-              error.message ||
-              ''
-          );
+        const limiteAtingido =
+            mensagem.includes(
+                'limitada'
+            ) ||
+            mensagem.includes(
+                'Too Many Requests'
+            ) ||
+            mensagem.includes(
+                '429'
+            );
 
-      const limiteAtingido =
-          mensagem.includes(
-              'limitada'
-          ) ||
-          mensagem.includes(
-              'Too Many Requests'
-          );
+        if (limiteAtingido) {
+            return res
+                .status(503)
+                .json({
+                    mensagem:
+                        'A API de pedidos está temporariamente limitada. ' +
+                        'Aguarde alguns segundos e tente novamente.'
+                });
+        }
 
-      if (limiteAtingido) {
-          return res
-              .status(503)
-              .json({
-                  mensagem:
-                      'A API de pedidos está temporariamente limitada. ' +
-                      'Aguarde alguns segundos e tente novamente.'
-              });
-      }
-
-      return res
-          .status(500)
-          .json({
-              mensagem:
-                  mensagem ||
-                  'Erro ao obter detalhes dos pedidos.'
-          });
-  }
-
+        return res
+            .status(500)
+            .json({
+                mensagem:
+                    mensagem ||
+                    'Erro ao obter detalhes dos pedidos.'
+            });
+    }
 }
 
 async function getClientDetailsEndpoint(req, res) {

@@ -91,62 +91,244 @@ function exportToExcel(data) {
     XLSX.writeFile(workbook, fileName);
 }
 
+function atualizarStatusPelaResposta(
+    pedidos
+) {
+    const possuiBuscaDireta =
+        Boolean(
+            currentFilters.codigoPedido ||
+            currentFilters.numeroNota
+        );
+
+    if (
+        !possuiBuscaDireta ||
+        !Array.isArray(
+            pedidos
+        ) ||
+        pedidos.length !== 1
+    ) {
+        return;
+    }
+
+    const pedido =
+        pedidos[0];
+
+    const campoStatus =
+        document.getElementById(
+            'statusFilter'
+        );
+
+    const campoSeparacao =
+        document.getElementById(
+            'statusSeparacaoFilter'
+        );
+
+    const statusResposta =
+        String(
+            pedido.status ?? ''
+        ).trim();
+
+    const separacaoResposta =
+        String(
+            pedido.statusSeparacao ?? ''
+        ).trim();
+
+    if (
+        campoStatus &&
+        statusResposta !== ''
+    ) {
+        const possuiOpcaoStatus =
+            Array.from(
+                campoStatus.options
+            ).some(opcao => {
+                return (
+                    opcao.value ===
+                    statusResposta
+                );
+            });
+
+        if (possuiOpcaoStatus) {
+            campoStatus.value =
+                statusResposta;
+
+            currentFilters.status =
+                statusResposta;
+        } else {
+            console.warn(
+                'O status retornado não existe no filtro:',
+                statusResposta
+            );
+        }
+    }
+
+    if (
+        campoSeparacao &&
+        separacaoResposta !== ''
+    ) {
+        const possuiOpcaoSeparacao =
+            Array.from(
+                campoSeparacao.options
+            ).some(opcao => {
+                return (
+                    opcao.value ===
+                    separacaoResposta
+                );
+            });
+
+        if (possuiOpcaoSeparacao) {
+            campoSeparacao.value =
+                separacaoResposta;
+
+            currentFilters.statusSeparacao =
+                separacaoResposta;
+        } else {
+            console.warn(
+                'O status de separação retornado não existe no filtro:',
+                separacaoResposta
+            );
+        }
+    }
+}
+
 // Carregar detalhes dos pedidos
-async function loadOrderDetails(status = currentFilters.status) {
+async function loadOrderDetails(
+    status = currentFilters.status
+) {
+    currentFilters.status =
+        status;
 
-    currentFilters.status = status;
+    const queryParams =
+        new URLSearchParams({
+            status:
+                currentFilters.status || '',
 
-    const queryParams = new URLSearchParams({
-    status:
-        currentFilters.status || '',
+            codRep:
+                currentFilters.representante || '',
 
-    codRep:
-        currentFilters.representante || '',
+            clienteCNPJ:
+                currentFilters.clienteCNPJ || '',
 
-    clienteCNPJ:
-        currentFilters.clienteCNPJ || '',
+            ClienteCodigo:
+                currentFilters.ClienteCodigo || '',
 
-    ClienteCodigo:
-        currentFilters.ClienteCodigo || '',
+            codigoPedido:
+                currentFilters.codigoPedido || '',
 
-    codigoPedido:
-        currentFilters.codigoPedido || '',
+            numeroNota:
+                currentFilters.numeroNota || '',
 
-    numeroNota:
-        currentFilters.numeroNota || '',
+            DataPedidoInicio:
+                formatDate(
+                    currentFilters.dataInicio
+                ) || '',
 
-    DataPedidoInicio:
-        formatDate(
-            currentFilters.dataInicio
-        ) || '',
+            DataPedidoFim:
+                formatDate(
+                    currentFilters.dataFim
+                ) || '',
 
-    DataPedidoFim:
-        formatDate(
-            currentFilters.dataFim
-        ) || '',
+            statusSeparacao:
+                currentFilters.statusSeparacao || ''
+        });
 
-    statusSeparacao:
-        currentFilters.statusSeparacao || ''
-});
-
-    showFeedback("Carregando pedidos, aguarde...");
+    showFeedback(
+        'Carregando pedidos, aguarde...'
+    );
 
     try {
-        const response = await fetch(`/api/pedidos?${queryParams.toString()}`);
+        const response =
+            await fetch(
+                `/api/pedidos?${queryParams.toString()}`
+            );
+
         if (response.status === 404) {
-            renderTable([]);
-            showFeedback("Nenhum dado encontrado com os filtros aplicados.");
+            ordersData =
+                [];
+
+            renderTable(
+                []
+            );
+
+            showFeedback(
+                'Nenhum dado encontrado com os filtros aplicados.'
+            );
+
             return;
         }
 
-        if (!response.ok) throw new Error(`Erro ao obter pedidos: ${response.statusText}`);
-        
-        ordersData = await response.json(); 
-        renderTable(ordersData);
+        if (!response.ok) {
+            let mensagem =
+                `Erro ao obter pedidos: ${response.statusText}`;
+
+            try {
+                const erro =
+                    await response.json();
+
+                mensagem =
+                    erro.mensagem ||
+                    mensagem;
+            } catch (error) {
+                console.error(
+                    'Não foi possível ler a mensagem da API:',
+                    error
+                );
+            }
+
+            throw new Error(
+                mensagem
+            );
+        }
+
+        const resultado =
+            await response.json();
+
+        if (
+            !Array.isArray(resultado) ||
+            resultado.length === 0
+        ) {
+            ordersData =
+                [];
+
+            renderTable(
+                []
+            );
+
+            showFeedback(
+                'Nenhum dado encontrado com os filtros aplicados.'
+            );
+
+            return;
+        }
+
+        ordersData =
+            resultado;
+
+        atualizarStatusPelaResposta(
+            ordersData
+        );
+
+        renderTable(
+            ordersData
+        );
+
         hideFeedback();
     } catch (error) {
-        console.error('Erro ao carregar os detalhes dos pedidos:', error);
-        showFeedback("Nenhum dado encontrado com os filtros aplicados.");
+        console.error(
+            'Erro ao carregar os detalhes dos pedidos:',
+            error
+        );
+
+        ordersData =
+            [];
+
+        renderTable(
+            []
+        );
+
+        showFeedback(
+            error.message ||
+            'Não foi possível carregar os pedidos.'
+        );
     }
 }
 
@@ -237,17 +419,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-
 async function applyFilters() {
-    sincronizarStatusSeparacao();
-    // Atualizar filtros globais com valores do DOM
-    currentFilters.representante = document.getElementById('representanteFilter').value.trim();
-    currentFilters.clienteCNPJ = document.getElementById('clienteCNPJFilter').value.trim();
-    currentFilters.ClienteCodigo = document.getElementById('codClientFilter').value;
-    currentFilters.status = document.getElementById('statusFilter').value;
-    currentFilters.dataInicio = document.getElementById('dataPedidoInicioFilter').value;
-    currentFilters.dataFim = document.getElementById('dataPedidoFimFilter').value;
-    currentFilters.statusSeparacao = document.getElementById('statusSeparacaoFilter').value;
+    currentFilters.representante =
+        document
+            .getElementById(
+                'representanteFilter'
+            )
+            .value
+            .trim();
+
+    currentFilters.clienteCNPJ =
+        document
+            .getElementById(
+                'clienteCNPJFilter'
+            )
+            .value
+            .trim();
+
+    currentFilters.ClienteCodigo =
+        document
+            .getElementById(
+                'codClientFilter'
+            )
+            .value
+            .trim();
+
     currentFilters.codigoPedido =
         document
             .getElementById(
@@ -264,9 +460,48 @@ async function applyFilters() {
             .value
             .trim();
 
-    await loadOrderDetails(currentFilters.status);
-}
+    currentFilters.status =
+        document
+            .getElementById(
+                'statusFilter'
+            )
+            .value;
 
+    currentFilters.dataInicio =
+        document
+            .getElementById(
+                'dataPedidoInicioFilter'
+            )
+            .value;
+
+    currentFilters.dataFim =
+        document
+            .getElementById(
+                'dataPedidoFimFilter'
+            )
+            .value;
+
+    const possuiBuscaDireta =
+        Boolean(
+            currentFilters.codigoPedido ||
+            currentFilters.numeroNota
+        );
+
+    if (!possuiBuscaDireta) {
+        sincronizarStatusSeparacao();
+    }
+
+    currentFilters.statusSeparacao =
+        document
+            .getElementById(
+                'statusSeparacaoFilter'
+            )
+            .value;
+
+    await loadOrderDetails(
+        currentFilters.status
+    );
+}
 
 // Limpar Filtros
 async function clearFilters() {
@@ -282,7 +517,7 @@ async function clearFilters() {
     document.getElementById('codClientFilter').value = '';
     document.getElementById('dataPedidoInicioFilter').value = '';
     document.getElementById('dataPedidoFimFilter').value = '';
-    document.getElementById('statusFilter').value = '3';
+    document.getElementById('statusFilter').value = '6';
     document.getElementById(
         'statusSeparacaoFilter'
     ).value = '0';

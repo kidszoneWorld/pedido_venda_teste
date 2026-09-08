@@ -59,9 +59,9 @@ async function executarFetchComRetentativa(
             `Tentativa ${tentativa} de ${limiteTentativas}.`
         );
 
-        // await aguardar(
-        //     tempoEspera
-        // );
+        await aguardar(
+            tempoEspera
+        );
 
         tentativa += 1;
     }
@@ -70,10 +70,10 @@ async function executarFetchComRetentativa(
         'A API permaneceu limitada após várias tentativas.'
     );
 }
+
 function criarOpcoesGet() {
     return {
-        method:
-            'GET',
+        method: 'GET',
 
         headers: {
             Authorization:
@@ -125,16 +125,451 @@ async function checkToken() {
   }
 }
 
-// Função para calcular as datas de início e fim (últimos 60 dias como padrão, se não fornecidas)
-function getLast30Days(userDataInicio = null, userDataFim = null) {
-  const hoje = new Date();
-  const dataFim = userDataFim ? new Date(userDataFim).toISOString().split('T')[0] : hoje.toISOString().split('T')[0]; // Usa data fornecida ou hoje
-  const dataInicio = userDataInicio 
-    ? new Date(userDataInicio).toISOString().split('T')[0] 
-    : new Date(hoje.setDate(hoje.getDate() - 60)).toISOString().split('T')[0]; // Usa data fornecida ou 60 dias atrás
-  return { dataInicio, dataFim };
+function normalizarNumeroNota(valor) {
+    return String(
+        valor ?? ''
+    ).replace(
+        /\D/g,
+        ''
+    );
 }
 
+async function buscarPedidosPorNotaFiscal(
+    numeroNota,
+    codigoCliente = null
+)  {
+    await checkToken();
+
+    if (!authToken) {
+        throw new Error(
+            'Token de autenticação não foi obtido.'
+        );
+    }
+
+    const notaProcurada =
+        normalizarNumeroNota(
+            numeroNota
+        );
+
+    if (!notaProcurada) {
+        return [];
+    }
+
+    const pageSize =
+        30;
+
+    const maxRecords =
+        300;
+
+    let paginaAtual =
+        1;
+
+    let quantidadeProcessada =
+        0;
+
+    let continuar =
+        true;
+
+    const pedidosEncontrados =
+        [];
+
+    const invoiceEndpoint =
+        '/documentos-fiscais-service/nota-fiscal' +
+        '?PedidoDeVendaCodigo=';
+
+    console.log(
+        `Procurando a nota ${notaProcurada} sem limitação de data.`
+    );
+
+    while (
+        continuar &&
+        quantidadeProcessada < maxRecords
+    ) {
+        const parametros =
+            new URLSearchParams();
+
+        parametros.set(
+            'EmpresaCodigo',
+            '2'
+        );
+
+        parametros.set(
+            'PageNumber',
+            String(
+                paginaAtual
+            )
+        );
+
+        parametros.set(
+            'PageSize',
+            String(
+                pageSize
+            )
+        );
+        if (
+            codigoCliente !== null &&
+            codigoCliente !== undefined &&
+            codigoCliente !== ''
+        ) {
+            parametros.set(
+                'ClienteCodigo',
+                String(
+                    codigoCliente
+                )
+            );
+        }
+
+        const url =
+            '/vendas-service/pedido?' +
+            parametros.toString();
+
+        const response =
+            await executarFetchComRetentativa(
+                `${NgLink}${url}`,
+                criarOpcoesGet()
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                `Erro ao buscar pedidos: ${response.statusText}`
+            );
+        }
+
+        const resultado =
+            await response.json();
+
+        const pedidosPagina =
+            Array.isArray(
+                resultado?.dados
+            )
+                ? resultado.dados
+                : [];
+
+        console.log(
+            `Página ${paginaAtual}: ` +
+            `${pedidosPagina.length} pedidos recebidos.`
+        );
+
+        for (const pedido of pedidosPagina) {
+            quantidadeProcessada += 1;
+
+            try {
+                const endpointNota =
+                    `${NgLink}` +
+                    `${invoiceEndpoint}` +
+                    `${encodeURIComponent(pedido.codigo)}`;
+
+                const invoiceResponse =
+                    await executarFetchComRetentativa(
+                        endpointNota,
+                        criarOpcoesGet()
+                    );
+
+                if (!invoiceResponse.ok) {
+                    continue;
+                }
+
+                const notasFiscais =
+                    await invoiceResponse.json();
+
+                const notas =
+                    Array.isArray(
+                        notasFiscais?.dados
+                    )
+                        ? notasFiscais.dados
+                        : [];
+
+                const possuiNota =
+                    notas.some(nota => {
+                        const numeroAtual =
+                            normalizarNumeroNota(
+                                nota?.numero
+                            );
+
+                        return (
+                            numeroAtual ===
+                            notaProcurada
+                        );
+                    });
+
+                if (possuiNota) {
+                    pedidosEncontrados.push({
+                        ...pedido,
+
+                        notas_fiscais:
+                            notasFiscais
+                    });
+
+                    continuar =
+                        false;
+
+                    break;
+                }
+            } catch (error) {
+                console.error(
+                    `Erro ao consultar notas do pedido ${pedido.codigo}:`,
+                    error
+                );
+            }
+
+            await aguardar(
+                80
+            );
+        }
+
+        if (
+            pedidosPagina.length < pageSize
+        ) {
+            continuar =
+                false;
+        } else if (continuar) {
+            paginaAtual += 1;
+
+            await aguardar(
+                300
+            );
+        }
+    }
+
+    console.log(
+        `Pedidos encontrados para a nota ${notaProcurada}: ` +
+        `${pedidosEncontrados.length}`
+    );
+
+    return pedidosEncontrados;
+}
+
+async function enriquecerPedidoEncontrado(
+    pedido
+) {
+    const representativeEndpoint =
+        '/pessoa-service/representante?ClienteCodigo=';
+
+    const orderDetailsEndpoint =
+        '/vendas-service/pedido/';
+
+    const transportEndpoint =
+        '/pessoa-service/transportadora/codigo/';
+
+    let representante =
+        null;
+
+    let detalhes =
+        null;
+
+    let detalhesTransporte =
+        null;
+
+    if (pedido.cliente?.codigo) {
+        try {
+            const response =
+                await executarFetchComRetentativa(
+                    `${NgLink}${representativeEndpoint}${pedido.cliente.codigo}`,
+                    criarOpcoesGet()
+                );
+
+            if (response.ok) {
+                const resultado =
+                    await response.json();
+
+                representante =
+                    resultado.dados?.[0] ??
+                    null;
+            }
+        } catch (error) {
+            console.error(
+                `Erro ao buscar representante do pedido ${pedido.codigo}:`,
+                error
+            );
+        }
+    }
+
+    if (pedido.id) {
+        try {
+            const response =
+                await executarFetchComRetentativa(
+                    `${NgLink}${orderDetailsEndpoint}${pedido.id}`,
+                    criarOpcoesGet()
+                );
+
+            if (response.ok) {
+                detalhes =
+                    await response.json();
+            }
+        } catch (error) {
+            console.error(
+                `Erro ao buscar detalhes do pedido ${pedido.codigo}:`,
+                error
+            );
+        }
+    }
+
+    if (pedido.transportadoraCodigo) {
+        try {
+            const response =
+                await executarFetchComRetentativa(
+                    `${NgLink}${transportEndpoint}${pedido.transportadoraCodigo}`,
+                    criarOpcoesGet()
+                );
+
+            if (response.ok) {
+                detalhesTransporte =
+                    await response.json();
+            }
+        } catch (error) {
+            console.error(
+                `Erro ao buscar transportadora do pedido ${pedido.codigo}:`,
+                error
+            );
+        }
+    }
+
+    return {
+        ...pedido,
+
+        representante:
+            representante,
+
+        detalhes:
+            detalhes,
+
+        detalhes_transporte:
+            detalhesTransporte
+    };
+}
+
+async function fetchOrdersByInvoice(
+    numeroNota,
+    codigoCliente = null
+) {
+    const pedidos =
+        await buscarPedidosPorNotaFiscal(
+            numeroNota,
+            codigoCliente
+        );
+
+    const pedidosEnriquecidos =
+        [];
+
+    for (const pedido of pedidos) {
+        const pedidoEnriquecido =
+            await enriquecerPedidoEncontrado(
+                pedido
+            );
+
+        pedidosEnriquecidos.push({
+            ...pedidoEnriquecido,
+
+            notas_fiscais:
+                pedido.notas_fiscais
+        });
+    }
+
+    return pedidosEnriquecidos;
+}
+
+// Função para calcular as datas de início e fim (últimos 60 dias como padrão, se não fornecidas)
+function obterPeriodoConsulta(
+    userDataInicio = null,
+    userDataFim = null
+) {
+    const possuiDataInicio =
+        Boolean(
+            userDataInicio
+        );
+
+    const possuiDataFim =
+        Boolean(
+            userDataFim
+        );
+
+    let dataInicioObjeto;
+    let dataFimObjeto;
+
+    if (
+        possuiDataInicio &&
+        possuiDataFim
+    ) {
+        dataInicioObjeto =
+            new Date(
+                userDataInicio
+            );
+
+        dataFimObjeto =
+            new Date(
+                userDataFim
+            );
+    } else if (possuiDataInicio) {
+        dataInicioObjeto =
+            new Date(
+                userDataInicio
+            );
+
+        dataFimObjeto =
+            new Date();
+    } else if (possuiDataFim) {
+        dataFimObjeto =
+            new Date(
+                userDataFim
+            );
+
+        dataInicioObjeto =
+            new Date(
+                dataFimObjeto
+            );
+
+        dataInicioObjeto.setDate(
+            dataInicioObjeto.getDate() - 15
+        );
+    } else {
+        dataFimObjeto =
+            new Date();
+
+        dataInicioObjeto =
+            new Date();
+
+        dataInicioObjeto.setDate(
+            dataInicioObjeto.getDate() - 15
+        );
+    }
+
+    if (
+        Number.isNaN(
+            dataInicioObjeto.getTime()
+        ) ||
+        Number.isNaN(
+            dataFimObjeto.getTime()
+        )
+    ) {
+        throw new Error(
+            'O período informado para consulta é inválido.'
+        );
+    }
+
+    if (
+        dataInicioObjeto >
+        dataFimObjeto
+    ) {
+        throw new Error(
+            'A data inicial não pode ser maior que a data final.'
+        );
+    }
+
+    const dataInicio =
+        dataInicioObjeto
+            .toISOString()
+            .split('T')[0];
+
+    const dataFim =
+        dataFimObjeto
+            .toISOString()
+            .split('T')[0];
+
+    return {
+        dataInicio,
+        dataFim
+    };
+}
 
 // Função para buscar os pedidos de venda com paginação e todos os detalhes relacionados
 async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim = null, userStatusSeparacao = null , usercodCliente = null) {
@@ -146,7 +581,14 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
   }
 
   // Calcula as datas dinamicamente com base nos parâmetros fornecidos ou padrão
-  const { dataInicio, dataFim } = getLast30Days(userDataInicio, userDataFim);
+  const {
+      dataInicio,
+      dataFim
+  } = obterPeriodoConsulta(
+      userDataInicio,
+      userDataFim
+  );
+
   
   console.log(`Buscando pedidos com status: ${status}, DataPedidoInicio: ${dataInicio}, DataPedidoFim: ${dataFim}, StatusSeparacao: ${userStatusSeparacao !== null ? userStatusSeparacao : 'todos'}`);
 
@@ -358,7 +800,165 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
   return allOrders;
 }
 
+async function fetchOrdersByCode(
+    codigoPedido,
+    codigoCliente = null
+) {
+    await checkToken();
 
+    if (!authToken) {
+        throw new Error(
+            'Token de autenticação não foi obtido.'
+        );
+    }
+
+    const codigo =
+        String(
+            codigoPedido || ''
+        ).trim();
+
+    if (!codigo) {
+        return [];
+    }
+
+    const parametros =
+        new URLSearchParams();
+
+    parametros.set(
+        'EmpresaCodigo',
+        '2'
+    );
+
+    parametros.set(
+        'PedidoCodigo',
+        codigo
+    );
+
+    parametros.set(
+        'PageNumber',
+        '1'
+    );
+
+    parametros.set(
+        'PageSize',
+        '30'
+    );
+
+    if (
+        codigoCliente !== null &&
+        codigoCliente !== undefined &&
+        codigoCliente !== ''
+    ) {
+        parametros.set(
+            'ClienteCodigo',
+            String(
+                codigoCliente
+            )
+        );
+    }
+
+    const endpoint =
+        '/vendas-service/pedido?' +
+        parametros.toString();
+
+    console.log(
+        'Consultando pedido diretamente:',
+        `${NgLink}${endpoint}`
+    );
+
+    const response =
+        await executarFetchComRetentativa(
+            `${NgLink}${endpoint}`,
+            criarOpcoesGet()
+        );
+
+    if (!response.ok) {
+        if (response.status === 404) {
+            return [];
+        }
+
+        throw new Error(
+            `Erro ao buscar pedido: ${response.statusText}`
+        );
+    }
+
+    const resultado =
+        await response.json();
+
+    const pedidosRecebidos =
+        Array.isArray(
+            resultado?.dados
+        )
+            ? resultado.dados
+            : [];
+
+    const pedidos =
+        pedidosRecebidos.filter(
+            pedido => {
+                return (
+                    String(
+                        pedido?.codigo ?? ''
+                    ).trim() === codigo
+                );
+            }
+        );
+
+    if (pedidos.length === 0) {
+        return [];
+    }
+
+    const pedido =
+        pedidos[0];
+
+    const pedidoEnriquecido =
+        await enriquecerPedidoEncontrado(
+            pedido
+        );
+
+    let notasFiscais =
+        null;
+
+    try {
+        const parametrosNota =
+            new URLSearchParams();
+
+        parametrosNota.set(
+            'PedidoDeVendaCodigo',
+            String(
+                pedido.codigo
+            )
+        );
+
+        const endpointNota =
+            '/documentos-fiscais-service/nota-fiscal?' +
+            parametrosNota.toString();
+
+        const respostaNota =
+            await executarFetchComRetentativa(
+                `${NgLink}${endpointNota}`,
+                criarOpcoesGet()
+            );
+
+        if (respostaNota.ok) {
+            notasFiscais =
+                await respostaNota.json();
+        }
+    } catch (error) {
+        console.error(
+            `Erro ao buscar notas do pedido ${pedido.codigo}:`,
+            error
+        );
+    }
+
+    return [
+        {
+            ...pedidoEnriquecido,
+
+            notas_fiscais:
+                notasFiscais
+        }
+    ];
+}
 
 async function fetchOrderDetailsEndpoint(CodPedido) {
   await checkToken();
@@ -473,8 +1073,10 @@ setInterval(checkToken, 60 * 60 * 1000);  // Verifica o token a cada 1 hora
 
 // Exportar as funções
 module.exports = {
-  authenticate,
-  checkToken,
-  fetchOrderDetails,
-  fetchOrderDetailsEndpoint
+    authenticate,
+    checkToken,
+    fetchOrderDetails,
+    fetchOrderDetailsEndpoint,
+    fetchOrdersByInvoice,
+    fetchOrdersByCode
 };
