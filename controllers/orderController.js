@@ -45,6 +45,12 @@ async function getOrderDetails(req, res) {
             req.query.numeroNota || ''
         ).trim();
 
+    const possuiBuscaDireta =
+    Boolean(
+        codigoPedido ||
+        numeroNota
+    );
+
     const dataInicio =
         String(
             req.query.DataPedidoInicio || ''
@@ -94,87 +100,71 @@ async function getOrderDetails(req, res) {
                     'O status de separação informado é inválido.'
             });
     }
+let dataInicioFiltro =
+    null;
 
-    let dataInicioFiltro =
-        null;
+let dataFimFiltro =
+    null;
 
-    let dataFimFiltro =
-        null;
-
-    if (
-        dataInicio &&
-        !possuiBuscaDireta
-    ) {
-        dataInicioFiltro =
-            new Date(
-                `${dataInicio}T00:00:00`
-            );
-
-        if (
-            Number.isNaN(
-                dataInicioFiltro.getTime()
-            )
-        ) {
-            return res
-                .status(400)
-                .json({
-                    mensagem:
-                        'A data inicial informada é inválida.'
-                });
-        }
-    }
-
-    if (dataFim) {if (
-        dataFim &&
-        !possuiBuscaDireta
-    ) {
-        dataFimFiltro =
-            new Date(
-                `${dataFim}T23:59:59.999`
-            );
-
-        if (
-            Number.isNaN(
-                dataFimFiltro.getTime()
-            )
-        ) {
-            return res
-                .status(400)
-                .json({
-                    mensagem:
-                        'A data final informada é inválida.'
-                });
-        }
-    }
+if (
+    dataInicio &&
+    !possuiBuscaDireta
+) {
+    dataInicioFiltro =
+        new Date(
+            `${dataInicio}T00:00:00`
+        );
 
     if (
-        !possuiBuscaDireta &&
-        dataInicioFiltro &&
-        dataFimFiltro &&
-        dataInicioFiltro > dataFimFiltro
+        Number.isNaN(
+            dataInicioFiltro.getTime()
+        )
     ) {
         return res
             .status(400)
             .json({
                 mensagem:
-                    'A data inicial não pode ser maior que a data final.'
+                    'A data inicial informada é inválida.'
             });
     }
+}
 
-    console.log(
-        'Filtros recebidos:',
-        {
-            status,
-            codRep,
-            cnpj,
-            codCliente,
-            codigoPedido,
-            numeroNota,
-            dataInicio,
-            dataFim,
-            statusSeparacao
-        }
-    );
+if (
+    dataFim &&
+    !possuiBuscaDireta
+) {
+    dataFimFiltro =
+        new Date(
+            `${dataFim}T23:59:59.999`
+        );
+
+    if (
+        Number.isNaN(
+            dataFimFiltro.getTime()
+        )
+    ) {
+        return res
+            .status(400)
+            .json({
+                mensagem:
+                    'A data final informada é inválida.'
+            });
+    }
+}
+
+if (
+    !possuiBuscaDireta &&
+    dataInicioFiltro &&
+    dataFimFiltro &&
+    dataInicioFiltro > dataFimFiltro
+) {
+    return res
+        .status(400)
+        .json({
+            mensagem:
+                'A data inicial não pode ser maior que a data final.'
+        });
+}
 
     try {
         let orders;
@@ -399,7 +389,7 @@ async function getOrderDetails(req, res) {
                     'Erro ao obter detalhes dos pedidos.'
             });
     }
-}}
+}
 
 async function getClientDetailsEndpoint(req, res) {
 
