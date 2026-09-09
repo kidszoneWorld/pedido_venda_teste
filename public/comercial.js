@@ -197,6 +197,26 @@ async function loadOrderDetails(
     currentFilters.status =
         status;
 
+        const possuiBuscaDireta =
+            Boolean(
+                currentFilters.codigoPedido ||
+                currentFilters.numeroNota
+            );
+
+        const dataInicioConsulta =
+            possuiBuscaDireta
+                ? ''
+                : formatDate(
+                    currentFilters.dataInicio
+                );
+
+        const dataFimConsulta =
+            possuiBuscaDireta
+                ? ''
+                : formatDate(
+                    currentFilters.dataFim
+                );
+
     const queryParams =
         new URLSearchParams({
             status:
@@ -218,15 +238,11 @@ async function loadOrderDetails(
                 currentFilters.numeroNota || '',
 
             DataPedidoInicio:
-                formatDate(
-                    currentFilters.dataInicio
-                ) || '',
+                dataInicioConsulta || '',
 
             DataPedidoFim:
-                formatDate(
-                    currentFilters.dataFim
-                ) || '',
-
+                dataFimConsulta || '',
+                
             statusSeparacao:
                 currentFilters.statusSeparacao || ''
         });

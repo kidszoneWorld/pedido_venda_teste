@@ -101,7 +101,10 @@ async function getOrderDetails(req, res) {
     let dataFimFiltro =
         null;
 
-    if (dataInicio) {
+    if (
+        dataInicio &&
+        !possuiBuscaDireta
+    ) {
         dataInicioFiltro =
             new Date(
                 `${dataInicio}T00:00:00`
@@ -121,7 +124,10 @@ async function getOrderDetails(req, res) {
         }
     }
 
-    if (dataFim) {
+    if (dataFim) {if (
+        dataFim &&
+        !possuiBuscaDireta
+    ) {
         dataFimFiltro =
             new Date(
                 `${dataFim}T23:59:59.999`
@@ -142,6 +148,7 @@ async function getOrderDetails(req, res) {
     }
 
     if (
+        !possuiBuscaDireta &&
         dataInicioFiltro &&
         dataFimFiltro &&
         dataInicioFiltro > dataFimFiltro
@@ -170,12 +177,6 @@ async function getOrderDetails(req, res) {
     );
 
     try {
-        const possuiBuscaDireta =
-    Boolean(
-        codigoPedido ||
-        numeroNota
-    );
-
         let orders;
 
         if (codigoPedido) {
@@ -420,8 +421,8 @@ async function getClientDetailsEndpoint(req, res) {
       res.status(500).send('Erro ao obter detalhes dos clientes');
   }
 }
- 
+ }
 module.exports = { 
     getOrderDetails, 
     getClientDetailsEndpoint    
-};
+}
