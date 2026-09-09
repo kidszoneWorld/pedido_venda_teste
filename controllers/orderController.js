@@ -10,8 +10,17 @@ function normalizarNumero(valor) {
 }
 
 async function getOrderDetails(req, res) {
+    const statusTexto =
+        String(
+            req.query.status || ''
+        ).trim();
+
     const status =
-        req.query.status || 3;
+        statusTexto
+            ? Number(
+                statusTexto
+            )
+            : 6;
 
     const codRep =
         String(
@@ -179,7 +188,8 @@ if (
             orders =
                 await apiService.fetchOrdersByInvoice(
                     numeroNota,
-                    codCliente
+                    codCliente,
+                    codRep
                 );
         } else {
             orders =

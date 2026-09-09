@@ -198,54 +198,65 @@ async function loadOrderDetails(
         status;
 
         const possuiBuscaDireta =
-            Boolean(
-                currentFilters.codigoPedido ||
-                currentFilters.numeroNota
+    Boolean(
+        currentFilters.codigoPedido ||
+        currentFilters.numeroNota
+    );
+
+    const statusConsulta =
+        possuiBuscaDireta
+            ? ''
+            : currentFilters.status;
+
+    const separacaoConsulta =
+        possuiBuscaDireta
+            ? ''
+            : currentFilters.statusSeparacao;
+
+    const dataInicioConsulta =
+        possuiBuscaDireta
+            ? ''
+            : formatDate(
+                currentFilters.dataInicio
             );
 
-        const dataInicioConsulta =
-            possuiBuscaDireta
-                ? ''
-                : formatDate(
-                    currentFilters.dataInicio
-                );
+    const dataFimConsulta =
+        possuiBuscaDireta
+            ? ''
+            : formatDate(
+                currentFilters.dataFim
+            );
 
-        const dataFimConsulta =
-            possuiBuscaDireta
-                ? ''
-                : formatDate(
-                    currentFilters.dataFim
-                );
 
     const queryParams =
-        new URLSearchParams({
-            status:
-                currentFilters.status || '',
+    new URLSearchParams({
+        status:
+            statusConsulta || '',
 
-            codRep:
-                currentFilters.representante || '',
+        codRep:
+            currentFilters.representante || '',
 
-            clienteCNPJ:
-                currentFilters.clienteCNPJ || '',
+        clienteCNPJ:
+            currentFilters.clienteCNPJ || '',
 
-            ClienteCodigo:
-                currentFilters.ClienteCodigo || '',
+        ClienteCodigo:
+            currentFilters.ClienteCodigo || '',
 
-            codigoPedido:
-                currentFilters.codigoPedido || '',
+        codigoPedido:
+            currentFilters.codigoPedido || '',
 
-            numeroNota:
-                currentFilters.numeroNota || '',
+        numeroNota:
+            currentFilters.numeroNota || '',
 
-            DataPedidoInicio:
-                dataInicioConsulta || '',
+        DataPedidoInicio:
+            dataInicioConsulta || '',
 
-            DataPedidoFim:
-                dataFimConsulta || '',
-                
-            statusSeparacao:
-                currentFilters.statusSeparacao || ''
-        });
+        DataPedidoFim:
+            dataFimConsulta || '',
+
+        statusSeparacao:
+            separacaoConsulta || ''
+    });
 
     showFeedback(
         'Carregando pedidos, aguarde...'
@@ -400,6 +411,7 @@ function mapStatus(status) {
 
 // Inicializar ao carregar a página
 document.addEventListener('DOMContentLoaded', async () => {
+    
     try {
         // Faz a requisição para obter os dados da sessão
         const response = await fetch('/session-data');
@@ -546,6 +558,18 @@ async function clearFilters() {
     ).value = '';
 
 
+    const campoSeparacao =
+        document.getElementById(
+            'statusSeparacaoFilter'
+        );
+
+    campoSeparacao.disabled =
+        false;
+
+    campoSeparacao.value =
+        '0';
+
+        
     // Limpar o estado global de filtros
     currentFilters = {
         representante:
@@ -637,7 +661,10 @@ function sincronizarStatusSeparacao() {
             'statusSeparacaoFilter'
         );
 
-    if (!campoStatus || !campoSeparacao) {
+    if (
+        !campoStatus ||
+        !campoSeparacao
+    ) {
         return;
     }
 
@@ -646,12 +673,18 @@ function sincronizarStatusSeparacao() {
             campoStatus.value
         );
 
+    campoSeparacao.disabled =
+        false;
+
     if (status === '5') {
-        campoSeparacao.value = '2';
+        campoSeparacao.value =
+            '2';
     } else if (status === '4') {
-        campoSeparacao.value = '1';
+        campoSeparacao.value =
+            '1';
     } else if (status === '3') {
-        campoSeparacao.value = '0';
+        campoSeparacao.value =
+            '0';
     }
 
     currentFilters.statusSeparacao =

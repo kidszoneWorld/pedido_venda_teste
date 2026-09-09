@@ -134,10 +134,43 @@ function normalizarNumeroNota(valor) {
     );
 }
 
+async function fetchOrdersByInvoice(
+    numeroNota,
+    codigoCliente = null,
+    codigoRepresentante = ''
+) {
+    const pedidos =
+        await buscarPedidosPorNotaFiscal(
+            numeroNota,
+            codigoCliente,
+            codigoRepresentante
+        );
+
+    const pedidosEnriquecidos =
+        [];
+
+    for (const pedido of pedidos) {
+        const pedidoEnriquecido =
+            await enriquecerPedidoEncontrado(
+                pedido
+            );
+
+        pedidosEnriquecidos.push({
+            ...pedidoEnriquecido,
+
+            notas_fiscais:
+                pedido.notas_fiscais
+        });
+    }
+
+    return pedidosEnriquecidos;
+}
+
 async function buscarPedidosPorNotaFiscal(
     numeroNota,
-    codigoCliente = null
-)  {
+    codigoCliente = null,
+    codigoRepresentante = ''
+) {
     await checkToken();
 
     if (!authToken) {
@@ -150,6 +183,11 @@ async function buscarPedidosPorNotaFiscal(
         normalizarNumeroNota(
             numeroNota
         );
+
+    const representanteProcurado =
+        String(
+            codigoRepresentante || ''
+        ).trim();
 
     if (!notaProcurada) {
         return [];
@@ -173,9 +211,11 @@ async function buscarPedidosPorNotaFiscal(
     const pedidosEncontrados =
         [];
 
-    const invoiceEndpoint =
-        '/documentos-fiscais-service/nota-fiscal' +
-        '?PedidoDeVendaCodigo=';
+    const endpointNotaFiscal =
+        '/documentos-fiscais-service/nota-fiscal';
+
+    const endpointRepresentante =
+        '/pessoa-service/representante';
 
     console.log(
         `Procurando a nota ${notaProcurada} sem limitação de data.`
@@ -206,6 +246,7 @@ async function buscarPedidosPorNotaFiscal(
                 pageSize
             )
         );
+
         if (
             codigoCliente !== null &&
             codigoCliente !== undefined &&
@@ -219,13 +260,13 @@ async function buscarPedidosPorNotaFiscal(
             );
         }
 
-        const url =
+        const urlPedidos =
             '/vendas-service/pedido?' +
             parametros.toString();
 
         const response =
             await executarFetchComRetentativa(
-                `${NgLink}${url}`,
+                `${NgLink}${urlPedidos}`,
                 criarOpcoesGet()
             );
 
@@ -251,26 +292,106 @@ async function buscarPedidosPorNotaFiscal(
         );
 
         for (const pedido of pedidosPagina) {
-            quantidadeProcessada += 1;
+            if (
+                quantidadeProcessada >=
+                maxRecords
+            ) {
+                continuar =
+                    false;
+
+                break;
+            }
+
+            quantidadeProcessada +=
+                1;
+
+            if (representanteProcurado) {
+                const clienteCodigo =
+                    pedido.cliente?.codigo;
+
+                if (!clienteCodigo) {
+                    continue;
+                }
+
+                try {
+                    const parametrosRepresentante =
+                        new URLSearchParams();
+
+                    parametrosRepresentante.set(
+                        'ClienteCodigo',
+                        String(
+                            clienteCodigo
+                        )
+                    );
+
+                    const urlRepresentante =
+                        `${NgLink}${endpointRepresentante}?` +
+                        parametrosRepresentante.toString();
+
+                    const respostaRepresentante =
+                        await executarFetchComRetentativa(
+                            urlRepresentante,
+                            criarOpcoesGet()
+                        );
+
+                    if (!respostaRepresentante.ok) {
+                        continue;
+                    }
+
+                    const resultadoRepresentante =
+                        await respostaRepresentante.json();
+
+                    const codigoRepresentantePedido =
+                        String(
+                            resultadoRepresentante
+                                ?.dados
+                                ?.[0]
+                                ?.codigo ?? ''
+                        ).trim();
+
+                    if (
+                        codigoRepresentantePedido !==
+                        representanteProcurado
+                    ) {
+                        continue;
+                    }
+                } catch (error) {
+                    console.error(
+                        `Erro ao verificar representante do pedido ${pedido.codigo}:`,
+                        error
+                    );
+
+                    continue;
+                }
+            }
 
             try {
-                const endpointNota =
-                    `${NgLink}` +
-                    `${invoiceEndpoint}` +
-                    `${encodeURIComponent(pedido.codigo)}`;
+                const parametrosNota =
+                    new URLSearchParams();
 
-                const invoiceResponse =
+                parametrosNota.set(
+                    'PedidoDeVendaCodigo',
+                    String(
+                        pedido.codigo
+                    )
+                );
+
+                const urlNota =
+                    `${NgLink}${endpointNotaFiscal}?` +
+                    parametrosNota.toString();
+
+                const respostaNota =
                     await executarFetchComRetentativa(
-                        endpointNota,
+                        urlNota,
                         criarOpcoesGet()
                     );
 
-                if (!invoiceResponse.ok) {
+                if (!respostaNota.ok) {
                     continue;
                 }
 
                 const notasFiscais =
-                    await invoiceResponse.json();
+                    await respostaNota.json();
 
                 const notas =
                     Array.isArray(
@@ -281,30 +402,33 @@ async function buscarPedidosPorNotaFiscal(
 
                 const possuiNota =
                     notas.some(nota => {
-                        const numeroAtual =
+                        return (
                             normalizarNumeroNota(
                                 nota?.numero
-                            );
-
-                        return (
-                            numeroAtual ===
+                            ) ===
                             notaProcurada
                         );
                     });
 
-                if (possuiNota) {
-                    pedidosEncontrados.push({
-                        ...pedido,
+                if (!possuiNota) {
+                    await aguardar(
+                        80
+                    );
 
-                        notas_fiscais:
-                            notasFiscais
-                    });
-
-                    continuar =
-                        false;
-
-                    break;
+                    continue;
                 }
+
+                pedidosEncontrados.push({
+                    ...pedido,
+
+                    notas_fiscais:
+                        notasFiscais
+                });
+
+                continuar =
+                    false;
+
+                break;
             } catch (error) {
                 console.error(
                     `Erro ao consultar notas do pedido ${pedido.codigo}:`,
@@ -318,12 +442,14 @@ async function buscarPedidosPorNotaFiscal(
         }
 
         if (
+            pedidosPagina.length === 0 ||
             pedidosPagina.length < pageSize
         ) {
             continuar =
                 false;
         } else if (continuar) {
-            paginaAtual += 1;
+            paginaAtual +=
+                1;
 
             await aguardar(
                 300
@@ -436,36 +562,6 @@ async function enriquecerPedidoEncontrado(
         detalhes_transporte:
             detalhesTransporte
     };
-}
-
-async function fetchOrdersByInvoice(
-    numeroNota,
-    codigoCliente = null
-) {
-    const pedidos =
-        await buscarPedidosPorNotaFiscal(
-            numeroNota,
-            codigoCliente
-        );
-
-    const pedidosEnriquecidos =
-        [];
-
-    for (const pedido of pedidos) {
-        const pedidoEnriquecido =
-            await enriquecerPedidoEncontrado(
-                pedido
-            );
-
-        pedidosEnriquecidos.push({
-            ...pedidoEnriquecido,
-
-            notas_fiscais:
-                pedido.notas_fiscais
-        });
-    }
-
-    return pedidosEnriquecidos;
 }
 
 // Função para calcular as datas de início e fim (últimos 60 dias como padrão, se não fornecidas)
@@ -610,13 +706,90 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
       
       // 1. Buscar pedidos da página atual
       // Constrói a URL dinamicamente, incluindo StatusSeparacao apenas se fornecido
-      let url = `/vendas-service/pedido?DataPedidoInicio=${dataInicio}&DataPedidoFim=${dataFim}&status=${status}&EmpresaCodigo=2&PageNumber=${currentPage}&PageSize=${pageSize}`;
-      if (userStatusSeparacao !== null) {
-        url += `&StatusSeparacao=${userStatusSeparacao}`;
-      }
-      if (usercodCliente !== null) {
-        url += `&ClienteCodigo=${usercodCliente}`;
-      }
+      const parametros =
+            new URLSearchParams();
+
+        parametros.set(
+            'EmpresaCodigo',
+            '2'
+        );
+
+        parametros.set(
+            'DataPedidoInicio',
+            dataInicio
+        );
+
+        parametros.set(
+            'DataPedidoFim',
+            dataFim
+        );
+
+        parametros.set(
+            'Status',
+            String(
+                status
+            )
+        );
+
+        parametros.set(
+            'PageNumber',
+            String(
+                currentPage
+            )
+        );
+
+        parametros.set(
+            'PageSize',
+            String(
+                pageSize
+            )
+        );
+
+        const statusNumerico =
+            Number(
+                status
+            );
+
+        const permiteFiltroSeparacao =
+            statusNumerico === 3 ||
+            statusNumerico === 4 ||
+            statusNumerico === 5;
+
+        if (
+            permiteFiltroSeparacao &&
+            userStatusSeparacao !== null &&
+            userStatusSeparacao !== undefined &&
+            userStatusSeparacao !== ''
+        ) {
+            parametros.set(
+                'StatusSeparacao',
+                String(
+                    userStatusSeparacao
+                )
+            );
+        }
+
+        if (
+            usercodCliente !== null &&
+            usercodCliente !== undefined &&
+            usercodCliente !== ''
+        ) {
+            parametros.set(
+                'ClienteCodigo',
+                String(
+                    usercodCliente
+                )
+            );
+        }
+
+        const url =
+            '/vendas-service/pedido?' +
+            parametros.toString();
+
+        console.log(
+            'URL de pedidos:',
+            `${NgLink}${url}`
+        );
 
       const response =
         await executarFetchComRetentativa(
