@@ -96,9 +96,9 @@ async function loadPedidoDetails() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${item.itemEmpresaId || ''}</td>
+                <td>${item.descricao || ''}</td>
                 <td>${item.quantidade || ''}</td>
                 <td>${item.unidadeMedidaAbreviado || ''}</td>
-                <td>${item.descricao || ''}</td>
                 <td>${item.tributos?.ipi?.aliquota 
                     ? item.tributos.ipi.aliquota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' 
                     : '0,00%'}</td>
