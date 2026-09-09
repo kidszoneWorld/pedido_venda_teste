@@ -399,7 +399,7 @@ async function getOrderDetails(req, res) {
                     'Erro ao obter detalhes dos pedidos.'
             });
     }
-}
+}}
 
 async function getClientDetailsEndpoint(req, res) {
 
@@ -421,7 +421,7 @@ async function getClientDetailsEndpoint(req, res) {
       res.status(500).send('Erro ao obter detalhes dos clientes');
   }
 }
- }
+ 
 module.exports = { 
     getOrderDetails, 
     getClientDetailsEndpoint    
