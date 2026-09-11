@@ -29,6 +29,7 @@ const displayDistribuidorController = require('../controllers/displayDistribuido
 const sellOutDistribuidorController = require('../controllers/sellOutDistribuidorController');
 const sellInDistribuidorController = require('../controllers/sellInDistribuidorController');
 const investPanelController = require('../controllers/investPanelController');
+const estoqueController = require('../controllers/estoqueController');
 
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
@@ -49,6 +50,11 @@ router.get('/login2', (req, res) => {
 // Rota para a página de devolução
 router.get('/devolucao',authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'devolucao.html'));
+});
+
+//Rota página de estoque
+router.get('/estoque',authMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'estoque.html'));
 });
 
 router.get('/rebaixa',authMiddleware, (req, res) => {
@@ -794,15 +800,10 @@ router.post('/api/pedidos/input', inputOrdersController.fetchImputOrders)
 router.get('/api/lista-preco/:listaId', productController.getListaPreco);
 router.get('/api/lista-preco-Sem-Verificar/:listaId', productController.getListaPrecoSemVerificar);
 
-
-/////banco de dados mogondb atlas
+//banco de dados mogondb atlas
 
 router.get('/api/eficiencia/:codgroup', eficienciaController.getEficienciaBycodgroup);
 router.post('/api/eficiencia/salvar', eficienciaController.salvarEficiencia);
-
-
-
-
 
 router.post('/api/devolucoes', devController.salvarDevolucao);
 router.get('/api/devolucoes/:id', devController.buscarDevolucaoPorId);
@@ -885,5 +886,10 @@ router.get(
     productController.getCatalogoCliente
 );
 
+router.get(
+    '/api/listarItens',
+    authMiddleware,
+    estoqueController.listarItens
+);
 
 module.exports = router;

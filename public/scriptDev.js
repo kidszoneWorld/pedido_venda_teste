@@ -990,7 +990,7 @@ const { uploadUrlDev, key } = await response.json();
         const options = {
             margin: [0, 0, 0, 0],
             filename: filename,
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 1 },
             jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
         };
          try {

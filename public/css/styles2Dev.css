@@ -1218,7 +1218,7 @@ label[for="referencia"]::after {
         content: "SALVAR EM PDF";
         color: #fafcfa;
         font-size: 107%;
-        position: absolute; /* Garante que o ::after não interfira no layout */
+        /*position: absolute; /* Garante que o ::after não interfira no layout */
         top: 50%; /* Centraliza verticalmente */
         left: 50%; /* Centraliza horizontalmente */
         transform: translate(-50%, -50%); /* Alinha corretamente o texto */
