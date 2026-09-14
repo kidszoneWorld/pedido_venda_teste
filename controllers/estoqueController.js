@@ -44,7 +44,7 @@ async function checkToken() {
 
 async function listarItens(){
     await checkToken();
-    let pageNumber = 1;
+
     let listaItens;
       
         if (!authToken) {
@@ -52,7 +52,7 @@ async function listarItens(){
           return null;
         }
         try {      
-        for(pageNumber = 1; pageNumber<=9; pageNumber++){
+        for(let pageNumber = 1; pageNumber<=9; pageNumber++){
           const listaEndpoint = `/produto-service/item?EmpresaCodigo=2&PageNumber=${pageNumber}&PageSize=30`;
           const lista = await fetch(`${ngLink}${listaEndpoint}`, {
             method: 'GET',
@@ -62,16 +62,16 @@ async function listarItens(){
               'Origin': 'https://kidszone-ng.dbcorp.com.br'
             }
           });
-      
-          if (!Response.ok) {
-            throw new Error(`Erro ao buscar lista de itens: ${Response.statusText}`);
-          }
-          console.log('dados Itens recebidos: '.pageNumber);
-          console.log('itens recebidos da consulta '. lista)
-          listaItens += await JSON.parse(lista);
+          const data = await lista.json();
 
+          if (!lista.ok) {
+                throw new Error(`Erro na autenticação: ${lista.statusText}`);
+              }
+              
+          listaItens += data;
+          
         }
-        console.log('lista: '.listaItens)
+        console.log('lista: '. listaItens)
           return {
             listaItens
           };

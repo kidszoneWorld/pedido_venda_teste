@@ -6,7 +6,7 @@ async function listarItens() {
 document.addEventListener(
     'DOMContentLoaded',
     () => {
-        const lista = JSON.parse(listarItens());
-       console.log('itens'.lista());
+        const lista = listarItens();
+       console.log('itens', lista);
     }
 );
