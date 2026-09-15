@@ -490,6 +490,24 @@ async function listarItens() {
                 !iniciaComDs &&
                 !estaNaListaDeOcultos;
         });
+        itensValidos.sort((itemA, itemB) => {
+            const codigoA = String(
+                obterCodigoItem(itemA) || ''
+            ).trim();
+
+            const codigoB = String(
+                obterCodigoItem(itemB) || ''
+            ).trim();
+
+            return codigoA.localeCompare(
+                codigoB,
+                'pt-BR',
+                {
+                    numeric: true,
+                    sensitivity: 'base'
+                }
+            );
+        });
 
         const listaItens = await enriquecerItensEmGrupos(
             itensValidos,

@@ -1,3 +1,5 @@
+let todosItensEstoque = [];
+
 async function listarItens() {
     const controller = new AbortController();
 
@@ -414,6 +416,89 @@ function renderizarItens(itens) {
     );
 }
 
+function normalizarTexto(valor) {
+    return String(
+        valor || ''
+    )
+        .normalize('NFD')
+        .replace(
+            /[\u0300-\u036f]/g,
+            ''
+        )
+        .trim()
+        .toUpperCase();
+}
+
+function filtrarItensEstoque() {
+    const campoFiltro =
+        document.getElementById(
+            'filtroCodigoDescricao'
+        );
+
+    if (!campoFiltro) {
+        return;
+    }
+
+    const pesquisa =
+        normalizarTexto(
+            campoFiltro.value
+        );
+
+    if (!pesquisa) {
+        renderizarItens(
+            todosItensEstoque
+        );
+
+        return;
+    }
+
+    const itensFiltrados =
+        todosItensEstoque.filter((item) => {
+            const codigo =
+                normalizarTexto(
+                    item?.codigo
+                );
+
+            const descricao =
+                normalizarTexto(
+                    item?.descricao
+                );
+
+            const codigoDescricao =
+                `${codigo} ${descricao}`;
+
+            return codigo.includes(
+                pesquisa
+            ) ||
+                descricao.includes(
+                    pesquisa
+                ) ||
+                codigoDescricao.includes(
+                    pesquisa
+                );
+        });
+
+    renderizarItens(
+        itensFiltrados
+    );
+}
+
+function configurarFiltroItens() {
+    const campoFiltro =
+        document.getElementById(
+            'filtroCodigoDescricao'
+        );
+
+    if (!campoFiltro) {
+        return;
+    }
+
+    campoFiltro.addEventListener(
+        'input',
+        filtrarItensEstoque
+    );
+}
+
 async function carregarItensNaPagina() {
     mostrarMensagemTabela(
         'Carregando itens...'
@@ -432,7 +517,7 @@ async function carregarItensNaPagina() {
             'Total de itens:',
             itens.length
         );
-
+        todosItensEstoque = itens;
         renderizarItens(
             itens
         );
@@ -451,5 +536,8 @@ async function carregarItensNaPagina() {
 
 document.addEventListener(
     'DOMContentLoaded',
-    carregarItensNaPagina
+    () => {
+        configurarFiltroItens();
+        carregarItensNaPagina();
+    }
 );
