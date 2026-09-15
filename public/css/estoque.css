@@ -1,0 +1,81 @@
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#dadosPedido {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#dadosPedido th,
+#dadosPedido td {
+    padding: 10px;
+    border: 1px solid #dddddd;
+    vertical-align: middle;
+}
+
+#dadosPedido .cabecalho-foto-item,
+#dadosPedido .celula-foto-item {
+    width: 100px;
+    text-align: center;
+}
+
+#dadosPedido .codigo-descricao {
+    text-align: left;
+}
+
+#dadosPedido .qtd {
+    width: 100px;
+    text-align: center;
+}
+
+.foto-item-pedido {
+    display: block;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.foto-item-pedido.sem-foto {
+    visibility: hidden;
+}
+
+.codigo-item {
+    color: #222222;
+}
+
+.descricao-item {
+    color: #444444;
+}
+
+.mensagem-lista-itens {
+    padding: 24px;
+    text-align: center;
+    color: #666666;
+}
+
+.linha-item-estoque:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+.foto-item-pedido {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    object-fit: contain;
+    background-color: #ffffff;
+}
+
+.foto-item-pedido.sem-foto {
+    visibility: hidden;
+}
+
+.celula-foto-item {
+    width: 120px;
+    min-width: 120px;
+    text-align: center;
+    vertical-align: middle;
+}

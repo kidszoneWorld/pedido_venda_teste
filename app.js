@@ -65,13 +65,13 @@ const redisClient = new Redis({
 
 
 
-// app.use(session({
+app.use(session({
 
-//     store: new RedisStore({
-//         client: redisClient
-//     }),
+    store: new RedisStore({
+        client: redisClient
+    }),
 
-//     secret: 'minha-chave-secreta',
+    secret: 'minha-chave-secreta',
 
     resave: false,
 

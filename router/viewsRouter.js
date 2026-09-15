@@ -889,7 +889,204 @@ router.get(
 router.get(
     '/api/listarItens',
     authMiddleware,
-    estoqueController.listarItens
+    async (req, res) => {
+        try {
+            console.log(
+                'Rota /api/listarItens iniciada.'
+            );
+
+            const itens = await estoqueController.listarItens();
+
+            console.log(
+                `Enviando ${itens.length} itens ao navegador.`
+            );
+
+            return res.status(200).json({
+                dados: itens,
+                total: itens.length
+            });
+        } catch (error) {
+            console.error(
+                'Erro na rota /api/listarItens:',
+                error
+            );
+
+            return res.status(500).json({
+                mensagem: error.message ||
+                    'Erro ao carregar os itens.'
+            });
+        }
+    }
+);
+
+function esperarImagem(tempo) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, tempo);
+    });
+}
+
+router.get(
+    '/api/imagem-item',
+    authMiddleware,
+    async (req, res) => {
+        const enderecoImagem = String(
+            req.query.url || ''
+        ).trim();
+
+        try {
+            if (!enderecoImagem) {
+                return res.status(400).send(
+                    'URL da imagem não informada.'
+                );
+            }
+
+            const urlImagem = new URL(
+                enderecoImagem
+            );
+
+            const hostsPermitidos = [
+                'homolog-kidszone-api-integracao.dbcorp.com.br',
+                'kidszone-api-integracao.dbcorp.com.br'
+            ];
+
+            if (
+                !hostsPermitidos.includes(
+                    urlImagem.hostname
+                )
+            ) {
+                return res.status(403).send(
+                    'Servidor de imagem não permitido.'
+                );
+            }
+
+            for (
+                let tentativa = 1;
+                tentativa <= 4;
+                tentativa += 1
+            ) {
+                const controller =
+                    new AbortController();
+
+                const timeout = setTimeout(
+                    () => {
+                        controller.abort();
+                    },
+                    15000
+                );
+
+                try {
+                    const response = await fetch(
+                        enderecoImagem,
+                        {
+                            method: 'GET',
+                            headers: {
+                                ApplicationToken:
+                                    process.env.APPLICATION_TOKEN,
+
+                                CompanyToken:
+                                    process.env.COMPANY_TOKEN,
+
+                                Accept:
+                                    'image/png,image/jpeg,image/webp'
+                            },
+                            signal:
+                                controller.signal
+                        }
+                    );
+
+                    if (response.ok) {
+                        const tipoImagem =
+                            response.headers.get(
+                                'content-type'
+                            ) || 'image/png';
+
+                        const imagem =
+                            Buffer.from(
+                                await response.arrayBuffer()
+                            );
+
+                        res.setHeader(
+                            'Content-Type',
+                            tipoImagem
+                        );
+
+                        res.setHeader(
+                            'Cache-Control',
+                            'public, max-age=86400'
+                        );
+
+                        clearTimeout(
+                            timeout
+                        );
+
+                        return res.status(200).send(
+                            imagem
+                        );
+                    }
+
+                    const textoErro =
+                        await response.text();
+
+                    console.warn(
+                        `Falha na imagem. Tentativa ${tentativa}. Status ${response.status}.`,
+                        textoErro
+                    );
+
+                    if (response.status === 404) {
+                        clearTimeout(
+                            timeout
+                        );
+
+                        return res.status(404).send(
+                            'Imagem não encontrada.'
+                        );
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.warn(
+                            `Tempo esgotado na tentativa ${tentativa} da imagem.`
+                        );
+                    } else {
+                        console.warn(
+                            `Erro na tentativa ${tentativa} da imagem:`,
+                            error.message
+                        );
+                    }
+                } finally {
+                    clearTimeout(
+                        timeout
+                    );
+                }
+
+                if (tentativa < 4) {
+                    const tempoEspera =
+                        tentativa * 750;
+
+                    await esperarImagem(
+                        tempoEspera
+                    );
+                }
+            }
+
+            return res.status(502).send(
+                'Servidor de imagens indisponível.'
+            );
+        } catch (error) {
+            console.error(
+                'Erro na rota de imagem:',
+                enderecoImagem,
+                error
+            );
+
+            if (res.headersSent) {
+                return;
+            }
+
+            return res.status(500).send(
+                'Erro ao processar imagem.'
+            );
+        }
+    }
 );
 
 module.exports = router;
