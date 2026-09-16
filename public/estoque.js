@@ -1,4 +1,41 @@
 let todosItensEstoque = [];
+let isOperador = false;
+
+async function carregarPermissaoUsuario() {
+    const sessionResponse = await fetch(
+        '/session-data',
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json'
+            }
+        }
+    );
+
+    if (!sessionResponse.ok) {
+        throw new Error(
+            'Não foi possível consultar a sessão do usuário.'
+        );
+    }
+
+    const sessionData =
+        await sessionResponse.json();
+
+    isOperador =
+        sessionData.userNumero;
+
+    const cabecalhoQuantidade =
+        document.querySelector(
+            '#dadosPedido thead .qtd'
+        );
+
+    if (
+        isOperador &&
+        cabecalhoQuantidade
+    ) {
+        cabecalhoQuantidade.remove();
+    }
+}
 
 async function listarItens() {
     const controller = new AbortController();
@@ -285,15 +322,30 @@ function criarLinhaItem(item) {
         elementoDescricao
     );
 
-    const celulaQuantidade =
-        document.createElement('td');
+    linha.appendChild(
+        celulaFoto
+    );
 
-    celulaQuantidade.className = 'qtd';
-    celulaQuantidade.textContent = String(saldo);
+    linha.appendChild(
+        celulaCodigoDescricao
+    );
 
-    linha.appendChild(celulaFoto);
-    linha.appendChild(celulaCodigoDescricao);
-    linha.appendChild(celulaQuantidade);
+    if (!isOperador) {
+        const celulaQuantidade =
+            document.createElement(
+                'td'
+            );
+
+        celulaQuantidade.className =
+            'qtd';
+
+        celulaQuantidade.textContent =
+            String(saldo);
+
+        linha.appendChild(
+            celulaQuantidade
+        );
+    }
 
     return linha;
 }
@@ -322,7 +374,9 @@ function mostrarMensagemTabela(mensagem) {
         );
 
     celula.colSpan =
-        3;
+        isOperador
+            ? 2
+           : 3;
 
     celula.className =
         'mensagem-lista-itens';
@@ -504,8 +558,23 @@ async function carregarItensNaPagina() {
 
 document.addEventListener(
     'DOMContentLoaded',
-    () => {
-        configurarFiltroItens();
-        carregarItensNaPagina();
+    async () => {
+        try {
+            await carregarPermissaoUsuario();
+
+            configurarFiltroItens();
+
+            await carregarItensNaPagina();
+        } catch (error) {
+            console.error(
+                'Erro ao iniciar a página:',
+                error
+            );
+
+            mostrarMensagemTabela(
+                error.message ||
+                'Não foi possível iniciar a página.'
+            );
+        }
     }
 );
