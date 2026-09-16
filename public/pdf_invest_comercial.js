@@ -62,7 +62,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
+function adicionarQuebrasEmPalavrasLongas(valor) {
+    return String(valor || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .replace(
+            /\S{25,}/g,
+            palavra => {
+                return palavra.replace(
+                    /.{25}/g,
+                    trecho => trecho + '\u200B'
+                );
+            }
+        );
+}
 
     async function gerarEEnviarPDF() {
         console.log('Botão de PDF clicado');
