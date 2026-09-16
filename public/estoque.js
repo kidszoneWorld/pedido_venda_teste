@@ -217,67 +217,55 @@ function criarImagemItem(item) {
 }
 
 function criarLinhaItem(item) {
-    const linha =
-        document.createElement(
-            'tr'
-        );
+    const linha = document.createElement('tr');
 
-    linha.className =
-        'linha-item-estoque';
+    linha.className = 'linha-item-estoque';
 
-    const codigo =
-        obterCodigoItem(
-            item
-        );
+    const saldoOriginal = Number(item?.qtd);
 
-    const descricao =
-        obterDescricaoItem(
-            item
-        );
+    const saldo = Number.isFinite(saldoOriginal)
+        ? saldoOriginal
+        : 0;
 
-    const celulaFoto =
-        document.createElement(
-            'td'
-        );
+    if (saldo < 500) {
+        linha.classList.add('estoque-baixo');
+    } else if (saldo <= 1500) {
+        linha.classList.add('estoque-medio');
+    } else {
+        linha.classList.add('estoque-alto');
+    }
 
-    celulaFoto.className =
-        'celula-foto-item';
+    const codigo = obterCodigoItem(item);
+    const descricao = obterDescricaoItem(item);
+
+    const celulaFoto = document.createElement('td');
+
+    celulaFoto.className = 'celula-foto-item';
 
     celulaFoto.appendChild(
-        criarImagemItem(
-            item
-        )
+        criarImagemItem(item)
     );
 
     const celulaCodigoDescricao =
-        document.createElement(
-            'td'
-        );
+        document.createElement('td');
 
     celulaCodigoDescricao.className =
         'codigo-descricao';
 
     const elementoCodigo =
-        document.createElement(
-            'strong'
-        );
+        document.createElement('strong');
 
     elementoCodigo.className =
         'codigo-item';
 
     elementoCodigo.textContent =
-        codigo ||
-        'Sem código';
+        codigo || 'Sem código';
 
     const elementoSeparador =
-        document.createTextNode(
-            ' - '
-        );
+        document.createTextNode(' - ');
 
     const elementoDescricao =
-        document.createElement(
-            'span'
-        );
+        document.createElement('span');
 
     elementoDescricao.className =
         'descricao-item';
@@ -298,34 +286,14 @@ function criarLinhaItem(item) {
     );
 
     const celulaQuantidade =
-        document.createElement(
-            'td'
-        );
+        document.createElement('td');
 
-    celulaQuantidade.className =
-            'qtd';
+    celulaQuantidade.className = 'qtd';
+    celulaQuantidade.textContent = String(saldo);
 
-        const saldo = Number(
-        item?.qtd
-    );
-
-    celulaQuantidade.textContent = Number.isFinite(
-        saldo
-    )
-        ? String(saldo)
-        : '0';
-
-    linha.appendChild(
-        celulaFoto
-    );
-
-    linha.appendChild(
-        celulaCodigoDescricao
-    );
-
-    linha.appendChild(
-        celulaQuantidade
-    );
+    linha.appendChild(celulaFoto);
+    linha.appendChild(celulaCodigoDescricao);
+    linha.appendChild(celulaQuantidade);
 
     return linha;
 }
