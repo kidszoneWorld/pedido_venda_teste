@@ -67,12 +67,9 @@ function adicionarQuebrasEmPalavrasLongas(valor) {
         .replace(/\r\n/g, '\n')
         .replace(/\r/g, '\n')
         .replace(
-            /\S{25,}/g,
+            /\S{20,}/g,
             palavra => {
-                return palavra.replace(
-                    /.{25}/g,
-                    trecho => trecho + '\u200B'
-                );
+                return palavra.match(/.{1,20}/g).join('\u200B');
             }
         );
 }
@@ -161,6 +158,16 @@ function adicionarQuebrasEmPalavrasLongas(valor) {
         textareaObs.style.display = 'none';
 
         const content = document.querySelector('.container');
+        const textosTextareas = {};
+
+        content
+            .querySelectorAll('textarea')
+            .forEach(textarea => {
+                if (textarea.id) {
+                    textosTextareas[textarea.id] =
+                        textarea.value || '';
+                }
+            });
         const cliente = clienteInput.value;
         const cnpj = cnpjInput.value;
         const responsavel = responsavelInput.value;
@@ -226,22 +233,16 @@ function adicionarQuebrasEmPalavrasLongas(valor) {
 
                 onclone:
                     documentoClonado => {
-
-                        documentoClonado
-                            .body
-                            .classList
-                            .add(
-                                'gerando-pdf'
-                            );
+                        documentoClonado.body.classList.add(
+                            'gerando-pdf'
+                        );
 
                         const containerClonado =
-                            documentoClonado
-                                .querySelector(
-                                    '.container'
-                                );
+                            documentoClonado.querySelector(
+                                '.container'
+                            );
 
-                        if(containerClonado){
-
+                        if (containerClonado) {
                             containerClonado.style.marginLeft =
                                 'auto';
 
@@ -254,10 +255,159 @@ function adicionarQuebrasEmPalavrasLongas(valor) {
                             containerClonado.style.transform =
                                 'none';
 
+                            containerClonado.style.overflow =
+                                'visible';
                         }
 
-                    }
+                        const textareasClonados =
+                            documentoClonado.querySelectorAll(
+                                '.container textarea'
+                            );
 
+                        textareasClonados.forEach(
+                            textarea => {
+                                if (textarea.hidden) {
+                                    return;
+                                }
+
+                                const textoOriginal =
+                                    textosTextareas[textarea.id] || '';
+
+                                const divTexto =
+                                    documentoClonado.createElement(
+                                        'div'
+                                    );
+
+                                divTexto.className =
+                                    'textarea-pdf';
+
+                                divTexto.textContent =
+                                    adicionarQuebrasEmPalavrasLongas(
+                                        textoOriginal
+                                    );
+
+                                divTexto.style.setProperty(
+                                    'display',
+                                    'block',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'width',
+                                    '100%',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'max-width',
+                                    '100%',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'min-width',
+                                    '0',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'min-height',
+                                    textarea.id === 'acaoSolicita'
+                                        ? '100px'
+                                        : '70px',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'height',
+                                    'auto',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'padding',
+                                    '10px',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'border',
+                                    '1px solid #777777',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'border-radius',
+                                    '3px',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'box-sizing',
+                                    'border-box',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'white-space',
+                                    'pre-wrap',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'overflow-wrap',
+                                    'anywhere',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'word-break',
+                                    'break-all',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'overflow',
+                                    'visible',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'font-family',
+                                    'Arial, sans-serif',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'font-size',
+                                    '14px',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'line-height',
+                                    '1.4',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'background-color',
+                                    '#ffffff',
+                                    'important'
+                                );
+
+                                divTexto.style.setProperty(
+                                    'color',
+                                    '#333333',
+                                    'important'
+                                );
+
+                                textarea.replaceWith(
+                                    divTexto
+                                );
+                            }
+                        );
+                    }
             },
 
             jsPDF: {
