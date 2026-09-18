@@ -234,7 +234,6 @@ body.dark-theme #dadosPedido tbody tr td input{
 }
 .container {
     width: 95%;
-    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     background-color: #ffffff;
@@ -353,7 +352,7 @@ body.dark-theme #dadosPedido tbody tr td input{
      overflow-x: auto;
 }
 .table {
-    width: 1000px;
+    /* width: 1000px; */
     border-collapse: collapse;
     margin-top: 10px;
     min-width: 800px;
@@ -1540,8 +1539,7 @@ button:disabled {
    ================================ */
 
 #dadosPedido {
-    table-layout: fixed;
-    width: 1000px;
+
     min-width: 1000px;
 }
 
@@ -1553,36 +1551,36 @@ button:disabled {
 
 /* Colunas pequenas */
 #dadosPedido col.col-reb-nf {
-    width: 8%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-codigo {
-    width: 7%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-descricao {
-    width: 13%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-lote {
-    width: 9%;
+    width: 10%;
 }
 
 /* Colunas numéricas maiores */
 #dadosPedido col.col-reb-preco {
-    width: 9%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-rebaixa {
-    width: 9%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-atual {
-    width: 9%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-quantidade {
-    width: 8%;
+    width: 10%;
 }
 
 #dadosPedido col.col-reb-total {
@@ -1591,7 +1589,7 @@ button:disabled {
 
 /* Botão excluir */
 #dadosPedido col.col-reb-excluir {
-    width: 7%;
+    width: 10%;
 }
 
 /* Item ID oculto */
