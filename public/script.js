@@ -2416,6 +2416,189 @@ function buscarItemPorPesquisa(
 
 }
 
+function converterColagemExcelEmItens(texto) {
+    return String(texto || '')
+        .split(/\r?\n/)
+        .map((linha) => {
+            const colunas = linha
+                .split('\t')
+                .map((coluna) => {
+                    return String(coluna || '').trim();
+                });
+
+            const codigo =
+                normalizarCodigoItem(
+                    colunas[0]
+                );
+
+            const quantidade = Number(
+                String(colunas[1] || '')
+                    .replace(',', '.')
+            );
+
+            return {
+                codigo,
+                quantidade
+            };
+        })
+        .filter((item) => {
+            return Boolean(item.codigo);
+        });
+}
+
+async function preencherItensColados(
+    linhaInicial,
+    itens
+) {
+    if (!catalogoClienteCarregado) {
+        alert(
+            'Carregue o cliente antes de colar os itens.'
+        );
+
+        return;
+    }
+
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
+
+    if (!tbody || !linhaInicial) {
+        return;
+    }
+
+    const erros = [];
+    let linhaAtual = linhaInicial;
+    let adicionados = 0;
+
+    iniciarBloqueioImportacao(
+        'Adicionando os itens copiados do Excel...'
+    );
+
+    try {
+        for (
+            let indice = 0;
+            indice < itens.length;
+            indice += 1
+        ) {
+            const itemColado =
+                itens[indice];
+
+            atualizarProgressoImportacao(
+                `Processando ${indice + 1} de ${itens.length}`
+            );
+
+            const itemCatalogo =
+                buscarItemNoCatalogo(
+                    itemColado.codigo
+                );
+
+            try {
+                validarDisponibilidadeItem(
+                    itemCatalogo
+                );
+
+                if (
+                    verificarCodigoDuplicadoNaTabela(
+                        itemColado.codigo,
+                        linhaAtual
+                    )
+                ) {
+                    throw new Error(
+                        'O item já está no pedido.'
+                    );
+                }
+
+                limparDadosLinhaItem(
+                    linhaAtual,
+                    false
+                );
+
+                preencherLinhaComItem(
+                    linhaAtual,
+                    itemCatalogo
+                );
+
+                const campoQuantidade =
+                    linhaAtual.querySelector(
+                        '.campo-quantidade-item'
+                    );
+
+                if (
+                    Number.isFinite(
+                        itemColado.quantidade
+                    ) &&
+                    itemColado.quantidade > 0
+                ) {
+                    campoQuantidade.value =
+                        String(
+                            itemColado.quantidade
+                        );
+
+                    atualizarTotalLinhaItem(
+                        linhaAtual
+                    );
+                } else {
+                    campoQuantidade.value =
+                        '';
+                }
+
+                adicionados += 1;
+            } catch (error) {
+                erros.push({
+                    codigo:
+                        itemColado.codigo,
+
+                    motivo:
+                        error.message ||
+                        'Item não carregado.'
+                });
+
+                limparDadosLinhaItem(
+                    linhaAtual,
+                    false
+                );
+            }
+
+            if (indice < itens.length - 1) {
+                linhaAtual =
+                    adicionarNovaLinha();
+            }
+        }
+
+        atualizarTotais();
+
+        const campoQuantidadeFinal =
+            linhaAtual.querySelector(
+                '.campo-quantidade-item'
+            );
+
+        if (
+            campoQuantidadeFinal &&
+            !campoQuantidadeFinal.value
+        ) {
+            campoQuantidadeFinal.focus();
+        }
+
+        if (erros.length > 0) {
+            const detalhes = erros
+                .map((erro) => {
+                    return `${erro.codigo}: ${erro.motivo}`;
+                })
+                .join('\n');
+
+            alert(
+                `${adicionados} itens adicionados.\n\n` +
+                `Itens não adicionados:\n${detalhes}`
+            );
+        }
+    } finally {
+        finalizarBloqueioImportacao();
+    }
+}
+
+
+
 function configurarLinhaItemPedido(
     tr
 ){
@@ -2433,6 +2616,48 @@ function configurarLinhaItemPedido(
         tr.querySelector(
             '.campo-item-pesquisa'
         );
+    campoPesquisa.addEventListener(
+        'paste',
+        async (evento) => {
+            const textoColado =
+                evento.clipboardData
+                    ?.getData('text') || '';
+
+            const possuiVariasLinhas =
+                textoColado.includes('\n') ||
+                textoColado.includes('\r');
+
+            const possuiColunas =
+                textoColado.includes('\t');
+
+            if (
+                !possuiVariasLinhas &&
+                !possuiColunas
+            ) {
+                return;
+            }
+
+            evento.preventDefault();
+
+            const itens =
+                converterColagemExcelEmItens(
+                    textoColado
+                );
+
+            if (itens.length === 0) {
+                alert(
+                    'Nenhum item válido foi encontrado no conteúdo copiado.'
+                );
+
+                return;
+            }
+
+            await preencherItensColados(
+                tr,
+                itens
+            );
+        }
+    );
 
     const campoQuantidade =
         tr.querySelector(
@@ -4524,6 +4749,182 @@ const observacaoClone =
 
 }
 
+function converterTextoColadoEmItens(texto) {
+    return String(texto || '')
+        .split(/\r?\n/)
+        .map((linha) => {
+            const colunas = linha
+                .split(/\t|;/)
+                .map((valor) => {
+                    return String(valor || '').trim();
+                });
+
+            return {
+                codigo: colunas[0] || '',
+                quantidade: Number(
+                    String(colunas[1] || '0')
+                        .replace(',', '.')
+                )
+            };
+        })
+        .filter((item) => {
+            return item.codigo &&
+                Number.isFinite(item.quantidade) &&
+                item.quantidade > 0;
+        });
+}
+
+async function adicionarItemColado(
+    codigo,
+    quantidade
+) {
+    const codigoNormalizado =
+        normalizarCodigoItem(
+            codigo
+        );
+
+    const item =
+        buscarItemNoCatalogo(
+            codigoNormalizado
+        );
+
+    validarDisponibilidadeItem(
+        item
+    );
+
+    if (
+        verificarCodigoDuplicadoNaTabela(
+            codigoNormalizado,
+            null
+        )
+    ) {
+        throw new Error(
+            'O item já está no pedido.'
+        );
+    }
+
+    const linha =
+        adicionarNovaLinha();
+
+    preencherLinhaComItem(
+        linha,
+        item
+    );
+
+    const campoQuantidade =
+        linha.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    campoQuantidade.value =
+        String(quantidade);
+
+    campoQuantidade.dispatchEvent(
+        new Event(
+            'input',
+            {
+                bubbles: true
+            }
+        )
+    );
+
+    return linha;
+}
+
+async function importarListaColada() {
+    const campoLista =
+        document.getElementById(
+            'listaItensColada'
+        );
+
+    if (!campoLista) {
+        return;
+    }
+
+    if (!catalogoClienteCarregado) {
+        alert(
+            'Carregue o cliente antes de colar os itens.'
+        );
+
+        return;
+    }
+
+    const itens =
+        converterTextoColadoEmItens(
+            campoLista.value
+        );
+
+    if (itens.length === 0) {
+        alert(
+            'Nenhum código e quantidade válidos foram encontrados.'
+        );
+
+        return;
+    }
+
+    const itensComErro = [];
+    let itensAdicionados = 0;
+
+    iniciarBloqueioImportacao(
+        'Adicionando itens colados...'
+    );
+
+    try {
+        for (
+            let indice = 0;
+            indice < itens.length;
+            indice += 1
+        ) {
+            const item = itens[indice];
+
+            atualizarProgressoImportacao(
+                `Processando ${indice + 1} de ${itens.length}`
+            );
+
+            try {
+                await adicionarItemColado(
+                    item.codigo,
+                    item.quantidade
+                );
+
+                itensAdicionados += 1;
+            } catch (error) {
+                itensComErro.push({
+                    codigo: item.codigo,
+                    motivo:
+                        error.message ||
+                        'Item não carregado.'
+                });
+            }
+        }
+
+        atualizarTotais();
+
+        campoLista.value = '';
+
+        let mensagem =
+            `${itensAdicionados} itens adicionados.`;
+
+        if (itensComErro.length > 0) {
+            const detalhes = itensComErro
+                .map((item) => {
+                    return `${item.codigo}: ${item.motivo}`;
+                })
+                .join('\n');
+
+            mensagem +=
+                '\n\nItens não adicionados:\n' +
+                detalhes;
+        }
+
+        alert(
+            mensagem
+        );
+    } finally {
+        finalizarBloqueioImportacao();
+    }
+}
+
 //--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -4536,7 +4937,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const helpWhats = document.getElementById('helpContainer');
     const feedbackDiv = document.getElementById('feedback1');
     const cnpjInput = document.getElementById('cnpj');
+    const botaoImportarLista =
+        document.getElementById(
+            'importarListaColada'
+        );
 
+    botaoImportarLista?.addEventListener(
+        'click',
+        importarListaColada
+    );
 async function gerarEEnviarPDF(){
 
     console.log(
