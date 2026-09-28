@@ -30,10 +30,16 @@ async function carregarPermissaoUsuario() {
         );
 
     if (
-        isOperador &&
         cabecalhoQuantidade
     ) {
         cabecalhoQuantidade.remove();
+    }
+    if(isOperador == 1 ||
+        isOperador == 79 ||
+        isOperador == 2 ||
+        isOperador == 30
+    ){
+        window.location.href = "/"
     }
 }
 
