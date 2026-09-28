@@ -10,44 +10,12 @@
     <link rel="manifest" href="/images/site.webmanifest">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="/css/logistica.css?v=1783967913332">
-
-    <link rel="stylesheet" href="/css/theme-toggle.css?v=1783967913332">
-    <!-- Script inline para aplicar o tema imediatamente -->
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.classList.add(savedTheme + '-theme');
-        })();
-    </script>
-    
+    <link rel="stylesheet" href="/css/logistica.css?v=1783967913330">
 </head>
 <body>
-
+ <%- include('partials/header') %>
 <div class="container">
-    <footer>
-                <div class="link_sites">
-
-            <!-- Toggle switch -->
-            <label class="theme-switch" id="seletor">
-                <input type="checkbox" id="themeToggle">
-                <span class="slider"></span>
-            </label>
-
-           <button id="logoutButton1">Sair</button>
-           <!--<a target="_blank" href="/admin">Área T.I.</a>-->
-           <a href="/">Pedido de Venda</a>
-           <a href="/devolucao">Devolução</a>
-           <a href="/rebaixa">Solicitação de Rebaixa</a>
-           <a href="/comercial">Área Comercial</a>
-           <a href="/logistica03">Área logística</a>
-           <a href="/detalhesProdutos">Detalhes do Produto</a>
-           <a href="/cadastroCliente">Cadastrar Cliente</a>
-           <a href="/investComercial">Investimento</a>
-           <a href="/estoque">Estoque</a>
-           <a href="/distribuidores">Distribuidores</a>
-           </div>
-        </footer>
+   
     <div class="header">
         <header class="header-container">
             <div class="header-left">
@@ -57,20 +25,6 @@
                     </a>
                 </div>
                 <h3 class="header-title">Acompanhamento de entrega</h3>
-
-                <!-- Toggle switch -->
-                <label class="theme-switch">
-                    <input type="checkbox" id="themeToggle">
-                    <span class="slider"></span>
-                </label>
-
-            </div>
-            <div class="header-right">
-                <h4>Você está em: <br/><strong>Norte/Nordeste/Centro-Oeste</strong></h4>
-                <div class="link-wrapper">
-                    <span class="link-label">Ir para:</span>
-                    <a class="link_logistica" href="/logistica02">Sul/Sudeste</a>
-                </div>
             </div>
         </header>
     </div>
@@ -150,7 +104,7 @@
                         <th class="clienteCNPJ">Cliente CNPJ</th>
                         <th class="uf">UF</th>
                         <th class="codRep">Cód Rep</th>
-                        <th class="codTrans">Cód Trans</th>
+                        <th class="codTrans">Cod Trans</th>
                         <th class="transportadora">Transportadora</th>
                         <th class="saida">Saída</th>
                         <th class="previsaoEntrega">Previsão de Entrega</th>
@@ -166,7 +120,6 @@
             </table>
          </div>
  </div>
-    <script src="/logistica03.js?v=1783967913332"></script>
-    <script src="/theme-toggle.js?v=1783967913332"></script>
+    <script src="/logistica.js?v=1783967913330"></script>
 </body>
 </html>

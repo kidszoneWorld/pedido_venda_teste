@@ -19,7 +19,18 @@ const clientePdfController = require('./controllers/clientePdfController');
 
 const app = express();
 
+app.set(
+    'view engine',
+    'ejs'
+);
 
+app.set(
+    'views',
+    path.join(
+        __dirname,
+        'views'
+    )
+);
 
 connectDB();
 
@@ -33,6 +44,9 @@ app.use(
             '50mb'
     })
 );
+
+
+
 
 app.use(
     express.urlencoded({

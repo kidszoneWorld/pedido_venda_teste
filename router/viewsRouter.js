@@ -34,80 +34,80 @@ const estoqueController = require('../controllers/estoqueController');
 // Rota para a página inicial
 router.get('/', authMiddleware, (req, res) => {
     console.log('Rota / acessada');
-    res.sendFile(path.resolve(__dirname, '..', 'views', 'index.html'));
+    res.render(path.resolve(__dirname, '..', 'views', 'index.ejs'));
 });
 
 // Rota para a página de login
 router.get('/login', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'views', 'login.html'));
+    res.render(path.resolve(__dirname, '..', 'views', 'login.ejs'));
 });
 
 // Rota para a página de login2
 router.get('/login2', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'views', 'login2.html'));
+    res.render(path.resolve(__dirname, '..', 'views', 'login2.ejs'));
 });
 
 // Rota para a página de devolução
 router.get('/devolucao',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'devolucao.html'));
+    res.render(path.join(__dirname, '..', 'views', 'devolucao.ejs'));
 });
 
 //Rota página de estoque
 router.get('/estoque',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'estoque.html'));
+    res.render(path.join(__dirname, '..', 'views', 'estoque.ejs'));
 });
 
 router.get('/rebaixa',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'rebaixa.html'));
+    res.render(path.join(__dirname, '..', 'views', 'rebaixa.ejs'));
 });
 
 // Rota para a página de administração
 router.get('/admin', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'views', 'admin.html'));
+    res.render(path.resolve(__dirname, '..', 'views', 'admin.ejs'));
 });
 
-// Rota para a página de pedidos comerciais (comercial.html)
+// Rota para a página de pedidos comerciais (comercial.ejs)
 router.get('/comercial', authMiddleware,(req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'views', 'comercial.html'));
+    res.render(path.resolve(__dirname, '..', 'views', 'comercial.ejs'));
 });
 
-// Rota para a página de detalhes do pedido (detalhes.html)
+// Rota para a página de detalhes do pedido (detalhes.ejs)
 router.get('/detalhes',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'detalhes.html'));
+    res.render(path.join(__dirname, '..', 'views', 'detalhes.ejs'));
 });
 
 router.get('/devolucaoPanel',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'devolucaoPanel.html'));
+    res.render(path.join(__dirname, '..', 'views', 'devolucaoPanel.ejs'));
 });
 
 router.get('/rebaixaPanel',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'rebaixaPanel.html'));
+    res.render(path.join(__dirname, '..', 'views', 'rebaixaPanel.ejs'));
 });
 
-// Rota para a página de detalhes do produto (Detalhes_Produtos.html)
-router.get('/devolucaoDetalhe.html',authMiddleware, (req, res) => {
-  res.sendFile(require('path').join(__dirname, '../views/devolucaoDetalhe.html'));
+// Rota para a página de detalhes do produto (Detalhes_Produtos.ejs)
+router.get('/devolucaoDetalhe.ejs',authMiddleware, (req, res) => {
+  res.render(require('path').join(__dirname, '../views/devolucaoDetalhe.ejs'));
 });
 
-router.get('/rebaixaDetalhe.html',authMiddleware, (req, res) => {
-  res.sendFile(require('path').join(__dirname, '../views/rebaixaDetalhe.html'));
+router.get('/rebaixaDetalhe.ejs',authMiddleware, (req, res) => {
+  res.render(require('path').join(__dirname, '../views/rebaixaDetalhe.ejs'));
 });
 
 //Rota para a pagina de detalhes de devoulção
 router.get('/detalhesProdutos',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.html'));
+    res.render(path.join(__dirname, '..', 'views', 'Detalhes_Produtos.ejs'));
 });
 //rota distribuidores, sell pagina inicial
 router.get(
     '/distribuidores',
     authMiddleware,
     (req, res) => {
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'distribuidores.html'
+                'distribuidores.ejs'
             )
         );
     }
@@ -164,12 +164,12 @@ router.get(
     authMiddleware,
     (req, res) => {
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'displayDistribuidor.html'
+                'displayDistribuidor.ejs'
             )
         );
 
@@ -179,12 +179,12 @@ router.get(
     '/investimentoDistribuidor/:codigoDistribuidor',
     authMiddleware,
     (req, res) => {
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'investimentoDistribuidor.html'
+                'investimentoDistribuidor.ejs'
             )
         );
     }
@@ -195,12 +195,12 @@ router.get(
     authMiddleware,
     (req, res) => {
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'adminItens.html'
+                'adminItens.ejs'
             )
         );
 
@@ -212,12 +212,12 @@ router.get(
     authMiddleware,
     (req,res)=>{
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'sellOutDistribuidor.html'
+                'sellOutDistribuidor.ejs'
             )
         );
 
@@ -229,12 +229,12 @@ router.get(
     authMiddleware,
     (req,res)=>{
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'positivacaoDistribuidor.html'
+                'positivacaoDistribuidor.ejs'
             )
         );
 
@@ -245,12 +245,12 @@ router.get(
     authMiddleware,
     (req, res) => {
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'sellInDistribuidor.html'
+                'sellInDistribuidor.ejs'
             )
         );
 
@@ -258,16 +258,16 @@ router.get(
 );
 
 router.get(
-    '/investDetalhe.html',
+    '/investDetalhe.ejs',
     authMiddleware,
     (req, res) => {
 
-        return res.sendFile(
+        return res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'investDetalhe.html'
+                'investDetalhe.ejs'
             )
         );
 
@@ -275,15 +275,15 @@ router.get(
 );
 
 router.get(
-    '/devolucaoEditar.html',
+    '/devolucaoEditar.ejs',
     authMiddleware,
     (req, res) => {
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'devolucaoEditar.html'
+                'devolucaoEditar.ejs'
             )
         );
     }
@@ -308,50 +308,50 @@ router.put(
 );
 
 
-// Rota para a página de eficiencia cliente (eficiencia.html)
+// Rota para a página de eficiencia cliente (eficiencia.ejs)
 router.get('/eficiencia',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'eficiencia.html'));
+    res.render(path.join(__dirname, '..', 'views', 'eficiencia.ejs'));
 });
 
 
-// Rota para a página de eficiencia cliente (sellOutMenu.html)
+// Rota para a página de eficiencia cliente (sellOutMenu.ejs)
 router.get('/sellOutMenu',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'sellOutMenu.html'));
+    res.render(path.join(__dirname, '..', 'views', 'sellOutMenu.ejs'));
 });
 
 
 
-// Rota para a página de cadastro de sellOut cliente (sellOutCadastro.html)
+// Rota para a página de cadastro de sellOut cliente (sellOutCadastro.ejs)
 router.get('/sellOutCadastro',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'sellOutCadastro.html'));
+    res.render(path.join(__dirname, '..', 'views', 'sellOutCadastro.ejs'));
 });
 
-// Rota para a página de eficiencia cliente (display.html)
+// Rota para a página de eficiencia cliente (display.ejs)
 router.get('/display',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'display.html'));
+    res.render(path.join(__dirname, '..', 'views', 'display.ejs'));
 });
 
-// Rota para a página de eficiencia cliente (redes.html)
+// Rota para a página de eficiencia cliente (redes.ejs)
 router.get('/redes',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'redes.html'));
+    res.render(path.join(__dirname, '..', 'views', 'redes.ejs'));
 });
 
-// Rota para a página de detalhes do pedido (detalhes.html)
+// Rota para a página de detalhes do pedido (detalhes.ejs)
 router.get('/logistica',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'logistica.html'));
+    res.render(path.join(__dirname, '..', 'views', 'logistica.ejs'));
 });
 
-// Rota para a página de detalhes do pedido (detalhes.html)
+// Rota para a página de detalhes do pedido (detalhes.ejs)
 router.get('/logistica03', authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'logisticaFernando.html'));
+    res.render(path.join(__dirname, '..', 'views', 'logisticaFernando.ejs'));
 });
 
 router.get('/logistica02', authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'logisticaJoao.html'));
+    res.render(path.join(__dirname, '..', 'views', 'logisticaJoao.ejs'));
 });
 
 router.get('/PainelInvestimento',authMiddleware,(req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'investPanel.html'));
+    res.render(path.join(__dirname, '..', 'views', 'investPanel.ejs'));
 });
 
 
@@ -360,12 +360,12 @@ router.get(
     authMiddleware,
     (req,res)=>{
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'estoqueDistribuidor.html'
+                'estoqueDistribuidor.ejs'
             )
         );
 
@@ -377,36 +377,36 @@ router.get(
     authMiddleware,
     (req,res)=>{
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'redesDistribuidor.html'
+                'redesDistribuidor.ejs'
             )
         );
 
     }
 );
 
-// Rota para a página (video.html)
+// Rota para a página (video.ejs)
 router.get('/video',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'video.html'));
+    res.render(path.join(__dirname, '..', 'views', 'video.ejs'));
 });
 
-// Rota para a página (cadastroCliente.html)
+// Rota para a página (cadastroCliente.ejs)
 router.get('/cadastroCliente',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'cadastroCliente.html'));
+    res.render(path.join(__dirname, '..', 'views', 'cadastroCliente.ejs'));
 });
 
 
-// Rota para a página (invest.html)
+// Rota para a página (invest.ejs)
 router.get('/investComercial',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'invest_comercial.html'));
+    res.render(path.join(__dirname, '..', 'views', 'invest_comercial.ejs'));
 });
 
 router.get('/investPromotor',authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'invest_promotor.html'));
+    res.render(path.join(__dirname, '..', 'views', 'invest_promotor.ejs'));
 });
 
 
@@ -539,12 +539,12 @@ router.get(
     authMiddleware,
     (req, res) => {
 
-        res.sendFile(
+        res.render(
             path.join(
                 __dirname,
                 '..',
                 'views',
-                'infoDistribuidor.html'
+                'infoDistribuidor.ejs'
             )
         );
 
@@ -653,12 +653,12 @@ router.put('/rebaixa/:id', rebController.atualizarRebaixa);
 
 // Rota para página de erro 401 (Senha incorreta)
 router.get('/error-401', (req, res) => {
-    res.status(401).sendFile(path.join(__dirname, '..', 'views', 'error-401.html'));
+    res.status(401).sendFile(path.join(__dirname, '..', 'views', 'error-401.ejs'));
 });
 
 // Rota para página de erro 404 (Usuário não encontrado)
 router.get('/error-404', (req, res) => {
-    res.status(404).sendFile(path.join(__dirname, '..', 'views', 'error-404.html'));
+    res.status(404).sendFile(path.join(__dirname, '..', 'views', 'error-404.ejs'));
 });
 
 //rota listar distribuidores

@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Detalhes da Rebaixa</title>
+  <title>Detalhes da Devolução</title>
   <link rel="stylesheet" href="/css/stylesDevDetalhes.css?v=1783967913338">
 
- <style>
+  <style>
     body {  font-family: Arial; }
     .grid {
       display: grid;
@@ -21,23 +21,8 @@
   </style>
 </head>
 <body>
-<!-- <footer>
-                <div class="link_sites">
-
-           <button id="logoutButton2">Sair</button>
-           <a target="_blank" href="/admin">Área T.I.</a>
-           <a href="/">Pedido de Venda</a>
-           <a href="/devolucao">Devolução</a>
-           <a href="/comercial">Área Comercial</a>
-           <a href="/logistica03">Área logística</a>
-           <a href="/detalhesProdutos">Detalhes do Produto</a>
-           <a href="/cadastroCliente">Cadastrar Cliente</a>
-           <a href="/investComercial">Investimento</a>
-           <a href="/estoque">Estoque</a>
-           <a href="/distribuidores">Distribuidores</a>
-           </div>
-        </footer> -->
-<header class="header"><h1 class="header-container">Detalhes da Rebaixa
+<!-- <%- include('partials/header') %> -->
+<header class="header"><h1 class="header-container">Detalhes da Devolução
             <!-- Toggle switch -->
             <label class="theme-switch" id="seletor">
                 <input type="checkbox" id="themeToggle">
@@ -46,7 +31,7 @@
 </h1></header>
 
 <div class="container">
-  <h2 class="h2">Dados da Rebaixa</h2>
+  <h2 class="h2">Dados da devolução</h2>
   <div class="grid" id="dadosPedido"></div>
 
 <button onclick="exportarDetalheExcel()">Exportar para Excel</button>
@@ -56,14 +41,14 @@
     <thead>
       <tr>
         <th>NF</th>
+        <th>Data</th>
         <th>Código</th>
-        <th>descrição</th>
+        <th>Descrição</th>
         <th>Lote</th>
-        <th>Preço Unitário</th>
-        <th>Rebaixa</th>
-        <th>Atual</th>
-        <th>Quantidade</th>
-        <th>Total Rebaixa</th>
+        <th>Qtd</th>
+        <th>UN</th>
+        <th>Preço</th>
+        <th>Total</th>
       </tr>
     </thead>
     <tbody id="tabelaProdutos"></tbody>
@@ -76,6 +61,6 @@
 </div>
 
     <script src="/theme-toggle.js?v=1783967913338"></script>
-<script src="/rebaixaDetalhe.js?v=1783967913338"></script>
+<script src="/devolucaoDetalhe.js?v=1783967913338"></script>
 </body>
 </html>
