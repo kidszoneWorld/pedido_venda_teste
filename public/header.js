@@ -129,7 +129,87 @@ function configurarHeader() {
     destacarPaginaAtual();
 }
 
-document.addEventListener(
-    'DOMContentLoaded',
-    configurarHeader
-);
+async function configurarVisibilidadeEstoque() {
+    try {
+        const sessionResponse = await fetch(
+            '/session-data',
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json'
+                },
+                credentials: 'same-origin',
+                cache: 'no-store'
+            }
+        );
+
+        if (!sessionResponse.ok) {
+            throw new Error(
+                'Não foi possível consultar a sessão.'
+            );
+        }
+
+        const sessionData =
+            await sessionResponse.json();
+
+        const userNumero = String(
+            sessionData.userNumero ||
+            sessionData.user?.numero ||
+            ''
+        ).trim();
+
+        const usuariosSemAcesso = new Set([
+            '1',
+            '2',
+            '30',
+            '79'
+        ]);
+
+        const linkEstoque =
+            document.getElementById(
+                'estoque'
+            );
+
+        console.log(
+            'Usuário da sessão:',
+            userNumero
+        );
+
+        console.log(
+            'Link Estoque encontrado:',
+            Boolean(linkEstoque)
+        );
+
+        if (
+            linkEstoque &&
+            usuariosSemAcesso.has(userNumero)
+        ) {
+            linkEstoque.remove();
+
+            console.log(
+                'Link Estoque removido.'
+            );
+        }
+    } catch (error) {
+        console.error(
+            'Erro ao configurar o link Estoque:',
+            error
+        );
+    }
+}
+
+
+async function iniciarHeader() {
+    configurarHeader();
+
+    await configurarVisibilidadeEstoque();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener(
+        'DOMContentLoaded',
+        iniciarHeader
+    );
+} else {
+    iniciarHeader();
+}
