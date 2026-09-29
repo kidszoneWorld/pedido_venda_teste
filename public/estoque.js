@@ -24,16 +24,6 @@ async function carregarPermissaoUsuario() {
     isOperador =
         sessionData.userNumero;
 
-    const cabecalhoQuantidade =
-        document.querySelector(
-            '#dadosPedido thead .qtd'
-        );
-
-    if (
-        cabecalhoQuantidade
-    ) {
-        cabecalhoQuantidade.remove();
-    }
     if(isOperador == 1 ||
         isOperador == 79 ||
         isOperador == 2 ||
@@ -270,13 +260,13 @@ function criarLinhaItem(item) {
         ? saldoOriginal
         : 0;
 
-    if (saldo < 500) {
-        linha.classList.add('estoque-baixo');
-    } else if (saldo <= 1500) {
-        linha.classList.add('estoque-medio');
-    } else {
-        linha.classList.add('estoque-alto');
-    }
+    // if (saldo < 500) {
+    //     linha.classList.add('estoque-baixo');
+    // } else if (saldo <= 1500) {
+    //     linha.classList.add('estoque-medio');
+    // } else {
+    //     linha.classList.add('estoque-alto');
+    // }
 
     const codigo = obterCodigoItem(item);
     const descricao = obterDescricaoItem(item);

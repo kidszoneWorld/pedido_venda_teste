@@ -459,7 +459,10 @@ async function listarItens() {
             'CAMISETA',
             'CATALOGO',
             'KITLCD',
-            '3528'
+            '3528',
+            // 'QB-7025',
+            // 'QB-7026',
+            'SACOLATERMICA'
         ]);
 
         const itensValidos = itensPcr.filter((item) => {
@@ -478,7 +481,7 @@ async function listarItens() {
                 codigo.includes('MATRIZ');
 
             const iniciaComDs =
-                codigo.startsWith('DS');
+                codigo.startsWith('DS') || codigo.startsWith('Q')
 
             const estaNaListaDeOcultos =
                 codigosOcultos.has(codigo);
