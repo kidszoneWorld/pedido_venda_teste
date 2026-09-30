@@ -5,7 +5,21 @@ const timestamp = Date.now();
 let clientesData;
 let promocaoData;
 let foraDeLinhaData;
-let listaPrecosData;
+let catalogoClienteData =
+    [];
+
+let catalogoClientePorCodigo =
+    new Map();
+
+let catalogoClienteCarregado =
+    false;
+
+let catalogoClienteCarregando =
+    false;
+
+let dadosListaPrecoAtual =
+    null;
+
 let icmsSTData;
 let listaPrecosIpiData;
   
@@ -42,12 +56,831 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
   .then(r => r.json())
   .then(d => icmsSTData = d);
 
+function normalizarCodigoItem(
+    valor
+) {
+    return String(
+        valor || ''
+    )
+        .trim()
+        .toUpperCase();
+}
 
+function converterParaBooleano(
+    valor
+) {
+    if (valor === true) {
+        return true;
+    }
 
-async function carregarListaPrecos(listaId) {
-    const response = await fetch(`/api/lista-preco-Sem-Verificar/${listaId}`);
-    listaPrecosData = await response.json();
-    console.log('LISTA DE PREÇOS CARREGADA:', Array.isArray(listaPrecosData) ? listaPrecosData.length : listaPrecosData);
+    if (valor === false) {
+        return false;
+    }
+
+    if (valor === 1) {
+        return true;
+    }
+
+    if (valor === 0) {
+        return false;
+    }
+
+    const texto =
+        String(
+            valor ?? ''
+        )
+            .trim()
+            .toLowerCase();
+
+    return (
+        texto === 'true' ||
+        texto === '1' ||
+        texto === 'sim' ||
+        texto === 's' ||
+        texto === 'ativo'
+    );
+}
+
+function itemPodeAparecerNaLista(
+    item
+) {
+    if (!item) {
+        return false;
+    }
+
+    const ativo =
+        converterParaBooleano(
+            item.ativo
+        );
+
+    const suspenso =
+        converterParaBooleano(
+            item.suspenso
+        );
+
+    const foraLinha =
+        converterParaBooleano(
+            item.foraLinha
+        );
+
+    const bloqueado =
+        converterParaBooleano(
+            item.bloqueado
+        );
+
+    const exibeConsultas =
+        item.exibeConsultasListaPreco === undefined ||
+        item.exibeConsultasListaPreco === null
+            ? true
+            : converterParaBooleano(
+                item.exibeConsultasListaPreco
+            );
+
+    const descricao =
+        String(
+            item.descricao || ''
+        )
+            .normalize(
+                'NFD'
+            )
+            .replace(
+                /[\u0300-\u036f]/g,
+                ''
+            )
+            .trim()
+            .toLowerCase();
+
+    const descricaoBloqueada =
+        descricao.includes(
+            'display'
+        ) ||
+        descricao.includes(
+            'bobina'
+        );
+
+    return (
+        ativo &&
+        !suspenso &&
+        !foraLinha &&
+        !bloqueado &&
+        exibeConsultas &&
+        !descricaoBloqueada
+    );
+}
+
+async function carregarCatalogoCliente(
+    clienteCodigo,
+    listaCodigo = null
+) {
+    const codigoCliente =
+        String(
+            clienteCodigo || ''
+        ).trim();
+
+    if (!codigoCliente) {
+        throw new Error(
+            'Código do cliente não disponível para carregar o catálogo.'
+        );
+    }
+
+    catalogoClienteCarregado =
+        false;
+
+    catalogoClienteCarregando =
+        true;
+
+    catalogoClienteData =
+        [];
+
+    catalogoClientePorCodigo =
+        new Map();
+
+    dadosListaPrecoAtual =
+        null;
+
+    showFeedback(
+        'Carregando lista de produtos do cliente...'
+    );
+
+    try {
+        const parametros =
+            new URLSearchParams();
+
+        if (
+            listaCodigo !== null &&
+            listaCodigo !== undefined &&
+            listaCodigo !== ''
+        ) {
+            parametros.set(
+                'listaCodigo',
+                String(
+                    listaCodigo
+                )
+            );
+        }
+
+        const queryString =
+            parametros.toString();
+
+        const url =
+            `/api/catalogo-cliente/${encodeURIComponent(codigoCliente)}` +
+            (
+                queryString
+                    ? `?${queryString}`
+                    : ''
+            );
+
+        console.log(
+            'Consultando catálogo da devolução:',
+            url
+        );
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        'GET',
+
+                    headers: {
+                        Accept:
+                            'application/json'
+                    }
+                }
+            );
+
+        const textoResposta =
+            await response.text();
+
+        let resultado =
+            null;
+
+        if (textoResposta) {
+            try {
+                resultado =
+                    JSON.parse(
+                        textoResposta
+                    );
+            } catch {
+                throw new Error(
+                    'O catálogo retornou uma resposta inválida.'
+                );
+            }
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                resultado?.mensagem ||
+                resultado?.message ||
+                textoResposta ||
+                `Erro HTTP ${response.status}`
+            );
+        }
+
+        const itensRecebidos =
+            Array.isArray(
+                resultado?.itens
+            )
+                ? resultado.itens
+                : [];
+
+        const itensDisponiveis =
+            itensRecebidos.filter(
+                itemPodeAparecerNaLista
+            );
+
+        catalogoClienteData =
+            itensDisponiveis;
+
+        dadosListaPrecoAtual =
+            resultado?.listaPreco ||
+            null;
+
+        catalogoClientePorCodigo =
+            new Map();
+
+        itensDisponiveis.forEach(
+            item => {
+                const codigo =
+                    normalizarCodigoItem(
+                        item.itemEmpresaId
+                    );
+
+                if (!codigo) {
+                    return;
+                }
+
+                catalogoClientePorCodigo.set(
+                    codigo,
+                    item
+                );
+            }
+        );
+
+        catalogoClienteCarregado =
+            true;
+
+        if (dadosListaPrecoAtual) {
+            const campoCodigoLista =
+                document.getElementById(
+                    'codgroup'
+                );
+
+            const campoNomeLista =
+                document.getElementById(
+                    'group'
+                );
+
+            if (campoCodigoLista) {
+                campoCodigoLista.value =
+                    dadosListaPrecoAtual.codigo ||
+                    '';
+            }
+
+            if (campoNomeLista) {
+                campoNomeLista.value =
+                    dadosListaPrecoAtual.descricao ||
+                    '';
+            }
+        }
+
+        criarDatalistCatalogo();
+
+        console.log(
+            'Catálogo da devolução carregado:',
+            {
+                clienteCodigo:
+                    codigoCliente,
+
+                listaPreco:
+                    dadosListaPrecoAtual,
+
+                totalRecebido:
+                    itensRecebidos.length,
+
+                totalDisponivel:
+                    itensDisponiveis.length,
+
+                totalIndexado:
+                    catalogoClientePorCodigo.size,
+
+                erros:
+                    resultado?.erros || []
+            }
+        );
+
+        return resultado;
+    } catch (error) {
+        catalogoClienteData =
+            [];
+
+        catalogoClientePorCodigo =
+            new Map();
+
+        catalogoClienteCarregado =
+            false;
+
+        console.error(
+            'Erro ao carregar catálogo da devolução:',
+            error
+        );
+
+        throw error;
+    } finally {
+        catalogoClienteCarregando =
+            false;
+
+        hideFeedback();
+    }
+}
+
+function criarDatalistCatalogo() {
+    let datalist =
+        document.getElementById(
+            'lista-produtos-cliente'
+        );
+
+    if (!datalist) {
+        datalist =
+            document.createElement(
+                'datalist'
+            );
+
+        datalist.id =
+            'lista-produtos-cliente';
+
+        document.body.appendChild(
+            datalist
+        );
+    }
+
+    datalist.innerHTML =
+        '';
+
+    catalogoClienteData.forEach(
+        item => {
+            const codigo =
+                String(
+                    item.itemEmpresaId || ''
+                ).trim();
+
+            const descricao =
+                String(
+                    item.descricao || ''
+                ).trim();
+
+            if (
+                !codigo ||
+                !descricao
+            ) {
+                return;
+            }
+
+            const option =
+                document.createElement(
+                    'option'
+                );
+
+            option.value =
+                `${codigo} - ${descricao}`;
+
+            datalist.appendChild(
+                option
+            );
+        }
+    );
+}
+
+function buscarItemNoCatalogo(
+    codigoDigitado
+) {
+    const codigo =
+        normalizarCodigoItem(
+            codigoDigitado
+        );
+
+    if (!codigo) {
+        return null;
+    }
+
+    return (
+        catalogoClientePorCodigo.get(
+            codigo
+        ) ||
+        null
+    );
+}
+
+function buscarItemPorPesquisa(
+    valorDigitado
+) {
+    const texto =
+        String(
+            valorDigitado || ''
+        ).trim();
+
+    if (!texto) {
+        return null;
+    }
+
+    const separador =
+        texto.indexOf(
+            ' - '
+        );
+
+    if (separador >= 0) {
+        const codigoExtraido =
+            normalizarCodigoItem(
+                texto.substring(
+                    0,
+                    separador
+                )
+            );
+
+        const itemPorCodigo =
+            buscarItemNoCatalogo(
+                codigoExtraido
+            );
+
+        if (itemPorCodigo) {
+            return itemPorCodigo;
+        }
+    }
+
+    const itemPorCodigo =
+        buscarItemNoCatalogo(
+            texto
+        );
+
+    if (itemPorCodigo) {
+        return itemPorCodigo;
+    }
+
+    const pesquisa =
+        texto.toUpperCase();
+
+    const correspondencias =
+        catalogoClienteData.filter(
+            item => {
+                const descricao =
+                    String(
+                        item.descricao || ''
+                    )
+                        .trim()
+                        .toUpperCase();
+
+                return (
+                    descricao ===
+                    pesquisa
+                );
+            }
+        );
+
+    return correspondencias.length === 1
+        ? correspondencias[0]
+        : null;
+}
+
+function linhaDevolucaoEstaVazia(
+    tr
+) {
+    if (!tr) {
+        return true;
+    }
+
+    const campoItem =
+        tr.querySelector(
+            '.campo-item-pesquisa'
+        );
+
+    const possuiCodigo =
+        Boolean(
+            String(
+                tr.dataset.itemEmpresaId || ''
+            ).trim()
+        );
+
+    const possuiPesquisa =
+        Boolean(
+            String(
+                campoItem?.value || ''
+            ).trim()
+        );
+
+    return (
+        !possuiCodigo &&
+        !possuiPesquisa
+    );
+}
+
+function garantirLinhaVaziaFinal() {
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
+
+    if (!tbody) {
+        return null;
+    }
+
+    const linhas =
+        Array.from(
+            tbody.querySelectorAll(
+                '.linha-item-devolucao'
+            )
+        );
+
+    if (linhas.length === 0) {
+        return adicionarNovaLinha();
+    }
+
+    const ultimaLinha =
+        linhas[
+            linhas.length - 1
+        ];
+
+    if (
+        !linhaDevolucaoEstaVazia(
+            ultimaLinha
+        )
+    ) {
+        return adicionarNovaLinha();
+    }
+
+    return ultimaLinha;
+}
+
+function configurarLinhaDevolucao(
+    tr
+) {
+    const campoPesquisa =
+        tr.querySelector(
+            '.campo-item-pesquisa'
+        );
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const campoPreco =
+        tr.querySelector(
+            '.campo-preco-unitario-item'
+        );
+
+    const botaoRemover =
+        tr.querySelector(
+            '.btn-remover-linha'
+        );
+
+    let processandoItem =
+        false;
+
+    async function processarItem() {
+        if (processandoItem) {
+            return false;
+        }
+
+        const valorDigitado =
+            campoPesquisa.value.trim();
+
+        if (!valorDigitado) {
+            return false;
+        }
+
+        processandoItem =
+            true;
+
+        campoPesquisa.readOnly =
+            true;
+
+        try {
+            if (catalogoClienteCarregando) {
+                throw new Error(
+                    'O catálogo ainda está sendo carregado. Aguarde.'
+                );
+            }
+
+            if (!catalogoClienteCarregado) {
+                throw new Error(
+                    'Carregue um cliente antes de informar os itens.'
+                );
+            }
+
+            const item =
+                buscarItemPorPesquisa(
+                    valorDigitado
+                );
+
+            if (!item) {
+                throw new Error(
+                    'Item não encontrado no catálogo do cliente.'
+                );
+            }
+
+            const codigo =
+                normalizarCodigoItem(
+                    item.itemEmpresaId
+                );
+
+            const itemDuplicado =
+                Array.from(
+                    document.querySelectorAll(
+                        '#dadosPedido tbody .linha-item-devolucao'
+                    )
+                ).some(
+                    linha => {
+                        return (
+                            linha !== tr &&
+                            normalizarCodigoItem(
+                                linha.dataset.itemEmpresaId
+                            ) === codigo
+                        );
+                    }
+                );
+
+            if (itemDuplicado) {
+                throw new Error(
+                    'Este item já foi adicionado à devolução.'
+                );
+            }
+
+            preencherLinhaDevolucao(
+                tr,
+                item
+            );
+
+            garantirLinhaVaziaFinal();
+
+            setTimeout(
+                () => {
+                    campoQuantidade.focus();
+                    campoQuantidade.select();
+                },
+                0
+            );
+            return true;
+        } catch (error) {
+            console.error(
+                'Erro ao carregar item da devolução:',
+                error
+            );
+
+            campoPesquisa.value =
+                '';
+
+            campoQuantidade.value =
+                '';
+
+            campoQuantidade.readOnly =
+                true;
+
+            campoPreco.value =
+                '';
+
+            campoPreco.readOnly =
+                true;
+
+            tr.dataset.itemId =
+                '';
+
+            tr.dataset.itemEmpresaId =
+                '';
+
+            tr.dataset.codigo =
+                '';
+
+            tr.dataset.descricao =
+                '';
+
+            tr.dataset.ipi =
+                '';
+
+            alert(
+                error.message ||
+                'Item indisponível.'
+            );
+
+            setTimeout(
+                () => {
+                    campoPesquisa.focus();
+                },
+                0
+            );
+
+            return false;
+        } finally {
+            processandoItem =
+                false;
+
+            campoPesquisa.readOnly =
+                false;
+        }
+    }
+
+    campoPesquisa.addEventListener(
+        'input',
+        () => {
+            const item =
+                buscarItemPorPesquisa(
+                    campoPesquisa.value
+                );
+
+            if (
+                item &&
+                !processandoItem
+            ) {
+                processarItem();
+            }
+        }
+    );
+
+    campoPesquisa.addEventListener(
+        'change',
+        processarItem
+    );
+
+    campoPesquisa.addEventListener(
+        'blur',
+        () => {
+            if (
+                campoPesquisa.value.trim() &&
+                !tr.dataset.itemId
+            ) {
+                processarItem();
+            }
+        }
+    );
+
+    campoPesquisa.addEventListener(
+        'keydown',
+        evento => {
+            if (
+                evento.key !== 'Enter' &&
+                evento.key !== 'Tab'
+            ) {
+                return;
+            }
+
+            if (evento.shiftKey) {
+                return;
+            }
+
+            evento.preventDefault();
+
+            processarItem();
+        }
+    );
+
+    campoQuantidade.addEventListener(
+        'input',
+        () => {
+            recalcularLinhaDevolucao(
+                tr
+            );
+        }
+    );
+
+    campoPreco.addEventListener(
+        'input',
+        () => {
+            recalcularLinhaDevolucao(
+                tr
+            );
+        }
+    );
+
+    campoPreco.addEventListener(
+        'blur',
+        () => {
+            const valor =
+                converterNumero(
+                    campoPreco.value
+                );
+
+            campoPreco.value =
+                valor > 0
+                    ? formatarMoeda(
+                        valor
+                    )
+                    : '';
+
+            recalcularLinhaDevolucao(
+                tr
+            );
+        }
+    );
+
+    botaoRemover.addEventListener(
+        'click',
+        () => {
+            tr.remove();
+
+            atualizarTotais();
+
+            garantirLinhaInicial();
+        }
+    );
 }
 
 console.log('script.js carregado');
@@ -108,7 +941,7 @@ const hideFeedback = () => { el('feedback1').style.display = 'none'; el('feedbac
 // Modal bloqueio CNPJ
 const cnpjInput1 = el('cnpj');
 const codInput1 = el('cod_cliente');
-const blockModal = el('blockModal');
+
 
 cnpjInput1.addEventListener('focus', () => {
     if (cnpjInput1.readOnly) {
@@ -165,7 +998,25 @@ cnpjInput1.addEventListener('blur', async function () {
 
         preencherCliente(clientesData[1]);
 
-        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+        const clienteCodigo =
+            clienteApi.codigo ??
+            clienteApi.Codigo ??
+            clienteApi['COD CLIENTE 2'] ??
+            document
+                .getElementById(
+                    'cod_cliente'
+                )
+                ?.value;
+
+        const listaCodigo =
+            clienteApi.LISTA ??
+            clienteApi.listaPrecoCodigo ??
+            null;
+
+        await carregarCatalogoCliente(
+            clienteCodigo,
+            listaCodigo
+        );
 
     } catch {
         alert("Cliente não encontrado, verificar com o financeiro.");
@@ -222,11 +1073,38 @@ codInput1.addEventListener('blur', async function () {
             return alert('Cliente não encontrado.');
         }
         preencherCliente(clientesData[1]);
-        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+        
+        const clienteCodigo =
+            clienteApi.codigo ??
+            clienteApi.Codigo ??
+            clienteApi['COD CLIENTE 2'] ??
+            document
+                .getElementById(
+                    'cod_cliente'
+                )
+                ?.value;
 
-    } catch {
-        alert("Cliente não encontrado, verificar com o financeiro.");
-    } finally {
+        const listaCodigo =
+            clienteApi.LISTA ??
+            clienteApi.listaPrecoCodigo ??
+            null;
+
+        await carregarCatalogoCliente(
+            clienteCodigo,
+            listaCodigo
+        );
+
+    }   catch (error) {
+            console.error(
+                'Erro ao carregar cliente ou catálogo:',
+                error
+            );
+
+            alert(
+                error.message ||
+                'Não foi possível carregar o cliente e o catálogo.'
+            );
+        }finally {
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
@@ -274,9 +1152,27 @@ function atualizarTotais() {
 }
 
 function garantirLinhaInicial() {
-    const tbody = el('dadosPedido').querySelector('tbody');
-    tbody.querySelectorAll('tr').forEach(tr => !tr.querySelector('input') && tr.remove());
-    if (!tbody.querySelector('tr')) adicionarNovaLinha();
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
+
+    if (!tbody) {
+        console.error(
+            'O corpo da tabela não foi encontrado.'
+        );
+
+        return;
+    }
+
+    const linhas =
+        tbody.querySelectorAll(
+            '.linha-item-devolucao'
+        );
+
+    if (linhas.length === 0) {
+        adicionarNovaLinha();
+    }
 }
 
 
@@ -326,132 +1222,345 @@ const dataBR = new Date()
 const dataFormatada = dataBR.toLocaleDateString('pt-BR', {
     timeZone: 'UTC'
 });
+
 function montarObjetoDevolucao() {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody tr'
+        );
 
-    const produtos = [];
+    const produtos =
+        [];
 
-    linhas.forEach(tr => {
-        const cells = tr.querySelectorAll('input');
+    linhas.forEach(
+    tr => {
+        const codigo =
+            String(
+                tr.dataset.itemEmpresaId || ''
+            ).trim();
 
-        if (!cells[1]?.value) return; // ignora linha vazia
+        const linhas =
+            document.querySelectorAll(
+                '#dadosPedido tbody ' +
+                '.linha-item-devolucao'
+            );
 
         produtos.push({
-            nforigem: cells[0]?.value,
-            data: cells[1]?.value, // ou você pode ter um campo de data
-            codigoItem: cells[2]?.value,
-            lote: cells[4]?.value, // se tiver campo, mapeia aqui
-            quantidade: cells[5]?.value || 0,
-            uv: cells[6]?.value,
-            descricao: cells[3]?.value,
-            precounitario: parseFloat(
-                cells[7]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
-            ) || 0,
-            total: parseFloat(
-                cells[8]?.value.replace("R$", "").replace(/\./g, "").replace(",", ".")
-            ) || 0
+            nforigem:
+                tr.querySelector(
+                    '.campo-nf-origem'
+                )?.value || '',
+
+            data:
+                tr.querySelector(
+                    '.campo-data-nf'
+                )?.value || '',
+
+            codigoItem:
+                codigo,
+
+            descricao:
+                String(
+                    tr.dataset.descricao || ''
+                ).trim(),
+
+            lote:
+                tr.querySelector(
+                    '.campo-lote-item'
+                )?.value || '',
+
+            quantidade:
+                converterNumero(
+                    tr.querySelector(
+                        '.campo-quantidade-item'
+                    )?.value
+                ),
+
+            uv:
+                tr.querySelector(
+                    '.campo-unidade-item'
+                )?.value || '',
+
+            PrecoUnitario:
+                converterNumero(
+                    tr.dataset.precoUnitario
+                ),
+
+            IPI:
+                converterNumero(
+                    tr.dataset.percentualIpi
+                ),
+
+            PrecoUnitarioIPI:
+                converterNumero(
+                    tr.dataset.precoUnitarioIpi
+                ),
+
+            total:
+                converterNumero(
+                    tr.dataset.total
+                ),
+
+            itemId:
+                Number(
+                    tr.dataset.itemId || 0
+                )
         });
-    });
+    }
+);
 
-    const devolucao = {
-        cnpj: document.getElementById('cnpj').value.replace(/\D/g, ''),
-        razaosocial: document.getElementById('razao_social').value,
-        endereco: document.getElementById('endereco').value,
-        cidade: document.getElementById('cidade').value,
-        Cep: document.getElementById('cep').value,
-        email: document.getElementById('email').value,
-        representante: document.getElementById('representante').value,
-        codCliente: Number(document.getElementById('cod_cliente').value),
-        bairro: document.getElementById('bairro').value,
-        uf: document.getElementById('uf').value,
-        telefone: document.getElementById('telefone').value,
-        emailFiscal: document.getElementById('email_fiscal').value,
-        data: dataFormatada,
-        motivo: document.getElementById('observation').value,
-        status: "pendente",
-        finalizado: 0,
-        nfVinculada: '',
-        produtos
+    return {
+        cnpj:
+            document
+                .getElementById(
+                    'cnpj'
+                )
+                .value
+                .replace(
+                    /\D/g,
+                    ''
+                ),
+
+        razaosocial:
+            document
+                .getElementById(
+                    'razao_social'
+                )
+                .value,
+
+        endereco:
+            document
+                .getElementById(
+                    'endereco'
+                )
+                .value,
+
+        cidade:
+            document
+                .getElementById(
+                    'cidade'
+                )
+                .value,
+
+        Cep:
+            document
+                .getElementById(
+                    'cep'
+                )
+                .value,
+
+        email:
+            document
+                .getElementById(
+                    'email'
+                )
+                .value,
+
+        representante:
+            document
+                .getElementById(
+                    'representante'
+                )
+                .value,
+
+        codCliente:
+            Number(
+                document
+                    .getElementById(
+                        'cod_cliente'
+                    )
+                    .value
+            ),
+
+        bairro:
+            document
+                .getElementById(
+                    'bairro'
+                )
+                .value,
+
+        uf:
+            document
+                .getElementById(
+                    'uf'
+                )
+                .value,
+
+        telefone:
+            document
+                .getElementById(
+                    'telefone'
+                )
+                .value,
+
+        emailFiscal:
+            document
+                .getElementById(
+                    'email_fiscal'
+                )
+                .value,
+
+        data:
+            dataFormatada,
+
+        motivo:
+            document
+                .getElementById(
+                    'observation'
+                )
+                .value,
+
+        status:
+            'pendente',
+
+        finalizado:
+            0,
+
+        nfVinculada:
+            '',
+
+        produtos:
+            produtos
     };
-
-    return devolucao;
 }
 
 async function salvarDevolucaoMongo() {
-    if (!validarTabelaPedido()) return;
+    if (!validarTabelaPedido()) {
+        return false;
+    }
 
-    const dados = montarObjetoDevolucao();
+    const dados =
+        montarObjetoDevolucao();
 
     try {
-        const res = await fetch('/api/devolucao', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dados)
-        });
+        const response =
+            await fetch(
+                '/api/devolucao',
+                {
+                    method:
+                        'POST',
 
-        const result = await res.json();
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
 
-        if (res.ok) {
-            console.log('Devolução salva, clique em ok para enviar o email......');
-        } else {
-            throw new Error(result.error);
+                    body:
+                        JSON.stringify(
+                            dados
+                        )
+                }
+            );
+
+        const textoResposta =
+            await response.text();
+
+        let resultado =
+            null;
+
+        if (textoResposta) {
+            try {
+                resultado =
+                    JSON.parse(
+                        textoResposta
+                    );
+            } catch {
+                resultado = {
+                    error:
+                        textoResposta
+                };
+            }
         }
 
-    } catch (err) {
-        console.error(err);
-        alert('Erro ao salvar devolução');
+        if (!response.ok) {
+            throw new Error(
+                resultado?.error ||
+                resultado?.message ||
+                textoResposta ||
+                `Erro HTTP ${response.status}`
+            );
+        }
+
+        console.log(
+            'Devolução salva:',
+            resultado
+        );
+
+        return true;
+    } catch (error) {
+        console.error(
+            'Erro ao salvar devolução:',
+            error
+        );
+
+        alert(
+            error.message ||
+            'Erro ao salvar devolução.'
+        );
+
+        return false;
     }
 }
 
-
-
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
 function atualizarTotalVolumes() {
-    let totalVolumes = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    let totalVolumes =
+        0;
 
-    linhas.forEach(tr => {
-        const cell = tr.cells[5]?.querySelector('input');
-        if (cell && cell.value) {
-            const quantidade = parseFloat(cell.value.replace(",", "."));
-            if (!isNaN(quantidade)) {
-                totalVolumes += quantidade;
-                console.log('Quantidade adicionada:', quantidade);
-                console.log('Total de volumes até agora:', totalVolumes);
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody .linha-item-devolucao'
+        )
+        .forEach(
+            tr => {
+                const quantidade =
+                    converterNumero(
+                        tr.querySelector(
+                            '.campo-quantidade-item'
+                        )?.value
+                    );
+
+                totalVolumes +=
+                    quantidade;
             }
-        }
-    });
+        );
 
-    document.getElementById('volume').value = totalVolumes;
+    document
+        .getElementById(
+            'volume'
+        )
+        .value =
+            totalVolumes;
 }
 
-
-
-
-// Função para atualizar o total de produtos (quantidade * valor unitário)
 function atualizarTotalProdutos() {
-    let totalProdutos = 0;
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    let totalProdutos =
+        0;
 
-    linhas.forEach(tr => {
-        const quantidadeCell = tr.cells[5]?.querySelector('input');
-        const valorTotalLinhaCell = tr.cells[9]?.querySelector('input');
-        console.log('Quantidade cell:', quantidadeCell);
-        console.log('Valor unitário cell:', valorTotalLinhaCell);
-
-        if (quantidadeCell && valorTotalLinhaCell && quantidadeCell.value && valorTotalLinhaCell.value) {
-            const quantidade = parseFloat(quantidadeCell.value.replace(",", "."));
-            const valorTotalLinha = parseFloat(valorTotalLinhaCell.value.replace("R$", "").replace(/\./g, "").replace(",", "."));
-            if (!isNaN(quantidade) && !isNaN(valorTotalLinha)) {
-                totalProdutos += valorTotalLinha;
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody .linha-item-devolucao'
+        )
+        .forEach(
+            tr => {
+                totalProdutos +=
+                    converterNumero(
+                        tr.dataset.total
+                    );
             }
-        }
-    });
+        );
 
-    document.getElementById('total').value = totalProdutos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    document
+        .getElementById(
+            'total'
+        )
+        .value =
+            formatarMoeda(
+                totalProdutos
+            );
 }
+
+
 
 function dataMaiorQue6Meses(dataInput) {
     const dataSelecionada = new Date(dataInput);
@@ -464,46 +1573,183 @@ function dataMaiorQue6Meses(dataInput) {
 }
 
 function validarTabelaPedido() {
-    const linhas = document.querySelectorAll('#dadosPedido tbody tr');
+    const todasAsLinhas =
+        Array.from(
+            document.querySelectorAll(
+                '#dadosPedido tbody ' +
+                '.linha-item-devolucao'
+            )
+        );
 
-    if (!linhas.length) {
-        alert("Adicione pelo menos um item no pedido.");
+    const linhasPreenchidas =
+        todasAsLinhas.filter(
+            tr => {
+                return Boolean(
+                    String(
+                        tr.dataset.itemEmpresaId || ''
+                    ).trim()
+                );
+            }
+        );
+
+    if (
+        linhasPreenchidas.length === 0
+    ) {
+        alert(
+            'Adicione pelo menos um item na devolução.'
+        );
+
         return false;
     }
 
-    for (let i = 0; i < linhas.length; i++) {
-        const tr = linhas[i];
-        const inputs = tr.querySelectorAll('input');
+    for (
+        let indice = 0;
+        indice < linhasPreenchidas.length;
+        indice += 1
+    ) {
+        const tr =
+            linhasPreenchidas[
+                indice
+            ];
 
-        // Campos obrigatórios por índice da coluna:
-        // 1 = código
-        // 2 = quantidade
-        // 5 = valor unitário
-        // 6 = total
+        const nf =
+            tr.querySelector(
+                '.campo-nf-origem'
+            )?.value.trim();
 
-        const nf = inputs[0]?.value.trim()
-        const data = inputs[1]?.value.trim();
-        if (!data) {
-            alert(`Preencha a data na linha ${i + 1}`);
-            inputs[1]?.focus();
+        const data =
+            tr.querySelector(
+                '.campo-data-nf'
+            )?.value.trim();
+
+        const codigo =
+            String(
+                tr.dataset.itemEmpresaId || ''
+            ).trim();
+
+        const lote =
+            tr.querySelector(
+                '.campo-lote-item'
+            )?.value.trim();
+
+        const quantidade =
+            converterNumero(
+                tr.querySelector(
+                    '.campo-quantidade-item'
+                )?.value
+            );
+
+        const precoSemImpostos =
+            converterNumero(
+                tr.dataset.precoUnitario
+            );
+
+        const precoComIpi =
+            converterNumero(
+                tr.dataset.precoUnitarioIpi
+            );
+
+        const total =
+            converterNumero(
+                tr.dataset.total
+            );
+
+        if (!nf) {
+            alert(
+                `Preencha a NF de origem na linha ${indice + 1}.`
+            );
+
+            tr.querySelector(
+                '.campo-nf-origem'
+            )?.focus();
+
             return false;
         }
 
-        // 🚫 BLOQUEIO DE 6 MESES
-       if (dataMaiorQue6Meses(data)) {
-           alert(`A data da linha ${i + 1} é superior a 6 meses. Não é permitido.`);
-           inputs[1]?.focus();
-            return false;   
-        }
-        const codigo = inputs[2]?.value.trim();
-        const lote = inputs[3]?.value.trim();
-        const quantidade = inputs[4]?.value.trim();
-        const valor = inputs[7]?.value.trim();
-        const total = inputs[8]?.value.trim();
+        if (!data) {
+            alert(
+                `Preencha a data da NF na linha ${indice + 1}.`
+            );
 
-        if (!codigo || !quantidade || !valor || !total || !nf || !lote || !data) {
-            alert(`Preencha todos os campos da linha ${i + 1}`);
-            inputs[0]?.focus();
+            tr.querySelector(
+                '.campo-data-nf'
+            )?.focus();
+
+            return false;
+        }
+
+        if (
+            dataMaiorQue6Meses(
+                data
+            )
+        ) {
+            alert(
+                `A data da linha ${indice + 1} é superior a 6 meses.`
+            );
+
+            tr.querySelector(
+                '.campo-data-nf'
+            )?.focus();
+
+            return false;
+        }
+
+        if (!codigo) {
+            alert(
+                `Preencha o item na linha ${indice + 1}.`
+            );
+
+            tr.querySelector(
+                '.campo-item-pesquisa'
+            )?.focus();
+
+            return false;
+        }
+
+        if (!lote) {
+            alert(
+                `Preencha o lote na linha ${indice + 1}.`
+            );
+
+            tr.querySelector(
+                '.campo-lote-item'
+            )?.focus();
+
+            return false;
+        }
+
+        if (quantidade <= 0) {
+            alert(
+                `Informe uma quantidade válida na linha ${indice + 1}.`
+            );
+
+            tr.querySelector(
+                '.campo-quantidade-item'
+            )?.focus();
+
+            return false;
+        }
+
+        if (precoSemImpostos <= 0) {
+            alert(
+                `Informe o preço sem impostos na linha ${indice + 1}.`
+            );
+
+            tr.querySelector(
+                '.campo-preco-unitario-item'
+            )?.focus();
+
+            return false;
+        }
+
+        if (
+            precoComIpi <= 0 ||
+            total <= 0
+        ) {
+            alert(
+                `Não foi possível calcular os valores da linha ${indice + 1}.`
+            );
+
             return false;
         }
     }
@@ -511,264 +1757,602 @@ function validarTabelaPedido() {
     return true;
 }
 
+function converterNumero(
+    valor
+) {
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ) {
+        return 0;
+    }
+
+    if (
+        typeof valor ===
+        'number'
+    ) {
+        return Number.isFinite(valor)
+            ? valor
+            : 0;
+    }
+
+    let texto =
+        String(
+            valor
+        )
+        .trim()
+        .replace(
+            'R$',
+            ''
+        )
+        .replace(
+            /\s/g,
+            ''
+        );
+
+    if (
+        texto.includes('.') &&
+        texto.includes(',')
+    ) {
+        texto =
+            texto
+                .replace(
+                    /\./g,
+                    ''
+                )
+                .replace(
+                    ',',
+                    '.'
+                );
+    } else {
+        texto =
+            texto.replace(
+                ',',
+                '.'
+            );
+    }
+
+    const numero =
+        Number(
+            texto
+        );
+
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+}
+
+function formatarMoeda(
+    valor
+) {
+    const numero =
+        Number(
+            valor
+        );
+
+    return (
+        Number.isFinite(numero)
+            ? numero
+            : 0
+    ).toLocaleString(
+        'pt-BR',
+        {
+            style:
+                'currency',
+
+            currency:
+                'BRL'
+        }
+    );
+}
+
+function formatarPercentual(
+    valor
+) {
+    const numero =
+        Number(
+            valor
+        );
+
+    return (
+        Number.isFinite(numero)
+            ? numero
+            : 0
+    ).toLocaleString(
+        'pt-BR',
+        {
+            minimumFractionDigits:
+                2,
+
+            maximumFractionDigits:
+                2
+        }
+    );
+}
+
+function recalcularLinhaDevolucao(
+    tr
+) {
+    const quantidadeInput =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const precoSemImpostosInput =
+        tr.querySelector(
+            '.campo-preco-unitario-item'
+        );
+
+    const ipiInput =
+        tr.querySelector(
+            '.campo-ipi-item'
+        );
+
+    const precoComIpiInput =
+        tr.querySelector(
+            '.campo-preco-com-ipi-item'
+        );
+
+    const totalInput =
+        tr.querySelector(
+            '.campo-total-item'
+        );
+
+    const quantidade =
+        converterNumero(
+            quantidadeInput?.value
+        );
+
+    const precoSemImpostos =
+        converterNumero(
+            precoSemImpostosInput?.value
+        );
+
+    const ipiDecimal =
+        Number(
+            tr.dataset.ipi || 0
+        );
+
+    const precoComIpi =
+        precoSemImpostos *
+        (
+            1 + ipiDecimal
+        );
+
+    const totalLinha =
+        precoComIpi *
+        quantidade;
+
+    tr.dataset.precoUnitario =
+        String(
+            precoSemImpostos
+        );
+
+    tr.dataset.percentualIpi =
+        String(
+            ipiDecimal * 100
+        );
+
+    tr.dataset.precoUnitarioIpi =
+        String(
+            precoComIpi
+        );
+
+    tr.dataset.total =
+        String(
+            totalLinha
+        );
+
+    if (ipiInput) {
+        ipiInput.value =
+            (ipiDecimal * 100)
+                .toLocaleString(
+                    'pt-BR',
+                    {
+                        minimumFractionDigits:
+                            2,
+
+                        maximumFractionDigits:
+                            2
+                    }
+                ) +
+            '%';
+    }
+
+    if (precoComIpiInput) {
+        precoComIpiInput.value =
+            precoSemImpostos > 0
+                ? formatarMoeda(
+                    precoComIpi
+                )
+                : '';
+    }
+
+    if (totalInput) {
+        totalInput.value =
+            quantidade > 0 &&
+            precoSemImpostos > 0
+                ? formatarMoeda(
+                    totalLinha
+                )
+                : '';
+    }
+
+    atualizarTotais();
+}
+
+function getIpi(
+    classificacao
+) {
+    const somenteNumeros =
+        String(
+            classificacao || ''
+        ).replace(
+            /\D/g,
+            ''
+        );
+
+    if (!somenteNumeros) {
+        return null;
+    }
+
+    const classificacaoNormalizada =
+        Number(
+            somenteNumeros
+        );
+
+    const classificacoesFiscais = [
+        [17041000, 0.0325],
+        [17049020, 0.0325],
+        [17049090, 0.0325],
+        [18069000, 0.0325],
+        [20079923, 0],
+        [20079990, 0],
+        [21069050, 0],
+        [39201099, 0],
+        [49019900, 0],
+        [49111090, 0],
+        [61091000, 0],
+        [84729059, 0],
+        [85061010, 0],
+        [87120010, 0],
+        [94033000, 0],
+        [94037000, 0],
+        [95030022, 0.065],
+        [95030031, 0],
+        [95030039, 0.065],
+        [95030070, 0.065],
+        [95030098, 0.065],
+        [95030099, 0.065],
+        [95049090, 0]
+    ];
+
+    const registro =
+        classificacoesFiscais.find(
+            linha => {
+                return (
+                    linha[0] ===
+                    classificacaoNormalizada
+                );
+            }
+        );
+
+    return registro
+        ? registro[1]
+        : null;
+}
+
+function obterIpiDoItemDevolucao(
+    item
+) {
+    const origem =
+        Number(
+            item?.origem || 0
+        );
+
+    if (origem !== 2) {
+        return 0;
+    }
+
+    const classificacaoFiscal =
+        String(
+            item?.classificacaoFiscal || ''
+        ).replace(
+            /\D/g,
+            ''
+        );
+
+    if (!classificacaoFiscal) {
+        throw new Error(
+            `A classificação fiscal do item ${item?.itemEmpresaId || ''} não foi informada.`
+        );
+    }
+
+    const ipi =
+        getIpi(
+            classificacaoFiscal
+        );
+
+    if (ipi === null) {
+        throw new Error(
+            `A classificação fiscal ${classificacaoFiscal} não está cadastrada na função getIpi.`
+        );
+    }
+
+    return ipi;
+}
+
+function preencherLinhaDevolucao(
+    tr,
+    item
+) {
+    const campoPesquisa =
+        tr.querySelector(
+            '.campo-item-pesquisa'
+        );
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-item'
+        );
+
+    const campoUnidade =
+        tr.querySelector(
+            '.campo-unidade-item'
+        );
+
+    const campoPreco =
+        tr.querySelector(
+            '.campo-preco-unitario-item'
+        );
+
+    const campoIpi =
+        tr.querySelector(
+            '.campo-ipi-item'
+        );
+
+    const campoItemId =
+        tr.querySelector(
+            '.campo-item-id'
+        );
+
+    const codigo =
+        String(
+            item.itemEmpresaId || ''
+        ).trim();
+
+    const descricao =
+        String(
+            item.descricao || ''
+        ).trim();
+
+    const ipi =
+        obterIpiDoItemDevolucao(
+            item
+        );
+
+    campoPesquisa.value =
+        `${codigo} - ${descricao}`;
+
+    campoQuantidade.value =
+        '';
+
+    campoQuantidade.readOnly =
+        false;
+
+    campoUnidade.value =
+        item.unidade ||
+        item.unidadeMedidaAbreviado ||
+        'CX';
+
+    campoPreco.value =
+        '';
+
+    campoPreco.readOnly =
+        false;
+
+    campoIpi.value =
+        (ipi * 100).toLocaleString(
+            'pt-BR',
+            {
+                minimumFractionDigits:
+                    2,
+
+                maximumFractionDigits:
+                    2
+            }
+        ) + '%';
+
+    campoItemId.value =
+        String(
+            item.itemId ||
+            item.codigo ||
+            ''
+        );
+
+    tr.dataset.itemId =
+        campoItemId.value;
+
+    tr.dataset.itemEmpresaId =
+        codigo;
+
+    tr.dataset.codigo =
+        codigo;
+
+    tr.dataset.descricao =
+        descricao;
+
+    tr.dataset.ipi =
+        String(
+            ipi
+        );
+
+    tr.dataset.percentualIpi =
+        String(
+            ipi * 100
+        );
+
+    tr.dataset.precoUnitario =
+        '';
+
+    tr.dataset.precoUnitarioIpi =
+        '';
+
+    tr.dataset.total =
+        '';
+}
 
 // Função para adicionar uma nova linha à tabela
 function adicionarNovaLinha() {
-    const tbody = document.querySelector('#dadosPedido tbody');
-    const tr = document.createElement('tr');
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
 
+    if (!tbody) {
+        console.error(
+            'Não foi possível adicionar a linha: tbody não encontrado.'
+        );
 
-
-    for (let i = 0; i < 11; i++) {
-        const td = document.createElement('td');
-
-        // coluna oculta (ItemId)
-        if (i === 10) {
-            td.style.display = 'none';
-        }
-
-        // 🗑 BOTÃO REMOVER LINHA
-        if (i === 7) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.classList.add('btn-remover-linha');
-            btn.textContent = 'REMOVER';
-
-
-                btn.gradient = 'linear-gradient(90deg,rgba(225,0,152) 0%,#f18fc7 100%)';
-                btn.color = '#fafcfa';
-            
-            btn.innerText = 'Excluir';
-            
-
-            btn.addEventListener('click', () => {
-                tr.remove();
-                atualizarTotais();
-                garantirLinhaInicial();
-            });
-             
-
-            td.appendChild(btn);
-            tr.appendChild(td);
-            continue; 
-        }
-
-        
-        
-        // ✏️ INPUT NORMAL
-        const input = document.createElement('input');
-        if(i === 1){
-            input.type = 'date';
-        }
-        else {
-            input.type = 'text';
-        }
-        // TAB só em quase tudo
-        input.tabIndex = (i === 0 || i === 1 || i === 2 || i === 4 || i === 5 || i === 8) ? 0 : -1;
-
-        input.style.padding = '5px';
-        input.style.width = '100%';
-        input.style.boxSizing = 'border-box';
-
-        td.appendChild(input);
-        tr.appendChild(td);
-        
-        // =========================
-        // NAVEGAÇÃO ↑ ↓ TAB
-        // =========================
-        input.addEventListener('keydown', (e) => {
-            const linhas = Array.from(tbody.querySelectorAll('tr'));
-            const linhaAtual = linhas.indexOf(tr);
-
-            if (e.key === 'ArrowUp' && linhaAtual > 0) {
-                e.preventDefault();
-                linhas[linhaAtual - 1].cells[i]?.querySelector('input')?.focus();
-            }
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-
-                if (linhaAtual === linhas.length - 1 && i === 10) {
-                    adicionarNovaLinha();
-                    setTimeout(() => {
-                        tbody.lastChild.cells[0].querySelector('input').focus();
-                    }, 0);
-                } else {
-                    linhas[linhaAtual + 1]?.cells[i]?.querySelector('input')?.focus();
-                }
-            }
-
-            if (e.key === 'Tab' && !e.shiftKey && i === 10 && linhaAtual === linhas.length - 1) {
-                e.preventDefault();
-                setTimeout(() => {
-                    tbody.lastChild.cells[0].querySelector('input').focus();
-                }, 0);
-            }
-            //enter = tab
-            if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
-    e.preventDefault();
-
-    // se estiver no valor (coluna 6)
-    if (i === 8) {
-        if (linhaAtual === linhas.length - 1) {
-            // última linha → cria nova
-            adicionarNovaLinha();
-            setTimeout(() => {
-                tbody.lastChild.cells[0].querySelector('input')?.focus();
-            }, 0);
-        } else {
-            // próxima linha
-            linhas[linhaAtual + 1]?.cells[0]?.querySelector('input')?.focus();
-        }
-        
+        return null;
     }
-        // se estiver no NF Origem (coluna 0)
-    if (i === 0) {
-        tr.cells[1]?.querySelector('input')?.focus();
-    }
-    // se estiver no CÓDIGO (coluna 1)
-    if (i === 1) {
-        tr.cells[2]?.querySelector('input')?.focus();
-    }
-    // se estiver na quantidade (coluna 2)
-    if (i === 2) {
-        tr.cells[4]?.querySelector('input')?.focus();
-    }
-    if (i === 4) {
-        tr.cells[5]?.querySelector('input')?.focus();
-    }
-    if (i === 5) {
-        tr.cells[8]?.querySelector('input')?.focus();
-    }
+
+    const tr =
+        document.createElement(
+            'tr'
+        );
+
+    tr.classList.add(
+        'linha-item-devolucao'
+    );
+
+    tr.innerHTML = `
+        <td>
+            <input
+                type="text"
+                class="campo-nf-origem"
+                autocomplete="off"
+            >
+        </td>
+
+        <td>
+            <input
+                type="date"
+                class="campo-data-nf"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-item-pesquisa"
+                list="lista-produtos-cliente"
+                placeholder="Digite o código ou a descrição"
+                autocomplete="off"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-lote-item"
+                autocomplete="off"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-quantidade-item"
+                inputmode="decimal"
+                autocomplete="off"
+                readonly
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-unidade-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td class="celula-excluir-item">
+            <button
+                type="button"
+                class="btn-remover-linha"
+                tabindex="-1"
+            >
+                Excluir
+            </button>
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-preco-unitario-item"
+                placeholder="Preço sem impostos"
+                inputmode="decimal"
+                autocomplete="off"
+                readonly
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-ipi-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-preco-com-ipi-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-total-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td style="display: none;">
+            <input
+                type="hidden"
+                class="campo-item-id"
+            >
+        </td>
+    `;
+
+    tbody.appendChild(
+        tr
+    );
+
+    configurarLinhaDevolucao(
+        tr
+    );
+
+    console.log(
+        'Nova linha adicionada. Total:',
+        tbody.querySelectorAll(
+            '.linha-item-devolucao'
+        ).length
+    );
+
+    return tr;
 }
-
-
-        });
-
-        // =========================
-        // CÓDIGO DO ITEM
-        // =========================
-       // =========================
-
-if (i === 2) {
-    input.addEventListener('blur', async function () {
-        const cod = this.value.trim().toUpperCase();
-        if (!cod) return;
-
-        // VERIFICA DUPLICIDADE
-        // if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
-        //     alert('Este item já foi adicionado ao pedido.');
-        //     this.value = '';
-        //     this.focus();
-        //     return;
-        // }
-
-        const listaId = document.getElementById('codgroup').value;
-        const cells = tr.querySelectorAll('td input');
-
-        // 🔄 FEEDBACK VISUAL
-        cells[3].value = 'Carregando item, por favor aguarde...';
-        this.readOnly = true;
-
-
-        try {
-            const response = await fetch(
-                `/api/lista-preco-Sem-Verificar/${listaId}?codigo=${encodeURIComponent(cod)}`
-            );
-
-            if (!response.ok) {
-                const erro = await response.json();
-                throw new Error(erro.message || 'Item não disponível');
-            }
-
-            const data = await response.json();
-            if (!data.length) {
-                throw new Error('Item não encontrado');
-            }
-
-            const item = data[0];
-            cells[6].value = 'UN';
-            cells[6].readOnly = true;
-            cells[3].value = item.ItemDescricao;
-            cells[7].readOnly = false; 
-            cells[8].readOnly = true;
-            cells[3].readOnly = true;
-
-            cells[2].addEventListener('input', (e) => {
-                cells[7].value = '';
-                cells[1].value = '';
-                cells[0].value = '';
-                cells[4].value = '';
-                cells[5].value = '';
-                const preco = parseFloat(cells[8].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                console.log(preco);
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-
-            totalLinha = preco * qtd;
-                cells[8].value = formatador.format(totalLinha)
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
-
-
-            cells[5].addEventListener('input', (e) => {
-
-                const preco = parseFloat(cells[8].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                console.log(preco);
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-                
-
-            totalLinha = preco * qtd;
-                cells[8].value = formatador.format(totalLinha)
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
-
-            cells[7].addEventListener('input', (e) => {
-
-                const preco = parseFloat(cells[7].value.replace(',', '.')) || 0;
-                const qtd = parseFloat(cells[5].value.replace(',', '.')) || 0;
-                console.log(preco);
-                const formatador = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-                
-
-            totalLinha = preco * qtd;
-                cells[8].value = formatador.format(totalLinha)
-                tr.dataset.itemId = item.ItemId;
-                atualizarTotais();
-            });
-            
-
-            
-        } catch (error) {
-            alert(error.message);
-            this.value = '';
-            this.focus();
-        } finally {
-            this.readOnly = false;
-        }
-    });
-}
-
-
-
-    }
-
-    tbody.appendChild(tr);
-}
-
-
 // Função para remover a última linha da tabela
 document.getElementById('excluirLinha').addEventListener('click', function () {
     let tbody = document.querySelector('#dadosPedido tbody');
@@ -829,10 +2413,10 @@ function verificarItensSemPreenchimento(codigo, linhaAtual) {
 
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
 const feedbackDiv = document.getElementById('feedback1');
-const modal = document.getElementById('customModal');
+
 const closeButton = document.querySelector('.close-button');
-const confirmButton = document.getElementById('confirmButton');
-const cancelButton = document.getElementById('cancelButton');
+
+
 const cnpjInput = document.getElementById('cnpj');
 
 // Função para abrir o modal
@@ -1206,7 +2790,12 @@ const { uploadUrlDev, key } = await response.json();
 
     // Envia o e-mail ao clicar no botão "Enviar"
     sendEmailButton.addEventListener('click', async () => {
-        await salvarDevolucaoMongo();
+        const devolucaoSalva =
+            await salvarDevolucaoMongo();
+
+        if (!devolucaoSalva) {
+            return;
+        }
         let emailTo = emailToInput.value;
         let emailCc = document.getElementById('emailCc').value;
         const emailSubject = emailSubjectInput.value;
