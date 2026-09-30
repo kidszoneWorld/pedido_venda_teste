@@ -262,7 +262,7 @@ document.getElementById('filtroFinalizado').addEventListener('change', aplicarFi
 document.getElementById('filtroNfVinculada').addEventListener('input', aplicarFiltros);
 
 function editarDevolucao(id){
-    window.open(`/devolucaoEditar.html?id=${id}`, '_blank');
+    window.open(`/devolucaoEditar.ejs?id=${id}`, '_blank');
 }
 // helpers
 function formatarCNPJ(cnpj) {
@@ -384,7 +384,7 @@ function salvar(id, btn) {
 
 // 🔎 botão detalhes
 function verDetalhes(id) {
-    window.open( `/devolucaoDetalhe.html?id=${id}`, '_blank');
+    window.open( `/devolucaoDetalhe.ejs?id=${id}`, '_blank');
 }
 
 carregarDevolucoes();
