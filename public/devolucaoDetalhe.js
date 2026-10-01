@@ -36,7 +36,7 @@ function exportarDetalheExcel() {
     }
 
     const dev = devolucaoAtual;
-
+    
     let csv = [];
 
     // ===== DADOS GERAIS =====
@@ -75,11 +75,11 @@ function exportarDetalheExcel() {
             p.quantidade,
             p.uv,
             p.descricao,
-            p.precoUnitario,
+            p.precoUnitario.replaceAll(".",","),
             p.ipi,
-            p.precoUnitarioIPI,
-            p.total,
-            p.totalIpi
+            p.precoUnitarioIPI.replaceAll(".",","),
+            p.total.replaceAll(".",","),
+            p.totalIpi.replaceAll(".",",")
         ]);
     });
 
@@ -180,11 +180,11 @@ function renderizarProdutos(produtos)
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
             <td>${p.uv}</td>
-            <td>R$${formatarMoeda(p.precoUnitario)}</td>
+            <td>${formatarMoeda(p.precoUnitario.replaceAll(".",","))}</td>
             <td>${p.ipi}%</td>
-            <td>${formatarMoeda(p.precoUnitarioIPI)}</td>
-            <td>R$${formatarMoeda(p.total)}</td>
-            <td>R$${formatarMoeda(p.totalIpi)}</td>
+            <td>R$${formatarMoeda(p.precoUnitarioIPI.replaceAll(".",","))}</td>
+            <td>R$${formatarMoeda(p.total.replaceAll(".",","))}</td>
+            <td>${formatarMoeda(p.totalIpi.replaceAll(".",","))}</td>
         `;
 
         tbody.appendChild(tr);
