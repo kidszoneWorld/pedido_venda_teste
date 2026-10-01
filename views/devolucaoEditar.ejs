@@ -333,9 +333,7 @@
                 >
 
                     <thead>
-
                         <tr>
-
                             <th class="nfOrigem">
                                 NF ORIGEM
                             </th>
@@ -344,12 +342,8 @@
                                 Data NF
                             </th>
 
-                            <th class="cod">
-                                CÓD
-                            </th>
-
-                            <th class="descricao">
-                                DESCRIÇÃO
+                            <th class="codigo-descricao">
+                                CÓDIGO / DESCRIÇÃO
                             </th>
 
                             <th class="lote">
@@ -369,22 +363,32 @@
                             </th>
 
                             <th class="unit">
-                                R$ UNITARIO COM IPI
+                                R$ UNITÁRIO SEM IMPOSTOS
+                            </th>
+
+                            <th class="ipi">
+                                % IPI
+                            </th>
+
+                            <th class="unitIpi">
+                                R$ UNITÁRIO COM IPI
                             </th>
 
                             <th class="total">
-                                TOTAL R$
+                                TOTAL SEM IPI
+                            </th>
+
+                            <th class="totalIpi">
+                                TOTAL COM IPI
                             </th>
 
                             <th
                                 class="itemId"
-                                id="esconder"
+                                style="display: none;"
                             >
                                 Item ID
                             </th>
-
                         </tr>
-
                     </thead>
 
                     <tbody>
@@ -417,6 +421,16 @@
                 <input
                     type="text"
                     id="total"
+                    readonly
+                >
+
+                <label for="totalIpi">
+                    TOTAL COM IPI:
+                </label>
+                
+                <input
+                    type="text"
+                    id="totalIpi"
                     readonly
                 >
             </center>
