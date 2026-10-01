@@ -184,7 +184,8 @@ function renderizarTabela(lista) {
             tr.style.setProperty('background-color', 'var(--tr-bg-cor-rep)'); // vermelho
         }
 
-        const totalItens = dev.produtos.reduce((acc, p) => acc + parseFloat(p.total), 0);
+        //mostra o totalIpi, caso seja "NAN" mostra total sem IPI
+        const totalItens = dev.produtos.reduce((acc, p) => acc + parseFloat(p.totalIpi || p.total), 0);
         // console.log("total de itens "+ parseFloat(totalItens))
         const isPendente = status === 'pendente';
         const isReprovado = status === 'reprovado';

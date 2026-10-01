@@ -180,11 +180,11 @@ function renderizarProdutos(produtos)
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
             <td>${p.uv}</td>
-            <td>${formatarMoeda(p.precoUnitario.replaceAll(".",","))}</td>
+            <td>${formatarMoeda(p.precoUnitario.replaceAll(".",",") ||  p.precoUnitarioIPI.replaceAll(".",",")) }</td>
             <td>${p.ipi}%</td>
-            <td>R$${formatarMoeda(p.precoUnitarioIPI.replaceAll(".",","))}</td>
-            <td>R$${formatarMoeda(p.total.replaceAll(".",","))}</td>
-            <td>${formatarMoeda(p.totalIpi.replaceAll(".",","))}</td>
+            <td>R$${formatarMoeda(p.precoUnitarioIPI.replaceAll(".",",") || p.precoUnitario.replaceAll(".",","))}</td>
+            <td>R$${formatarMoeda(p.total.replaceAll(".",",") || p.totalIpi.replaceAll(".",","))}</td>
+            <td>${formatarMoeda(p.totalIpi.replaceAll(".",",") || p.total.replaceAll(".",","))}</td>
         `;
 
         tbody.appendChild(tr);

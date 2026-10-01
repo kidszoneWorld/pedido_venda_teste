@@ -592,14 +592,14 @@ function preencherLinhaComProdutoSalvo(tr, produto) {
 
     const ipiDecimal = percentualIpi / 100;
 
-    const precoUnitarioIpiRecebido = converterNumero(obterValorProduto(
+    const PrecoUnitarioIPIRecebido = converterNumero(obterValorProduto(
         produto,
-        ['precoUnitarioIPI', 'PrecoUnitarioIPI', 'precoUnitarioIpi'],
+        ['PrecoUnitarioIPI', 'PrecoUnitarioIPI', 'PrecoUnitarioIPI'],
         0
     ));
 
-    const precoUnitarioIpi = precoUnitarioIpiRecebido > 0
-        ? precoUnitarioIpiRecebido
+    const PrecoUnitarioIPI = PrecoUnitarioIPIRecebido > 0
+        ? PrecoUnitarioIPIRecebido
         : precoUnitario * (1 + ipiDecimal);
 
     const totalRecebido = converterNumero(obterValorProduto(
@@ -620,7 +620,7 @@ function preencherLinhaComProdutoSalvo(tr, produto) {
 
     const totalIpi = totalIpiRecebido > 0
         ? totalIpiRecebido
-        : precoUnitarioIpi * quantidade;
+        : PrecoUnitarioIPI * quantidade;
 
     tr.querySelector('.campo-nf-origem').value = obterValorProduto(
         produto,
@@ -657,8 +657,8 @@ function preencherLinhaComProdutoSalvo(tr, produto) {
         : '';
 
     tr.querySelector('.campo-ipi-item').value = formatarPercentual(percentualIpi);
-    tr.querySelector('.campo-preco-com-ipi-item').value = precoUnitarioIpi > 0
-        ? formatarMoeda(precoUnitarioIpi)
+    tr.querySelector('.campo-preco-com-ipi-item').value = PrecoUnitarioIPI > 0
+        ? formatarMoeda(PrecoUnitarioIPI)
         : '';
 
     tr.querySelector('.campo-total-item').value = total > 0
@@ -685,7 +685,7 @@ function preencherLinhaComProdutoSalvo(tr, produto) {
     tr.dataset.ipi = String(ipiDecimal);
     tr.dataset.percentualIpi = String(percentualIpi);
     tr.dataset.precoUnitario = String(precoUnitario);
-    tr.dataset.precoUnitarioIpi = String(precoUnitarioIpi);
+    tr.dataset.PrecoUnitarioIPI = String(PrecoUnitarioIPI);
     tr.dataset.total = String(total);
     tr.dataset.totalIpi = String(totalIpi);
     tr.dataset.linhaFinalizada = 'true';
@@ -820,7 +820,7 @@ function preencherLinhaComItemCatalogo(tr, item) {
     tr.dataset.ipi = String(ipiDecimal);
     tr.dataset.percentualIpi = String(ipiDecimal * 100);
     tr.dataset.precoUnitario = '';
-    tr.dataset.precoUnitarioIpi = '';
+    tr.dataset.PrecoUnitarioIPI = '';
     tr.dataset.total = '';
     tr.dataset.totalIpi = '';
     tr.dataset.linhaFinalizada = 'false';
@@ -836,19 +836,19 @@ function recalcularLinhaDevolucao(tr) {
     );
 
     const ipiDecimal = Number(tr.dataset.ipi || 0);
-    const precoUnitarioIpi = precoUnitario * (1 + ipiDecimal);
+    const PrecoUnitarioIPI = precoUnitario * (1 + ipiDecimal);
     const total = precoUnitario * quantidade;
-    const totalIpi = precoUnitarioIpi * quantidade;
+    const totalIpi = PrecoUnitarioIPI * quantidade;
 
     tr.dataset.precoUnitario = String(precoUnitario);
     tr.dataset.percentualIpi = String(ipiDecimal * 100);
-    tr.dataset.precoUnitarioIpi = String(precoUnitarioIpi);
+    tr.dataset.PrecoUnitarioIPI = String(PrecoUnitarioIPI);
     tr.dataset.total = String(total);
     tr.dataset.totalIpi = String(totalIpi);
 
     tr.querySelector('.campo-ipi-item').value = formatarPercentual(ipiDecimal * 100);
     tr.querySelector('.campo-preco-com-ipi-item').value = precoUnitario > 0
-        ? formatarMoeda(precoUnitarioIpi)
+        ? formatarMoeda(PrecoUnitarioIPI)
         : '';
 
     tr.querySelector('.campo-total-item').value = quantidade > 0 && precoUnitario > 0
@@ -1135,7 +1135,7 @@ function validarTabelaPedido() {
             tr.querySelector('.campo-quantidade-item')?.value
         );
         const preco = converterNumero(tr.dataset.precoUnitario);
-        const precoIpi = converterNumero(tr.dataset.precoUnitarioIpi);
+        const precoIpi = converterNumero(tr.dataset.PrecoUnitarioIPI);
         const total = converterNumero(tr.dataset.total);
         const totalIpi = converterNumero(tr.dataset.totalIpi);
 
@@ -1192,7 +1192,7 @@ function montarObjetoEdicao() {
             uv: tr.querySelector('.campo-unidade-item')?.value.trim() || 'CX',
             precoUnitario: converterNumero(tr.dataset.precoUnitario),
             ipi: converterNumero(tr.dataset.percentualIpi),
-            precoUnitarioIPI: converterNumero(tr.dataset.precoUnitarioIpi),
+            PrecoUnitarioIPI: converterNumero(tr.dataset.PrecoUnitarioIPI),
             total: converterNumero(tr.dataset.total),
             totalIpi: converterNumero(tr.dataset.totalIpi)
         };
