@@ -224,7 +224,8 @@ const putCommand = new PutObjectCommand({
         console.log("📧 Tentando enviar e-mail...");
     const info = await transporter.sendMail({
       from: "Devoluções KIDS ZONE <kidzonkidszonemail@gmail.com>",
-      to: "devolucao.kz@kidszoneworld.com.br; erick.almeida@kidszoneworld.com.br",
+      // to: "devolucao.kz@kidszoneworld.com.br; erick.almeida@kidszoneworld.com.br",
+      to: "luis.henrique@kidszoneworld.com.br",
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `

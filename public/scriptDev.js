@@ -573,41 +573,60 @@ function linhaDevolucaoEstaVazia(
     );
 }
 
-function garantirLinhaVaziaFinal() {
-    const tbody =
-        document.querySelector(
-            '#dadosPedido tbody'
-        );
-
-    if (!tbody) {
+function obterProximaLinhaDevolucao(
+    linhaAtual
+) {
+    if (!linhaAtual) {
         return null;
     }
 
-    const linhas =
-        Array.from(
-            tbody.querySelectorAll(
-                '.linha-item-devolucao'
-            )
-        );
-
-    if (linhas.length === 0) {
-        return adicionarNovaLinha();
-    }
-
-    const ultimaLinha =
-        linhas[
-            linhas.length - 1
-        ];
+    const proximaLinha =
+        linhaAtual.nextElementSibling;
 
     if (
-        !linhaDevolucaoEstaVazia(
-            ultimaLinha
+        proximaLinha &&
+        proximaLinha.classList.contains(
+            'linha-item-devolucao'
         )
     ) {
-        return adicionarNovaLinha();
+        return proximaLinha;
     }
 
-    return ultimaLinha;
+    return adicionarNovaLinha();
+}
+
+function finalizarPrecoLinhaDevolucao(
+    tr,
+    campoPreco
+) {
+    const valor =
+        converterNumero(
+            campoPreco.value
+        );
+
+    if (valor <= 0) {
+        campoPreco.value =
+            '';
+
+        campoPreco.focus();
+
+        alert(
+            'Informe um preço unitário válido.'
+        );
+
+        return false;
+    }
+
+    campoPreco.value =
+        formatarMoeda(
+            valor
+        );
+
+    recalcularLinhaDevolucao(
+        tr
+    );
+
+    return true;
 }
 
 function configurarLinhaDevolucao(
@@ -616,6 +635,11 @@ function configurarLinhaDevolucao(
     const campoPesquisa =
         tr.querySelector(
             '.campo-item-pesquisa'
+        );
+
+    const campoLote =
+        tr.querySelector(
+            '.campo-lote-item'
         );
 
     const campoQuantidade =
@@ -710,12 +734,10 @@ function configurarLinhaDevolucao(
                 item
             );
 
-            garantirLinhaVaziaFinal();
-
             setTimeout(
                 () => {
-                    campoQuantidade.focus();
-                    campoQuantidade.select();
+                    campoLote.focus();
+                    campoLote.select();
                 },
                 0
             );
@@ -844,6 +866,9 @@ function configurarLinhaDevolucao(
     campoPreco.addEventListener(
         'input',
         () => {
+            tr.dataset.linhaFinalizada =
+                'false';
+
             recalcularLinhaDevolucao(
                 tr
             );
@@ -858,15 +883,92 @@ function configurarLinhaDevolucao(
                     campoPreco.value
                 );
 
+            if (valor <= 0) {
+                campoPreco.value =
+                    '';
+
+                recalcularLinhaDevolucao(
+                    tr
+                );
+
+                return;
+            }
+
             campoPreco.value =
-                valor > 0
-                    ? formatarMoeda(
-                        valor
-                    )
-                    : '';
+                formatarMoeda(
+                    valor
+                );
 
             recalcularLinhaDevolucao(
                 tr
+            );
+        }
+    );
+
+    campoPreco.addEventListener(
+        'keydown',
+        evento => {
+            const pressionouEnter =
+                evento.key ===
+                'Enter';
+
+            const pressionouTab =
+                evento.key ===
+                'Tab';
+
+            if (
+                !pressionouEnter &&
+                !pressionouTab
+            ) {
+                return;
+            }
+
+            if (
+                pressionouTab &&
+                evento.shiftKey
+            ) {
+                return;
+            }
+
+            evento.preventDefault();
+
+            const linhaFinalizada =
+                finalizarPrecoLinhaDevolucao(
+                    tr,
+                    campoPreco
+                );
+
+            if (!linhaFinalizada) {
+                return;
+            }
+
+            let proximaLinha =
+                tr.nextElementSibling;
+
+            if (
+                !proximaLinha ||
+                !proximaLinha.classList.contains(
+                    'linha-item-devolucao'
+                )
+            ) {
+                proximaLinha =
+                    adicionarNovaLinha();
+            }
+
+            tr.dataset.linhaFinalizada =
+                'true';
+
+            const campoNfProximaLinha =
+                proximaLinha?.querySelector(
+                    '.campo-nf-origem'
+                );
+
+            setTimeout(
+                () => {
+                    campoNfProximaLinha?.focus();
+                    campoNfProximaLinha?.select();
+                },
+                0
             );
         }
     );
@@ -1149,6 +1251,7 @@ function preencherCliente(c) {
 function atualizarTotais() {
     atualizarTotalProdutos();
     atualizarTotalVolumes();
+    atualizarTotalProdutosIpi();
 }
 
 function garantirLinhaInicial() {
@@ -1281,17 +1384,17 @@ function montarObjetoDevolucao() {
                     '.campo-unidade-item'
                 )?.value || '',
 
-            PrecoUnitario:
+            precoUnitario:
                 converterNumero(
                     tr.dataset.precoUnitario
                 ),
 
-            IPI:
+            ipi:
                 converterNumero(
                     tr.dataset.percentualIpi
                 ),
 
-            PrecoUnitarioIPI:
+            precoUnitarioIPI:
                 converterNumero(
                     tr.dataset.precoUnitarioIpi
                 ),
@@ -1300,6 +1403,11 @@ function montarObjetoDevolucao() {
                 converterNumero(
                     tr.dataset.total
                 ),
+                
+            totalIpi:
+                converterNumero(
+                        tr.dataset.totalIpi
+                    ),
 
             itemId:
                 Number(
@@ -1560,12 +1668,38 @@ function atualizarTotalProdutos() {
             );
 }
 
+function atualizarTotalProdutosIpi() {
+    let totalProdutosIpi =
+        0;
+
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody .linha-item-devolucao'
+        )
+        .forEach(
+            tr => {
+                totalProdutosIpi +=
+                    converterNumero(
+                        tr.dataset.totalIpi
+                    );
+            }
+        );
+
+    document
+        .getElementById(
+            'totalIpi'
+        )
+        .value =
+            formatarMoeda(
+                totalProdutosIpi
+            );
+}
+
 
 
 function dataMaiorQue6Meses(dataInput) {
     const dataSelecionada = new Date(dataInput);
     const hoje = new Date();
-
     const limite = new Date();
     limite.setMonth(limite.getMonth() - 6); // volta 6 meses
 
@@ -1652,6 +1786,11 @@ function validarTabelaPedido() {
         const total =
             converterNumero(
                 tr.dataset.total
+            );
+        
+        const totalIpi =
+            converterNumero(
+                tr.dataset.totalIpi
             );
 
         if (!nf) {
@@ -1743,8 +1882,12 @@ function validarTabelaPedido() {
         }
 
         if (
-            precoComIpi <= 0 ||
+            precoSemImpostos <= 0 ||
             total <= 0
+        )
+        if (
+            precoComIpi <= 0 ||
+            totalIpi <= 0
         ) {
             alert(
                 `Não foi possível calcular os valores da linha ${indice + 1}.`
@@ -1898,6 +2041,10 @@ function recalcularLinhaDevolucao(
         tr.querySelector(
             '.campo-total-item'
         );
+    const totalIpiInput =
+        tr.querySelector(
+            '.campo-total-item-Ipi'
+        );
 
     const quantidade =
         converterNumero(
@@ -1920,8 +2067,12 @@ function recalcularLinhaDevolucao(
             1 + ipiDecimal
         );
 
-    const totalLinha =
+    const totalLinhaIpi =
         precoComIpi *
+        quantidade;
+    
+    const totalLinha =
+        precoSemImpostos *
         quantidade;
 
     tr.dataset.precoUnitario =
@@ -1942,6 +2093,10 @@ function recalcularLinhaDevolucao(
     tr.dataset.total =
         String(
             totalLinha
+        );
+    tr.dataset.totalIpi =
+        String(
+            totalLinhaIpi
         );
 
     if (ipiInput) {
@@ -1975,6 +2130,15 @@ function recalcularLinhaDevolucao(
             precoSemImpostos > 0
                 ? formatarMoeda(
                     totalLinha
+                )
+                : '';
+    }
+    if (totalIpiInput) {
+        totalIpiInput.value =
+            quantidade > 0 &&
+            precoComIpi > 0
+                ? formatarMoeda(
+                    totalLinhaIpi
                 )
                 : '';
     }
@@ -2201,6 +2365,9 @@ function preencherLinhaDevolucao(
 
     tr.dataset.total =
         '';
+    
+    tr.dataset.totalIpi =
+        '';
 }
 
 // Função para adicionar uma nova linha à tabela
@@ -2323,6 +2490,15 @@ function adicionarNovaLinha() {
             <input
                 type="text"
                 class="campo-total-item"
+                readonly
+                tabindex="-1"
+            >
+        </td>
+
+        <td>
+            <input
+                type="text"
+                class="campo-total-item-Ipi"
                 readonly
                 tabindex="-1"
             >
@@ -2683,7 +2859,6 @@ const { uploadUrlDev, key } = await response.json();
     }
 }
 
-    
     // Função para atualizar os anexos, mantendo o PDF fixo
     function atualizarAnexos() {
         const dataTransfer = new DataTransfer();

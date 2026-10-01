@@ -223,13 +223,14 @@ class DevolucaoRepository {
                     "Uv",
                     "Descricao",
                     "PrecoUnitario",
-                    "IPI",
+                    "ipi",
                     "PrecoUnitarioIPI",
-                    "Total"
+                    "Total",
+                    "TotalIpi"
                 )
                 VALUES
                 (
-                    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+                    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
                 )
                 `,
                 [
@@ -241,10 +242,11 @@ class DevolucaoRepository {
                     produto.quantidade,
                     produto.uv,
                     produto.descricao,
-                    produto.precounitario,
-                    produto.IPI,
+                    produto.precoUnitario,
+                    produto.ipi,
                     produto.PrecoUnitarioIPI,
-                    produto.total
+                    produto.total,
+                    produto.totalIpi
                 ]
             );
 
@@ -280,7 +282,7 @@ class DevolucaoRepository {
 }
 
   async inserirProduto(devId, produto) {
-// console.log(produto)
+console.log(produto)
     await pool.query(`
       INSERT INTO public."TbDevolucaoProdutos"
       (
@@ -293,11 +295,14 @@ class DevolucaoRepository {
         "Uv",
         "Descricao",
         "PrecoUnitario",
-        "Total"
+        "ipi",
+        "PrecoUnitarioIPI",
+        "Total",
+        "TotalIpi"
       )
       VALUES
       (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
       )
     `,
     [
@@ -309,8 +314,11 @@ class DevolucaoRepository {
       produto.quantidade,
       produto.uv,
       produto.descricao,
-      produto.precounitario,
-      produto.total
+      produto.precoUnitario,
+      produto.ipi,
+      produto.precoUnitarioIPI,
+      produto.total,
+      produto.totalIpi
     ]);
   }
 
@@ -355,7 +363,10 @@ class DevolucaoRepository {
         uv: row.Uv,
         descricao: row.Descricao,
         precoUnitario: row.PrecoUnitario,
-        total: row.Total
+        ipi: row.ipi,
+        precoUnitarioIPI: row.PrecoUnitarioIPI,
+        total: row.Total,
+        totalIpi: row.TotalIpi
       });
 
     });
