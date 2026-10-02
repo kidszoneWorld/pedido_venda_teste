@@ -87,12 +87,13 @@ class DevolucaoRepository {
         "Motivo",
         "Status",
         "Finalizado",
-        "NfVinculada"
+        "NfVinculada",
+        "MovimentaEstoque"
       )
       VALUES
       (
         $1,$2,$3,$4,$5,$6,$7,$8,$9,
-        $10,$11,$12,$13,$14,$15,$16,$17
+        $10,$11,$12,$13,$14,$15,$16,$17,$18
       )
       RETURNING *
     `,
@@ -113,7 +114,8 @@ class DevolucaoRepository {
       dados.motivo,
       'pendente',
       0,
-      ''
+      '',
+      dados.movimentaEstoque
     ]);
 
     return rows[0];
@@ -349,6 +351,10 @@ console.log(produto)
           status: row.Status,
           finalizado: row.Finalizado,
           nfVinculada: row.NfVinculada,
+          movimentaEstoque:
+            Number(
+                row.MovimentaEstoque || 0
+            ),
           produtos: []
         };
       }

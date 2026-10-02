@@ -1311,7 +1311,7 @@ function abrirDetalhesInvestimento(
     }
 
     const url =
-        `/investDetalhe.html?id=${encodeURIComponent(codigo)}`;
+        `/investDetalhe.ejs?id=${encodeURIComponent(codigo)}`;
 
     window.open(
         url,

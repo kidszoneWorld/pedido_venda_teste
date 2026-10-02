@@ -1380,9 +1380,7 @@ function montarObjetoDevolucao() {
                 ),
 
             uv:
-                tr.querySelector(
-                    '.campo-unidade-item'
-                )?.value || '',
+               obterUvDevolucao(),
 
             precoUnitario:
                 converterNumero(
@@ -1418,6 +1416,9 @@ function montarObjetoDevolucao() {
 );
 
     return {
+        movimentaEstoque:
+            obterMovimentaEstoque(),
+
         cnpj:
             document
                 .getElementById(
@@ -1760,6 +1761,10 @@ function validarTabelaPedido() {
             String(
                 tr.dataset.itemEmpresaId || ''
             ).trim();
+            
+        if (!codigo) {
+            return;
+        }
 
         const lote =
             tr.querySelector(
@@ -2247,6 +2252,84 @@ function obterIpiDoItemDevolucao(
     return ipi;
 }
 
+function obterMovimentaEstoque() {
+    const campoMovimentaEstoque =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    return campoMovimentaEstoque?.checked
+        ? 1
+        : 0;
+}
+
+function obterUvDevolucao() {
+    return obterMovimentaEstoque() === 1
+        ? 'CX'
+        : 'UN';
+}
+
+function atualizarUvTodasAsLinhas() {
+    const uv =
+        obterUvDevolucao();
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-devolucao'
+        );
+
+    linhas.forEach(
+        tr => {
+            const campoUnidade =
+                tr.querySelector(
+                    '.campo-unidade-item'
+                );
+
+            if (campoUnidade) {
+                campoUnidade.value =
+                    uv;
+            }
+
+            tr.dataset.movimentaEstoque =
+                String(
+                    obterMovimentaEstoque()
+                );
+        }
+    );
+}
+
+function configurarMovimentacaoEstoque() {
+    const campoMovimentaEstoque =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    if (!campoMovimentaEstoque) {
+        console.error(
+            'Campo movimentaEstoque não encontrado.'
+        );
+
+        return;
+    }
+
+    campoMovimentaEstoque.addEventListener(
+        'change',
+        () => {
+            atualizarUvTodasAsLinhas();
+
+            console.log(
+                'Movimenta estoque:',
+                obterMovimentaEstoque(),
+                'UV:',
+                obterUvDevolucao()
+            );
+        }
+    );
+
+    atualizarUvTodasAsLinhas();
+}
+
 function preencherLinhaDevolucao(
     tr,
     item
@@ -2306,9 +2389,12 @@ function preencherLinhaDevolucao(
         false;
 
     campoUnidade.value =
-        item.unidade ||
-        item.unidadeMedidaAbreviado ||
-        'UN';
+        obterUvDevolucao();
+
+    tr.dataset.movimentaEstoque =
+        String(
+            obterMovimentaEstoque()
+        );
 
     campoPreco.value =
         '';
@@ -2519,7 +2605,20 @@ function adicionarNovaLinha() {
     configurarLinhaDevolucao(
         tr
     );
+    const campoUnidade =
+        tr.querySelector(
+            '.campo-unidade-item'
+        );
 
+    if (campoUnidade) {
+        campoUnidade.value =
+            obterUvDevolucao();
+    }
+
+    tr.dataset.movimentaEstoque =
+        String(
+            obterMovimentaEstoque()
+        );
     console.log(
         'Nova linha adicionada. Total:',
         tbody.querySelectorAll(
@@ -3041,6 +3140,10 @@ const response = await fetch('/send-client-pdf-dev', {
     hideFeedback();
     window.location.reload();
 }
+
+    configurarMovimentacaoEstoque();
+    garantirLinhaInicial();
+    
 });
 });
 

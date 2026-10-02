@@ -105,6 +105,38 @@ exports.salvarDevolucao = async (req, res) => {
 
   try {
 
+    const movimentaEstoque =
+        Number(
+            req.body.movimentaEstoque ??
+            req.body.MovimentaEstoque ??
+            0
+        ) === 1
+            ? 1
+            : 0;
+
+    const uv =
+        movimentaEstoque === 1
+            ? 'CX'
+            : 'UN';
+
+    req.body.movimentaEstoque =
+        movimentaEstoque;
+
+    req.body.produtos =
+        Array.isArray(
+            req.body.produtos
+        )
+            ? req.body.produtos.map(
+                produto => {
+                    return {
+                        ...produto,
+                        uv:
+                            uv
+                    };
+                }
+            )
+            : [];
+
     const devolucao =
       await devolucaoRepository.inserirDevolucao(req.body);
 

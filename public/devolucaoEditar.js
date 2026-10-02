@@ -457,6 +457,7 @@ function buscarItemPorPesquisa(valor) {
 }
 
 function preencherDadosDevolucao(dev) {
+    
     el('devId').value = dev.id || '';
     el('statusDevolucao').value = dev.status || '';
     el('cnpj').value = formatarCNPJ(dev.cnpj);

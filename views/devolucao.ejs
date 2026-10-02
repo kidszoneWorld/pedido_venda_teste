@@ -124,13 +124,31 @@
         <div class="button-group">
             <button id="button_pdf">INSERIR ANEXOS E ENVIAR E-MAIL </button>
         </div>
-               <button
+               <div class="acoes-devolucao">
+                <button
                     type="button"
                     id="iniciarTutorial"
                     class="button"
                 >
                     Tutorial
                 </button>
+
+                <label
+                    for="movimentaEstoque"
+                    class="controle-movimenta-estoque"
+                >
+                    <input
+                        type="checkbox"
+                        id="movimentaEstoque"
+                        name="movimentaEstoque"
+                        value="1"
+                    >
+
+                    <span>
+                        Movimenta estoque?
+                    </span>
+                </label>
+            </div>
         <div class="section">
             <div class="section-title">DADOS DO CLIENTE</div>
             <form class="form-group">
@@ -342,6 +360,5 @@
         <button onclick="endTutorial()">Finalizar</button>
     </div>
 </div>
-
 </body>
 </html>

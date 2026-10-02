@@ -1903,6 +1903,62 @@ html .container-pdf.layout-pdf-desktop .observations {
     margin-top: 20px !important;
 }
 
+.acoes-devolucao {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    margin: 12px 0;
+}
+
+.controle-movimenta-estoque {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    min-height: 38px;
+    padding: 6px 12px;
+
+    border: 1px solid #b9b9b9;
+    border-radius: 6px;
+
+    background-color: #ffffff;
+    color: #222222;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#movimentaEstoque {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+
+    accent-color: #2878c8;
+    cursor: pointer;
+}
+
+html.dark-theme .controle-movimenta-estoque {
+    border-color: #666666;
+    background-color: #292929;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .acoes-devolucao {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .controle-movimenta-estoque {
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+
 html .container-pdf.layout-pdf-desktop .observacao-pdf {
     display: block !important;
 
