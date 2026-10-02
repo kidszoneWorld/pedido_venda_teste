@@ -649,7 +649,7 @@ function preencherLinhaComProdutoSalvo(tr, produto) {
     tr.querySelector('.campo-unidade-item').value = obterValorProduto(
         produto,
         ['uv', 'Uv', 'unidadeMedidaAbreviado'],
-        'CX'
+        'UN'
     );
 
     tr.querySelector('.campo-preco-unitario-item').value = precoUnitario > 0
@@ -807,7 +807,7 @@ function preencherLinhaComItemCatalogo(tr, item) {
     campoPesquisa.value = `${codigo} - ${descricao}`;
     campoQuantidade.value = '';
     campoQuantidade.readOnly = false;
-    campoUnidade.value = item.unidade || item.unidadeMedidaAbreviado || 'CX';
+    campoUnidade.value = item.unidade || item.unidadeMedidaAbreviado || 'UN';
     campoPreco.value = '';
     campoPreco.readOnly = false;
     campoIpi.value = formatarPercentual(ipiDecimal * 100);
@@ -1189,7 +1189,7 @@ function montarObjetoEdicao() {
             quantidade: converterNumero(
                 tr.querySelector('.campo-quantidade-item')?.value
             ),
-            uv: tr.querySelector('.campo-unidade-item')?.value.trim() || 'CX',
+            uv: tr.querySelector('.campo-unidade-item')?.value.trim() || 'UN',
             precoUnitario: converterNumero(tr.dataset.precoUnitario),
             ipi: converterNumero(tr.dataset.percentualIpi),
             PrecoUnitarioIPI: converterNumero(tr.dataset.PrecoUnitarioIPI),

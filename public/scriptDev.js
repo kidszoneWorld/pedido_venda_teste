@@ -2308,7 +2308,7 @@ function preencherLinhaDevolucao(
     campoUnidade.value =
         item.unidade ||
         item.unidadeMedidaAbreviado ||
-        'CX';
+        'UN';
 
     campoPreco.value =
         '';
