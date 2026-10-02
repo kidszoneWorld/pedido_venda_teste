@@ -61,6 +61,8 @@ function exportarDetalheExcel() {
         "Quantidade",
         "UV",
         "Descrição",
+        "Preço Unitário",
+        "IPI",
         "Preço Unitário com IPI",
         "Total",
         "Total Ipi"
@@ -72,11 +74,11 @@ function exportarDetalheExcel() {
             p.data,
             p.codigoItem,
             p.lote,
-            p.quantidade,
+            p.quantidade.replaceAll(".",","),
             p.uv,
             p.descricao,
             p.precoUnitario.replaceAll(".",","),
-            p.ipi,
+            p.ipi.replaceAll(".",","),
             p.precoUnitarioIPI.replaceAll(".",","),
             p.total.replaceAll(".",","),
             p.totalIpi.replaceAll(".",",")
