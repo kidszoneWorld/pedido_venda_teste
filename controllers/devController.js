@@ -318,12 +318,51 @@ exports.editarDevolucaoPendente = async (req, res) => {
             });
         }
 
-        const dados = req.body;
+        const movimentaEstoque =
+          Number(
+              req.body.movimentaEstoque ??
+              req.body.MovimentaEstoque ??
+              0
+          ) === 1
+              ? 1
+              : 0;
 
-        await devolucaoRepository.atualizarDadosDevolucaoPendente(
-            id,
-            dados
-        );
+      const uv =
+          movimentaEstoque === 1
+              ? 'CX'
+              : 'UN';
+
+      const produtos =
+          Array.isArray(
+              req.body.produtos
+          )
+              ? req.body.produtos.map(
+                  produto => {
+                      return {
+                          ...produto,
+
+                          uv:
+                              uv
+                      };
+                  }
+              )
+              : [];
+
+      const dados = {
+          ...req.body,
+
+          movimentaEstoque:
+              movimentaEstoque,
+
+          produtos:
+              produtos
+      };
+
+      await devolucaoRepository
+          .atualizarDadosDevolucaoPendente(
+              id,
+              dados
+          );
 
         res.json({
             success:true

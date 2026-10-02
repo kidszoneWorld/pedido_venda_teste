@@ -456,6 +456,104 @@ function buscarItemPorPesquisa(valor) {
     return itens.length === 1 ? itens[0] : null;
 }
 
+function obterMovimentaEstoqueEdicao() {
+    const campo =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    return campo?.checked
+        ? 1
+        : 0;
+}
+
+function obterUvEdicao() {
+    return obterMovimentaEstoqueEdicao() === 1
+        ? 'CX'
+        : 'UN';
+}
+
+function atualizarUvTodasAsLinhasEdicao() {
+    const uv =
+        obterUvEdicao();
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-devolucao'
+        );
+
+    linhas.forEach(
+        tr => {
+            const campoUnidade =
+                tr.querySelector(
+                    '.campo-unidade-item'
+                );
+
+            if (campoUnidade) {
+                campoUnidade.value =
+                    uv;
+            }
+        }
+    );
+
+    console.log(
+        'Movimenta estoque:',
+        obterMovimentaEstoqueEdicao(),
+        'UV aplicada:',
+        uv
+    );
+}
+
+function obterMovimentaEstoqueEdicao() {
+    const campo =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    return campo?.checked
+        ? 1
+        : 0;
+}
+
+function obterUvEdicao() {
+    return obterMovimentaEstoqueEdicao() === 1
+        ? 'CX'
+        : 'UN';
+}
+
+function atualizarUvTodasAsLinhasEdicao() {
+    const uv =
+        obterUvEdicao();
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-devolucao'
+        );
+
+    linhas.forEach(
+        tr => {
+            const campoUnidade =
+                tr.querySelector(
+                    '.campo-unidade-item'
+                );
+
+            if (campoUnidade) {
+                campoUnidade.value =
+                    uv;
+            }
+        }
+    );
+
+    console.log(
+        'Movimenta estoque:',
+        obterMovimentaEstoqueEdicao(),
+        'UV aplicada:',
+        uv
+    );
+}
+
 function preencherDadosDevolucao(dev) {
     
     el('devId').value = dev.id || '';
@@ -473,6 +571,22 @@ function preencherDadosDevolucao(dev) {
     el('email').value = dev.email || '';
     el('email_fiscal').value = dev.emailFiscal || '';
     el('observation').value = dev.motivo || '';
+    const campoMovimentaEstoque =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    const movimentaEstoque =
+        Number(
+            dev.movimentaEstoque ??
+            dev.MovimentaEstoque ??
+            0
+        ) === 1;
+
+    if (campoMovimentaEstoque) {
+        campoMovimentaEstoque.checked =
+            movimentaEstoque;
+    }
     el('codgroup').value = dev.codgroup ||
         dev.codGroup ||
         dev.listaId ||
@@ -647,11 +761,10 @@ function preencherLinhaComProdutoSalvo(tr, produto) {
     );
 
     tr.querySelector('.campo-quantidade-item').value = quantidade || '';
-    tr.querySelector('.campo-unidade-item').value = obterValorProduto(
-        produto,
-        ['uv', 'Uv', 'unidadeMedidaAbreviado'],
-        'UN'
-    );
+    tr.querySelector(
+        '.campo-unidade-item'
+    ).value =
+        obterUvEdicao();
 
     tr.querySelector('.campo-preco-unitario-item').value = precoUnitario > 0
         ? formatarMoeda(precoUnitario)
@@ -808,7 +921,8 @@ function preencherLinhaComItemCatalogo(tr, item) {
     campoPesquisa.value = `${codigo} - ${descricao}`;
     campoQuantidade.value = '';
     campoQuantidade.readOnly = false;
-    campoUnidade.value = item.unidade || item.unidadeMedidaAbreviado || 'UN';
+    campoUnidade.value =
+        obterUvEdicao();
     campoPreco.value = '';
     campoPreco.readOnly = false;
     campoIpi.value = formatarPercentual(ipiDecimal * 100);
@@ -879,6 +993,15 @@ function finalizarPrecoLinha(tr, campoPreco) {
 }
 
 function configurarLinhaDevolucao(tr) {
+    const campoUnidade =
+        tr.querySelector(
+            '.campo-unidade-item'
+        );
+
+    if (campoUnidade) {
+        campoUnidade.value =
+            obterUvEdicao();
+    }
     const campoPesquisa = tr.querySelector('.campo-item-pesquisa');
     const campoLote = tr.querySelector('.campo-lote-item');
     const campoQuantidade = tr.querySelector('.campo-quantidade-item');
@@ -1199,9 +1322,35 @@ function montarObjetoEdicao() {
         };
     });
 
+    const movimentaEstoque =
+        obterMovimentaEstoqueEdicao();
+
+    const uv =
+        obterUvEdicao();
+
+    const produtosNormalizados =
+        produtos.map(
+            produto => {
+                return {
+                    ...produto,
+
+                    uv:
+                        uv
+                };
+            }
+        );
+
     return {
-        motivo: el('observation').value.trim(),
-        produtos
+        motivo:
+            el(
+                'observation'
+            ).value.trim(),
+
+        movimentaEstoque:
+            movimentaEstoque,
+
+        produtos:
+            produtosNormalizados
     };
 }
 
@@ -1282,20 +1431,56 @@ async function salvarEdicaoDevolucao() {
 }
 
 function bloquearCamposEdicao() {
-    document.querySelectorAll('#dadosPedido input, #observation')
-        .forEach(campo => {
-            campo.readOnly = true;
-            campo.style.backgroundColor = '#e9e9e9';
-            campo.style.cursor = 'not-allowed';
-            campo.title = 'Esta devolução não pode ser editada.';
-        });
+    document
+        .querySelectorAll(
+            '#dadosPedido input, ' +
+            '#observation'
+        )
+        .forEach(
+            campo => {
+                campo.readOnly =
+                    true;
 
-    document.querySelectorAll('.btn-remover-linha')
-        .forEach(botao => {
-            botao.disabled = true;
-            botao.style.opacity = '0.5';
-            botao.style.cursor = 'not-allowed';
-        });
+                campo.style.backgroundColor =
+                    '#e9e9e9';
+
+                campo.style.cursor =
+                    'not-allowed';
+
+                campo.title =
+                    'Esta devolução não pode ser editada.';
+            }
+        );
+
+    const campoMovimentaEstoque =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    if (campoMovimentaEstoque) {
+        campoMovimentaEstoque.disabled =
+            true;
+
+        campoMovimentaEstoque.title =
+            'Esta devolução não pode ser editada.';
+    }
+
+    document
+        .querySelectorAll(
+            '.btn-remover-linha'
+        )
+        .forEach(
+            botao => {
+                botao.disabled =
+                    true;
+
+                botao.style.opacity =
+                    '0.5';
+
+                botao.style.cursor =
+                    'not-allowed';
+            }
+        );
 }
 
 function bloquearLinha(tr) {
@@ -1327,7 +1512,7 @@ async function carregarDevolucao() {
         const response = await fetch(`/api/devolucao/${id}`);
         const texto = await response.text();
         let dev = null;
-
+        
         if (texto) {
             try {
                 dev = JSON.parse(texto);
@@ -1356,9 +1541,27 @@ async function carregarDevolucao() {
 
         await obterDadosClienteParaCatalogo(dev);
 
-        renderizarProdutos(dev.produtos || []);
-        verificarPermissaoEdicao(dev);
+        renderizarProdutos(
+            dev.produtos || []
+        );
+
+        atualizarUvTodasAsLinhasEdicao();
+
+        verificarPermissaoEdicao(
+            dev
+        );
+
         atualizarTotais();
+        console.log(
+    'Devolução recebida:',
+    dev
+);
+
+console.log(
+    'MovimentaEstoque recebido:',
+    dev.movimentaEstoque,
+    dev.MovimentaEstoque
+);
     } catch (error) {
         console.error('Erro ao carregar devolução:', error);
         alert(error.message || 'Erro ao carregar devolução.');
@@ -1368,6 +1571,28 @@ async function carregarDevolucao() {
 }
 
 function configurarEventos() {
+    const campoMovimentaEstoque =
+        document.getElementById(
+            'movimentaEstoque'
+        );
+
+    campoMovimentaEstoque?.addEventListener(
+        'change',
+        () => {
+            if (edicaoBloqueada) {
+                campoMovimentaEstoque.checked =
+                    Number(
+                        devolucaoAtual?.movimentaEstoque ??
+                        devolucaoAtual?.MovimentaEstoque ??
+                        0
+                    ) === 1;
+
+                return;
+            }
+
+            atualizarUvTodasAsLinhasEdicao();
+        }
+    );
     el('voltarPainel')?.addEventListener('click', () => {
         window.location.href = '/devolucaoPanel';
     });

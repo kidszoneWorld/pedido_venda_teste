@@ -15,20 +15,95 @@ class DevolucaoRepository {
     return this.agruparDevolucoes(rows);
   }
 
-  async buscarPorId(devId) {
+  async buscarPorId(
+    devId
+) {
+    const {
+        rows
+    } =
+        await pool.query(
+            `
+            SELECT
+                A."DevId",
+                A."Cnpj",
+                A."RazaoSocial",
+                A."Endereco",
+                A."Cidade",
+                A."Cep",
+                A."Email",
+                A."Representante",
+                A."CodCliente",
+                A."Bairro",
+                A."Uf",
+                A."Telefone",
+                A."EmailFiscal",
+                A."Data",
+                A."Motivo",
+                A."Status",
+                A."Finalizado",
+                A."NfVinculada",
 
-    const { rows } = await pool.query(`
-      SELECT *
-      FROM public."TbDevolucoes" A
-      INNER JOIN public."TbDevolucaoProdutos" B
-        ON A."DevId" = B."DevId"
-      WHERE A."DevId" = $1
-    `, [devId]);
+                A."MovimentaEstoque"
+                    AS "DevolucaoMovimentaEstoque",
 
-    const devolucoes = this.agruparDevolucoes(rows);
-        // console.log(devolucoes[0])
-    return devolucoes[0] || null;
-  }
+                B."DevProdId",
+                B."NfOrigem",
+                B."ProdData",
+                B."CodigoItem",
+                B."Lote",
+                B."Quantidade",
+                B."Uv",
+                B."Descricao",
+                B."PrecoUnitario",
+                B."ipi",
+                B."PrecoUnitarioIPI",
+                B."Total",
+                B."TotalIpi"
+
+            FROM
+                public."TbDevolucoes" A
+
+            LEFT JOIN
+                public."TbDevolucaoProdutos" B
+            ON
+                B."DevId" =
+                A."DevId"
+
+            WHERE
+                A."DevId" = $1
+
+            ORDER BY
+                B."DevProdId" ASC
+            `,
+            [
+                devId
+            ]
+        );
+
+    console.log(
+        'Resultado bruto da devolução:',
+        rows[0]
+    );
+
+    console.log(
+        'MovimentaEstoque bruto:',
+        rows[0]
+            ?.DevolucaoMovimentaEstoque
+    );
+
+    const devolucoes =
+        this.agruparDevolucoes(
+            rows
+        );
+
+    console.log(
+        'Devolução agrupada:',
+        devolucoes[0]
+    );
+
+    return devolucoes[0] ||
+        null;
+}
 
 
   async atualizar(devId, dados) {
@@ -183,16 +258,32 @@ class DevolucaoRepository {
 
         }
 
+        const movimentaEstoque =
+            Number(
+                dados.movimentaEstoque ??
+                dados.MovimentaEstoque ??
+                0
+            ) === 1
+                ? 1
+                : 0;
+
+        const uv =
+            movimentaEstoque === 1
+                ? 'CX'
+                : 'UN';
+
         await client.query(
             `
             UPDATE public."TbDevolucoes"
             SET
-                "Motivo" = $1
+                "Motivo" = $1,
+                "MovimentaEstoque" = $2
             WHERE
-                "DevId" = $2
+                "DevId" = $3
             `,
             [
                 dados.motivo,
+                movimentaEstoque,
                 devId
             ]
         );
@@ -242,7 +333,7 @@ class DevolucaoRepository {
                     produto.codigoItem,
                     produto.lote,
                     produto.quantidade,
-                    produto.uv,
+                    uv,
                     produto.descricao,
                     produto.precoUnitario,
                     produto.ipi,
@@ -353,7 +444,10 @@ console.log(produto)
           nfVinculada: row.NfVinculada,
           movimentaEstoque:
             Number(
-                row.MovimentaEstoque || 0
+                row.DevolucaoMovimentaEstoque ??
+                row.MovimentaEstoque ??
+                row.movimentaestoque ??
+                0
             ),
           produtos: []
         };
