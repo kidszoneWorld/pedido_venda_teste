@@ -180,13 +180,13 @@ function renderizarProdutos(produtos)
             <td>${p.codigoItem}</td>
             <td>${p.descricao}</td>
             <td>${p.lote}</td>
-            <td>${p.quantidade.replaceAll(".",",")}</td>
+            <td>${p.quantidade}</td>
             <td>${p.uv}</td>
-            <td>${formatarMoeda(p.precoUnitario.replaceAll(".",",") ||  p.precoUnitarioIPI.replaceAll(".",",")) }</td>
-            <td>${p.ipi.replaceAll(".",",")}%</td>
-            <td>R$${formatarMoeda(p.precoUnitarioIPI.replaceAll(".",",") || p.precoUnitario.replaceAll(".",","))}</td>
-            <td>R$${formatarMoeda(p.total.replaceAll(".",",") || p.totalIpi.replaceAll(".",","))}</td>
-            <td>${formatarMoeda(p.totalIpi.replaceAll(".",",") || p.total.replaceAll(".",","))}</td>
+            <td>R$ ${formatarMoeda(p.precoUnitario ||  p.precoUnitarioIPI) }</td>
+            <td>${p.ipi}%</td>
+            <td>R$ ${formatarMoeda(p.precoUnitarioIPI || p.precoUnitario)}</td>
+            <td>R$ ${formatarMoeda(p.total || p.totalIpi)}</td>
+            <td>R$ ${formatarMoeda(p.totalIpi || p.total)}</td>
         `;
 
         tbody.appendChild(tr);
