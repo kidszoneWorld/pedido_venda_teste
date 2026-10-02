@@ -1611,6 +1611,809 @@ async function salvarDevolucaoMongo() {
     }
 }
 
+async function gerarPdfNoNavegador(
+    elemento,
+    nomeArquivo
+) {
+    if (
+        typeof window.html2canvas !==
+        'function'
+    ) {
+        throw new Error(
+            'A biblioteca html2canvas não foi carregada.'
+        );
+    }
+
+    if (
+        typeof window.jspdf?.jsPDF !==
+        'function'
+    ) {
+        throw new Error(
+            'A biblioteca jsPDF não foi carregada.'
+        );
+    }
+
+    if (!elemento) {
+        throw new Error(
+            'O conteúdo da devolução não foi informado.'
+        );
+    }
+
+    await new Promise(
+        resolve => {
+            requestAnimationFrame(
+                () => {
+                    requestAnimationFrame(
+                        resolve
+                    );
+                }
+            );
+        }
+    );
+
+    if (document.fonts?.ready) {
+        await document.fonts.ready;
+    }
+
+    const imagens =
+        Array.from(
+            elemento.querySelectorAll(
+                'img'
+            )
+        );
+
+    await Promise.all(
+        imagens.map(
+            imagem => {
+                if (imagem.complete) {
+                    return Promise.resolve();
+                }
+
+                return new Promise(
+                    resolve => {
+                        let terminou =
+                            false;
+
+                        const finalizar =
+                            () => {
+                                if (terminou) {
+                                    return;
+                                }
+
+                                terminou =
+                                    true;
+
+                                resolve();
+                            };
+
+                        imagem.addEventListener(
+                            'load',
+                            finalizar,
+                            {
+                                once:
+                                    true
+                            }
+                        );
+
+                        imagem.addEventListener(
+                            'error',
+                            finalizar,
+                            {
+                                once:
+                                    true
+                            }
+                        );
+
+                        setTimeout(
+                            finalizar,
+                            5000
+                        );
+                    }
+                );
+            }
+        )
+    );
+
+    const larguraPadraoPdf =
+        1120;
+
+    const altura =
+        Math.ceil(
+            Math.max(
+                elemento.scrollHeight,
+                elemento.offsetHeight,
+                elemento
+                    .getBoundingClientRect()
+                    .height
+            )
+        );
+
+    if (
+        larguraPadraoPdf <= 0 ||
+        altura <= 1
+    ) {
+        throw new Error(
+            'O conteúdo preparado para o PDF está vazio.'
+        );
+    }
+
+    console.log(
+        'Capturando devolução para PDF:',
+        {
+            largura:
+                larguraPadraoPdf,
+
+            altura:
+                altura
+        }
+    );
+
+    const canvas =
+        await window.html2canvas(
+            elemento,
+            {
+                scale:
+                    1.5,
+
+                useCORS:
+                    true,
+
+                allowTaint:
+                    false,
+
+                backgroundColor:
+                    '#ffffff',
+
+                logging:
+                    false,
+
+                scrollX:
+                    0,
+
+                scrollY:
+                    0,
+
+                width:
+                    larguraPadraoPdf,
+
+                height:
+                    altura,
+
+                windowWidth:
+                    larguraPadraoPdf,
+
+                windowHeight:
+                    altura,
+
+                onclone:
+                    documentoClonado => {
+                        const containerPdf =
+                            documentoClonado
+                                .querySelector(
+                                    '.container-pdf'
+                                );
+
+                        if (!containerPdf) {
+                            return;
+                        }
+
+                        containerPdf.style.setProperty(
+                            'display',
+                            'block',
+                            'important'
+                        );
+
+                        containerPdf.style.setProperty(
+                            'visibility',
+                            'visible',
+                            'important'
+                        );
+
+                        containerPdf.style.setProperty(
+                            'opacity',
+                            '1',
+                            'important'
+                        );
+
+                        containerPdf.style.setProperty(
+                            'width',
+                            '1120px',
+                            'important'
+                        );
+
+                        containerPdf.style.setProperty(
+                            'min-width',
+                            '1120px',
+                            'important'
+                        );
+
+                        containerPdf.style.setProperty(
+                            'max-width',
+                            '1120px',
+                            'important'
+                        );
+
+                        containerPdf.style.setProperty(
+                            'transform',
+                            'none',
+                            'important'
+                        );
+                    }
+            }
+        );
+
+    if (
+        canvas.width <= 0 ||
+        canvas.height <= 0
+    ) {
+        throw new Error(
+            'O canvas do PDF foi gerado vazio.'
+        );
+    }
+
+    const jsPDF =
+        window.jspdf.jsPDF;
+
+    const pdf =
+        new jsPDF({
+            orientation:
+                'landscape',
+
+            unit:
+                'mm',
+
+            format:
+                'a4',
+
+            compress:
+                true
+        });
+
+    const margem =
+        5;
+
+    const larguraPagina =
+        pdf.internal.pageSize
+            .getWidth();
+
+    const alturaPagina =
+        pdf.internal.pageSize
+            .getHeight();
+
+    const larguraUtil =
+        larguraPagina -
+        margem * 2;
+
+    const alturaUtil =
+        alturaPagina -
+        margem * 2;
+
+    const escalaPdf =
+        larguraUtil /
+        canvas.width;
+
+    const alturaPaginaPixels =
+        Math.max(
+            1,
+            Math.floor(
+                alturaUtil /
+                escalaPdf
+            )
+        );
+
+    let posicaoY =
+        0;
+
+    let pagina =
+        0;
+
+    while (
+        posicaoY <
+        canvas.height
+    ) {
+        const alturaParte =
+            Math.min(
+                alturaPaginaPixels,
+                canvas.height -
+                posicaoY
+            );
+
+        const canvasPagina =
+            document.createElement(
+                'canvas'
+            );
+
+        canvasPagina.width =
+            canvas.width;
+
+        canvasPagina.height =
+            alturaParte;
+
+        const contexto =
+            canvasPagina.getContext(
+                '2d'
+            );
+
+        if (!contexto) {
+            throw new Error(
+                'Não foi possível preparar uma página do PDF.'
+            );
+        }
+
+        contexto.fillStyle =
+            '#ffffff';
+
+        contexto.fillRect(
+            0,
+            0,
+            canvasPagina.width,
+            canvasPagina.height
+        );
+
+        contexto.drawImage(
+            canvas,
+            0,
+            posicaoY,
+            canvas.width,
+            alturaParte,
+            0,
+            0,
+            canvas.width,
+            alturaParte
+        );
+
+        const imagem =
+            canvasPagina.toDataURL(
+                'image/jpeg',
+                0.95
+            );
+
+        if (pagina > 0) {
+            pdf.addPage(
+                'a4',
+                'landscape'
+            );
+        }
+
+        pdf.addImage(
+            imagem,
+            'JPEG',
+            margem,
+            margem,
+            larguraUtil,
+            alturaParte *
+                escalaPdf,
+            undefined,
+            'FAST'
+        );
+
+        posicaoY +=
+            alturaParte;
+
+        pagina +=
+            1;
+    }
+
+    const pdfBlob =
+        pdf.output(
+            'blob'
+        );
+
+    if (
+        !pdfBlob ||
+        pdfBlob.size === 0
+    ) {
+        throw new Error(
+            'O PDF gerado está vazio.'
+        );
+    }
+
+    console.log(
+        'PDF da devolução concluído:',
+        {
+            nomeArquivo:
+                nomeArquivo,
+
+            paginas:
+                pagina,
+
+            tamanho:
+                pdfBlob.size
+        }
+    );
+
+    return pdfBlob;
+}
+
+function prepararDevolucaoParaPdf() {
+    const containerOriginal =
+        document.querySelector(
+            '.container'
+        );
+
+    if (!containerOriginal) {
+        throw new Error(
+            'O conteúdo da devolução não foi encontrado.'
+        );
+    }
+
+    const clone =
+        containerOriginal.cloneNode(
+            true
+        );
+
+    clone.classList.add(
+        'container-pdf'
+    );
+
+    clone.classList.add(
+        'layout-pdf-desktop'
+    );
+
+    copiarValoresParaClonePdf(
+        containerOriginal,
+        clone
+    );
+
+    removerElementosInterativosPdf(
+        clone
+    );
+
+    removerColunasTecnicasPdf(
+        clone
+    );
+
+    removerLinhasVaziasPdf(
+        clone
+    );
+
+    substituirObservacaoPdf(
+        containerOriginal,
+        clone
+    );
+
+    configurarContainerPdf(
+        clone
+    );
+
+    document.body.appendChild(
+        clone
+    );
+
+    return clone;
+}
+
+function removerLinhasVaziasPdf(
+    clone
+) {
+    clone
+        .querySelectorAll(
+            '#dadosPedido tbody tr'
+        )
+        .forEach(
+            linha => {
+                const campoItem =
+                    linha.querySelector(
+                        '.campo-item-pesquisa'
+                    );
+
+                const itemPreenchido =
+                    String(
+                        campoItem?.value ||
+                        ''
+                    ).trim();
+
+                if (!itemPreenchido) {
+                    linha.remove();
+                }
+            }
+        );
+}
+
+function substituirObservacaoPdf(
+    containerOriginal,
+    clone
+) {
+    const observacaoOriginal =
+        containerOriginal
+            .querySelector(
+                '#observation'
+            );
+
+    const observacaoClone =
+        clone.querySelector(
+            '#observation'
+        );
+
+    if (
+        !observacaoOriginal ||
+        !observacaoClone
+    ) {
+        return;
+    }
+
+    const observacaoPdf =
+        document.createElement(
+            'div'
+        );
+
+    observacaoPdf.id =
+        'observation-pdf';
+
+    observacaoPdf.className =
+        'observacao-pdf';
+
+    observacaoPdf.textContent =
+        observacaoOriginal.value ||
+        '';
+
+    observacaoPdf.style.whiteSpace =
+        'pre-wrap';
+
+    observacaoPdf.style.overflowWrap =
+        'anywhere';
+
+    observacaoPdf.style.minHeight =
+        '70px';
+
+    observacaoPdf.style.padding =
+        '10px';
+
+    observacaoPdf.style.border =
+        '1px solid #000000';
+
+    observacaoPdf.style.backgroundColor =
+        '#ffffff';
+
+    observacaoPdf.style.color =
+        '#000000';
+
+    observacaoClone.replaceWith(
+        observacaoPdf
+    );
+}
+
+function configurarContainerPdf(
+    clone
+) {
+    const larguraPadraoPdf =
+        1120;
+
+    clone.style.setProperty(
+        'width',
+        `${larguraPadraoPdf}px`,
+        'important'
+    );
+
+    clone.style.setProperty(
+        'min-width',
+        `${larguraPadraoPdf}px`,
+        'important'
+    );
+
+    clone.style.setProperty(
+        'max-width',
+        `${larguraPadraoPdf}px`,
+        'important'
+    );
+
+    clone.style.setProperty(
+        'position',
+        'absolute',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'top',
+        '0',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'left',
+        '0',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'margin',
+        '0',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'display',
+        'block',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'visibility',
+        'visible',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'opacity',
+        '1',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'overflow',
+        'visible',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'transform',
+        'none',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'z-index',
+        '999999',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'pointer-events',
+        'none',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'background-color',
+        '#ffffff',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'color',
+        '#000000',
+        'important'
+    );
+}
+
+function copiarValoresParaClonePdf(
+    containerOriginal,
+    clone
+) {
+    const camposOriginais =
+        containerOriginal
+            .querySelectorAll(
+                'input, textarea, select'
+            );
+
+    const camposClone =
+        clone.querySelectorAll(
+            'input, textarea, select'
+        );
+
+    camposOriginais.forEach(
+        (
+            campoOriginal,
+            indice
+        ) => {
+            const campoClone =
+                camposClone[
+                    indice
+                ];
+
+            if (!campoClone) {
+                return;
+            }
+
+            if (
+                campoOriginal.type ===
+                    'checkbox' ||
+                campoOriginal.type ===
+                    'radio'
+            ) {
+                campoClone.checked =
+                    campoOriginal.checked;
+
+                if (
+                    campoOriginal.checked
+                ) {
+                    campoClone.setAttribute(
+                        'checked',
+                        'checked'
+                    );
+                } else {
+                    campoClone.removeAttribute(
+                        'checked'
+                    );
+                }
+
+                return;
+            }
+
+            campoClone.value =
+                campoOriginal.value;
+
+            campoClone.setAttribute(
+                'value',
+                campoOriginal.value
+            );
+
+            if (
+                campoOriginal.tagName ===
+                'TEXTAREA'
+            ) {
+                campoClone.textContent =
+                    campoOriginal.value;
+
+                campoClone.style.whiteSpace =
+                    'pre-wrap';
+            }
+
+            if (
+                campoOriginal.tagName ===
+                'SELECT'
+            ) {
+                campoClone.selectedIndex =
+                    campoOriginal
+                        .selectedIndex;
+
+                Array.from(
+                    campoClone.options
+                ).forEach(
+                    (
+                        opcao,
+                        indiceOpcao
+                    ) => {
+                        opcao.selected =
+                            indiceOpcao ===
+                            campoOriginal
+                                .selectedIndex;
+                    }
+                );
+            }
+        }
+    );
+}
+function removerElementosInterativosPdf(
+    clone
+) {
+    const seletoresRemover = [
+        '.no-print',
+        '.button-group',
+        '.btn-remover-linha',
+        '.celula-excluir-item',
+        '.esconder',
+        '#esconder',
+        '[hidden]',
+        'input[type="hidden"]',
+        '#helpContainer',
+        '#emailModalDevolucao',
+        '#sizeLimitModal',
+        '#tutorialOverlay',
+        '#tutorialBox',
+        '#feedback1',
+        '#excluirLinha',
+        '#adicionarLinha',
+        '#button_pdf',
+        '#iniciarTutorial',
+        '#emailForm',
+        '.modal',
+        '.modal1'
+    ];
+
+    clone
+        .querySelectorAll(
+            seletoresRemover.join(
+                ','
+            )
+        )
+        .forEach(
+            elemento => {
+                elemento.remove();
+            }
+        );
+}
+
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
 function atualizarTotalVolumes() {
     let totalVolumes =
@@ -2719,7 +3522,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailAttachmentInput = document.getElementById('emailAttachment');
     const attachmentList = document.getElementById('attachmentList');
     const totalSizeDisplay = document.getElementById('totalSizeDisplay');
-    const selector = document.getElementById('seletor');
     
     // Elementos do modal de limite de tamanho
     const sizeLimitModal = document.getElementById('sizeLimitModal');
@@ -2840,35 +3642,115 @@ const { uploadUrlDev, key } = await response.json();
 
         // Função para gerar o PDF automaticamente
     async function gerarPDF() {
-        const content = document.querySelector('.container');
-        const razaoSocial = document.getElementById('razao_social').value || "Cliente";
-        const obs = document.getElementById('observation').value 
-        const timestamp = formatarDataBrasileira();
-        const filename = `Devolucao_${razaoSocial}_${timestamp}.pdf`;
+    const razaoSocial =
+        document
+            .getElementById(
+                'razao_social'
+            )
+            ?.value ||
+        'Cliente';
 
-        const options = {
-            margin: [0, 0, 0, 0],
-            filename: filename,
-            html2canvas: { scale: 1 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
-        };
-         try {
-            hideFeedback();
-            buttonPdf.style.display = 'none';
-            selector.style.display = 'none';
+    const codCliente =
+        document
+            .getElementById(
+                'cod_cliente'
+            )
+            ?.value ||
+        '';
 
-            const pdfBlob = await html2pdf().set(options).from(content).output('blob');
-            generatedPdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
-            return generatedPdfFile;
-        } catch (error) {
-            console.error('Erro ao gerar o PDF:', error);
-            alert('Erro ao gerar o PDF: ' + error.message);
-            return null;
-        } finally {
-            buttonPdf.style.display = 'block';
-            selector.style.display = 'inline-block';
-        }
+    const timestamp =
+        formatarDataBrasileira();
+
+    const nomeCliente =
+        String(
+            razaoSocial
+        )
+            .replace(
+                /[\\/:*?"<>|]/g,
+                ''
+            )
+            .trim();
+
+    const nomeArquivo =
+        `Devolucao - ` +
+        `${nomeCliente} - ` +
+        `${codCliente} - ` +
+        `${timestamp}.pdf`;
+
+    let clonePdf =
+        null;
+
+    try {
+        buttonPdf.disabled =
+            true;
+
+        showFeedback(
+            'Gerando PDF, aguarde...'
+        );
+
+        clonePdf =
+            prepararDevolucaoParaPdf();
+
+        const pdfBlob =
+            await gerarPdfNoNavegador(
+                clonePdf,
+                nomeArquivo
+            );
+
+        generatedPdfFile =
+            new File(
+                [
+                    pdfBlob
+                ],
+                nomeArquivo,
+                {
+                    type:
+                        'application/pdf'
+                }
+            );
+
+        console.log(
+            'Arquivo da devolução preparado:',
+            {
+                nome:
+                    generatedPdfFile.name,
+
+                tamanho:
+                    generatedPdfFile.size,
+
+                tipo:
+                    generatedPdfFile.type
+            }
+        );
+
+        return generatedPdfFile;
+    } catch (error) {
+        generatedPdfFile =
+            null;
+
+        console.error(
+            'Erro ao gerar o PDF:',
+            error
+        );
+
+        alert(
+            'Erro ao gerar o PDF: ' +
+            (
+                error.message ||
+                'Erro desconhecido.'
+            )
+        );
+
+        return null;
+    } finally {
+        clonePdf?.remove();
+
+        buttonPdf.disabled =
+            false;
+
+        hideFeedback();
     }
+}
 
     function atualizarListaAnexos() {
     attachmentList.innerHTML = '';

@@ -1711,6 +1711,97 @@ td {
         var(--invest-finalizado-text-light);
 }
 
+.container-pdf {
+    box-sizing: border-box !important;
+
+    width: 1120px !important;
+    min-width: 1120px !important;
+    max-width: 1120px !important;
+
+    padding: 16px !important;
+
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+.container-pdf * {
+    box-sizing: border-box !important;
+}
+
+.container-pdf .table-container {
+    width: 100% !important;
+    overflow: visible !important;
+}
+
+.container-pdf #dadosPedido {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+}
+
+.container-pdf #dadosPedido th,
+.container-pdf #dadosPedido td {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+
+    background: #ffffff !important;
+    color: #000000 !important;
+
+    border: 1px solid #000000 !important;
+}
+
+.container-pdf input,
+.container-pdf textarea,
+.container-pdf select {
+    background: #ffffff !important;
+    color: #000000 !important;
+
+    border: none !important;
+
+    box-shadow: none !important;
+    outline: none !important;
+
+    opacity: 1 !important;
+
+    -webkit-text-fill-color: #000000 !important;
+}
+
+.container-pdf input[readonly] {
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+.container-pdf .campo-item-pesquisa {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+.container-pdf .section,
+.container-pdf .observations,
+.container-pdf .payment-conditions {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.container-pdf .header {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+.container-pdf .section-title,
+.container-pdf .obs-title {
+    color: #000000 !important;
+}
+
+.container-pdf .observacao-pdf {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
 .controle-movimenta-estoque {
     display: inline-flex;
     align-items: center;
