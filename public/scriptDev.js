@@ -4228,6 +4228,109 @@ function bloquearEventosForaDoTutorial(){
 
 }
 
+function removerColunasTecnicasPdf(
+    clone
+) {
+    if (!clone) {
+        return;
+    }
+
+    const tabela =
+        clone.querySelector(
+            '#dadosPedido'
+        );
+
+    if (!tabela) {
+        console.warn(
+            'Tabela de itens não encontrada no clone do PDF.'
+        );
+
+        return;
+    }
+
+    const cabecalhos =
+        Array.from(
+            tabela.querySelectorAll(
+                'thead th'
+            )
+        );
+
+    const indicesRemover =
+        cabecalhos
+            .map(
+                (
+                    cabecalho,
+                    indice
+                ) => {
+                    const texto =
+                        String(
+                            cabecalho.textContent ||
+                            ''
+                        )
+                            .trim()
+                            .toLowerCase();
+
+                    const classe =
+                        String(
+                            cabecalho.className ||
+                            ''
+                        )
+                            .trim()
+                            .toLowerCase();
+
+                    const deveRemover =
+                        texto === 'excluir' ||
+                        texto === 'item id' ||
+                        texto === 'itemid' ||
+                        classe.includes(
+                            'pack'
+                        ) ||
+                        classe.includes(
+                            'itemid'
+                        );
+
+                    return deveRemover
+                        ? indice
+                        : -1;
+                }
+            )
+            .filter(
+                indice => {
+                    return indice >= 0;
+                }
+            )
+            .sort(
+                (
+                    primeiro,
+                    segundo
+                ) => {
+                    return segundo -
+                        primeiro;
+                }
+            );
+
+    indicesRemover.forEach(
+        indice => {
+            tabela
+                .querySelectorAll(
+                    'tr'
+                )
+                .forEach(
+                    linha => {
+                        const celula =
+                            linha.children[
+                                indice
+                            ];
+
+                        if (celula) {
+                            celula.remove();
+                        }
+                    }
+                );
+        }
+    );
+}
+
 function iniciarTutorial(){
 
     step =
