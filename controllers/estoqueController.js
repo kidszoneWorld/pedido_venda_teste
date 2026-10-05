@@ -460,6 +460,7 @@ async function listarItens() {
             'CATALOGO',
             'KITLCD',
             '3528',
+            'SCOOTER',
             // 'QB-7025',
             // 'QB-7026',
             'SACOLATERMICA'
