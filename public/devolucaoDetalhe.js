@@ -182,11 +182,11 @@ function renderizarProdutos(produtos)
             <td>${p.lote}</td>
             <td>${p.quantidade}</td>
             <td>${p.uv}</td>
-            <td>R$ ${formatarMoeda(p.precoUnitario ||  p.precoUnitarioIPI) }</td>
+            <td>R$ ${formatarMoeda(p.precoUnitario) }</td>
             <td>${p.ipi}%</td>
-            <td>R$ ${formatarMoeda(p.precoUnitarioIPI || p.precoUnitario)}</td>
-            <td>R$ ${formatarMoeda(p.total || p.totalIpi)}</td>
-            <td>R$ ${formatarMoeda(p.totalIpi || p.total)}</td>
+            <td>R$ ${formatarMoeda(p.precoUnitarioIPI )}</td>
+            <td>R$ ${formatarMoeda(p.total )}</td>
+            <td>R$ ${formatarMoeda(p.totalIpi)}</td>
         `;
 
         tbody.appendChild(tr);
