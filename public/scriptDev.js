@@ -1341,12 +1341,9 @@ function montarObjetoDevolucao() {
             String(
                 tr.dataset.itemEmpresaId || ''
             ).trim();
-
-        const linhas =
-            document.querySelectorAll(
-                '#dadosPedido tbody ' +
-                '.linha-item-devolucao'
-            );
+            if (!codigo) {
+                return;
+            }
 
         produtos.push({
             nforigem:
@@ -1635,7 +1632,7 @@ async function gerarPdfNoNavegador(
 
     if (!elemento) {
         throw new Error(
-            'O conteúdo da devolução não foi informado.'
+            'O relatório da devolução não foi criado.'
         );
     }
 
@@ -1655,69 +1652,10 @@ async function gerarPdfNoNavegador(
         await document.fonts.ready;
     }
 
-    const imagens =
-        Array.from(
-            elemento.querySelectorAll(
-                'img'
-            )
-        );
-
-    await Promise.all(
-        imagens.map(
-            imagem => {
-                if (imagem.complete) {
-                    return Promise.resolve();
-                }
-
-                return new Promise(
-                    resolve => {
-                        let terminou =
-                            false;
-
-                        const finalizar =
-                            () => {
-                                if (terminou) {
-                                    return;
-                                }
-
-                                terminou =
-                                    true;
-
-                                resolve();
-                            };
-
-                        imagem.addEventListener(
-                            'load',
-                            finalizar,
-                            {
-                                once:
-                                    true
-                            }
-                        );
-
-                        imagem.addEventListener(
-                            'error',
-                            finalizar,
-                            {
-                                once:
-                                    true
-                            }
-                        );
-
-                        setTimeout(
-                            finalizar,
-                            5000
-                        );
-                    }
-                );
-            }
-        )
-    );
-
-    const larguraPadraoPdf =
+    const larguraCaptura =
         1120;
 
-    const altura =
+    const alturaCaptura =
         Math.ceil(
             Math.max(
                 elemento.scrollHeight,
@@ -1728,23 +1666,14 @@ async function gerarPdfNoNavegador(
             )
         );
 
-    if (
-        larguraPadraoPdf <= 0 ||
-        altura <= 1
-    ) {
-        throw new Error(
-            'O conteúdo preparado para o PDF está vazio.'
-        );
-    }
-
     console.log(
-        'Capturando devolução para PDF:',
+        'Dimensões do relatório:',
         {
-            largura:
-                larguraPadraoPdf,
+            larguraCaptura:
+                larguraCaptura,
 
-            altura:
-                altura
+            alturaCaptura:
+                alturaCaptura
         }
     );
 
@@ -1753,7 +1682,7 @@ async function gerarPdfNoNavegador(
             elemento,
             {
                 scale:
-                    1.5,
+                    2,
 
                 useCORS:
                     true,
@@ -1767,89 +1696,25 @@ async function gerarPdfNoNavegador(
                 logging:
                     false,
 
+                width:
+                    larguraCaptura,
+
+                height:
+                    alturaCaptura,
+
+                windowWidth:
+                    larguraCaptura,
+
+                windowHeight:
+                    alturaCaptura,
+
                 scrollX:
                     0,
 
                 scrollY:
-                    0,
-
-                width:
-                    larguraPadraoPdf,
-
-                height:
-                    altura,
-
-                windowWidth:
-                    larguraPadraoPdf,
-
-                windowHeight:
-                    altura,
-
-                onclone:
-                    documentoClonado => {
-                        const containerPdf =
-                            documentoClonado
-                                .querySelector(
-                                    '.container-pdf'
-                                );
-
-                        if (!containerPdf) {
-                            return;
-                        }
-
-                        containerPdf.style.setProperty(
-                            'display',
-                            'block',
-                            'important'
-                        );
-
-                        containerPdf.style.setProperty(
-                            'visibility',
-                            'visible',
-                            'important'
-                        );
-
-                        containerPdf.style.setProperty(
-                            'opacity',
-                            '1',
-                            'important'
-                        );
-
-                        containerPdf.style.setProperty(
-                            'width',
-                            '1120px',
-                            'important'
-                        );
-
-                        containerPdf.style.setProperty(
-                            'min-width',
-                            '1120px',
-                            'important'
-                        );
-
-                        containerPdf.style.setProperty(
-                            'max-width',
-                            '1120px',
-                            'important'
-                        );
-
-                        containerPdf.style.setProperty(
-                            'transform',
-                            'none',
-                            'important'
-                        );
-                    }
+                    0
             }
         );
-
-    if (
-        canvas.width <= 0 ||
-        canvas.height <= 0
-    ) {
-        throw new Error(
-            'O canvas do PDF foi gerado vazio.'
-        );
-    }
 
     const jsPDF =
         window.jspdf.jsPDF;
@@ -1870,7 +1735,7 @@ async function gerarPdfNoNavegador(
         });
 
     const margem =
-        5;
+        4;
 
     const larguraPagina =
         pdf.internal.pageSize
@@ -1880,207 +1745,1195 @@ async function gerarPdfNoNavegador(
         pdf.internal.pageSize
             .getHeight();
 
-    const larguraUtil =
+    const larguraDisponivel =
         larguraPagina -
         margem * 2;
 
-    const alturaUtil =
+    const alturaDisponivel =
         alturaPagina -
         margem * 2;
 
-    const escalaPdf =
-        larguraUtil /
+    const escalaHorizontal =
+        larguraDisponivel /
         canvas.width;
 
-    const alturaPaginaPixels =
-        Math.max(
-            1,
-            Math.floor(
-                alturaUtil /
-                escalaPdf
-            )
+    const escalaVertical =
+        alturaDisponivel /
+        canvas.height;
+
+    const escalaFinal =
+        Math.min(
+            escalaHorizontal,
+            escalaVertical
         );
 
-    let posicaoY =
-        0;
+    const larguraFinal =
+        canvas.width *
+        escalaFinal;
 
-    let pagina =
-        0;
+    const alturaFinal =
+        canvas.height *
+        escalaFinal;
 
-    while (
-        posicaoY <
-        canvas.height
-    ) {
-        const alturaParte =
-            Math.min(
-                alturaPaginaPixels,
-                canvas.height -
-                posicaoY
-            );
+    const x =
+        (
+            larguraPagina -
+            larguraFinal
+        ) /
+        2;
 
-        const canvasPagina =
-            document.createElement(
-                'canvas'
-            );
+    const y =
+        margem;
 
-        canvasPagina.width =
-            canvas.width;
+    pdf.addImage(
+        canvas.toDataURL(
+            'image/jpeg',
+            0.96
+        ),
+        'JPEG',
+        x,
+        y,
+        larguraFinal,
+        alturaFinal,
+        undefined,
+        'FAST'
+    );
 
-        canvasPagina.height =
-            alturaParte;
-
-        const contexto =
-            canvasPagina.getContext(
-                '2d'
-            );
-
-        if (!contexto) {
-            throw new Error(
-                'Não foi possível preparar uma página do PDF.'
-            );
-        }
-
-        contexto.fillStyle =
-            '#ffffff';
-
-        contexto.fillRect(
-            0,
-            0,
-            canvasPagina.width,
-            canvasPagina.height
-        );
-
-        contexto.drawImage(
-            canvas,
-            0,
-            posicaoY,
-            canvas.width,
-            alturaParte,
-            0,
-            0,
-            canvas.width,
-            alturaParte
-        );
-
-        const imagem =
-            canvasPagina.toDataURL(
-                'image/jpeg',
-                0.95
-            );
-
-        if (pagina > 0) {
-            pdf.addPage(
-                'a4',
-                'landscape'
-            );
-        }
-
-        pdf.addImage(
-            imagem,
-            'JPEG',
-            margem,
-            margem,
-            larguraUtil,
-            alturaParte *
-                escalaPdf,
-            undefined,
-            'FAST'
-        );
-
-        posicaoY +=
-            alturaParte;
-
-        pagina +=
-            1;
-    }
-
-    const pdfBlob =
+    const blob =
         pdf.output(
             'blob'
         );
 
     if (
-        !pdfBlob ||
-        pdfBlob.size === 0
+        !blob ||
+        blob.size === 0
     ) {
         throw new Error(
-            'O PDF gerado está vazio.'
+            'O PDF foi gerado vazio.'
         );
     }
 
     console.log(
-        'PDF da devolução concluído:',
+        'PDF gerado:',
         {
             nomeArquivo:
                 nomeArquivo,
 
-            paginas:
-                pagina,
+            larguraFinal:
+                larguraFinal,
+
+            alturaFinal:
+                alturaFinal,
 
             tamanho:
-                pdfBlob.size
+                blob.size
         }
     );
 
-    return pdfBlob;
+    return blob;
 }
 
-function prepararDevolucaoParaPdf() {
-    const containerOriginal =
-        document.querySelector(
-            '.container'
+function obterValorCampoPdf(
+    id,
+    valorPadrao = '-'
+) {
+    const campo =
+        document.getElementById(
+            id
         );
 
-    if (!containerOriginal) {
-        throw new Error(
-            'O conteúdo da devolução não foi encontrado.'
+    const valor =
+        String(
+            campo?.value || ''
+        ).trim();
+
+    return valor ||
+        valorPadrao;
+}
+
+function converterCamposParaTextoPdf(
+    clone
+) {
+    const campos =
+        Array.from(
+            clone.querySelectorAll(
+                'input, textarea, select'
+            )
+        );
+
+    campos.forEach(
+        campo => {
+            if (
+                campo.type ===
+                'hidden'
+            ) {
+                campo.remove();
+
+                return;
+            }
+
+            if (
+                campo.type ===
+                'checkbox'
+            ) {
+                const textoCheckbox =
+                    document.createElement(
+                        'span'
+                    );
+
+                textoCheckbox.className =
+                    'valor-checkbox-pdf';
+
+                textoCheckbox.textContent =
+                    campo.checked
+                        ? 'Sim'
+                        : 'Não';
+
+                campo.replaceWith(
+                    textoCheckbox
+                );
+
+                return;
+            }
+
+            let valor =
+                '';
+
+            if (
+                campo.tagName ===
+                'SELECT'
+            ) {
+                valor =
+                    campo.options[
+                        campo.selectedIndex
+                    ]?.textContent || '';
+            } else {
+                valor =
+                    campo.value || '';
+            }
+
+            const texto =
+                document.createElement(
+                    campo.tagName ===
+                        'TEXTAREA'
+                        ? 'div'
+                        : 'span'
+                );
+
+            texto.className =
+                campo.tagName ===
+                    'TEXTAREA'
+                    ? 'valor-textarea-pdf'
+                    : 'valor-campo-pdf';
+
+            texto.textContent =
+                valor || '-';
+
+            campo.replaceWith(
+                texto
+            );
+        }
+    );
+}
+
+function organizarCabecalhoPdf(
+    clone
+) {
+    const cabecalho =
+        clone.querySelector(
+            '.header'
+        );
+
+    if (!cabecalho) {
+        return;
+    }
+
+    cabecalho.classList.add(
+        'cabecalho-relatorio-pdf'
+    );
+
+    const titulo =
+        cabecalho.querySelector(
+            'h1'
+        );
+
+    if (titulo) {
+        titulo.textContent =
+            'DEVOLUÇÃO DE PRODUTOS';
+    }
+
+    const logo =
+        cabecalho.querySelector(
+            'img'
+        );
+
+    if (logo) {
+        logo.style.width =
+            '145px';
+
+        logo.style.height =
+            'auto';
+
+        logo.style.objectFit =
+            'contain';
+    }
+}
+
+function organizarDadosClientePdf(
+    clone
+) {
+    const formulario =
+        clone.querySelector(
+            '.form-group'
+        );
+
+    if (!formulario) {
+        return;
+    }
+
+    formulario.classList.add(
+        'dados-cliente-pdf'
+    );
+
+    const elementos =
+        Array.from(
+            formulario.children
+        );
+
+    const grade =
+        document.createElement(
+            'div'
+        );
+
+    grade.className =
+        'grade-cliente-pdf';
+
+    for (
+        let indice = 0;
+        indice < elementos.length;
+        indice += 2
+    ) {
+        const label =
+            elementos[indice];
+
+        const valor =
+            elementos[
+                indice + 1
+            ];
+
+        if (
+            !label ||
+            label.classList.contains(
+                'esconder'
+            )
+        ) {
+            continue;
+        }
+
+        const campo =
+            document.createElement(
+                'div'
+            );
+
+        campo.className =
+            'campo-cliente-pdf';
+
+        const titulo =
+            document.createElement(
+                'strong'
+            );
+
+        titulo.textContent =
+            String(
+                label.textContent || ''
+            )
+                .replace(
+                    'Campo Obrigatório',
+                    ''
+                )
+                .trim();
+
+        const conteudo =
+            document.createElement(
+                'span'
+            );
+
+        conteudo.textContent =
+            String(
+                valor?.textContent || '-'
+            ).trim() || '-';
+
+        campo.appendChild(
+            titulo
+        );
+
+        campo.appendChild(
+            conteudo
+        );
+
+        grade.appendChild(
+            campo
         );
     }
 
-    const clone =
-        containerOriginal.cloneNode(
-            true
+    formulario.replaceWith(
+        grade
+    );
+}
+
+function organizarTabelaPdf(
+    clone
+) {
+    const tabela =
+        clone.querySelector(
+            '#dadosPedido'
         );
 
-    clone.classList.add(
-        'container-pdf'
+    if (!tabela) {
+        return;
+    }
+
+    tabela.classList.add(
+        'tabela-devolucao-pdf'
     );
 
-    clone.classList.add(
-        'layout-pdf-desktop'
+    const cabecalhos =
+        tabela.querySelectorAll(
+            'thead th'
+        );
+
+    const larguras = [
+        '7%',
+        '8%',
+        '22%',
+        '8%',
+        '5%',
+        '4%',
+        '9%',
+        '6%',
+        '9%',
+        '9%',
+        '9%'
+    ];
+
+    cabecalhos.forEach(
+        (
+            cabecalho,
+            indice
+        ) => {
+            cabecalho.style.width =
+                larguras[indice] ||
+                '8%';
+        }
     );
 
-    copiarValoresParaClonePdf(
-        containerOriginal,
-        clone
+    tabela
+        .querySelectorAll(
+            '.campo-item-pesquisa'
+        )
+        .forEach(
+            campo => {
+                campo.style.whiteSpace =
+                    'normal';
+            }
+        );
+}
+
+function criarCabecalhoPdf() {
+    const cabecalho =
+        document.createElement(
+            'div'
+        );
+
+    cabecalho.className =
+        'pdf-cabecalho';
+
+    const areaLogo =
+        document.createElement(
+            'div'
+        );
+
+    areaLogo.className =
+        'pdf-logo-container';
+
+    const logoOriginal =
+        document.querySelector(
+            '.header img'
+        );
+
+    if (logoOriginal) {
+        const logo =
+            logoOriginal.cloneNode(
+                true
+            );
+
+        logo.removeAttribute(
+            'width'
+        );
+
+        logo.removeAttribute(
+            'height'
+        );
+
+        areaLogo.appendChild(
+            logo
+        );
+    }
+
+    const titulo =
+        document.createElement(
+            'h1'
+        );
+
+    titulo.textContent =
+        'DEVOLUÇÃO DE PRODUTOS';
+
+    const data =
+        document.createElement(
+            'div'
+        );
+
+    data.className =
+        'pdf-data';
+
+    data.textContent =
+        new Date()
+            .toLocaleString(
+                'pt-BR'
+            );
+
+    cabecalho.appendChild(
+        areaLogo
     );
 
-    removerElementosInterativosPdf(
-        clone
+    cabecalho.appendChild(
+        titulo
     );
 
-    removerColunasTecnicasPdf(
-        clone
+    cabecalho.appendChild(
+        data
     );
 
-    removerLinhasVaziasPdf(
-        clone
+    return cabecalho;
+}
+
+function criarCampoClientePdf(
+    rotulo,
+    valor,
+    classeExtra = ''
+) {
+    const campo =
+        document.createElement(
+            'div'
+        );
+
+    campo.className =
+        `pdf-campo-cliente ${classeExtra}`
+            .trim();
+
+    const titulo =
+        document.createElement(
+            'strong'
+        );
+
+    titulo.textContent =
+        rotulo;
+
+    const conteudo =
+        document.createElement(
+            'span'
+        );
+
+    conteudo.textContent =
+        valor || '-';
+
+    campo.appendChild(
+        titulo
     );
 
-    substituirObservacaoPdf(
-        containerOriginal,
-        clone
+    campo.appendChild(
+        conteudo
     );
 
-    configurarContainerPdf(
-        clone
+    return campo;
+}
+
+function criarDadosClientePdf() {
+    const secao =
+        document.createElement(
+            'section'
+        );
+
+    secao.className =
+        'pdf-secao pdf-dados-cliente';
+
+    const titulo =
+        document.createElement(
+            'h2'
+        );
+
+    titulo.textContent =
+        'DADOS DO CLIENTE';
+
+    const grade =
+        document.createElement(
+            'div'
+        );
+
+    grade.className =
+        'pdf-grade-cliente';
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CNPJ',
+            obterValorCampoPdf(
+                'cnpj'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CÓD CLIENTE',
+            obterValorCampoPdf(
+                'cod_cliente'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'RAZÃO SOCIAL',
+            obterValorCampoPdf(
+                'razao_social'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CÓDIGO REP',
+            obterValorCampoPdf(
+                'representante'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'ENDEREÇO',
+            obterValorCampoPdf(
+                'endereco'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'BAIRRO',
+            obterValorCampoPdf(
+                'bairro'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CIDADE',
+            obterValorCampoPdf(
+                'cidade'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'UF',
+            obterValorCampoPdf(
+                'uf'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CEP',
+            obterValorCampoPdf(
+                'cep'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'TELEFONE',
+            obterValorCampoPdf(
+                'telefone'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'E-MAIL',
+            obterValorCampoPdf(
+                'email'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'E-MAIL FISCAL',
+            obterValorCampoPdf(
+                'email_fiscal'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    const movimentaEstoque =
+        document.getElementById(
+            'movimentaEstoque'
+        )?.checked
+            ? 'Sim'
+            : 'Não';
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'MOVIMENTA ESTOQUE',
+            movimentaEstoque
+        )
+    );
+
+    secao.appendChild(
+        titulo
+    );
+
+    secao.appendChild(
+        grade
+    );
+
+    return secao;
+}
+
+function criarMotivoPdf() {
+    const secao =
+        document.createElement(
+            'section'
+        );
+
+    secao.className =
+        'pdf-secao pdf-motivo';
+
+    const titulo =
+        document.createElement(
+            'h2'
+        );
+
+    titulo.textContent =
+        'MOTIVO DA DEVOLUÇÃO';
+
+    const texto =
+        document.createElement(
+            'div'
+        );
+
+    texto.className =
+        'pdf-motivo-texto';
+
+    texto.textContent =
+        obterValorCampoPdf(
+            'observation',
+            '-'
+        );
+
+    secao.appendChild(
+        titulo
+    );
+
+    secao.appendChild(
+        texto
+    );
+
+    return secao;
+}
+
+function criarCelulaPdf(
+    texto,
+    classe = ''
+) {
+    const td =
+        document.createElement(
+            'td'
+        );
+
+    td.className =
+        classe;
+
+    td.textContent =
+        String(
+            texto ?? ''
+        ).trim() || '-';
+
+    return td;
+}
+
+function obterValorLinhaPdf(
+    tr,
+    seletor,
+    valorPadrao = '-'
+) {
+    const campo =
+        tr.querySelector(
+            seletor
+        );
+
+    const valor =
+        String(
+            campo?.value || ''
+        ).trim();
+
+    return valor ||
+        valorPadrao;
+}
+
+function criarTabelaItensPdf() {
+    const secao =
+        document.createElement(
+            'section'
+        );
+
+    secao.className =
+        'pdf-secao pdf-itens';
+
+    const titulo =
+        document.createElement(
+            'h2'
+        );
+
+    titulo.textContent =
+        'DADOS DEVOLUÇÃO';
+
+    const tabela =
+        document.createElement(
+            'table'
+        );
+
+    tabela.className =
+        'pdf-tabela-itens';
+
+    const colgroup =
+        document.createElement(
+            'colgroup'
+        );
+
+    const larguras = [
+        '8%',
+        '9%',
+        '24%',
+        '8%',
+        '5%',
+        '4%',
+        '9%',
+        '6%',
+        '9%',
+        '9%',
+        '9%'
+    ];
+
+    larguras.forEach(
+        largura => {
+            const col =
+                document.createElement(
+                    'col'
+                );
+
+            col.style.width =
+                largura;
+
+            colgroup.appendChild(
+                col
+            );
+        }
+    );
+
+    tabela.appendChild(
+        colgroup
+    );
+
+    const thead =
+        document.createElement(
+            'thead'
+        );
+
+    const linhaCabecalho =
+        document.createElement(
+            'tr'
+        );
+
+    const titulos = [
+        'NF ORIGEM',
+        'DATA NF',
+        'CÓDIGO / DESCRIÇÃO',
+        'LOTE',
+        'QTD',
+        'UV',
+        'R$ UNITÁRIO SEM IMPOSTOS',
+        '% IPI',
+        'R$ UNITÁRIO COM IPI',
+        'TOTAL R$',
+        'TOTAL COM IPI R$'
+    ];
+
+    titulos.forEach(
+        texto => {
+            const th =
+                document.createElement(
+                    'th'
+                );
+
+            th.textContent =
+                texto;
+
+            linhaCabecalho.appendChild(
+                th
+            );
+        }
+    );
+
+    thead.appendChild(
+        linhaCabecalho
+    );
+
+    tabela.appendChild(
+        thead
+    );
+
+    const tbody =
+        document.createElement(
+            'tbody'
+        );
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-devolucao'
+        );
+
+    linhas.forEach(
+        tr => {
+            const codigo =
+                String(
+                    tr.dataset
+                        .itemEmpresaId ||
+                    ''
+                ).trim();
+
+            if (!codigo) {
+                return;
+            }
+
+            const descricao =
+                String(
+                    tr.dataset.descricao ||
+                    ''
+                ).trim();
+
+            const linha =
+                document.createElement(
+                    'tr'
+                );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    obterValorLinhaPdf(
+                        tr,
+                        '.campo-nf-origem'
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarDataPdf(
+                        obterValorLinhaPdf(
+                            tr,
+                            '.campo-data-nf',
+                            ''
+                        )
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    `${codigo} - ${descricao}`,
+                    'pdf-descricao-item'
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    obterValorLinhaPdf(
+                        tr,
+                        '.campo-lote-item'
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    obterValorLinhaPdf(
+                        tr,
+                        '.campo-quantidade-item'
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    obterValorLinhaPdf(
+                        tr,
+                        '.campo-unidade-item'
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoeda(
+                        converterNumero(
+                            tr.dataset
+                                .precoUnitario
+                        )
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarPercentual(
+                        converterNumero(
+                            tr.dataset
+                                .percentualIpi
+                        )
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoeda(
+                        converterNumero(
+                            tr.dataset
+                                .precoUnitarioIpi ??
+                            tr.dataset
+                                .PrecoUnitarioIPI
+                        )
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoeda(
+                        converterNumero(
+                            tr.dataset.total
+                        )
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoeda(
+                        converterNumero(
+                            tr.dataset.totalIpi
+                        )
+                    )
+                )
+            );
+
+            tbody.appendChild(
+                linha
+            );
+        }
+    );
+
+    tabela.appendChild(
+        tbody
+    );
+
+    secao.appendChild(
+        titulo
+    );
+
+    secao.appendChild(
+        tabela
+    );
+
+    return secao;
+}
+
+function formatarDataPdf(
+    valor
+) {
+    if (!valor) {
+        return '-';
+    }
+
+    const partes =
+        String(
+            valor
+        ).split(
+            '-'
+        );
+
+    if (partes.length !== 3) {
+        return valor;
+    }
+
+    return (
+        `${partes[2]}/` +
+        `${partes[1]}/` +
+        `${partes[0]}`
+    );
+}
+
+function criarCampoTotalPdf(
+    rotulo,
+    valor
+) {
+    const campo =
+        document.createElement(
+            'div'
+        );
+
+    campo.className =
+        'pdf-total-campo';
+
+    const label =
+        document.createElement(
+            'strong'
+        );
+
+    label.textContent =
+        rotulo;
+
+    const conteudo =
+        document.createElement(
+            'span'
+        );
+
+    conteudo.textContent =
+        valor;
+
+    campo.appendChild(
+        label
+    );
+
+    campo.appendChild(
+        conteudo
+    );
+
+    return campo;
+}
+
+function criarTotaisPdf() {
+    const totais =
+        document.createElement(
+            'div'
+        );
+
+    totais.className =
+        'pdf-totais';
+
+    totais.appendChild(
+        criarCampoTotalPdf(
+            'VOLUMES',
+            obterValorCampoPdf(
+                'volume',
+                '0'
+            )
+        )
+    );
+
+    totais.appendChild(
+        criarCampoTotalPdf(
+            'TOTAL PRODUTOS',
+            obterValorCampoPdf(
+                'total',
+                'R$ 0,00'
+            )
+        )
+    );
+
+    totais.appendChild(
+        criarCampoTotalPdf(
+            'TOTAL PRODUTOS COM IPI',
+            obterValorCampoPdf(
+                'totalIpi',
+                'R$ 0,00'
+            )
+        )
+    );
+
+    return totais;
+}
+
+function prepararDevolucaoParaPdf() {
+    const relatorio =
+        document.createElement(
+            'div'
+        );
+
+    relatorio.className =
+        'relatorio-devolucao-pdf';
+
+    const cabecalho =
+        criarCabecalhoPdf();
+
+    const dadosCliente =
+        criarDadosClientePdf();
+
+    const motivo =
+        criarMotivoPdf();
+
+    const tabela =
+        criarTabelaItensPdf();
+
+    const totais =
+        criarTotaisPdf();
+
+    relatorio.appendChild(
+        cabecalho
+    );
+
+    relatorio.appendChild(
+        dadosCliente
+    );
+
+    relatorio.appendChild(
+        motivo
+    );
+
+    relatorio.appendChild(
+        tabela
+    );
+
+    relatorio.appendChild(
+        totais
     );
 
     document.body.appendChild(
-        clone
+        relatorio
     );
 
-    return clone;
+    return relatorio;
 }
 
 function removerLinhasVaziasPdf(
@@ -2176,30 +3029,9 @@ function substituirObservacaoPdf(
 function configurarContainerPdf(
     clone
 ) {
-    const larguraPadraoPdf =
-        1120;
-
-    clone.style.setProperty(
-        'width',
-        `${larguraPadraoPdf}px`,
-        'important'
-    );
-
-    clone.style.setProperty(
-        'min-width',
-        `${larguraPadraoPdf}px`,
-        'important'
-    );
-
-    clone.style.setProperty(
-        'max-width',
-        `${larguraPadraoPdf}px`,
-        'important'
-    );
-
     clone.style.setProperty(
         'position',
-        'absolute',
+        'fixed',
         'important'
     );
 
@@ -2211,7 +3043,31 @@ function configurarContainerPdf(
 
     clone.style.setProperty(
         'left',
-        '0',
+        '-100000px',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'width',
+        '1120px',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'min-width',
+        '1120px',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'max-width',
+        '1120px',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'padding',
+        '18px',
         'important'
     );
 
@@ -2246,25 +3102,7 @@ function configurarContainerPdf(
     );
 
     clone.style.setProperty(
-        'transform',
-        'none',
-        'important'
-    );
-
-    clone.style.setProperty(
-        'z-index',
-        '999999',
-        'important'
-    );
-
-    clone.style.setProperty(
-        'pointer-events',
-        'none',
-        'important'
-    );
-
-    clone.style.setProperty(
-        'background-color',
+        'background',
         '#ffffff',
         'important'
     );
@@ -2272,6 +3110,18 @@ function configurarContainerPdf(
     clone.style.setProperty(
         'color',
         '#000000',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'box-sizing',
+        'border-box',
+        'important'
+    );
+
+    clone.style.setProperty(
+        'z-index',
+        '-1',
         'important'
     );
 }
