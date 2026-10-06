@@ -156,14 +156,39 @@ function itemPodeAparecerNaLista(
         ) ||
         descricao.includes(
             'bobina'
-        );
-
-    return (
-        ativo &&
-        !suspenso &&
-        !foraLinha &&
-        !bloqueado &&
-        exibeConsultas &&
+        )
+        ||
+        descricao.includes(
+            'CATÁLOGO'
+        )
+                ||
+        descricao.includes(
+            'CAMISETA'
+        )
+        ||
+        descricao.includes(
+            'Scooter'
+        )
+        ||
+        descricao.includes(
+            'SACOLA'
+        )
+        ||
+        descricao.includes(
+            'Patinete'
+        )||
+        descricao.includes(
+            'LCD'
+        )||
+        descricao.includes(
+            'BICICLETA'
+        )
+    return ( 
+        // ativo &&
+        // !suspenso &&
+        // !foraLinha &&
+        // !bloqueado &&
+        // exibeConsultas &&
         !descricaoBloqueada
     );
 }

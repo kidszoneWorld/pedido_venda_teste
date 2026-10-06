@@ -533,5 +533,5 @@ function salvar(id, btn) {
 
 // 🔎 botão detalhes
 function verDetalhes(id) {
-    window.open( `/rebaixaDetalhe.html?id=${id}`, '_blank');
+    window.open( `/rebaixaDetalhe.ejs?id=${id}`, '_blank');
 }

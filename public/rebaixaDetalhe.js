@@ -72,11 +72,11 @@ function exportarDetalheExcel() {
             p.codigoItem,
             p.descricao,
             p.lote,
-            p.precounitario,
-            p.rebaixa,
-            p.atual,
+            String(p.precounitario).replaceAll(".",","),
+            String(p.rebaixa).replaceAll(".",","),
+            String(p.atual).replaceAll(".",","),
             p.quantidade,
-            p.total
+            String(p.total).replaceAll(".",",")
         ]);
     });
 

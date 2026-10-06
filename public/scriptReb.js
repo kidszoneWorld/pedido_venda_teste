@@ -5,10 +5,22 @@ const timestamp = Date.now();
 let clientesData;
 let promocaoData;
 let foraDeLinhaData;
-let listaPrecosData;
 let icmsSTData;
 let listaPrecosIpiData;
-  
+let catalogoClienteData =
+    [];
+
+let catalogoClientePorCodigo =
+    new Map();
+
+let catalogoClienteCarregado =
+    false;
+
+let catalogoClienteCarregando =
+    false;
+
+let dadosListaPrecoAtual =
+    null;
 let step = 0;
 let tutorialAtivo = false;
 
@@ -42,12 +54,515 @@ fetch(`/data/ICMS-ST.json?cacheBust=${timestamp}`)
   .then(r => r.json())
   .then(d => icmsSTData = d);
 
+function normalizarCodigoItem(
+    valor
+) {
+    return String(
+        valor || ''
+    )
+        .trim()
+        .toUpperCase();
+}
 
+function converterParaBooleano(
+    valor
+) {
+    if (
+        valor === true ||
+        valor === 1
+    ) {
+        return true;
+    }
 
-async function carregarListaPrecos(listaId) {
-    const response = await fetch(`/api/lista-preco-Sem-Verificar/${listaId}`);
-    listaPrecosData = await response.json();
-    console.log('LISTA DE PREÇOS CARREGADA:', Array.isArray(listaPrecosData) ? listaPrecosData.length : listaPrecosData);
+    if (
+        valor === false ||
+        valor === 0
+    ) {
+        return false;
+    }
+
+    const texto =
+        String(
+            valor ?? ''
+        )
+            .trim()
+            .toLowerCase();
+
+    return (
+        texto === 'true' ||
+        texto === '1' ||
+        texto === 'sim' ||
+        texto === 's' ||
+        texto === 'ativo'
+    );
+}
+
+function normalizarTextoPesquisa(
+    valor
+) {
+    return String(
+        valor || ''
+    )
+        .normalize(
+            'NFD'
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ''
+        )
+        .trim()
+        .toUpperCase();
+}
+
+function itemPodeAparecerNaLista(
+    item
+) {
+    if (!item) {
+        return false;
+    }
+
+    const ativo =
+        item.ativo === undefined ||
+        item.ativo === null
+            ? true
+            : converterParaBooleano(
+                item.ativo
+            );
+
+    const suspenso =
+        converterParaBooleano(
+            item.suspenso
+        );
+
+    const foraLinha =
+        converterParaBooleano(
+            item.foraLinha
+        );
+
+    const bloqueado =
+        converterParaBooleano(
+            item.bloqueado
+        );
+
+    const exibeConsultas =
+        item.exibeConsultasListaPreco ===
+            undefined ||
+        item.exibeConsultasListaPreco ===
+            null
+            ? true
+            : converterParaBooleano(
+                item.exibeConsultasListaPreco
+            );
+
+    const descricao =
+        normalizarTextoPesquisa(
+            item.descricao
+        );
+
+    const descricoesBloqueadas = [
+        'DISPLAY',
+        'BOBINA',
+        'CATALOGO',
+        'CAMISETA',
+        'SCOOTER',
+        'SACOLA',
+        'PATINETE',
+        'LCD',
+        'BICICLETA'
+    ];
+
+    const descricaoBloqueada =
+        descricoesBloqueadas.some(
+            texto => {
+                return descricao.includes(
+                    texto
+                );
+            }
+        );
+
+    return (
+        // ativo &&
+        // !suspenso &&
+        // !foraLinha &&
+        // !bloqueado &&
+        // exibeConsultas &&
+        !descricaoBloqueada
+    );
+}
+
+async function carregarCatalogoCliente(
+    clienteCodigo,
+    listaCodigo = null
+) {
+    const codigoCliente =
+        String(
+            clienteCodigo || ''
+        ).trim();
+
+    if (!codigoCliente) {
+        throw new Error(
+            'Código do cliente não disponível para carregar o catálogo.'
+        );
+    }
+
+    catalogoClienteCarregado =
+        false;
+
+    catalogoClienteCarregando =
+        true;
+
+    catalogoClienteData =
+        [];
+
+    catalogoClientePorCodigo =
+        new Map();
+
+    dadosListaPrecoAtual =
+        null;
+
+    showFeedback(
+        'Carregando lista de produtos do cliente...'
+    );
+
+    try {
+        const parametros =
+            new URLSearchParams();
+
+        if (
+            listaCodigo !== null &&
+            listaCodigo !== undefined &&
+            listaCodigo !== ''
+        ) {
+            parametros.set(
+                'listaCodigo',
+                String(
+                    listaCodigo
+                )
+            );
+        }
+
+        const queryString =
+            parametros.toString();
+
+        const url =
+            `/api/catalogo-cliente/${encodeURIComponent(codigoCliente)}` +
+            (
+                queryString
+                    ? `?${queryString}`
+                    : ''
+            );
+
+        console.log(
+            'Consultando catálogo da rebaixa:',
+            url
+        );
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        'GET',
+
+                    headers: {
+                        Accept:
+                            'application/json'
+                    }
+                }
+            );
+
+        const textoResposta =
+            await response.text();
+
+        let resultado =
+            null;
+
+        if (textoResposta) {
+            try {
+                resultado =
+                    JSON.parse(
+                        textoResposta
+                    );
+            } catch {
+                throw new Error(
+                    'O catálogo retornou uma resposta inválida.'
+                );
+            }
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                resultado?.mensagem ||
+                resultado?.message ||
+                textoResposta ||
+                `Erro HTTP ${response.status}`
+            );
+        }
+
+        const itensRecebidos =
+            Array.isArray(
+                resultado?.itens
+            )
+                ? resultado.itens
+                : [];
+
+        const itensDisponiveis =
+            itensRecebidos.filter(
+                itemPodeAparecerNaLista
+            );
+
+        catalogoClienteData =
+            itensDisponiveis;
+
+        dadosListaPrecoAtual =
+            resultado?.listaPreco ||
+            null;
+
+        catalogoClientePorCodigo =
+            new Map();
+
+        itensDisponiveis.forEach(
+            item => {
+                const codigo =
+                    normalizarCodigoItem(
+                        item.itemEmpresaId
+                    );
+
+                if (!codigo) {
+                    return;
+                }
+
+                catalogoClientePorCodigo.set(
+                    codigo,
+                    item
+                );
+            }
+        );
+
+        catalogoClienteCarregado =
+            true;
+
+        if (dadosListaPrecoAtual) {
+            const campoCodigoLista =
+                document.getElementById(
+                    'codgroup'
+                );
+
+            const campoNomeLista =
+                document.getElementById(
+                    'group'
+                );
+
+            if (campoCodigoLista) {
+                campoCodigoLista.value =
+                    dadosListaPrecoAtual.codigo ||
+                    '';
+            }
+
+            if (campoNomeLista) {
+                campoNomeLista.value =
+                    dadosListaPrecoAtual.descricao ||
+                    '';
+            }
+        }
+
+        criarDatalistCatalogoRebaixa();
+
+        console.log(
+            'Catálogo da rebaixa carregado:',
+            {
+                clienteCodigo:
+                    codigoCliente,
+
+                listaPreco:
+                    dadosListaPrecoAtual,
+
+                totalRecebido:
+                    itensRecebidos.length,
+
+                totalDisponivel:
+                    itensDisponiveis.length,
+
+                totalIndexado:
+                    catalogoClientePorCodigo.size,
+
+                erros:
+                    resultado?.erros || []
+            }
+        );
+
+        return resultado;
+    } catch (error) {
+        catalogoClienteData =
+            [];
+
+        catalogoClientePorCodigo =
+            new Map();
+
+        catalogoClienteCarregado =
+            false;
+
+        console.error(
+            'Erro ao carregar catálogo da rebaixa:',
+            error
+        );
+
+        throw error;
+    } finally {
+        catalogoClienteCarregando =
+            false;
+
+        hideFeedback();
+    }
+}
+
+function criarDatalistCatalogoRebaixa() {
+    let datalist =
+        document.getElementById(
+            'lista-produtos-rebaixa'
+        );
+
+    if (!datalist) {
+        datalist =
+            document.createElement(
+                'datalist'
+            );
+
+        datalist.id =
+            'lista-produtos-rebaixa';
+
+        document.body.appendChild(
+            datalist
+        );
+    }
+
+    datalist.innerHTML =
+        '';
+
+    catalogoClienteData.forEach(
+        item => {
+            const codigo =
+                String(
+                    item.itemEmpresaId ||
+                    ''
+                ).trim();
+
+            const descricao =
+                String(
+                    item.descricao ||
+                    ''
+                ).trim();
+
+            if (
+                !codigo ||
+                !descricao
+            ) {
+                return;
+            }
+
+            const option =
+                document.createElement(
+                    'option'
+                );
+
+            option.value =
+                `${codigo} - ${descricao}`;
+
+            datalist.appendChild(
+                option
+            );
+        }
+    );
+}
+
+function buscarItemNoCatalogo(
+    codigoDigitado
+) {
+    const codigo =
+        normalizarCodigoItem(
+            codigoDigitado
+        );
+
+    if (!codigo) {
+        return null;
+    }
+
+    return (
+        catalogoClientePorCodigo.get(
+            codigo
+        ) ||
+        null
+    );
+}
+
+function buscarItemPorPesquisa(
+    valorDigitado
+) {
+    const texto =
+        String(
+            valorDigitado || ''
+        ).trim();
+
+    if (!texto) {
+        return null;
+    }
+
+    const separador =
+        texto.indexOf(
+            ' - '
+        );
+
+    if (separador >= 0) {
+        const codigoExtraido =
+            normalizarCodigoItem(
+                texto.substring(
+                    0,
+                    separador
+                )
+            );
+
+        const itemPorCodigo =
+            buscarItemNoCatalogo(
+                codigoExtraido
+            );
+
+        if (itemPorCodigo) {
+            return itemPorCodigo;
+        }
+    }
+
+    const itemPorCodigo =
+        buscarItemNoCatalogo(
+            texto
+        );
+
+    if (itemPorCodigo) {
+        return itemPorCodigo;
+    }
+
+    const pesquisa =
+        normalizarTextoPesquisa(
+            texto
+        );
+
+    const correspondencias =
+        catalogoClienteData.filter(
+            item => {
+                const descricao =
+                    normalizarTextoPesquisa(
+                        item.descricao
+                    );
+
+                return (
+                    descricao ===
+                    pesquisa
+                );
+            }
+        );
+
+    return correspondencias.length === 1
+        ? correspondencias[0]
+        : null;
 }
 
 console.log('script.js carregado');
@@ -165,11 +680,37 @@ cnpjInput1.addEventListener('blur', async function () {
 
         preencherCliente(clientesData[1]);
 
-        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+        const clienteCodigo =
+    clienteApi.codigo ??
+    clienteApi.Codigo ??
+    clienteApi['COD CLIENTE 2'] ??
+    document
+        .getElementById(
+            'cod_cliente'
+        )
+        ?.value;
 
-    } catch {
-        alert("Cliente não encontrado, verificar com o financeiro.");
-    } finally {
+const listaCodigo =
+    clienteApi.LISTA ??
+    clienteApi.listaPrecoCodigo ??
+    null;
+
+await carregarCatalogoCliente(
+    clienteCodigo,
+    listaCodigo
+);
+
+    } catch (error) {
+    console.error(
+        'Erro ao carregar cliente ou catálogo:',
+        error
+    );
+
+    alert(
+        error.message ||
+        'Não foi possível carregar o cliente e o catálogo.'
+    );
+}finally {
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
@@ -222,11 +763,37 @@ codInput1.addEventListener('blur', async function () {
             return alert('Cliente não encontrado.');
         }
         preencherCliente(clientesData[1]);
-        if (clienteApi.LISTA) await carregarListaPrecos(clienteApi.LISTA);
+        const clienteCodigo =
+            clienteApi.codigo ??
+            clienteApi.Codigo ??
+            clienteApi['COD CLIENTE 2'] ??
+            document
+                .getElementById(
+                    'cod_cliente'
+                )
+                ?.value;
 
-    } catch {
-        alert("Cliente não encontrado, verificar com o financeiro.");
-    } finally {
+        const listaCodigo =
+            clienteApi.LISTA ??
+            clienteApi.listaPrecoCodigo ??
+            null;
+
+        await carregarCatalogoCliente(
+            clienteCodigo,
+            listaCodigo
+        );
+
+    } catch (error) {
+        console.error(
+            'Erro ao carregar cliente ou catálogo:',
+            error
+        );
+
+        alert(
+            error.message ||
+            'Não foi possível carregar o cliente e o catálogo.'
+        );
+        } finally {
         hideFeedback();
         this.readOnly = false;
         garantirLinhaInicial();
@@ -276,9 +843,27 @@ function atualizarTotais() {
 }
 
 function garantirLinhaInicial() {
-    const tbody = el('dadosPedido').querySelector('tbody');
-    tbody.querySelectorAll('tr').forEach(tr => !tr.querySelector('input') && tr.remove());
-    if (!tbody.querySelector('tr')) adicionarNovaLinha();
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
+
+    if (!tbody) {
+        console.error(
+            'Tabela de rebaixa não encontrada.'
+        );
+
+        return;
+    }
+
+    const linhas =
+        tbody.querySelectorAll(
+            '.linha-item-rebaixa'
+        );
+
+    if (linhas.length === 0) {
+        adicionarNovaLinha();
+    }
 }
 
 function moedaBRParaNumero(valor){
@@ -402,57 +987,90 @@ const dataBR = new Date()
 const dataFormatada = dataBR.toLocaleDateString('pt-BR', {
     timeZone: 'UTC'
 });
+
 function montarObjetoRebaixa() {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
 
     const produtos = [];
 
-    linhas.forEach(tr => {
-        const cells = tr.querySelectorAll('input');
+    linhas.forEach(
+        tr => {
+            const codigo =
+                String(
+                    tr.dataset.itemEmpresaId ||
+                    ''
+                ).trim();
 
-        if (!cells[1]?.value) return; // ignora linha vazia
+            if (!codigo) {
+                return;
+            }
 
-        produtos.push({
+            produtos.push({
+                nforigem:
+                    tr.querySelector(
+                        '.campo-nf-origem-rebaixa'
+                    )?.value || '',
 
-            nforigem:
-                cells[0]?.value,
+                codigoItem:
+                    codigo,
 
-            codigoItem:
-                cells[1]?.value,
+                descricao:
+                    String(
+                        tr.dataset.descricao ||
+                        ''
+                    ).trim(),
 
-            descricao:
-                cells[2]?.value,
+                lote:
+                    tr.querySelector(
+                        '.campo-lote-rebaixa'
+                    )?.value || '',
 
-            lote:
-                cells[3]?.value,
+                precounitario:
+                    moedaBRParaNumero(
+                        tr.querySelector(
+                            '.campo-preco-rebaixa'
+                        )?.value
+                    ),
 
-            precounitario:
-                moedaBRParaNumero(
-                    cells[4]?.value
-                ),
+                rebaixa:
+                    moedaBRParaNumero(
+                        tr.querySelector(
+                            '.campo-valor-rebaixa'
+                        )?.value
+                    ),
 
-            rebaixa:
-                moedaBRParaNumero(
-                    cells[5]?.value
-                ),
+                atual:
+                    moedaBRParaNumero(
+                        tr.querySelector(
+                            '.campo-preco-atual-rebaixa'
+                        )?.value
+                    ),
 
-            atual:
-                moedaBRParaNumero(
-                    cells[6]?.value
-                ),
+                quantidade:
+                    numeroQuantidade(
+                        tr.querySelector(
+                            '.campo-quantidade-rebaixa'
+                        )?.value
+                    ),
 
-            quantidade:
-                numeroQuantidade(
-                    cells[7]?.value
-                ),
+                total:
+                    moedaBRParaNumero(
+                        tr.querySelector(
+                            '.campo-total-rebaixa'
+                        )?.value
+                    ),
 
-            total:
-                moedaBRParaNumero(
-                    cells[8]?.value
-                )
-        });
-
-    });
+                itemId:
+                    Number(
+                        tr.dataset.itemId ||
+                        tr.querySelector(
+                            '.campo-item-id-rebaixa'
+                        )?.value ||
+                        0
+                    )
+            });
+        }
+    );
 
     const rebaixa = {
         cnpj: document.getElementById('cnpj').value.replace(/\D/g, ''),
@@ -509,98 +1127,76 @@ async function salvarRebaixaMongo() {
 
 
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
-function atualizarTotalVolumes(){
-
+function atualizarTotalVolumes() {
     let totalVolumes =
         0;
 
-    const linhas =
-        document.querySelectorAll(
-            '#dadosPedido tbody tr'
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-rebaixa'
+        )
+        .forEach(
+            tr => {
+                totalVolumes +=
+                    numeroQuantidade(
+                        tr.querySelector(
+                            '.campo-quantidade-rebaixa'
+                        )?.value
+                    );
+            }
         );
 
-    linhas.forEach(tr => {
+    const campoVolume =
+        document.getElementById(
+            'volume'
+        );
 
-        const cell =
-            tr.cells[7]?.querySelector(
-                'input'
-            );
-
-        if(cell && cell.value){
-
-            const quantidade =
-                numeroQuantidade(
-                    cell.value
-                );
-
-            if(!isNaN(quantidade)){
-
-                totalVolumes +=
-                    quantidade;
-
-            }
-
-        }
-
-    });
-
-    document.getElementById(
-        'volume'
-    ).value =
-        totalVolumes;
-
+    if (campoVolume) {
+        campoVolume.value =
+            totalVolumes;
+    }
 }
 
 // Função para atualizar o total de produtos (quantidade * valor unitário)
-function atualizarTotalProdutos(){
-
+function atualizarTotalProdutos() {
     let totalProdutos =
         0;
 
-    const linhas =
-        document.querySelectorAll(
-            '#dadosPedido tbody tr'
-        );
-
-    linhas.forEach(tr => {
-
-        const valorTotalLinhaCell =
-            tr.cells[8]?.querySelector(
-                'input'
-            );
-
-        if(
-            valorTotalLinhaCell &&
-            valorTotalLinhaCell.value
-        ){
-
-            const valorTotalLinha =
-                moedaBRParaNumero(
-                    valorTotalLinhaCell.value
-                );
-
-            if(!isNaN(valorTotalLinha)){
-
+    document
+        .querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-rebaixa'
+        )
+        .forEach(
+            tr => {
                 totalProdutos +=
-                    valorTotalLinha;
-
-            }
-
-        }
-
-    });
-
-    document.getElementById(
-        'total'
-    ).value =
-        totalProdutos.toLocaleString(
-            'pt-BR',
-            {
-                style: 'currency',
-                currency: 'BRL'
+                    moedaBRParaNumero(
+                        tr.querySelector(
+                            '.campo-total-rebaixa'
+                        )?.value
+                    );
             }
         );
 
+    const campoTotal =
+        document.getElementById(
+            'total'
+        );
+
+    if (campoTotal) {
+        campoTotal.value =
+            totalProdutos.toLocaleString(
+                'pt-BR',
+                {
+                    style:
+                        'currency',
+
+                    currency:
+                        'BRL'
+                }
+            );
+    }
 }
 
 function dataMaiorQue6Meses(dataInput) {
@@ -613,528 +1209,1237 @@ function dataMaiorQue6Meses(dataInput) {
     return dataSelecionada < limite;
 }
 
-function validarTabelaPedido(){
-
+function validarTabelaPedido() {
     const linhas =
-        document.querySelectorAll(
-            '#dadosPedido tbody tr'
+        Array.from(
+            document.querySelectorAll(
+                '#dadosPedido tbody ' +
+                '.linha-item-rebaixa'
+            )
+        ).filter(
+            tr => {
+                return Boolean(
+                    String(
+                        tr.dataset.itemEmpresaId ||
+                        ''
+                    ).trim()
+                );
+            }
         );
 
-    if(!linhas.length){
-
+    if (linhas.length === 0) {
         alert(
-            'Adicione pelo menos um item no pedido.'
+            'Adicione pelo menos um item na rebaixa.'
         );
 
         return false;
-
     }
 
-    for(let i = 0; i < linhas.length; i++){
-
+    for (
+        let indice = 0;
+        indice < linhas.length;
+        indice += 1
+    ) {
         const tr =
-            linhas[i];
+            linhas[indice];
 
-        const inputs =
-            tr.querySelectorAll(
-                'input'
-            );
+        const numeroLinha =
+            indice + 1;
 
         const nf =
-            inputs[0]?.value.trim();
+            tr.querySelector(
+                '.campo-nf-origem-rebaixa'
+            )?.value.trim();
 
         const codigo =
-            inputs[1]?.value.trim();
+            String(
+                tr.dataset.itemEmpresaId ||
+                ''
+            ).trim();
 
         const descricao =
-            inputs[2]?.value.trim();
+            String(
+                tr.dataset.descricao ||
+                ''
+            ).trim();
 
         const lote =
-            inputs[3]?.value.trim();
+            tr.querySelector(
+                '.campo-lote-rebaixa'
+            )?.value.trim();
 
         const preco =
-            inputs[4]?.value.trim();
-
-        const rebaixa =
-            inputs[5]?.value.trim();
-
-        const atual =
-            inputs[6]?.value.trim();
-
-        const quantidade =
-            inputs[7]?.value.trim();
-
-        const total =
-            inputs[8]?.value.trim();
-
-        if(
-            !nf ||
-            !codigo ||
-            !descricao ||
-            !lote ||
-            !preco ||
-            !rebaixa ||
-            !atual ||
-            !quantidade ||
-            !total
-        ){
-
-            alert(
-                `Preencha todos os campos da linha ${i + 1}`
+            moedaBRParaNumero(
+                tr.querySelector(
+                    '.campo-preco-rebaixa'
+                )?.value
             );
 
-            inputs[0]?.focus();
+        const rebaixa =
+            moedaBRParaNumero(
+                tr.querySelector(
+                    '.campo-valor-rebaixa'
+                )?.value
+            );
+
+        const atual =
+            moedaBRParaNumero(
+                tr.querySelector(
+                    '.campo-preco-atual-rebaixa'
+                )?.value
+            );
+
+        const quantidade =
+            numeroQuantidade(
+                tr.querySelector(
+                    '.campo-quantidade-rebaixa'
+                )?.value
+            );
+
+        const total =
+            moedaBRParaNumero(
+                tr.querySelector(
+                    '.campo-total-rebaixa'
+                )?.value
+            );
+
+        if (!nf) {
+            alert(
+                `Preencha a NF de origem na linha ${numeroLinha}.`
+            );
+
+            tr.querySelector(
+                '.campo-nf-origem-rebaixa'
+            )?.focus();
 
             return false;
-
         }
 
+        if (
+            !codigo ||
+            !descricao
+        ) {
+            alert(
+                `Selecione um item válido na linha ${numeroLinha}.`
+            );
+
+            tr.querySelector(
+                '.campo-item-pesquisa-rebaixa'
+            )?.focus();
+
+            return false;
+        }
+
+        if (!lote) {
+            alert(
+                `Preencha o lote na linha ${numeroLinha}.`
+            );
+
+            tr.querySelector(
+                '.campo-lote-rebaixa'
+            )?.focus();
+
+            return false;
+        }
+
+        if (preco <= 0) {
+            alert(
+                `Informe o preço unitário na linha ${numeroLinha}.`
+            );
+
+            tr.querySelector(
+                '.campo-preco-rebaixa'
+            )?.focus();
+
+            return false;
+        }
+
+        if (
+            rebaixa <= 0 ||
+            rebaixa > preco
+        ) {
+            alert(
+                `Informe uma rebaixa válida na linha ${numeroLinha}.`
+            );
+
+            tr.querySelector(
+                '.campo-valor-rebaixa'
+            )?.focus();
+
+            return false;
+        }
+
+        if (
+            atual < 0 ||
+            quantidade <= 0 ||
+            total <= 0
+        ) {
+            alert(
+                `Verifique os valores da linha ${numeroLinha}.`
+            );
+
+            return false;
+        }
     }
 
     return true;
-
 }
 
-function recalcularLinhaRebaixa(tr){
+function recalcularLinhaRebaixa(
+    tr
+) {
+    const campoPreco =
+        tr.querySelector(
+            '.campo-preco-rebaixa'
+        );
 
-    const cells =
-        tr.querySelectorAll(
-            'td input'
+    const campoRebaixa =
+        tr.querySelector(
+            '.campo-valor-rebaixa'
+        );
+
+    const campoAtual =
+        tr.querySelector(
+            '.campo-preco-atual-rebaixa'
+        );
+
+    const campoQuantidade =
+        tr.querySelector(
+            '.campo-quantidade-rebaixa'
+        );
+
+    const campoTotal =
+        tr.querySelector(
+            '.campo-total-rebaixa'
         );
 
     const preco =
         moedaBRParaNumero(
-            cells[4]?.value
+            campoPreco?.value
         );
 
     const rebaixa =
         moedaBRParaNumero(
-            cells[5]?.value
+            campoRebaixa?.value
         );
 
-    const qtd =
+    const quantidade =
         numeroQuantidade(
-            cells[7]?.value
+            campoQuantidade?.value
         );
 
     const atual =
-        preco - rebaixa;
+        preco -
+        rebaixa;
 
     const total =
-        rebaixa * qtd;
+        rebaixa *
+        quantidade;
 
-    if(cells[6]){
-
-        cells[6].value =
+    if (campoAtual) {
+        campoAtual.value =
             numeroParaMoedaBR(
                 atual
             );
-
     }
 
-    if(cells[8]){
-
-        cells[8].value =
+    if (campoTotal) {
+        campoTotal.value =
             numeroParaMoedaBR(
                 total
             );
-
     }
 
     atualizarTotais();
-
 }
 
+function limparItemLinhaRebaixa(
+    tr
+) {
+    const seletoresCampos = [
+        '.campo-item-pesquisa-rebaixa',
+        '.campo-lote-rebaixa',
+        '.campo-preco-rebaixa',
+        '.campo-valor-rebaixa',
+        '.campo-preco-atual-rebaixa',
+        '.campo-quantidade-rebaixa',
+        '.campo-total-rebaixa',
+        '.campo-item-id-rebaixa'
+    ];
 
-// Função para adicionar uma nova linha à tabela
-function adicionarNovaLinha() {
-    const tbody = document.querySelector('#dadosPedido tbody');
-    const tr = document.createElement('tr');
-
-
-
-    for (let i = 0; i < 11; i++) {
-        
-        const td = document.createElement('td');
-        const classesColunas = {
-                0: 'col-reb-nf',
-                1: 'col-reb-codigo',
-                2: 'col-reb-descricao',
-                3: 'col-reb-lote',
-                4: 'col-reb-preco',
-                5: 'col-reb-rebaixa',
-                6: 'col-reb-atual',
-                7: 'col-reb-quantidade',
-                8: 'col-reb-total',
-                9: 'col-reb-excluir',
-                10: 'col-reb-itemid'
-            };
-
-            if(classesColunas[i]){
-                td.classList.add(
-                    classesColunas[i]
+    seletoresCampos.forEach(
+        seletor => {
+            const campo =
+                tr.querySelector(
+                    seletor
                 );
+
+            if (campo) {
+                campo.value =
+                    '';
             }
-        // coluna oculta (ItemId)
-        if (i === 10) {
-            td.style.display = 'none';
         }
-
-        // 🗑 BOTÃO REMOVER LINHA
-        if (i === 9) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.classList.add('btn-remover-linha');
-            btn.textContent = 'REMOVER';
-
-
-                btn.gradient = 'linear-gradient(90deg,rgba(225,0,152) 0%,#f18fc7 100%)';
-                btn.color = '#fafcfa';
-            
-            btn.innerText = 'Excluir';
-            
-
-            btn.addEventListener('click', () => {
-                tr.remove();
-                atualizarTotais();
-                garantirLinhaInicial();
-            });
-             
-
-            td.appendChild(btn);
-            tr.appendChild(td);
-            continue; 
-        }
-
-        
-        
-        // ✏️ INPUT NORMAL
-const input =
-    document.createElement('input');
-
-input.type =
-    'text';
-
-// TAB só em quase tudo
-input.tabIndex =
-    (
-        i === 0 ||
-        i === 1 ||
-        i === 2 ||
-        i === 3 ||
-        i === 4 ||
-        i === 8
-    )
-    ? 0
-    : -1;
-
-input.style.padding =
-    '5px';
-
-input.style.width =
-    '100%';
-
-input.style.boxSizing =
-    'border-box';
-
-const camposDinheiro =
-    [4, 5, 6, 8];
-
-const camposCalculam =
-    [4, 5, 7];
-
-if(camposDinheiro.includes(i)){
-
-    input.classList.add(
-        'campo-dinheiro-reb'
     );
 
-    input.inputMode =
-        'decimal';
+    tr.dataset.itemId =
+        '';
 
+    tr.dataset.itemEmpresaId =
+        '';
+
+    tr.dataset.codigo =
+        '';
+
+    tr.dataset.descricao =
+        '';
+
+    tr.dataset.itemCarregado =
+        'false';
+
+    atualizarTotais();
 }
 
-if(i === 7){
+function preencherItemLinhaRebaixa(
+    tr,
+    item
+) {
+    const campoPesquisa =
+        tr.querySelector(
+            '.campo-item-pesquisa-rebaixa'
+        );
 
-    input.classList.add(
-        'campo-qtd-reb'
-    );
+    const campoLote =
+        tr.querySelector(
+            '.campo-lote-rebaixa'
+        );
 
-    input.inputMode =
-        'decimal';
+    const campoItemId =
+        tr.querySelector(
+            '.campo-item-id-rebaixa'
+        );
 
-}
+    const codigo =
+        String(
+            item.itemEmpresaId || ''
+        ).trim();
 
-if(i === 6 || i === 8){
+    const descricao =
+        String(
+            item.descricao || ''
+        ).trim();
 
-    input.readOnly =
-        true;
+    const itemId =
+        item.itemId ??
+        item.ItemId ??
+        item.codigo ??
+        '';
 
-}
+    campoPesquisa.value =
+        `${codigo} - ${descricao}`;
 
-if(camposCalculam.includes(i)){
-
-    input.addEventListener(
-        'input',
-        () => {
-
-            recalcularLinhaRebaixa(
-                tr
+    if (campoItemId) {
+        campoItemId.value =
+            String(
+                itemId
             );
+    }
 
-        }
+    tr.dataset.itemId =
+        String(
+            itemId
+        );
+
+    tr.dataset.itemEmpresaId =
+        codigo;
+
+    tr.dataset.codigo =
+        codigo;
+
+    tr.dataset.descricao =
+        descricao;
+
+    tr.dataset.itemCarregado =
+        'true';
+
+    recalcularLinhaRebaixa(
+        tr
     );
 
-}
-
-if(camposDinheiro.includes(i)){
-
-    input.addEventListener(
-        'blur',
+    setTimeout(
         () => {
-
-            formatarCampoMoedaBR(
-                input
-            );
-
-            recalcularLinhaRebaixa(
-                tr
-            );
-
-        }
+            campoLote?.focus();
+            campoLote?.select();
+        },
+        0
     );
-
-    input.addEventListener(
-        'focus',
-        () => {
-
-            input.select();
-
-        }
-    );
-
 }
 
-// CAMPOS COM R$
-if(
-    i === 4 ||
-    i === 5 ||
-    i === 6 ||
-    i === 8
-){
+function configurarPesquisaItemRebaixa(
+    tr,
+    campoPesquisa
+) {
+    let processandoItem =
+        false;
 
-    const wrapperMoeda =
-        document.createElement('div');
-
-    wrapperMoeda.classList.add(
-        'campo-moeda'
-    );
-
-    const simboloMoeda =
-        document.createElement('span');
-
-    simboloMoeda.textContent =
-        'R$';
-
-    wrapperMoeda.appendChild(
-        simboloMoeda
-    );
-
-    wrapperMoeda.appendChild(
-        input
-    );
-
-    td.appendChild(
-        wrapperMoeda
-    );
-
-}else{
-
-    td.appendChild(
-        input
-    );
-
-}
-
-tr.appendChild(
-    td
-);
-        
-        // =========================
-        // NAVEGAÇÃO ↑ ↓ TAB
-        // =========================
-        input.addEventListener('keydown', (e) => {
-            const linhas = Array.from(tbody.querySelectorAll('tr'));
-            const linhaAtual = linhas.indexOf(tr);
-
-            if (e.key === 'ArrowUp' && linhaAtual > 0) {
-                e.preventDefault();
-                linhas[linhaAtual - 1].cells[i]?.querySelector('input')?.focus();
-            }
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-
-                if (linhaAtual === linhas.length - 1 && i === 10) {
-                    adicionarNovaLinha();
-                    setTimeout(() => {
-                        tbody.lastChild.cells[0].querySelector('input').focus();
-                    }, 0);
-                } else {
-                    linhas[linhaAtual + 1]?.cells[i]?.querySelector('input')?.focus();
-                }
-            }
-
-            if (e.key === 'Tab' && !e.shiftKey && i === 10 && linhaAtual === linhas.length - 1) {
-                e.preventDefault();
-                setTimeout(() => {
-                    tbody.lastChild.cells[0].querySelector('input').focus();
-                }, 0);
-            }
-            //enter = tab
-            if ((e.key === 'Tab' || e.key === 'Enter') && !e.shiftKey) {
-    e.preventDefault();
-
-    // se estiver no qtd (coluna 7)
-    if (i === 7) {
-        if (linhaAtual === linhas.length - 1) {
-            // última linha → cria nova
-            adicionarNovaLinha();
-            setTimeout(() => {
-                tbody.lastChild.cells[0].querySelector('input')?.focus();
-            }, 0);
-        } else {
-            // próxima linha
-            linhas[linhaAtual + 1]?.cells[0]?.querySelector('input')?.focus();
-        }
-        
-    }
-        // se estiver no NF Origem (coluna 0)
-    if (i === 0) {
-        tr.cells[1]?.querySelector('input')?.focus();
-    }
-    // se estiver no CÓDIGO (coluna 1)
-    else if (i === 1) {
-        tr.cells[3]?.querySelector('input')?.focus();
-    }
-    // se estiver na quantidade (coluna 2)
-    else if (i === 3) {
-        tr.cells[4]?.querySelector('input')?.focus();
-    }
-    else if (i === 4) {
-        tr.cells[5]?.querySelector('input')?.focus();
-    }
-    else if (i === 5) {
-        tr.cells[7]?.querySelector('input')?.focus();
-    }
-}
-
-
-        });
-
-        // =========================
-        // CÓDIGO DO ITEM
-        // =========================
-       // =========================
-
-if (i === 1) {
-    input.addEventListener('blur', async function () {
-        const cod = this.value.trim().toUpperCase();
-        if (!cod) return;
-
-        // VERIFICA DUPLICIDADE
-        if (verificarCodigoDuplicadoNaTabela(cod, tr)) {
-            alert('Este item já foi adicionado ao pedido.');
-            this.value = '';
-            this.focus();
-            return;
+    async function processarItem() {
+        if (processandoItem) {
+            return false;
         }
 
-        const listaId = document.getElementById('codgroup').value;
-        const cells = tr.querySelectorAll('td input');
+        const valorDigitado =
+            campoPesquisa.value.trim();
 
-        // 🔄 FEEDBACK VISUAL
-        cells[2].value = 'Carregando item, por favor aguarde...';
-        
+        if (!valorDigitado) {
+            return false;
+        }
+
+        processandoItem =
+            true;
+
+        campoPesquisa.readOnly =
+            true;
 
         try {
-            const response = await fetch(
-                `/api/lista-preco-Sem-Verificar/${listaId}?codigo=${encodeURIComponent(cod)}`
-            );
-
-            if (!response.ok) {
-                const erro = await response.json();
-                throw new Error(erro.message || 'Item não disponível');
+            if (catalogoClienteCarregando) {
+                throw new Error(
+                    'O catálogo ainda está sendo carregado. Aguarde.'
+                );
             }
 
-            const data = await response.json();
-            if (!data.length) {
-                throw new Error('Item não encontrado');
+            if (!catalogoClienteCarregado) {
+                throw new Error(
+                    'Carregue um cliente antes de informar os itens.'
+                );
             }
 
             const item =
-    data[0];
+                buscarItemPorPesquisa(
+                    valorDigitado
+                );
 
-cells[2].value =
-    item.ItemDescricao || '';
+            if (!item) {
+                throw new Error(
+                    'Item não encontrado no catálogo do cliente.'
+                );
+            }
 
-tr.dataset.itemId =
-    item.ItemId || '';
+            const codigo =
+                normalizarCodigoItem(
+                    item.itemEmpresaId
+                );
 
-cells[1].addEventListener(
-    'input',
-    () => {
+            if (!codigo) {
+                throw new Error(
+                    'O item selecionado não possui código de empresa.'
+                );
+            }
 
-        cells[2].value =
-            '';
+            const itemDuplicado =
+                Array.from(
+                    document.querySelectorAll(
+                        '#dadosPedido tbody tr'
+                    )
+                ).some(
+                    linha => {
+                        if (linha === tr) {
+                            return false;
+                        }
 
-        cells[3].value =
-            '';
+                        const codigoLinha =
+                            normalizarCodigoItem(
+                                linha.dataset
+                                    .itemEmpresaId
+                            );
 
-        cells[4].value =
-            '';
+                        return (
+                            codigoLinha &&
+                            codigoLinha === codigo
+                        );
+                    }
+                );
 
-        cells[5].value =
-            '';
+            if (itemDuplicado) {
+                throw new Error(
+                    'Este item já foi adicionado à rebaixa.'
+                );
+            }
 
-        cells[6].value =
-            '';
+            preencherItemLinhaRebaixa(
+                tr,
+                item
+            );
 
-        cells[7].value =
-            '';
+            tr.dataset.itemCarregado =
+                'true';
 
-        cells[8].value =
-            '';
+            return true;
+        } catch (error) {
+            console.error(
+                'Erro ao carregar item da rebaixa:',
+                error
+            );
+
+            limparItemLinhaRebaixa(
+                tr
+            );
+
+            alert(
+                error.message ||
+                'Não foi possível carregar o item.'
+            );
+
+            setTimeout(
+                () => {
+                    campoPesquisa.focus();
+                    campoPesquisa.select();
+                },
+                0
+            );
+
+            return false;
+        } finally {
+            processandoItem =
+                false;
+
+            campoPesquisa.readOnly =
+                false;
+        }
+    }
+
+    function limparItemSelecionadoAoEditar() {
+        if (
+            processandoItem ||
+            !tr.dataset.itemEmpresaId
+        ) {
+            return;
+        }
+
+        const valorDigitado =
+            String(
+                campoPesquisa.value || ''
+            ).trim();
+
+        const separador =
+            valorDigitado.indexOf(
+                ' - '
+            );
+
+        const codigoDigitado =
+            separador >= 0
+                ? valorDigitado.substring(
+                    0,
+                    separador
+                )
+                : valorDigitado;
+
+        const codigoNormalizado =
+            normalizarCodigoItem(
+                codigoDigitado
+            );
+
+        const codigoCarregado =
+            normalizarCodigoItem(
+                tr.dataset.itemEmpresaId
+            );
+
+        if (
+            codigoNormalizado ===
+            codigoCarregado
+        ) {
+            return;
+        }
+
+        const campoDescricao =
+            tr.querySelector(
+                '.campo-descricao-rebaixa'
+            );
+
+        const campoItemId =
+            tr.querySelector(
+                '.campo-item-id-rebaixa'
+            );
+
+        if (campoDescricao) {
+            campoDescricao.value =
+                '';
+        }
+
+        if (campoItemId) {
+            campoItemId.value =
+                '';
+        }
 
         tr.dataset.itemId =
             '';
 
-        atualizarTotais();
+        tr.dataset.itemEmpresaId =
+            '';
 
+        tr.dataset.codigo =
+            '';
+
+        tr.dataset.descricao =
+            '';
+
+        tr.dataset.itemCarregado =
+            'false';
     }
-);
 
-recalcularLinhaRebaixa(
-    tr
-);
+    campoPesquisa.addEventListener(
+        'input',
+        () => {
+            limparItemSelecionadoAoEditar();
 
-        } catch (error) {
-            alert(error.message);
-            this.value = '';
-            this.focus();
-        } finally {
-            this.readOnly = false;
+            const item =
+                buscarItemPorPesquisa(
+                    campoPesquisa.value
+                );
+
+            if (
+                item &&
+                !processandoItem
+            ) {
+                processarItem();
+            }
         }
-    });
+    );
+
+    campoPesquisa.addEventListener(
+        'change',
+        () => {
+            processarItem();
+        }
+    );
+
+    campoPesquisa.addEventListener(
+        'blur',
+        () => {
+            const possuiValor =
+                Boolean(
+                    campoPesquisa.value.trim()
+                );
+
+            const possuiItemCarregado =
+                Boolean(
+                    String(
+                        tr.dataset.itemEmpresaId ||
+                        ''
+                    ).trim()
+                );
+
+            if (
+                possuiValor &&
+                !possuiItemCarregado &&
+                !processandoItem
+            ) {
+                processarItem();
+            }
+        }
+    );
+
+    campoPesquisa.addEventListener(
+        'keydown',
+        async evento => {
+            const pressionouEnter =
+                evento.key ===
+                'Enter';
+
+            const pressionouTab =
+                evento.key ===
+                'Tab';
+
+            if (
+                !pressionouEnter &&
+                !pressionouTab
+            ) {
+                return;
+            }
+
+            if (
+                pressionouTab &&
+                evento.shiftKey
+            ) {
+                return;
+            }
+
+            evento.preventDefault();
+            evento.stopPropagation();
+
+            const itemCarregado =
+                await processarItem();
+
+            if (!itemCarregado) {
+                return;
+            }
+
+            const campoLote =
+                tr.querySelector(
+                    '.campo-lote-rebaixa'
+                );
+
+            setTimeout(
+                () => {
+                    campoLote?.focus();
+                    campoLote?.select();
+                },
+                0
+            );
+        }
+    );
 }
 
+// Função para adicionar uma nova linha à tabela
+function adicionarNovaLinha() {
+    const tbody =
+        document.querySelector(
+            '#dadosPedido tbody'
+        );
 
+    if (!tbody) {
+        console.error(
+            'O tbody da tabela de rebaixa não foi encontrado.'
+        );
 
+        return null;
     }
 
-    tbody.appendChild(tr);
-}
+    const tr =
+        document.createElement(
+            'tr'
+        );
 
+    tr.classList.add(
+        'linha-item-rebaixa'
+    );
+
+    const criarCelulaInput = ({
+        classeCelula,
+        classeInput,
+        tipo = 'text',
+        somenteLeitura = false,
+        tabIndex = 0,
+        placeholder = '',
+        inputMode = '',
+        oculto = false
+    }) => {
+        const td =
+            document.createElement(
+                'td'
+            );
+
+        if (classeCelula) {
+            td.classList.add(
+                classeCelula
+            );
+        }
+
+        if (oculto) {
+            td.style.display =
+                'none';
+        }
+
+        const input =
+            document.createElement(
+                'input'
+            );
+
+        input.type =
+            tipo;
+
+        if (classeInput) {
+            input.classList.add(
+                classeInput
+            );
+        }
+
+        input.readOnly =
+            somenteLeitura;
+
+        input.tabIndex =
+            tabIndex;
+
+        input.placeholder =
+            placeholder;
+
+        if (inputMode) {
+            input.inputMode =
+                inputMode;
+        }
+
+        input.autocomplete =
+            'off';
+
+        td.appendChild(
+            input
+        );
+
+        tr.appendChild(
+            td
+        );
+
+        return {
+            td,
+            input
+        };
+    };
+
+    /*
+     * 0 - NF origem
+     */
+    const campoNf =
+        criarCelulaInput({
+            classeCelula:
+                'col-reb-nf',
+
+            classeInput:
+                'campo-nf-origem-rebaixa'
+        }).input;
+
+    /*
+     * 1 - Código / descrição
+     */
+    const campoPesquisa =
+        criarCelulaInput({
+            classeCelula:
+                'col-reb-codigo-descricao',
+
+            classeInput:
+                'campo-item-pesquisa-rebaixa',
+
+            placeholder:
+                'Digite o código ou a descrição'
+        }).input;
+
+    campoPesquisa.setAttribute(
+        'list',
+        'lista-produtos-rebaixa'
+    );
+
+    /*
+     * 2 - Lote
+     */
+    const campoLote =
+        criarCelulaInput({
+            classeCelula:
+                'col-reb-lote',
+
+            classeInput:
+                'campo-lote-rebaixa'
+        }).input;
+
+    /*
+     * Função auxiliar para campos monetários.
+     */
+    function criarCampoMoeda(
+        classeCelula,
+        classeInput,
+        somenteLeitura = false
+    ) {
+        const td =
+            document.createElement(
+                'td'
+            );
+
+        td.classList.add(
+            classeCelula
+        );
+
+        const wrapper =
+            document.createElement(
+                'div'
+            );
+
+        wrapper.classList.add(
+            'campo-moeda'
+        );
+
+        const simbolo =
+            document.createElement(
+                'span'
+            );
+
+        simbolo.textContent =
+            'R$';
+
+        const input =
+            document.createElement(
+                'input'
+            );
+
+        input.type =
+            'text';
+
+        input.classList.add(
+            classeInput,
+            'campo-dinheiro-reb'
+        );
+
+        input.inputMode =
+            'decimal';
+
+        input.autocomplete =
+            'off';
+
+        input.readOnly =
+            somenteLeitura;
+
+        input.tabIndex =
+            somenteLeitura
+                ? -1
+                : 0;
+
+        wrapper.appendChild(
+            simbolo
+        );
+
+        wrapper.appendChild(
+            input
+        );
+
+        td.appendChild(
+            wrapper
+        );
+
+        tr.appendChild(
+            td
+        );
+
+        return input;
+    }
+
+    /*
+     * 3 - Preço unitário com impostos
+     */
+    const campoPreco =
+        criarCampoMoeda(
+            'col-reb-preco',
+            'campo-preco-rebaixa'
+        );
+
+    /*
+     * 4 - Valor da rebaixa
+     */
+    const campoRebaixa =
+        criarCampoMoeda(
+            'col-reb-rebaixa',
+            'campo-valor-rebaixa'
+        );
+
+    /*
+     * 5 - Preço atual calculado
+     */
+    const campoAtual =
+        criarCampoMoeda(
+            'col-reb-atual',
+            'campo-preco-atual-rebaixa',
+            true
+        );
+
+    /*
+     * 6 - Quantidade
+     */
+    const campoQuantidade =
+        criarCelulaInput({
+            classeCelula:
+                'col-reb-quantidade',
+
+            classeInput:
+                'campo-quantidade-rebaixa',
+
+            inputMode:
+                'decimal'
+        }).input;
+
+    /*
+     * 7 - Total calculado
+     */
+    const campoTotal =
+        criarCampoMoeda(
+            'col-reb-total',
+            'campo-total-rebaixa',
+            true
+        );
+
+    /*
+     * 8 - Excluir
+     */
+    const celulaExcluir =
+        document.createElement(
+            'td'
+        );
+
+    celulaExcluir.classList.add(
+        'col-reb-excluir'
+    );
+
+    const botaoRemover =
+        document.createElement(
+            'button'
+        );
+
+    botaoRemover.type =
+        'button';
+
+    botaoRemover.classList.add(
+        'btn-remover-linha'
+    );
+
+    botaoRemover.textContent =
+        'Excluir';
+
+    celulaExcluir.appendChild(
+        botaoRemover
+    );
+
+    tr.appendChild(
+        celulaExcluir
+    );
+
+    /*
+     * 9 - Item ID oculto
+     */
+    const campoItemId =
+        criarCelulaInput({
+            classeCelula:
+                'col-reb-itemid',
+
+            classeInput:
+                'campo-item-id-rebaixa',
+
+            tipo:
+                'hidden',
+
+            tabIndex:
+                -1,
+
+            oculto:
+                true
+        }).input;
+
+    /*
+     * A linha precisa ser adicionada antes da configuração
+     * dos eventos que consultam os campos dentro de "tr".
+     */
+    tbody.appendChild(
+        tr
+    );
+
+    configurarPesquisaItemRebaixa(
+        tr,
+        campoPesquisa
+    );
+
+    const camposCalculados = [
+        campoPreco,
+        campoRebaixa,
+        campoQuantidade
+    ];
+
+    camposCalculados.forEach(
+        campo => {
+            campo.addEventListener(
+                'input',
+                () => {
+                    recalcularLinhaRebaixa(
+                        tr
+                    );
+                }
+            );
+        }
+    );
+
+    [
+        campoPreco,
+        campoRebaixa
+    ].forEach(
+        campo => {
+            campo.addEventListener(
+                'focus',
+                () => {
+                    campo.select();
+                }
+            );
+
+            campo.addEventListener(
+                'blur',
+                () => {
+                    formatarCampoMoedaBR(
+                        campo
+                    );
+
+                    recalcularLinhaRebaixa(
+                        tr
+                    );
+                }
+            );
+        }
+    );
+
+    function configurarEnterTab(
+        campo,
+        proximoCampo,
+        callback = null
+    ) {
+        campo.addEventListener(
+            'keydown',
+            evento => {
+                const enter =
+                    evento.key ===
+                    'Enter';
+
+                const tab =
+                    evento.key ===
+                    'Tab';
+
+                if (
+                    !enter &&
+                    !tab
+                ) {
+                    return;
+                }
+
+                if (
+                    tab &&
+                    evento.shiftKey
+                ) {
+                    return;
+                }
+
+                evento.preventDefault();
+
+                callback?.();
+
+                setTimeout(
+                    () => {
+                        proximoCampo?.focus();
+                        proximoCampo?.select();
+                    },
+                    0
+                );
+            }
+        );
+    }
+
+    configurarEnterTab(
+        campoNf,
+        campoPesquisa
+    );
+
+    configurarEnterTab(
+        campoLote,
+        campoPreco
+    );
+
+    configurarEnterTab(
+        campoPreco,
+        campoRebaixa,
+        () => {
+            formatarCampoMoedaBR(
+                campoPreco
+            );
+
+            recalcularLinhaRebaixa(
+                tr
+            );
+        }
+    );
+
+    configurarEnterTab(
+        campoRebaixa,
+        campoQuantidade,
+        () => {
+            formatarCampoMoedaBR(
+                campoRebaixa
+            );
+
+            recalcularLinhaRebaixa(
+                tr
+            );
+        }
+    );
+
+    campoQuantidade.addEventListener(
+        'keydown',
+        evento => {
+            const enter =
+                evento.key ===
+                'Enter';
+
+            const tab =
+                evento.key ===
+                'Tab';
+
+            if (
+                !enter &&
+                !tab
+            ) {
+                return;
+            }
+
+            if (
+                tab &&
+                evento.shiftKey
+            ) {
+                return;
+            }
+
+            evento.preventDefault();
+
+            recalcularLinhaRebaixa(
+                tr
+            );
+
+            let proximaLinha =
+                tr.nextElementSibling;
+
+            if (
+                !proximaLinha ||
+                !proximaLinha.classList.contains(
+                    'linha-item-rebaixa'
+                )
+            ) {
+                proximaLinha =
+                    adicionarNovaLinha();
+            }
+
+            setTimeout(
+                () => {
+                    proximaLinha
+                        ?.querySelector(
+                            '.campo-nf-origem-rebaixa'
+                        )
+                        ?.focus();
+                },
+                0
+            );
+        }
+    );
+
+    botaoRemover.addEventListener(
+        'click',
+        () => {
+            tr.remove();
+
+            atualizarTotais();
+
+            garantirLinhaInicial();
+        }
+    );
+
+    /*
+     * Referências opcionais no dataset.
+     */
+    tr.dataset.itemId =
+        campoItemId.value || '';
+
+    tr.dataset.itemEmpresaId =
+        '';
+
+    tr.dataset.descricao =
+        '';
+
+    return tr;
+}
 
 // Função para remover a última linha da tabela
 document.getElementById('excluirLinha').addEventListener('click', function () {
