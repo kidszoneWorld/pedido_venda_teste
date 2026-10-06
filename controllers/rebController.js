@@ -24,36 +24,7 @@ exports.listarRebaixas = async (req, res) => {
 
         const { rows } = await pool.query(`
             SELECT
-              A."RebId"          AS "RebId",
-              A."Cnpj"           AS "Cnpj",
-              A."RazaoSocial"    AS "RazaoSocial",
-              A."Endereco"       AS "Endereco",
-              A."Cidade"         AS "Cidade",
-              A."Cep"            AS "Cep",
-              A."Email"          AS "Email",
-              A."Representante"  AS "Representante",
-              A."CodCliente"     AS "CodCliente",
-              A."Bairro"         AS "Bairro",
-              A."Uf"             AS "Uf",
-              A."Telefone"       AS "Telefone",
-              A."EmailFiscal"    AS "EmailFiscal",
-              A."Data"           AS "Data",
-              A."Motivo"         AS "Motivo",
-              A."Status"         AS "Status",
-              A."Finalizado"     AS "Finalizado",
-              A."NfVinculada"    AS "NfVinculada",
-              B."RebProdId"      AS "RebProdId",
-              B."RebId"          AS "RebProdutoRebId",
-              B."NfOrigem"       AS "NfOrigem",
-              B."CodigoItem"     AS "CodigoItem",
-              B."Descricao"      AS "Descricao",
-              B."Lote"           AS "Lote",
-              B."PrecoUnitario"  AS "PrecoUnitario",
-              B."Rebaixa"        AS "Rebaixa",
-              B."Atual"          AS "Atual",
-              B."Quantidade"     AS "Quantidade",
-              B."Total"          AS "Total"
-
+           *
           FROM "TbRebaixas" A
           INNER JOIN "TbRebaixaProdutos" B
               ON A."RebId" = B."RebId"

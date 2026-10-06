@@ -625,14 +625,32 @@ const cnpjInput1 = el('cnpj');
 const codInput1 = el('cod_cliente');
 const blockModal = el('blockModal');
 
-cnpjInput1.addEventListener('focus', () => {
-    if (cnpjInput1.readOnly) {
-        blockModal.style.display = "block";
-        el('timestamp').textContent = new Date().toLocaleString('pt-BR');
-        return;
+cnpjInput1.addEventListener(
+    'focus',
+    () => {
+        if (!cnpjInput1.readOnly) {
+            return;
+        }
+
+        if (blockModal) {
+            blockModal.style.display =
+                'block';
+        }
+
+        const campoTimestamp =
+            el(
+                'timestamp'
+            );
+
+        if (campoTimestamp) {
+            campoTimestamp.textContent =
+                new Date()
+                    .toLocaleString(
+                        'pt-BR'
+                    );
+        }
     }
-   // limparCamposCliente();
-});
+);
 
 // ======================================================================
 // 🔄 BLUR CNPJ → API CLIENTE
@@ -2456,6 +2474,997 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
                     adicionarNovaLinha(); 
     });
 
+
+function obterValorCampoPdf(
+    id,
+    valorPadrao = '-'
+) {
+    const campo =
+        document.getElementById(
+            id
+        );
+
+    const valor =
+        String(
+            campo?.value ?? ''
+        ).trim();
+
+    return valor || valorPadrao;
+}
+
+function criarCampoClientePdf(
+    rotulo,
+    valor,
+    classeExtra = ''
+) {
+    const campo =
+        document.createElement(
+            'div'
+        );
+
+    campo.className =
+        `pdf-campo-cliente ${classeExtra}`
+            .trim();
+
+    const titulo =
+        document.createElement(
+            'strong'
+        );
+
+    titulo.textContent =
+        rotulo;
+
+    const conteudo =
+        document.createElement(
+            'span'
+        );
+
+    conteudo.textContent =
+        String(
+            valor || '-'
+        );
+
+    campo.appendChild(
+        titulo
+    );
+
+    campo.appendChild(
+        conteudo
+    );
+
+    return campo;
+}
+
+function criarCelulaPdf(
+    valor,
+    classe = ''
+) {
+    const td =
+        document.createElement(
+            'td'
+        );
+
+    if (classe) {
+        td.className =
+            classe;
+    }
+
+    td.textContent =
+        String(
+            valor ?? ''
+        ).trim() || '-';
+
+    return td;
+}
+
+function formatarNumeroPdf(
+    valor
+) {
+    return Number(
+        valor || 0
+    ).toLocaleString(
+        'pt-BR',
+        {
+            minimumFractionDigits:
+                2,
+
+            maximumFractionDigits:
+                2
+        }
+    );
+}
+
+function formatarMoedaPdf(
+    valor
+) {
+    return Number(
+        valor || 0
+    ).toLocaleString(
+        'pt-BR',
+        {
+            style:
+                'currency',
+
+            currency:
+                'BRL'
+        }
+    );
+}
+
+function criarCabecalhoRebaixaPdf() {
+    const cabecalho =
+        document.createElement(
+            'div'
+        );
+
+    cabecalho.className =
+        'pdf-cabecalho';
+
+    const areaLogo =
+        document.createElement(
+            'div'
+        );
+
+    areaLogo.className =
+        'pdf-logo-container';
+
+    const logoOriginal =
+        document.querySelector(
+            '.header img'
+        );
+
+    if (logoOriginal) {
+        const logo =
+            logoOriginal.cloneNode(
+                true
+            );
+
+        areaLogo.appendChild(
+            logo
+        );
+    }
+
+    const titulo =
+        document.createElement(
+            'h1'
+        );
+
+    titulo.textContent =
+        'SOLICITAÇÃO DE REBAIXA';
+
+    const data =
+        document.createElement(
+            'div'
+        );
+
+    data.className =
+        'pdf-data';
+
+    data.textContent =
+        new Date()
+            .toLocaleString(
+                'pt-BR'
+            );
+
+    cabecalho.appendChild(
+        areaLogo
+    );
+
+    cabecalho.appendChild(
+        titulo
+    );
+
+    cabecalho.appendChild(
+        data
+    );
+
+    return cabecalho;
+}
+
+function criarDadosClienteRebaixaPdf() {
+    const secao =
+        document.createElement(
+            'section'
+        );
+
+    secao.className =
+        'pdf-secao pdf-dados-cliente';
+
+    const titulo =
+        document.createElement(
+            'h2'
+        );
+
+    titulo.textContent =
+        'DADOS DO CLIENTE';
+
+    const grade =
+        document.createElement(
+            'div'
+        );
+
+    grade.className =
+        'pdf-grade-cliente';
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CNPJ',
+            obterValorCampoPdf(
+                'cnpj'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CÓD CLIENTE',
+            obterValorCampoPdf(
+                'cod_cliente'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'RAZÃO SOCIAL',
+            obterValorCampoPdf(
+                'razao_social'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'REPRESENTANTE',
+            obterValorCampoPdf(
+                'representante'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'ENDEREÇO',
+            obterValorCampoPdf(
+                'endereco'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'BAIRRO',
+            obterValorCampoPdf(
+                'bairro'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CIDADE',
+            obterValorCampoPdf(
+                'cidade'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'UF',
+            obterValorCampoPdf(
+                'uf'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'CEP',
+            obterValorCampoPdf(
+                'cep'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'TELEFONE',
+            obterValorCampoPdf(
+                'telefone'
+            )
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'E-MAIL',
+            obterValorCampoPdf(
+                'email'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    grade.appendChild(
+        criarCampoClientePdf(
+            'E-MAIL FISCAL',
+            obterValorCampoPdf(
+                'email_fiscal'
+            ),
+            'pdf-campo-duplo'
+        )
+    );
+
+    secao.appendChild(
+        titulo
+    );
+
+    secao.appendChild(
+        grade
+    );
+
+    return secao;
+}
+
+function criarMotivoRebaixaPdf() {
+    const secao =
+        document.createElement(
+            'section'
+        );
+
+    secao.className =
+        'pdf-secao pdf-motivo';
+
+    const titulo =
+        document.createElement(
+            'h2'
+        );
+
+    titulo.textContent =
+        'MOTIVO DA REBAIXA';
+
+    const texto =
+        document.createElement(
+            'div'
+        );
+
+    texto.className =
+        'pdf-motivo-texto';
+
+    texto.textContent =
+        obterValorCampoPdf(
+            'observation'
+        );
+
+    secao.appendChild(
+        titulo
+    );
+
+    secao.appendChild(
+        texto
+    );
+
+    return secao;
+}
+
+function criarTabelaRebaixaPdf() {
+    const secao =
+        document.createElement(
+            'section'
+        );
+
+    secao.className =
+        'pdf-secao pdf-itens';
+
+    const titulo =
+        document.createElement(
+            'h2'
+        );
+
+    titulo.textContent =
+        'DADOS DA REBAIXA';
+
+    const tabela =
+        document.createElement(
+            'table'
+        );
+
+    tabela.className =
+        'pdf-tabela-itens ' +
+        'pdf-tabela-rebaixa';
+
+    const colgroup =
+        document.createElement(
+            'colgroup'
+        );
+
+    const larguras = [
+        '9%',
+        '30%',
+        '9%',
+        '10%',
+        '9%',
+        '9%',
+        '7%',
+        '10%'
+    ];
+
+    larguras.forEach(
+        largura => {
+            const col =
+                document.createElement(
+                    'col'
+                );
+
+            col.style.width =
+                largura;
+
+            colgroup.appendChild(
+                col
+            );
+        }
+    );
+
+    tabela.appendChild(
+        colgroup
+    );
+
+    const thead =
+        document.createElement(
+            'thead'
+        );
+
+    const linhaCabecalho =
+        document.createElement(
+            'tr'
+        );
+
+    const titulos = [
+        'NF ORIGEM',
+        'CÓDIGO / DESCRIÇÃO',
+        'LOTE',
+        'R$ UNITÁRIO COM IMPOSTOS',
+        'R$ REBAIXA',
+        'R$ ATUAL',
+        'QTD (UN)',
+        'TOTAL R$'
+    ];
+
+    titulos.forEach(
+        texto => {
+            const th =
+                document.createElement(
+                    'th'
+                );
+
+            th.textContent =
+                texto;
+
+            linhaCabecalho.appendChild(
+                th
+            );
+        }
+    );
+
+    thead.appendChild(
+        linhaCabecalho
+    );
+
+    tabela.appendChild(
+        thead
+    );
+
+    const tbody =
+        document.createElement(
+            'tbody'
+        );
+
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody ' +
+            '.linha-item-rebaixa'
+        );
+
+    linhas.forEach(
+        tr => {
+            const codigo =
+                String(
+                    tr.dataset.itemEmpresaId ||
+                    ''
+                ).trim();
+
+            if (!codigo) {
+                return;
+            }
+
+            const descricao =
+                String(
+                    tr.dataset.descricao ||
+                    ''
+                ).trim();
+
+            const nf =
+                tr.querySelector(
+                    '.campo-nf-origem-rebaixa'
+                )?.value || '';
+
+            const lote =
+                tr.querySelector(
+                    '.campo-lote-rebaixa'
+                )?.value || '';
+
+            const preco =
+                moedaBRParaNumero(
+                    tr.querySelector(
+                        '.campo-preco-rebaixa'
+                    )?.value
+                );
+
+            const rebaixa =
+                moedaBRParaNumero(
+                    tr.querySelector(
+                        '.campo-valor-rebaixa'
+                    )?.value
+                );
+
+            const atual =
+                moedaBRParaNumero(
+                    tr.querySelector(
+                        '.campo-preco-atual-rebaixa'
+                    )?.value
+                );
+
+            const quantidade =
+                numeroQuantidade(
+                    tr.querySelector(
+                        '.campo-quantidade-rebaixa'
+                    )?.value
+                );
+
+            const total =
+                moedaBRParaNumero(
+                    tr.querySelector(
+                        '.campo-total-rebaixa'
+                    )?.value
+                );
+
+            const linha =
+                document.createElement(
+                    'tr'
+                );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    nf
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    `${codigo} - ${descricao}`,
+                    'pdf-descricao-item'
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    lote
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoedaPdf(
+                        preco
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoedaPdf(
+                        rebaixa
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoedaPdf(
+                        atual
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarNumeroPdf(
+                        quantidade
+                    )
+                )
+            );
+
+            linha.appendChild(
+                criarCelulaPdf(
+                    formatarMoedaPdf(
+                        total
+                    )
+                )
+            );
+
+            tbody.appendChild(
+                linha
+            );
+        }
+    );
+
+    tabela.appendChild(
+        tbody
+    );
+
+    secao.appendChild(
+        titulo
+    );
+
+    secao.appendChild(
+        tabela
+    );
+
+    return secao;
+}
+
+function criarCampoTotalRebaixaPdf(
+    rotulo,
+    valor
+) {
+    const campo =
+        document.createElement(
+            'div'
+        );
+
+    campo.className =
+        'pdf-total-campo';
+
+    const titulo =
+        document.createElement(
+            'strong'
+        );
+
+    titulo.textContent =
+        rotulo;
+
+    const conteudo =
+        document.createElement(
+            'span'
+        );
+
+    conteudo.textContent =
+        valor;
+
+    campo.appendChild(
+        titulo
+    );
+
+    campo.appendChild(
+        conteudo
+    );
+
+    return campo;
+}
+
+function criarTotaisRebaixaPdf() {
+    const totais =
+        document.createElement(
+            'div'
+        );
+
+    totais.className =
+        'pdf-totais';
+
+    totais.appendChild(
+        criarCampoTotalRebaixaPdf(
+            'VOLUMES',
+            obterValorCampoPdf(
+                'volume',
+                '0'
+            )
+        )
+    );
+
+    totais.appendChild(
+        criarCampoTotalRebaixaPdf(
+            'TOTAL DA REBAIXA',
+            obterValorCampoPdf(
+                'total',
+                'R$ 0,00'
+            )
+        )
+    );
+
+    return totais;
+}
+
+function prepararRebaixaParaPdf() {
+    const relatorio =
+        document.createElement(
+            'div'
+        );
+
+    /*
+     * Usa a classe visual já criada para o PDF da devolução
+     * e uma classe adicional específica da rebaixa.
+     */
+    relatorio.className =
+        'relatorio-devolucao-pdf ' +
+        'relatorio-rebaixa-pdf';
+
+    relatorio.appendChild(
+        criarCabecalhoRebaixaPdf()
+    );
+
+    relatorio.appendChild(
+        criarDadosClienteRebaixaPdf()
+    );
+
+    relatorio.appendChild(
+        criarMotivoRebaixaPdf()
+    );
+
+    relatorio.appendChild(
+        criarTabelaRebaixaPdf()
+    );
+
+    relatorio.appendChild(
+        criarTotaisRebaixaPdf()
+    );
+
+    document.body.appendChild(
+        relatorio
+    );
+
+    return relatorio;
+}
+
+async function gerarBlobRebaixaPdf(
+    elemento
+) {
+    if (
+        typeof window.html2canvas !==
+        'function'
+    ) {
+        throw new Error(
+            'A biblioteca html2canvas não foi carregada.'
+        );
+    }
+
+    if (
+        typeof window.jspdf?.jsPDF !==
+        'function'
+    ) {
+        throw new Error(
+            'A biblioteca jsPDF não foi carregada.'
+        );
+    }
+
+    await new Promise(
+        resolve => {
+            requestAnimationFrame(
+                () => {
+                    requestAnimationFrame(
+                        resolve
+                    );
+                }
+            );
+        }
+    );
+
+    if (document.fonts?.ready) {
+        await document.fonts.ready;
+    }
+
+    const imagens =
+        Array.from(
+            elemento.querySelectorAll(
+                'img'
+            )
+        );
+
+    await Promise.all(
+        imagens.map(
+            imagem => {
+                if (imagem.complete) {
+                    return Promise.resolve();
+                }
+
+                return new Promise(
+                    resolve => {
+                        imagem.addEventListener(
+                            'load',
+                            resolve,
+                            {
+                                once: true
+                            }
+                        );
+
+                        imagem.addEventListener(
+                            'error',
+                            resolve,
+                            {
+                                once: true
+                            }
+                        );
+
+                        setTimeout(
+                            resolve,
+                            3000
+                        );
+                    }
+                );
+            }
+        )
+    );
+
+    const larguraCaptura =
+        1120;
+
+    const alturaCaptura =
+        Math.ceil(
+            Math.max(
+                elemento.scrollHeight,
+                elemento.offsetHeight,
+                elemento
+                    .getBoundingClientRect()
+                    .height
+            )
+        );
+
+    if (alturaCaptura <= 0) {
+        throw new Error(
+            'O relatório da rebaixa está vazio.'
+        );
+    }
+
+    const canvas =
+        await window.html2canvas(
+            elemento,
+            {
+                scale:
+                    2,
+
+                useCORS:
+                    true,
+
+                allowTaint:
+                    false,
+
+                backgroundColor:
+                    '#ffffff',
+
+                logging:
+                    false,
+
+                width:
+                    larguraCaptura,
+
+                height:
+                    alturaCaptura,
+
+                windowWidth:
+                    larguraCaptura,
+
+                windowHeight:
+                    alturaCaptura,
+
+                scrollX:
+                    0,
+
+                scrollY:
+                    0
+            }
+        );
+
+    const jsPDF =
+        window.jspdf.jsPDF;
+
+    const pdf =
+        new jsPDF({
+            orientation:
+                'landscape',
+
+            unit:
+                'mm',
+
+            format:
+                'a4',
+
+            compress:
+                true
+        });
+
+    const margem =
+        4;
+
+    const larguraPagina =
+        pdf.internal.pageSize
+            .getWidth();
+
+    const alturaPagina =
+        pdf.internal.pageSize
+            .getHeight();
+
+    const larguraDisponivel =
+        larguraPagina -
+        margem * 2;
+
+    const alturaDisponivel =
+        alturaPagina -
+        margem * 2;
+
+    const escalaHorizontal =
+        larguraDisponivel /
+        canvas.width;
+
+    const escalaVertical =
+        alturaDisponivel /
+        canvas.height;
+
+    const escalaFinal =
+        Math.min(
+            escalaHorizontal,
+            escalaVertical
+        );
+
+    const larguraFinal =
+        canvas.width *
+        escalaFinal;
+
+    const alturaFinal =
+        canvas.height *
+        escalaFinal;
+
+    const posicaoX =
+        (
+            larguraPagina -
+            larguraFinal
+        ) /
+        2;
+
+    pdf.addImage(
+        canvas.toDataURL(
+            'image/jpeg',
+            0.96
+        ),
+        'JPEG',
+        posicaoX,
+        margem,
+        larguraFinal,
+        alturaFinal,
+        undefined,
+        'FAST'
+    );
+
+    const blob =
+        pdf.output(
+            'blob'
+        );
+
+    if (
+        !blob ||
+        blob.size === 0
+    ) {
+        throw new Error(
+            'O PDF da rebaixa foi gerado vazio.'
+        );
+    }
+
+    return blob;
+}
+
+
+
 // Função para verificar duplicatas de código na tabela
 function verificarCodigoDuplicado(codigo) {
     const linhas = document.querySelectorAll('#dadosPedido tbody tr');
@@ -2500,20 +3509,7 @@ function verificarItensSemPreenchimento(codigo, linhaAtual) {
 
 //--inicio-----envio de dados para o sistema DBCorp-----------------------------------------------------------------------------------------////
 const feedbackDiv = document.getElementById('feedback1');
-const modal = document.getElementById('customModal');
-const closeButton = document.querySelector('.close-button');
-const confirmButton = document.getElementById('confirmButton');
-const cancelButton = document.getElementById('cancelButton');
 const cnpjInput = document.getElementById('cnpj');
-
-// Função para abrir o modal
-
-// Fecha o modal ao clicar no botão "Não" ou no botão de fechar
-closeButton.addEventListener("click", () => {
-    modal.style.display = "none";
-});
-
-
 
 //--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
 
@@ -2534,7 +3530,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailAttachmentInput = document.getElementById('emailAttachment');
     const attachmentList = document.getElementById('attachmentList');
     const totalSizeDisplay = document.getElementById('totalSizeDisplay');
-    const selector = document.getElementById('seletor');
+  
     
     // Elementos do modal de limite de tamanho
     const sizeLimitModal = document.getElementById('sizeLimitModal');
@@ -2654,36 +3650,105 @@ const { uploadUrlReb, key } = await response.json();
 
         // Função para gerar o PDF automaticamente
     async function gerarPDF() {
-        const content = document.querySelector('.container');
-        const razaoSocial = document.getElementById('razao_social').value || "Cliente";
-        const obs = document.getElementById('observation').value 
-        const timestamp = formatarDataBrasileira();
-        const filename = `Rebaixa_${razaoSocial}_${timestamp}.pdf`;
+        const razaoSocial =
+            obterValorCampoPdf(
+                'razao_social',
+                'Cliente'
+            );
 
-        const options = {
-            margin: [0, 0, 0, 0],
-            filename: filename,
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
-        };
-         try {
-            hideFeedback();
-            buttonPdf.style.display = 'none';
-            selector.style.display = 'none';
+        const codigoCliente =
+            obterValorCampoPdf(
+                'cod_cliente',
+                ''
+            );
 
-            const pdfBlob = await html2pdf().set(options).from(content).output('blob');
-            generatedPdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+        const dataArquivo =
+            formatarDataBrasileira();
+
+        const nomeCliente =
+            String(
+                razaoSocial
+            )
+                .replace(
+                    /[\\/:*?"<>|]/g,
+                    ''
+                )
+                .trim();
+
+        const nomeArquivo =
+            `Rebaixa - ` +
+            `${nomeCliente} - ` +
+            `${codigoCliente} - ` +
+            `${dataArquivo}.pdf`;
+
+        let relatorio =
+            null;
+
+        try {
+            buttonPdf.disabled =
+                true;
+
+            showFeedback(
+                'Gerando PDF da rebaixa, aguarde...'
+            );
+
+            relatorio =
+                prepararRebaixaParaPdf();
+
+            const pdfBlob =
+                await gerarBlobRebaixaPdf(
+                    relatorio
+                );
+
+            generatedPdfFile =
+                new File(
+                    [
+                        pdfBlob
+                    ],
+                    nomeArquivo,
+                    {
+                        type:
+                            'application/pdf'
+                    }
+                );
+
+            console.log(
+                'PDF da rebaixa gerado:',
+                {
+                    nome:
+                        generatedPdfFile.name,
+
+                    tamanho:
+                        generatedPdfFile.size
+                }
+            );
+
             return generatedPdfFile;
         } catch (error) {
-            console.error('Erro ao gerar o PDF:', error);
-            alert('Erro ao gerar o PDF: ' + error.message);
+            generatedPdfFile =
+                null;
+
+            console.error(
+                'Erro ao gerar PDF da rebaixa:',
+                error
+            );
+
+            alert(
+                error.message ||
+                'Não foi possível gerar o PDF da rebaixa.'
+            );
+
             return null;
         } finally {
-            buttonPdf.style.display = 'block';
-            selector.style.display = 'inline-block';
+            relatorio?.remove();
+
+            buttonPdf.disabled =
+                false;
+
+            hideFeedback();
         }
     }
-
+    
     function atualizarListaAnexos() {
     attachmentList.innerHTML = '';
 
@@ -2839,12 +3904,20 @@ const { uploadUrlReb, key } = await response.json();
             return;
         }
 
-        await gerarPDF();
-        if (generatedPdfFile) {
-            additionalFiles = [];
-            preencherFormularioEmail();
-            emailModal.style.display = 'block';
+        const arquivoPdf =
+            await gerarPDF();
+
+        if (!arquivoPdf) {
+            return;
         }
+
+        additionalFiles =
+            [];
+
+        preencherFormularioEmail();
+
+        emailModal.style.display =
+            'block';
     });
 
     // Fecha o modal ao clicar no botão de fechar
