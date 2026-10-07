@@ -252,21 +252,16 @@
 
                     sessionStorage.clear();
                     localStorage.clear();
-
                     await fetch(
                         '/logout',
                         {
                             method: 'POST'
                         }
                     );
-
                     window.location.href =
                         '/login2';
-
                 }
             );
     </script>
-
 </body>
-
 </html>
