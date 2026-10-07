@@ -1307,14 +1307,14 @@ input:checked + .slider:before {
 }
 
 .coluna-status-investimento {
-    min-width: 130px;
+    min-width: 155px;
     text-align: center;
 }
 
 .select-status-investimento {
     display: block;
     width: 100%;
-    min-width: 130px;
+    min-width: 155px;
     padding: 8px 10px;
     border: 1px solid #bbbbbb;
     border-radius: 6px;

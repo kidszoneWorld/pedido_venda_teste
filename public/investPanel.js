@@ -591,10 +591,10 @@ function renderizarInvestimentos(lista){
                 ${formatarMoeda(investimento.valorCompra)}
             </td>
 
-            <td>
+            <!--<td>
                 ${formatarPercentual(investimento.investimentoSobreCompra)}
             </td>
-
+-->
             <td class="status-atual-investimento">
                 ${escaparHtml(
                     formatarStatusInvestimento(
