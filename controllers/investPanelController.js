@@ -506,7 +506,14 @@ exports.buscarInvestimentoPorId =
 
 exports.atualizarStatusInvestimento =
     async (req, res) => {
-
+        const observacaoInvestimento =
+        String(
+            req.body
+                ?.observacaoInvestimento ??
+            req.body
+                ?.ObservacaoInvestimento ??
+            ''
+        ).trim();
         let client;
         let transacaoAberta =
             false;
@@ -568,6 +575,20 @@ exports.atualizarStatusInvestimento =
                     });
 
             }
+            if (
+                observacaoInvestimento.length >
+                600
+            ) {
+                return res
+                    .status(400)
+                    .json({
+                        success:
+                            false,
+
+                        mensagem:
+                            'A observação deve possuir no máximo 600 caracteres.'
+                    });
+            }
 
             client =
                 await pool.connect();
@@ -588,7 +609,8 @@ exports.atualizarStatusInvestimento =
                             "RazaoSocialInvestimento",
                             "RepresentanteInvestimento",
                             "ValorInvestimento",
-                            "StatusInvestimento"
+                            "StatusInvestimento",
+                            "ObservacaoInvestimento"
                         FROM public."TbInvestimentoComercial"
                         WHERE "CodigoInvestimento" = $1
                         FOR UPDATE
@@ -597,7 +619,6 @@ exports.atualizarStatusInvestimento =
                         codigoInvestimento
                     ]
                 );
-
             if(
                 resultadoInvestimento.rows.length ===
                 0
@@ -632,45 +653,62 @@ exports.atualizarStatusInvestimento =
                 )
                 .trim()
                 .toLowerCase();
+if (
+    !statusFoiAlterado &&
+    !observacaoFoiAlterada
+) {
+    await client.query(
+        'ROLLBACK'
+    );
 
-            if(statusAnterior === novoStatus){
+    transacaoAberta =
+        false;
 
-                await client.query(
-                    'ROLLBACK'
-                );
+    return res.json({
+        success:
+            true,
 
-                transacaoAberta =
-                    false;
+        emailEnviado:
+            false,
 
-                return res.json({
-                    success:
-                        true,
+        mensagem:
+            'Nenhuma alteração foi identificada.',
 
-                    emailEnviado:
-                        false,
+        data: {
+            CodigoInvestimento:
+                codigoInvestimento,
 
-                    mensagem:
-                        'O investimento já possui o status selecionado.',
+            StatusInvestimento:
+                novoStatus,
 
-                    data: {
-                        CodigoInvestimento:
-                            codigoInvestimento,
+            ObservacaoInvestimento:
+                observacaoInvestimento
+        }
+    });
+}
+            const observacaoAnterior =
+                String(
+                    investimento
+                        .ObservacaoInvestimento ??
+                    ''
+                ).trim();
 
-                        StatusInvestimento:
-                            novoStatus
-                    }
-                });
+            const statusFoiAlterado =
+                statusAnterior !==
+                novoStatus;
 
-            }
-
+            const observacaoFoiAlterada =
+                observacaoAnterior !==
+                observacaoInvestimento;
             let emailRepresentante =
                 null;
 
-            if(
+            if (
+                statusFoiAlterado &&
                 statusExigeEmailRepresentante(
                     novoStatus
                 )
-            ){
+            ) {
 
                 emailRepresentante =
                     await buscarEmailRepresentante(
@@ -703,23 +741,33 @@ exports.atualizarStatusInvestimento =
             }
 
             const destinatarios =
-            montarDestinatariosNotificacao(
-                novoStatus,
-                emailRepresentante
-            );
+                statusFoiAlterado
+                    ? montarDestinatariosNotificacao(
+                        novoStatus,
+                        emailRepresentante
+                    )
+                    : [];
 
             const resultadoAtualizacao =
                 await client.query(
                     `
                         UPDATE public."TbInvestimentoComercial"
-                        SET "StatusInvestimento" = $1
-                        WHERE "CodigoInvestimento" = $2
+                        SET
+                            "StatusInvestimento" = $1,
+                            "ObservacaoInvestimento" = $2
+                        WHERE
+                            "CodigoInvestimento" = $3
                         RETURNING
                             "CodigoInvestimento",
-                            "StatusInvestimento"
+                            "StatusInvestimento",
+                            "ObservacaoInvestimento"
                     `,
                     [
                         novoStatus,
+
+                        observacaoInvestimento ||
+                            null,
+
                         codigoInvestimento
                     ]
                 );
@@ -727,7 +775,10 @@ exports.atualizarStatusInvestimento =
             let emailEnviado =
                 false;
 
-            if(destinatarios.length > 0){
+            if (
+                statusFoiAlterado &&
+                destinatarios.length > 0
+            ) {
 
                 await enviarNotificacaoStatus({
                     investimento:
@@ -767,9 +818,10 @@ exports.atualizarStatusInvestimento =
 
                 mensagem:
                     emailEnviado
-                        ? 'Status atualizado e notificação enviada com sucesso.'
-                        : 'Status atualizado com sucesso.',
-
+                        ? 'Status e observação atualizados; notificação enviada com sucesso.'
+                        : statusFoiAlterado
+                            ? 'Status e observação atualizados com sucesso.'
+                            : 'Observação atualizada com sucesso.',
                 data:
                     resultadoAtualizacao.rows[0]
             });

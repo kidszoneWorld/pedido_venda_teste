@@ -1307,14 +1307,14 @@ input:checked + .slider:before {
 }
 
 .coluna-status-investimento {
-    min-width: 190px;
+    min-width: 130px;
     text-align: center;
 }
 
 .select-status-investimento {
     display: block;
     width: 100%;
-    min-width: 180px;
+    min-width: 130px;
     padding: 8px 10px;
     border: 1px solid #bbbbbb;
     border-radius: 6px;
@@ -1339,4 +1339,85 @@ input:checked + .slider:before {
 .status-atual-investimento {
     font-weight: 600;
     text-align: center;
+}
+
+#tabelaInvestimentos
+.coluna-observacao-investimento,
+#tabelaInvestimentos
+.celula-observacao-investimento {
+    width: 160px;
+    min-width: 160px;
+}
+
+.campo-observacao-investimento {
+    display: block;
+
+    width: 100%;
+    min-width: 160px;
+    min-height: 7px;
+    height: 35px;
+    padding: 8px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #777777;
+    border-radius: 5px;
+
+    background-color: #ffffff;
+    color: #333333;
+
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.35;
+
+    resize: vertical;
+}
+
+.campo-observacao-investimento:focus {
+    border-color: rgba(225, 0, 152);
+    outline: none;
+
+    box-shadow:
+        0 0 5px rgba(225, 0, 152, 0.65);
+}
+
+.campo-observacao-investimento:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+
+    background-color: #e9ecef;
+}
+
+.contador-observacao-investimento {
+    margin-top: 4px;
+
+    color: #666666;
+
+    font-size: 11px;
+    text-align: right;
+}
+
+html.dark-theme
+.campo-observacao-investimento,
+body.dark-theme
+.campo-observacao-investimento {
+    background-color: #291919;
+    color: #ffffff;
+
+    border-color: #666666;
+}
+
+html.dark-theme
+.campo-observacao-investimento:disabled,
+body.dark-theme
+.campo-observacao-investimento:disabled {
+    background-color: #292929;
+    color: #cccccc;
+}
+
+html.dark-theme
+.contador-observacao-investimento,
+body.dark-theme
+.contador-observacao-investimento {
+    color: #cccccc;
 }

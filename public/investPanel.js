@@ -507,7 +507,10 @@ function renderizarInvestimentos(lista){
             );
 
         linha.innerHTML = `
-            <td colspan="14" style="text-align:center;">
+            <td
+                colspan="15"
+                style="text-align:center;"
+            >
                 Nenhum investimento encontrado.
             </td>
         `;
@@ -655,7 +658,28 @@ function renderizarInvestimentos(lista){
             </select>
 
         </td>
+        <td class="celula-observacao-investimento">
+            <textarea
+                class="campo-observacao-investimento"
+                data-id="${investimento.codigoInvestimento}"
+                maxlength="600"
+                rows="4"
+                placeholder="Digite uma observação"
+                ${controlesDesabilitados}
+            >${escaparHtml(
+                investimento.observacao ?? ''
+            )}</textarea>
 
+            <div class="contador-observacao-investimento">
+                <span class="quantidade-observacao-investimento">
+                    ${
+                        String(
+                            investimento.observacao ?? ''
+                        ).length
+                    }
+                </span>/600
+            </div>
+        </td>
             <td>
                 <button
                     type="button"
@@ -665,8 +689,32 @@ function renderizarInvestimentos(lista){
                 >
                     Salvar
                 </button>
-            </td>
+        </td>
         `;
+        const campoObservacao =
+            linha.querySelector(
+                '.campo-observacao-investimento'
+            );
+
+        const contadorObservacao =
+            linha.querySelector(
+                '.quantidade-observacao-investimento'
+            );
+
+        campoObservacao?.addEventListener(
+            'input',
+            () => {
+                const quantidade =
+                    campoObservacao.value.length;
+
+                if (contadorObservacao) {
+                    contadorObservacao.textContent =
+                        String(
+                            quantidade
+                        );
+                }
+            }
+        );
 
         linha
             .querySelector(
@@ -780,6 +828,14 @@ async function salvarStatusInvestimento(
     botao
 ){
 
+    if (window.isRepresentante) {
+        alert(
+            'Usuários vinculados a um representante não podem alterar o status ou a observação.'
+        );
+
+        return;
+    }
+
     const linha =
         botao.closest(
             'tr'
@@ -808,6 +864,37 @@ async function salvarStatusInvestimento(
 
         return;
 
+    }
+
+    const campoObservacao =
+        linha.querySelector(
+            '.campo-observacao-investimento'
+        );
+
+    if (!campoObservacao) {
+        alert(
+            'Não foi possível localizar o campo de observação.'
+        );
+
+        return;
+    }
+
+    const observacaoInvestimento =
+        String(
+            campoObservacao.value || ''
+        ).trim();
+
+    if (
+        observacaoInvestimento.length >
+        600
+    ) {
+        alert(
+            'A observação deve possuir no máximo 600 caracteres.'
+        );
+
+        campoObservacao.focus();
+
+        return;
     }
 
     const statusSelecionado =
@@ -858,7 +945,10 @@ async function salvarStatusInvestimento(
                     body:
                         JSON.stringify({
                             status:
-                                statusSelecionado
+                                statusSelecionado,
+
+                            observacaoInvestimento:
+                                observacaoInvestimento
                         })
                 }
             );
@@ -935,15 +1025,17 @@ async function salvarStatusInvestimento(
                 }
             );
 
-        if(investimentoLocal){
-
+        if (investimentoLocal) {
             investimentoLocal.status =
                 statusSelecionado;
 
+            investimentoLocal.observacao =
+                observacaoInvestimento;
         }
 
         alert(
-            'Status atualizado com sucesso.'
+            resultado.mensagem ||
+            'Investimento atualizado com sucesso.'
         );
 
     }catch(error){
@@ -970,11 +1062,12 @@ async function salvarStatusInvestimento(
         botao.disabled =
             false;
 
-        if(!window.isRepresentante){
-
+        if (!window.isRepresentante) {
             selectStatus.disabled =
                 false;
 
+            campoObservacao.disabled =
+                false;
         }
 
     }
