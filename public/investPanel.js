@@ -669,7 +669,7 @@ function renderizarInvestimentos(lista){
             >${escaparHtml(
                 investimento.observacao ?? ''
             )}</textarea>
-
+<!--
             <div class="contador-observacao-investimento">
                 <span class="quantidade-observacao-investimento">
                     ${
@@ -678,7 +678,7 @@ function renderizarInvestimentos(lista){
                         ).length
                     }
                 </span>/600
-            </div>
+            </div> -->
         </td>
             <td>
                 <button
