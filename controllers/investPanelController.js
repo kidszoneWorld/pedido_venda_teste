@@ -248,8 +248,7 @@ exports.listarInvestimentos =
                         I."InvestimentoSobreCompra",
                         P."CodigoParcela",
                         P."Parcela",
-                        P."ValorParcela",
-                        P."ValorPagamento"
+                        P."ValorParcela"
                     FROM public."TbInvestimentoComercial" I
                     LEFT JOIN public."TbParcelaInvestimentoComercial" P
                         ON P."CodigoInvestimento" =
@@ -459,8 +458,7 @@ exports.buscarInvestimentoPorId =
                             "CodigoParcela",
                             "CodigoInvestimento",
                             "Parcela",
-                            "ValorParcela",
-                            "ValorPagamento"
+                            "ValorParcela"
                         FROM public."TbParcelaInvestimentoComercial"
                         WHERE "CodigoInvestimento" = $1
                         ORDER BY "CodigoParcela"
@@ -655,45 +653,12 @@ exports.atualizarStatusInvestimento =
                     investimento.StatusInvestimento ||
                     'pendente'
                 )
-                .trim()
-                .toLowerCase();
-if (
-    !statusFoiAlterado &&
-    !observacaoFoiAlterada
-) {
-    await client.query(
-        'ROLLBACK'
-    );
+                    .trim()
+                    .toLowerCase();
 
-    transacaoAberta =
-        false;
-
-    return res.json({
-        success:
-            true,
-
-        emailEnviado:
-            false,
-
-        mensagem:
-            'Nenhuma alteração foi identificada.',
-
-        data: {
-            CodigoInvestimento:
-                codigoInvestimento,
-
-            StatusInvestimento:
-                novoStatus,
-
-            ObservacaoInvestimento:
-                observacaoInvestimento
-        }
-    });
-}
             const observacaoAnterior =
                 String(
-                    investimento
-                        .ObservacaoInvestimento ??
+                    investimento.ObservacaoInvestimento ??
                     ''
                 ).trim();
 
@@ -704,6 +669,40 @@ if (
             const observacaoFoiAlterada =
                 observacaoAnterior !==
                 observacaoInvestimento;
+
+            if (
+                !statusFoiAlterado &&
+                !observacaoFoiAlterada
+            ) {
+                await client.query(
+                    'ROLLBACK'
+                );
+
+                transacaoAberta =
+                    false;
+
+                return res.json({
+                    success:
+                        true,
+
+                    emailEnviado:
+                        false,
+
+                    mensagem:
+                        'Nenhuma alteração foi identificada.',
+
+                    data: {
+                        CodigoInvestimento:
+                            codigoInvestimento,
+
+                        StatusInvestimento:
+                            novoStatus,
+
+                        ObservacaoInvestimento:
+                            observacaoInvestimento
+                    }
+                });
+            }
             let emailRepresentante =
                 null;
 
@@ -721,26 +720,26 @@ if (
                             .RepresentanteInvestimento
                     );
 
-                if(!emailRepresentante){
+                // if(!emailRepresentante){
 
-                    await client.query(
-                        'ROLLBACK'
-                    );
+                //     await client.query(
+                //         'ROLLBACK'
+                //     );
 
-                    transacaoAberta =
-                        false;
+                //     transacaoAberta =
+                //         false;
 
-                    return res
-                        .status(400)
-                        .json({
-                            success:
-                                false,
+                //     return res
+                //         .status(400)
+                //         .json({
+                //             success:
+                //                 false,
 
-                            mensagem:
-                                'O e-mail do representante responsável não foi encontrado. O status não foi alterado.'
-                        });
+                //             mensagem:
+                //                 'O e-mail do representante responsável não foi encontrado. O status não foi alterado.'
+                //         });
 
-                }
+                // }
 
             }
 
@@ -924,13 +923,8 @@ function agruparInvestimentos(rows){
                         Number(
                             row.ValorParcela ||
                             0
-                        ),
-
-                    valorPagamento:
-                        Number(
-                            row.ValorPagamento ||
-                            0
                         )
+
                 });
 
         }
@@ -942,6 +936,643 @@ function agruparInvestimentos(rows){
     );
 
 }
+
+exports.buscarInvestimentoParaEdicao =
+    async (
+        req,
+        res
+    ) => {
+        const codigoInvestimento =
+            Number(
+                req.params.id
+            );
+
+        if (
+            !Number.isInteger(
+                codigoInvestimento
+            ) ||
+            codigoInvestimento <= 0
+        ) {
+            return res
+                .status(400)
+                .json({
+                    success:
+                        false,
+
+                    mensagem:
+                        'Código do investimento inválido.'
+                });
+        }
+
+        let client;
+
+        try {
+            client =
+                await pool.connect();
+
+            const resultadoInvestimento =
+                await client.query(
+                    `
+                        SELECT
+                            "CodigoInvestimento",
+                            "CnpjInvestimento",
+                            "EnderecoInvestimento",
+                            "RazaoSocialInvestimento",
+                            "TelefoneInvestimento",
+                            "ResponsavelInvestimento",
+                            "CargoInvestimento",
+                            "ResumoInvestimento",
+                            "VigenciaInicialInvestimento",
+                            "VigenciaFinalInvestimento",
+                            "TipoInvestimento",
+                            "DescricaoInvestimento",
+                            "ObservacaoDescricaoInvestimento",
+                            "ValorInvestimento",
+                            "ValorCompraInvestimento",
+                            "RepresentanteInvestimento",
+                            "StatusInvestimento",
+                            "ObservacaoInvestimento",
+                            "InvestimentoSobreCompra"
+                        FROM public."TbInvestimentoComercial"
+                        WHERE
+                            "CodigoInvestimento" = $1
+                    `,
+                    [
+                        codigoInvestimento
+                    ]
+                );
+
+            if (
+                resultadoInvestimento
+                    .rows.length === 0
+            ) {
+                return res
+                    .status(404)
+                    .json({
+                        success:
+                            false,
+
+                        mensagem:
+                            'Investimento não encontrado.'
+                    });
+            }
+
+            const investimento =
+                resultadoInvestimento
+                    .rows[0];
+
+            const resultadoParcelas =
+                await client.query(
+                    `
+                        SELECT
+                            "Parcela",
+                            "ValorParcela"
+                        FROM public."TbParcelaInvestimentoComercial"
+                        WHERE
+                            "CodigoInvestimento" = $1
+                        ORDER BY
+                            "Parcela" ASC
+                    `,
+                    [
+                        codigoInvestimento
+                    ]
+                );
+
+            return res.json({
+                success:
+                    true,
+
+                investimento: {
+                    codigoInvestimento:
+                        investimento
+                            .CodigoInvestimento,
+
+                    cnpjInvestimento:
+                        investimento
+                            .CnpjInvestimento,
+
+                    enderecoInvestimento:
+                        investimento
+                            .EnderecoInvestimento,
+
+                    razaoSocialInvestimento:
+                        investimento
+                            .RazaoSocialInvestimento,
+
+                    telefoneInvestimento:
+                        investimento
+                            .TelefoneInvestimento,
+
+                    responsavelInvestimento:
+                        investimento
+                            .ResponsavelInvestimento,
+
+                    cargoInvestimento:
+                        investimento
+                            .CargoInvestimento,
+
+                    resumoInvestimento:
+                        investimento
+                            .ResumoInvestimento,
+
+                    vigenciaInicialInvestimento:
+                        investimento
+                            .VigenciaInicialInvestimento,
+
+                    vigenciaFinalInvestimento:
+                        investimento
+                            .VigenciaFinalInvestimento,
+
+                    tipoInvestimento:
+                        investimento
+                            .TipoInvestimento,
+
+                    descricaoInvestimento:
+                        investimento
+                            .DescricaoInvestimento,
+
+                    observacaoDescricaoInvestimento:
+                        investimento
+                            .ObservacaoDescricaoInvestimento,
+
+                    valorInvestimento:
+                        Number(
+                            investimento
+                                .ValorInvestimento ||
+                            0
+                        ),
+
+                    valorCompraInvestimento:
+                        Number(
+                            investimento
+                                .ValorCompraInvestimento ||
+                            0
+                        ),
+
+                    representanteInvestimento:
+                        investimento
+                            .RepresentanteInvestimento,
+
+                    statusInvestimento:
+                        investimento
+                            .StatusInvestimento,
+
+                    observacaoInvestimento:
+                        investimento
+                            .ObservacaoInvestimento ||
+                        '',
+
+                    investimentoSobreCompra:
+                        Number(
+                            investimento
+                                .InvestimentoSobreCompra ||
+                            0
+                        ),
+
+                    parcelas:
+                        resultadoParcelas.rows.map(
+                            parcela => {
+                                return {
+                                    parcela:
+                                        parcela.Parcela,
+
+                                    valorParcela:
+                                        Number(
+                                            parcela.ValorParcela ||
+                                            0
+                                        )
+                                };
+                            }
+                        )
+                }
+            });
+        } catch (error) {
+            console.error(
+                'Erro ao buscar investimento para edição:',
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    success:
+                        false,
+
+                    mensagem:
+                        error.message ||
+                        'Erro ao buscar investimento.'
+                });
+        } finally {
+            client?.release();
+        }
+    };
+
+function textoOuNull(
+    valor
+) {
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+        return null;
+    }
+
+    const texto =
+        String(
+            valor
+        ).trim();
+
+    return texto ||
+        null;
+}
+
+function numeroOuZero(
+    valor
+) {
+    const numero =
+        Number(
+            valor
+        );
+
+    return Number.isFinite(
+        numero
+    )
+        ? numero
+        : 0;
+}
+
+exports.editarInvestimentoPendente =
+    async (
+        req,
+        res
+    ) => {
+        const codigoInvestimento =
+            Number(
+                req.params.id
+            );
+
+        if (
+            !Number.isInteger(
+                codigoInvestimento
+            ) ||
+            codigoInvestimento <= 0
+        ) {
+            return res
+                .status(400)
+                .json({
+                    success:
+                        false,
+
+                    mensagem:
+                        'Código do investimento inválido.'
+                });
+        }
+
+        const dados =
+            req.body || {};
+
+        const parcelas =
+            Array.isArray(
+                dados.parcelas
+            )
+                ? dados.parcelas
+                : [];
+
+        let client;
+        let transacaoAberta =
+            false;
+
+        try {
+            client =
+                await pool.connect();
+
+            await client.query(
+                'BEGIN'
+            );
+
+            transacaoAberta =
+                true;
+
+            /*
+             * O FOR UPDATE impede outra alteração concorrente
+             * enquanto o investimento está sendo editado.
+             */
+            const resultadoAtual =
+                await client.query(
+                    `
+                        SELECT
+                            "CodigoInvestimento",
+                            "StatusInvestimento"
+                        FROM public."TbInvestimentoComercial"
+                        WHERE
+                            "CodigoInvestimento" = $1
+                        FOR UPDATE
+                    `,
+                    [
+                        codigoInvestimento
+                    ]
+                );
+
+            if (
+                resultadoAtual
+                    .rows.length === 0
+            ) {
+                await client.query(
+                    'ROLLBACK'
+                );
+
+                transacaoAberta =
+                    false;
+
+                return res
+                    .status(404)
+                    .json({
+                        success:
+                            false,
+
+                        mensagem:
+                            'Investimento não encontrado.'
+                    });
+            }
+
+            const statusAtual =
+                String(
+                    resultadoAtual
+                        .rows[0]
+                        .StatusInvestimento ||
+                    ''
+                )
+                    .trim()
+                    .toLowerCase();
+
+            if (
+                statusAtual !==
+                'pendente'
+            ) {
+                await client.query(
+                    'ROLLBACK'
+                );
+
+                transacaoAberta =
+                    false;
+
+                return res
+                    .status(409)
+                    .json({
+                        success:
+                            false,
+
+                        mensagem:
+                            'Somente investimentos pendentes podem ser editados.'
+                    });
+            }
+
+            const observacaoInvestimento =
+                String(
+                    dados.observacaoInvestimento ??
+                    ''
+                ).trim();
+
+            if (
+                observacaoInvestimento.length >
+                600
+            ) {
+                await client.query(
+                    'ROLLBACK'
+                );
+
+                transacaoAberta =
+                    false;
+
+                return res
+                    .status(400)
+                    .json({
+                        success:
+                            false,
+
+                        mensagem:
+                            'A observação deve possuir no máximo 600 caracteres.'
+                    });
+            }
+
+            await client.query(
+                `
+                    UPDATE public."TbInvestimentoComercial"
+                    SET
+                        "CnpjInvestimento" = $1,
+                        "EnderecoInvestimento" = $2,
+                        "RazaoSocialInvestimento" = $3,
+                        "TelefoneInvestimento" = $4,
+                        "ResponsavelInvestimento" = $5,
+                        "CargoInvestimento" = $6,
+                        "ResumoInvestimento" = $7,
+                        "VigenciaInicialInvestimento" = $8,
+                        "VigenciaFinalInvestimento" = $9,
+                        "TipoInvestimento" = $10,
+                        "DescricaoInvestimento" = $11,
+                        "ObservacaoDescricaoInvestimento" = $12,
+                        "ValorInvestimento" = $13,
+                        "ValorCompraInvestimento" = $14,
+                        "RepresentanteInvestimento" = $15,
+                        "ObservacaoInvestimento" = $16,
+                        "InvestimentoSobreCompra" = $17
+                    WHERE
+                        "CodigoInvestimento" = $18
+                        AND LOWER(
+                            COALESCE(
+                                "StatusInvestimento",
+                                ''
+                            )
+                        ) = 'pendente'
+                    RETURNING
+                        "CodigoInvestimento"
+                `,
+                [
+                    textoOuNull(
+                        dados.cnpjInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.enderecoInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.razaoSocialInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.telefoneInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.responsavelInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.cargoInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.resumoInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.vigenciaInicialInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.vigenciaFinalInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.tipoInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.descricaoInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.observacaoDescricaoInvestimento
+                    ),
+
+                    numeroOuZero(
+                        dados.valorInvestimento
+                    ),
+
+                    numeroOuZero(
+                        dados.valorCompraInvestimento
+                    ),
+
+                    textoOuNull(
+                        dados.representanteInvestimento
+                    ),
+
+                    textoOuNull(
+                        observacaoInvestimento
+                    ),
+
+                    numeroOuZero(
+                        dados.investimentoSobreCompra
+                    ),
+
+                    codigoInvestimento
+                ]
+            );
+
+            /*
+             * Como as parcelas pertencem ao investimento pendente,
+             * elas podem ser substituídas dentro da mesma transação.
+             */
+            await client.query(
+                `
+                    DELETE FROM public."TbParcelaInvestimentoComercial"
+                    WHERE
+                        "CodigoInvestimento" = $1
+                `,
+                [
+                    codigoInvestimento
+                ]
+            );
+
+            for (
+                const parcela of parcelas
+            ) {
+                const parcelaTexto =
+                    textoOuNull(
+                        parcela.parcela
+                    );
+
+                const valorParcela =
+                    numeroOuZero(
+                        parcela.valorParcela
+                    );
+
+                if (
+                    !parcelaTexto ||
+                    valorParcela <= 0
+                ) {
+                    continue;
+                }
+
+                await client.query(
+                    `
+                        INSERT INTO public."TbParcelaInvestimentoComercial"
+                        (
+                            "CodigoInvestimento",
+                            "Parcela",
+                            "ValorParcela"
+                        )
+                        VALUES
+                        (
+                            $1,
+                            $2,
+                            $3
+                        )
+                    `,
+                    [
+                        codigoInvestimento,
+                        parcelaTexto,
+                        valorParcela                        
+                    ]
+                );
+            }
+
+            await client.query(
+                'COMMIT'
+            );
+
+            transacaoAberta =
+                false;
+
+            return res.json({
+                success:
+                    true,
+
+                mensagem:
+                    'Investimento atualizado com sucesso.',
+
+                codigoInvestimento:
+                    codigoInvestimento
+            });
+        } catch (error) {
+            if (
+                client &&
+                transacaoAberta
+            ) {
+                await client
+                    .query(
+                        'ROLLBACK'
+                    )
+                    .catch(
+                        rollbackError => {
+                            console.error(
+                                'Erro no rollback da edição do investimento:',
+                                rollbackError
+                            );
+                        }
+                    );
+            }
+
+            console.error(
+                'Erro ao editar investimento:',
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    success:
+                        false,
+
+                    mensagem:
+                        error.message ||
+                        'Erro ao editar investimento.'
+                });
+        } finally {
+            client?.release();
+        }
+    };
 
 function montarInvestimento(
     registro,
@@ -1027,13 +1658,8 @@ function montarInvestimento(
                     Number(
                         parcela.ValorParcela ||
                         0
-                    ),
-
-                valorPagamento:
-                    Number(
-                        parcela.ValorPagamento ||
-                        0
                     )
+
             }))
     };
 

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDSZONE - Solicitação de Investimento Comercial</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/invest_comercial.css?v=1787056278975">
+    <link rel="stylesheet" href="/css/distribuidores.css">
+    <link rel="stylesheet" href="/css/theme-toggle.css?v=1787056278975">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme + '-theme');
+        })();
+    </script>
+</head>
+
+<body id="corpo">
+    <%- include('header') %>
+
+    <main class="container">
+        <div class="header">
+              <a href="/"><img src="/images/logo.png" alt="Imagem KidsZone"></a> 
+
+            <h1>
+                EDITAR INVESTIMENTO COMERCIAL
+            </h1>
+
+            <div
+                class="date"
+                id="dataHoraEdicaoInvestimento"
+            ></div>
+
+            <div
+                id="mensagemEdicaoInvestimento"
+                role="status"
+                aria-live="polite"
+            ></div>
+        </div>
+
+        <div class="acoes-edicao-investimento">
+            <button
+                type="button"
+                id="voltarPainelInvestimentos"
+            >
+                VOLTAR AO PAINEL
+            </button>
+
+            <button
+                type="button"
+                id="salvarEdicaoInvestimento"
+            >
+                SALVAR ALTERAÇÕES
+            </button>
+        </div>
+
+        <section class="section">
+            <div class="section-title">
+                IDENTIFICAÇÃO DO INVESTIMENTO
+            </div>
+
+            <div class="identificacao-edicao-investimento">
+                <div>
+                    <label for="codigoInvestimento">
+                        Nº INVESTIMENTO:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="codigoInvestimento"
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="statusInvestimento">
+                        STATUS:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="statusInvestimento"
+                        readonly
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                SOLICITAÇÃO DE INVESTIMENTO COMERCIAL - KZ
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label for="cnpjInvestimento">
+                        CNPJ:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cnpjInvestimento"
+                        maxlength="18"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        placeholder="00.000.000/0000-00"
+                    >
+                </div>
+
+                <div>
+                    <label for="razaoSocialInvestimento">
+                        CLIENTE:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="razaoSocialInvestimento"
+                        placeholder="Razão Social"
+                    >
+                </div>
+
+                <div>
+                    <label for="enderecoInvestimento">
+                        ENDEREÇO:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="enderecoInvestimento"
+                        placeholder="Endereço completo"
+                    >
+                </div>
+
+                <div>
+                    <label for="telefoneInvestimento">
+                        TELEFONE:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="telefoneInvestimento"
+                        maxlength="15"
+                        inputmode="numeric"
+                        autocomplete="tel"
+                        placeholder="(00) 00000-0000"
+                    >
+                </div>
+
+                <div>
+                    <label for="responsavelInvestimento">
+                        RESPONSÁVEL:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="responsavelInvestimento"
+                        placeholder="Responsável do cliente"
+                    >
+                </div>
+
+                <div>
+                    <label for="cargoInvestimento">
+                        CARGO:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cargoInvestimento"
+                        placeholder="Cargo do responsável"
+                    >
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label for="empresa">
+                        EMPRESA:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="empresa"
+                        value="KIDS ZONE IMPORTAÇÃO E COM. DE BRINQ. LTDA"
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="empresa_cnpj">
+                        CNPJ:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="empresa_cnpj"
+                        value="33.551.721/0002-20"
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="empresa_endereco">
+                        ENDEREÇO:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="empresa_endereco"
+                        value="R. Jose Lana - Nº 850 - Brilhante I"
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="empresa_telefone">
+                        TELEFONE:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="empresa_telefone"
+                        value="(11) 3065-4372"
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="empresa_responsavel">
+                        RESPONSÁVEL:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="empresa_responsavel"
+                        value="Juliana Silva / Clayton Trindade"
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="empresa_cargo">
+                        SETOR:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="empresa_cargo"
+                        value="Comercial"
+                        readonly
+                    >
+                </div>
+            </div>
+
+            <p class="textwarning">
+                O presente instrumento tem como objetivo firmar
+                acordo entre a KIDS ZONE e seu parceiro, nos termos
+                descritos abaixo:
+            </p>
+        </section>
+
+        <div class="acao-solicitada-container">
+            <label
+                class="acao_solicita label"
+                for="resumoInvestimento"
+            >
+                RESUMO DA AÇÃO SOLICITADA:
+            </label>
+
+            <textarea
+                wrap="soft"
+                id="resumoInvestimento"
+                class="acaoSolicita campo-resumo-edicao"
+                rows="1"
+                placeholder="Descreva o resumo da ação solicitada"
+            ></textarea>
+        </div>
+
+        <section class="section">
+            <div class="section-title investimento">
+                INVESTIMENTOS
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label for="vigenciaInicialInvestimento">
+                        Vigência Inicial:
+                    </label>
+
+                    <input
+                        type="date"
+                        id="vigenciaInicialInvestimento"
+                    >
+                </div>
+
+                <div>
+                    <label for="vigenciaFinalInvestimento">
+                        Vigência Final:
+                    </label>
+
+                    <input
+                        type="date"
+                        id="vigenciaFinalInvestimento"
+                    >
+                </div>
+
+                <div></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="form-grid">
+                <div>
+                    <label for="tipoInvestimento">
+                        Tipo de Investimento:
+                    </label>
+
+                    <select
+                        name="tipoInvestimento"
+                        id="tipoInvestimento"
+                        class="tipoInvestimento"
+                    >
+                        <option value="Bonificacao">
+                            Bonificação
+                        </option>
+
+                        <option value="Abatimento">
+                            Abatimento
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="descricaoInvestimento">
+                        Descrição de investimento:
+                    </label>
+
+                    <select
+                        name="descricaoInvestimento"
+                        id="descricaoInvestimento"
+                        class="tipoInvestimento"
+                    >
+                        <option value="Ambientação">
+                            Ambientação
+                        </option>
+
+                        <option value="Aniversário da Loja">
+                            Aniversário da Loja
+                        </option>
+
+                        <option value="Campanha de Incentivo">
+                            Campanha de Incentivo
+                        </option>
+
+                        <option value="Encartes">
+                            Encartes
+                        </option>
+
+                        <option value="Inauguração">
+                            Inauguração
+                        </option>
+
+                        <option value="Introdução">
+                            Introdução
+                        </option>
+
+                        <option value="Outros">
+                            Outros
+                        </option>
+                    </select>
+                </div>
+
+                <div></div>
+            </div>
+        </section>
+
+        <label
+            for="observacaoDescricaoInvestimento"
+            class="label"
+        >
+            Observação de Investimento:
+        </label>
+
+        <textarea
+            wrap="soft"
+            id="observacaoDescricaoInvestimento"
+            placeholder="Observação de Investimento"
+            class="text campo-observacao-descricao-edicao"
+        ></textarea>
+
+        <section class="section">
+            <div class="no-print">
+                <button
+                    type="button"
+                    id="adicionarParcelaInvestimento"
+                >
+                    Adicionar parcela
+                </button>
+            </div>
+
+            <div class="container-tabela-parcelas-edicao">
+                <table
+                    id="tabelaParcelasInvestimento"
+                    class="investment-table"
+                    border="1"
+                >
+                    <thead>
+                        <tr>
+                            <th class="coluna-parcela">
+                                Parcela
+                            </th>
+
+                            <th class="coluna-valor-parcela">
+                                Valor
+                            </th>
+
+                            <th class="coluna-excluir no-print">
+                                Excluir linha
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="payment-conditions">
+                <label for="valorInvestimento">
+                    Valor do Investimento:
+                </label>
+
+                <input
+                    type="text"
+                    id="valorInvestimento"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    placeholder="0,00"
+                >
+
+                <label for="valorCompraInvestimento">
+                    Valor de compra:
+                </label>
+
+                <input
+                    type="text"
+                    id="valorCompraInvestimento"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    placeholder="0,00"
+                >
+
+                <label for="investimentoSobreCompra">
+                    % de Investimento / Compra:
+                </label>
+
+                <input
+                    type="text"
+                    id="investimentoSobreCompra"
+                    class="campo-percentual-calculado"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    placeholder="0,00"
+                    readonly
+                >
+            </div>
+        </section>
+
+        <section class="section">
+            <label for="representanteInvestimento">
+                Representante Responsável:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                id="representanteInvestimento"
+                readonly
+                placeholder="Representante responsável"
+            >
+        </section>
+
+        <br>
+
+        <div>
+            <label for="responsavel_aprovacao">
+                Responsáveis pela aprovação:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                id="responsavel_aprovacao"
+                value="Marcos Sancovsky / Juliana Silva / Clayton Trindade"
+                readonly
+            >
+        </div>
+
+        <section class="section campo-observacao-edicao">
+            <div class="section-title" hidden>
+                OBSERVAÇÃO DO INVESTIMENTO
+            </div>
+
+            <label for="observacaoInvestimento" hidden>
+                Observação:
+            </label>
+
+            <textarea
+                id="observacaoInvestimento"
+                maxlength="600"
+                rows="4"
+                placeholder="Digite uma observação com até 600 caracteres" hidden
+            ></textarea>
+
+            <div class="contador-observacao-edicao" hidden>
+
+            </div>
+        </section>
+
+        <div class="observations">
+            <div
+                class="obs-title"
+                hidden
+            >
+                OBSERVAÇÕES:
+            </div>
+
+            <textarea
+                id="observacoes"
+                placeholder="Escreva suas observações aqui..."
+                style="
+                    height: 170px;
+                    white-space: pre-wrap;
+                    overflow-wrap: break-word;
+                "
+                hidden
+            ></textarea>
+
+            <div
+                id="observacoesPdf"
+                class="observacoes-pdf"
+            ></div>
+        </div>
+
+        <div id="helpContainer">
+            <div
+                id="helpIcon"
+                class="help-icon"
+            >
+                <a href="/">
+                    <button
+                        type="button"
+                        class="button button-group"
+                    >
+                        Painel de Investimentos
+                    </button>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="/investimentoComercialEditar.js"></script>
+
+    <script
+        src="/theme-toggle.js?v=1787056278976"
+    ></script>
+
+    <script>
+        (function configurarRelogioEdicao() {
+            const elementoData =
+                document.getElementById(
+                    'dataHoraEdicaoInvestimento'
+                );
+
+            if (!elementoData) {
+                return;
+            }
+
+            function atualizarDataHora() {
+                const agora =
+                    new Date();
+
+                const dataFormatada =
+                    agora.toLocaleDateString(
+                        'pt-BR',
+                        {
+                            day:
+                                '2-digit',
+
+                            month:
+                                '2-digit',
+
+                            year:
+                                'numeric'
+                        }
+                    );
+
+                const horaFormatada =
+                    agora.toLocaleTimeString(
+                        'pt-BR',
+                        {
+                            hour:
+                                '2-digit',
+
+                            minute:
+                                '2-digit',
+
+                            second:
+                                '2-digit'
+                        }
+                    );
+
+                elementoData.textContent =
+                    `${dataFormatada} ${horaFormatada}`;
+
+                elementoData.style.fontSize =
+                    '105%';
+
+                elementoData.style.color =
+                    '#FFFFFF';
+            }
+
+            atualizarDataHora();
+
+            setInterval(
+                atualizarDataHora,
+                1000
+            );
+        })();
+    </script>
+
+    <script>
+        const textareaResumo =
+            document.getElementById(
+                'resumoInvestimento'
+            );
+
+        if (textareaResumo) {
+            textareaResumo.addEventListener(
+                'input',
+                function () {
+                    this.style.height =
+                        'auto';
+
+                    this.style.height =
+                        `${this.scrollHeight}px`;
+                }
+            );
+        }
+    </script>
+
+    <script>
+        document
+            .getElementById(
+                'logoutButton2'
+            )
+            ?.addEventListener(
+                'click',
+                async () => {
+                    sessionStorage.clear();
+                    localStorage.clear();
+
+                    await fetch(
+                        '/logout',
+                        {
+                            method:
+                                'POST'
+                        }
+                    );
+
+                    window.location.href =
+                        '/login2';
+                }
+            );
+    </script>
+</body>
+
+</html>

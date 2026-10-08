@@ -250,49 +250,69 @@ async function aplicarRestricaoRepresentante(){
 
 }
 
-async function carregarInvestimentos(){
-
+async function carregarInvestimentos() {
     mostrarMensagem(
         'Carregando investimentos...',
         'carregando'
     );
 
-    try{
-
+    try {
         const response =
             await fetch(
                 '/api/investimentos-comerciais',
                 {
-                    method: 'GET',
-                    credentials: 'same-origin',
+                    method:
+                        'GET',
+
+                    credentials:
+                        'same-origin',
+
                     headers: {
-                        Accept: 'application/json'
+                        Accept:
+                            'application/json'
                     }
                 }
             );
 
-        const resultado =
-            await response.json();
+        const textoResposta =
+            await response.text();
 
-        if(!response.ok){
+        let resultado =
+            null;
 
-            throw new Error(
-                resultado.mensagem ||
-                resultado.error ||
-                'Erro ao carregar investimentos.'
-            );
-
+        if (textoResposta) {
+            try {
+                resultado =
+                    JSON.parse(
+                        textoResposta
+                    );
+            } catch {
+                throw new Error(
+                    textoResposta ||
+                    'O servidor retornou uma resposta inválida.'
+                );
+            }
         }
 
-        if(
-            !resultado.success ||
-            !Array.isArray(resultado.data)
-        ){
-
+        if (!response.ok) {
             throw new Error(
+                resultado?.mensagem ||
+                resultado?.error ||
+                textoResposta ||
+                `Erro HTTP ${response.status}`
+            );
+        }
+
+        if (
+            !resultado?.success ||
+            !Array.isArray(
+                resultado.data
+            )
+        ) {
+            throw new Error(
+                resultado?.mensagem ||
                 'A API retornou dados inválidos.'
             );
-
         }
 
         investimentosOriginais =
@@ -301,9 +321,7 @@ async function carregarInvestimentos(){
         aplicarFiltrosInvestimentos();
 
         ocultarMensagem();
-
-    }catch(error){
-
+    } catch (error) {
         console.error(
             'Erro ao carregar investimentos:',
             error
@@ -317,12 +335,11 @@ async function carregarInvestimentos(){
         );
 
         mostrarMensagem(
-            error.message,
+            error.message ||
+            'Erro ao carregar investimentos.',
             'erro'
         );
-
     }
-
 }
 
 function aplicarFiltrosInvestimentos(){
@@ -487,6 +504,7 @@ function obterValorFiltro(id){
 
 function renderizarInvestimentos(lista){
 
+ 
     const tbody =
         document.querySelector(
             '#tabelaInvestimentos tbody'
@@ -495,6 +513,7 @@ function renderizarInvestimentos(lista){
     if(!tbody){
         return;
     }
+
 
     tbody.innerHTML =
         '';
@@ -525,6 +544,8 @@ function renderizarInvestimentos(lista){
 
     lista.forEach(investimento => {
 
+        
+
         const linha =
             document.createElement(
                 'tr'
@@ -536,6 +557,9 @@ function renderizarInvestimentos(lista){
                 'pendente'
             )
             .toLowerCase();
+            
+        const podeEditar =
+            status === 'pendente';
 
         aplicarCorStatus(
             linha,
@@ -602,14 +626,32 @@ function renderizarInvestimentos(lista){
                     )
                 )}
             </td>
-            <td>
-                <button
-                    type="button"
-                    class="button botao-detalhes-investimento"
-                    data-id="${investimento.codigoInvestimento}"
-                >
-                    Ver
-                </button>
+            <td class="celula-acoes-investimento">
+                <div class="acoes-investimento">
+                    <button
+                        type="button"
+                        class="button botao-detalhes-investimento"
+                        data-id="${investimento.codigoInvestimento}"
+                    >
+                        Ver
+                    </button>
+
+                    ${
+                        
+
+                        podeEditar
+                            ? `
+                                <button
+                                    type="button"
+                                    class="button botao-editar-investimento"
+                                    data-id="${investimento.codigoInvestimento}"
+                                >
+                                    Editar
+                                </button>
+                            `
+                            : ''
+                    }
+                </div>
             </td>
 
        <td class="coluna-status-investimento">
@@ -691,6 +733,34 @@ function renderizarInvestimentos(lista){
                 </button>
         </td>
         `;
+        linha
+            .querySelector(
+                '.botao-editar-investimento'
+            )
+            ?.addEventListener(
+                'click',
+                evento => {
+                    const botao =
+                        evento.currentTarget;
+
+                    const codigoInvestimento =
+                        botao.dataset.id;
+
+                    if (!codigoInvestimento) {
+                        alert(
+                            'Código do investimento não encontrado.'
+                        );
+
+                        return;
+                    }
+
+                    window.location.href =
+                        `/investimentoComercialEditar?id=${encodeURIComponent(
+                            codigoInvestimento
+                        )}`;
+                }
+            );
+
         const campoObservacao =
             linha.querySelector(
                 '.campo-observacao-investimento'

@@ -1421,3 +1421,35 @@ body.dark-theme
 .contador-observacao-investimento {
     color: #cccccc;
 }
+
+.celula-acoes-investimento {
+    min-width: 170px;
+}
+
+.acoes-investimento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.acoes-investimento .button {
+    min-width: 70px;
+    padding: 7px 10px;
+}
+
+.botao-editar-investimento {
+    background-color: #005faa;
+    color: #ffffff;
+}
+
+.botao-editar-investimento:hover {
+    background-color: #00437a;
+}
+
+html.dark-theme .botao-editar-investimento,
+body.dark-theme .botao-editar-investimento {
+    background-color: #2878c8;
+    color: #ffffff;
+}

@@ -880,11 +880,39 @@ async function obterClientePorCnpj(cnpj) {
     return await response.json();
 }
 
+router.get(
+    '/investimentoComercialEditar',
+    authMiddleware,
+    (
+        req,
+        res
+    ) => {
+        return res.render(
+            'investimentoComercialEditar'
+        );
+    }
+);
+
+router.get(
+    '/api/investimentos-comerciais/:id/editar',
+    authMiddleware,
+    investPanelController
+        .buscarInvestimentoParaEdicao
+);
+
+router.put(
+    '/api/investimentos-comerciais/:id/editar',
+    authMiddleware,
+    investPanelController
+        .editarInvestimentoPendente
+);
 
 router.get(
     '/api/catalogo-cliente/:clienteCodigo',
     productController.getCatalogoCliente
 );
+
+
 
 router.get(
     '/api/listarItens',
