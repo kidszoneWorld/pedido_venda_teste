@@ -1423,7 +1423,7 @@ body.dark-theme
 }
 
 .celula-acoes-investimento {
-    min-width: 170px;
+    min-width: 100px;
 }
 
 .acoes-investimento {
@@ -1435,8 +1435,8 @@ body.dark-theme
 }
 
 .acoes-investimento .button {
-    min-width: 70px;
-    padding: 7px 10px;
+    min-width: 45px;
+    max-height: 25px;
 }
 
 .botao-editar-investimento {
