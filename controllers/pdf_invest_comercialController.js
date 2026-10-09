@@ -390,18 +390,13 @@ exports.sendPdf =
                         parcela.valorParcela
                     );
 
-                const valorPagamento =
-                    numeroOuZero(
-                        parcela.valorPagamento
-                    );
 
                 /*
                 * Ignora uma linha completamente vazia.
                 */
                 if(
                     !parcelaTexto &&
-                    valorParcela === 0 &&
-                    valorPagamento === 0
+                    valorParcela === 0 
                 ){
                     continue;
                 }
@@ -412,22 +407,20 @@ exports.sendPdf =
                         (
                             "CodigoInvestimento",
                             "Parcela",
-                            "ValorParcela",
-                            "ValorPagamento"
+                            "ValorParcela"
+                      
                         )
                         VALUES
                         (
                             $1,
                             $2,
-                            $3,
-                            $4
+                            $3
                         )
                     `,
                     [
                         codigoInvestimento,
                         parcelaTexto,
-                        valorParcela,
-                        valorPagamento
+                        valorParcela
                     ]
                 );
 
@@ -473,13 +466,13 @@ exports.sendPdf =
                 from:
                     'KidsZone Investimento Comercial <kidzonekidszonemail@gmail.com>',
 
-                // to: [
-                //     'verbas@kidszoneworld.com.br'
-                // ],
-
                 to: [
-                    'luis.henrique@kidszoneworld.com.br'
+                    'verbas@kidszoneworld.com.br'
                 ],
+
+                // to: [
+                //     'luis.henrique@kidszoneworld.com.br'
+                // ],
 
                 subject:
                     subject,

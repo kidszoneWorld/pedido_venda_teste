@@ -327,7 +327,7 @@ function montarDestinatariosNotificacao(
     if(status === 'aprovacao_comercial'){
 
         return removerEmailsDuplicados([
-            // emailDiretor,
+            emailDiretor,
             emailLuis
         ]);
 
@@ -336,10 +336,10 @@ function montarDestinatariosNotificacao(
     if(status === 'aprovacao_diretoria'){
 
         return removerEmailsDuplicados([
-            // emailComercial,
-            // emailFinanceiro,
-            // emailFinanceiro2,
-            // emailFinanceiro3,
+            emailComercial,
+            emailFinanceiro,
+            emailFinanceiro2,
+            emailFinanceiro3,
             emailLuis
         ]);
 
@@ -351,10 +351,10 @@ function montarDestinatariosNotificacao(
     ){
 
         return removerEmailsDuplicados([
-            // emailComercial,
-            // emailFinanceiro,
-            // emailFinanceiro2,
-            // emailRepresentante,
+            emailComercial,
+            emailFinanceiro,
+            emailFinanceiro2,
+            emailRepresentante,
             emailLuis
         ]);
 

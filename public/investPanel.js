@@ -877,14 +877,9 @@ function montarParcelasHtml(parcelas){
                     parcela.valorParcela
                 );
 
-            const pagamento =
-                formatarMoeda(
-                    parcela.valorPagamento
-                );
-
             return `
                 <div class="parcela-resumo">
-                    ${numero}: ${valor} / ${pagamento}
+                    ${numero}: ${valor}
                 </div>
             `;
 
@@ -1267,11 +1262,7 @@ function montarLinhaExcel(
                 0
             ),
 
-        ValorPagamento:
-            Number(
-                parcela?.valorPagamento ||
-                0
-            ),
+
 
         Status:
             investimento.status
