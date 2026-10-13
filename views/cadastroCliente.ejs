@@ -31,8 +31,8 @@
             <span class="close-button">&times;</span>
             <h2>Aviso!</h2>
             <p>Você deseja realmente enviar para o sistema?</p>
-            <button id="confirmButton">Sim: </button>
-            <button id="cancelButton">Não: </button>
+            <button id="confirmButton">Sim</button>
+            <button id="cancelButton">Não</button>
         </div>
     </div>
 
@@ -41,8 +41,8 @@
             <span class="close-button1">&times;</span>
             <h2>Aviso!</h2>
             <p>Você deseja realmente enviar o e-mail?</p>
-            <button id="confirmButton1">Sim: </button>
-            <button id="cancelButton1">Não: </button>
+            <button id="confirmButton1">Sim</button>
+            <button id="cancelButton1">Não</button>
         </div>
     </div>
 
@@ -232,8 +232,8 @@
                 </label>
                 
                 <!-- <input type="text" id="regime_especial" placeholder="Digite sua resposta"> -->
-                 Sim: <input type="radio" name="regime_especial" id="regime_especial" class="regime_especial" value="Sim: "> 
-                 Não: <input type="radio" name="regime_especial" id="regime_especial" class="regime_especial" value="Não: " checked>
+                 Sim:<input type="radio" name="regime_especial" id="regime_especial" class="regime_especial" value="Sim"> 
+                 Não:<input type="radio" name="regime_especial" id="regime_especial" class="regime_especial" value="Não" checked>
             </div>
             <div>
                 <label for="agendamento" class="label-obrigatorio">
@@ -244,22 +244,22 @@
                     </span>
                 </label>
 
-                Sim: 
+                Sim:
                 <input
                     type="radio"
                     name="agendamento"
                     id="agendamento"
                     class="agendamento"
-                    value="Sim: "
+                    value="Sim"
                 >
 
-                Não: 
+                Não:
                 <input
                     type="radio"
                     name="agendamento"
                     id="agendamento"
                     class="agendamento"
-                    value="Não: "
+                    value="Não"
                     checked
                 >
             </div>
@@ -288,16 +288,7 @@
                     placeholder="Ex.: (11) 96767 - 4206 Robson"
                 >
             </div>
-            <div class="">
-                <label for="paletizada" class="label-obrigatorio"><b>A carga deve ser paletizada?</b>
-                    <span class="tooltip2">Campo Obrigatório</span>
-                </label>
-                <!-- <input type="text" id="paletizada" placeholder="Digite sua resposta"> -->
-                Sim: <input type="radio" name="paletizada" id="paletizada" class="paletizada" value="Sim: "> 
-                Não: <input type="radio" name="paletizada" id="paletizada" class="paletizada" value="Não: " checked>
-
-            </div>
-           <div
+            <div
                 id="grupo_horario_entrega"
                 class="info-item campo-condicional-agendamento"
                 hidden
@@ -321,18 +312,28 @@
                 >
             </div>
             <div class="">
+                <label for="paletizada" class="label-obrigatorio"><b>A carga deve ser paletizada?</b>
+                    <span class="tooltip2">Campo Obrigatório</span>
+                </label>
+                <!-- <input type="text" id="paletizada" placeholder="Digite sua resposta"> -->
+                Sim:<input type="radio" name="paletizada" id="paletizada" class="paletizada" value="Sim"> 
+                Não:<input type="radio" name="paletizada" id="paletizada" class="paletizada" value="Não" checked>
+
+            </div>
+           
+            <div class="">
                 <label for="numero_nf" class="label-obrigatorio"><b>O número do pedido deve constar na NF?</b>
                     <span class="tooltip2">Campo Obrigatório</span>
                 </label>
                 <!-- <input type="text" id="numero_nf" placeholder="Digite sua resposta"> -->
-                Sim: <input type="radio" name="numero_nf" id="numero_nf" class="numero_nf" value="Sim: " checked> 
-                Não: <input type="radio" name="numero_nf" id="numero_nf" class="numero_nf" value="Não: ">
+                Sim:<input type="radio" name="numero_nf" id="numero_nf" class="numero_nf" value="Sim" checked> 
+                Não:<input type="radio" name="numero_nf" id="numero_nf" class="numero_nf" value="Não">
             </div>
         </form>
         <p class="info-footer">
-            Caso as informações necessárias não:  forem repassadas para a empresa e o cliente venha a recusar ou devolver o pedido, 
-            os custos serão repassados ao representante. Vale ressaltar que a empresa NÃO:  irá arcar com as despesas de devolução de pedido, 
-            assim:  como frete de IDA e VOLTA.
+            Caso as informações necessárias não forem repassadas para a empresa e o cliente venha a recusar ou devolver o pedido, 
+            os custos serão repassados ao representante. Vale ressaltar que a empresa NÃO irá arcar com as despesas de devolução de pedido, 
+            assim como frete de IDA e VOLTA.
         </p>
     </div>
 
