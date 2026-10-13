@@ -456,16 +456,6 @@ function buscarItemPorPesquisa(valor) {
     return itens.length === 1 ? itens[0] : null;
 }
 
-function obterMovimentaEstoqueEdicao() {
-    const campo =
-        document.getElementById(
-            'movimentaEstoque'
-        );
-
-    return campo?.checked
-        ? 1
-        : 0;
-}
 
 function obterUvEdicao() {
     return obterMovimentaEstoqueEdicao() === 1
@@ -473,37 +463,6 @@ function obterUvEdicao() {
         : 'UN';
 }
 
-function atualizarUvTodasAsLinhasEdicao() {
-    const uv =
-        obterUvEdicao();
-
-    const linhas =
-        document.querySelectorAll(
-            '#dadosPedido tbody ' +
-            '.linha-item-devolucao'
-        );
-
-    linhas.forEach(
-        tr => {
-            const campoUnidade =
-                tr.querySelector(
-                    '.campo-unidade-item'
-                );
-
-            if (campoUnidade) {
-                campoUnidade.value =
-                    uv;
-            }
-        }
-    );
-
-    console.log(
-        'Movimenta estoque:',
-        obterMovimentaEstoqueEdicao(),
-        'UV aplicada:',
-        uv
-    );
-}
 
 function obterMovimentaEstoqueEdicao() {
     const campo =
@@ -516,11 +475,6 @@ function obterMovimentaEstoqueEdicao() {
         : 0;
 }
 
-function obterUvEdicao() {
-    return obterMovimentaEstoqueEdicao() === 1
-        ? 'CX'
-        : 'UN';
-}
 
 function atualizarUvTodasAsLinhasEdicao() {
     const uv =
@@ -1322,8 +1276,7 @@ function montarObjetoEdicao() {
         };
     });
 
-    const movimentaEstoque =
-        obterMovimentaEstoqueEdicao();
+ 
 
     const uv =
         obterUvEdicao();
@@ -1571,28 +1524,7 @@ console.log(
 }
 
 function configurarEventos() {
-    const campoMovimentaEstoque =
-        document.getElementById(
-            'movimentaEstoque'
-        );
 
-    campoMovimentaEstoque?.addEventListener(
-        'change',
-        () => {
-            if (edicaoBloqueada) {
-                campoMovimentaEstoque.checked =
-                    Number(
-                        devolucaoAtual?.movimentaEstoque ??
-                        devolucaoAtual?.MovimentaEstoque ??
-                        0
-                    ) === 1;
-
-                return;
-            }
-
-            atualizarUvTodasAsLinhasEdicao();
-        }
-    );
     el('voltarPainel')?.addEventListener('click', () => {
         window.location.href = '/devolucaoPanel';
     });
