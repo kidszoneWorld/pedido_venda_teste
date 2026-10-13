@@ -84,7 +84,8 @@ exports.sendClientPdf = async (req, res) => {
 
     const info = await transporter.sendMail({
       from: "Cadastro de Clientes <kidzonkidszonemail@gmail.com>",
-      to: "pedidoskz@kidszoneworld.com.br",
+      // to: "pedidoskz@kidszoneworld.com.br",
+      to: "luis.henrique@kidszoneworld.com.br",
       cc: emailCc ? emailCc.split(";").map(email => email.trim()) : [],
       subject,
       text: `

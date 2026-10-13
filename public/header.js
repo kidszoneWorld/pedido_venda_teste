@@ -270,8 +270,8 @@ async function configurarVisibilidadeRebaixa() {
 async function iniciarHeader() {
     configurarHeader();
 
-    await configurarVisibilidadeEstoque();
-    await configurarVisibilidadeRebaixa();
+    // await configurarVisibilidadeEstoque();
+    // await configurarVisibilidadeRebaixa();
 }
 
 if (document.readyState === 'loading') {

@@ -226,41 +226,124 @@
     <div class="observations">
         <div class="obs-title">INFORMAÇÕES NECESSÁRIAS</div>
         <form class="info-form">
-            <div class="info-item">
-                <label for="regime_especial" class="label-obrigatorio">Possui Regime Especial?
+            <div>
+                <label for="regime_especial" class="label-obrigatorio"><b>Possui Regime Especial?</b>
                     <span class="tooltip2">Campo Obrigatório</span>
                 </label>
-                <input type="text" id="regime_especial" placeholder="Digite sua resposta">
+                
+                <!-- <input type="text" id="regime_especial" placeholder="Digite sua resposta"> -->
+                 Sim<input type="radio" name="regime_especial" id="regime_especial" class="regime_especial" value="Sim"> 
+                 Não<input type="radio" name="regime_especial" id="regime_especial" class="regime_especial" value="Não" checked>
             </div>
-            <div class="info-item">
-                <label for="agendamento" class="label-obrigatorio">É necessário fazer agendamento para entrega?
-                    <span class="tooltip2">Campo Obrigatório</span>
+            <div>
+                <label for="agendamento" class="label-obrigatorio">
+                    <b>É necessário fazer agendamento para entrega?</b>
+
+                    <span class="tooltip2">
+                        Campo Obrigatório
+                    </span>
                 </label>
-                <input type="text" id="agendamento" placeholder="Digite sua resposta">
+
+                Sim
+                <input
+                    type="radio"
+                    name="agendamento"
+                    id="agendamento"
+                    class="agendamento"
+                    value="Sim"
+                >
+
+                Não
+                <input
+                    type="radio"
+                    name="agendamento"
+                    id="agendamento"
+                    class="agendamento"
+                    value="Não"
+                    checked
+                >
             </div>
-            <div class="info-item">
-                <label for="dados_responsavel" class="label-obrigatorio">Informar os dados como telefone, e-mail e o nome do responsável para entrega:
-                    <span class="tooltip2">Campo Obrigatório</span>
+
+            <div
+                id="grupo_dados_responsavel"
+                class="campo-condicional-agendamento"
+                hidden
+            >
+                <span class="label-obrigatorio">
+                    <b>
+                        Informar os dados como telefone, e-mail e o nome
+                        do responsável para entrega:
+                    </b>
+
+                    <span class="tooltip2">
+                        Campo Obrigatório
+                    </span>
+                </span>
+
+                <label for="dados_responsavel_sim">
+                    Sim
                 </label>
-                <input type="text" id="dados_responsavel" placeholder="Digite sua resposta">
+
+                <input
+                    type="radio"
+                    name="dados_responsavel"
+                    id="dados_responsavel_sim"
+                    class="dados_responsavel"
+                    value="Sim"
+                >
+
+                <label for="dados_responsavel_nao">
+                    Não
+                </label>
+
+                <input
+                    type="radio"
+                    name="dados_responsavel"
+                    id="dados_responsavel_nao"
+                    class="dados_responsavel"
+                    value="Não"
+                    checked
+                >
             </div>
-            <div class="info-item">
-                <label for="paletizada" class="label-obrigatorio">A carga deve ser paletizada?
+            <div class="">
+                <label for="paletizada" class="label-obrigatorio"><b>A carga deve ser paletizada?</b>
                     <span class="tooltip2">Campo Obrigatório</span>
                 </label>
-                <input type="text" id="paletizada" placeholder="Digite sua resposta">
+                <!-- <input type="text" id="paletizada" placeholder="Digite sua resposta"> -->
+                Sim<input type="radio" name="paletizada" id="paletizada" class="paletizada" value="Sim"> 
+                Não<input type="radio" name="paletizada" id="paletizada" class="paletizada" value="Não" checked>
+
             </div>
-            <div class="info-item">
-                <label for="horario_entrega" class="label-obrigatorio">Horário e dia de entrega?
-                    <span class="tooltip2">Campo Obrigatório</span>
+           <div
+                id="grupo_horario_entrega"
+                class="info-item campo-condicional-agendamento"
+                hidden
+            >
+                <label
+                    for="horario_entrega"
+                    class="label-obrigatorio"
+                >
+                    Horário e dia de entrega?
+
+                    <span class="tooltip2">
+                        Campo Obrigatório
+                    </span>
                 </label>
-                <input type="text" id="horario_entrega" placeholder="Digite sua resposta">
+
+                <input
+                    type="text"
+                    id="horario_entrega"
+                    placeholder="Ex.: segunda a sexta, das 08:00 às 17:00"
+                    autocomplete="off"
+                >
             </div>
-            <div class="info-item">
-                <label for="numero_nf" class="label-obrigatorio">O número do pedido deve constar na NF?
+            <div class="">
+                <label for="numero_nf" class="label-obrigatorio"><b>O número do pedido deve constar na NF?</b>
                     <span class="tooltip2">Campo Obrigatório</span>
                 </label>
-                <input type="text" id="numero_nf" placeholder="Digite sua resposta">
+                <!-- <input type="text" id="numero_nf" placeholder="Digite sua resposta"> -->
+                Sim<input type="radio" name="numero_nf" id="numero_nf" class="numero_nf" value="Sim" checked> 
+                Não<input type="radio" name="numero_nf" id="numero_nf" class="numero_nf" value="Não">
             </div>
         </form>
         <p class="info-footer">

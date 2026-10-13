@@ -988,7 +988,6 @@ label[for="cod_cliente"]::after {
     padding: 8px;
     border: 1px solid #242323;
     border-radius: 3px;
-    width: 98%;
     color: #0000FF; /* Respostas em azul */
     font-size: 14px;
 }
@@ -1604,4 +1603,7 @@ footer {
     font-size: 140%;
     
 
+}
+.campo-condicional-agendamento[hidden] {
+    display: none !important;
 }

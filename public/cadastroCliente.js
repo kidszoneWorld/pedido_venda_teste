@@ -19,6 +19,99 @@ document.addEventListener("DOMContentLoaded", () => {
     const sizeLimitOkButton = document.getElementById('sizeLimitOkButton');
     const sizeLimitCloseButton = sizeLimitModal.querySelector('.close-button1');
 
+    const radiosAgendamento =
+        document.querySelectorAll(
+            'input[name="agendamento"]'
+        );
+
+    const grupoDadosResponsavel =
+        document.getElementById(
+            'grupo_dados_responsavel'
+        );
+
+    const grupoHorarioEntrega =
+        document.getElementById(
+            'grupo_horario_entrega'
+        );
+
+    const campoHorarioEntrega =
+        document.getElementById(
+            'horario_entrega'
+        );
+
+    const radiosDadosResponsavel =
+        document.querySelectorAll(
+            'input[name="dados_responsavel"]'
+        );
+
+    function atualizarCamposAgendamento() {
+        const agendamentoSelecionado =
+            document.querySelector(
+                'input[name="agendamento"]:checked'
+            );
+
+        const precisaAgendamento =
+            agendamentoSelecionado?.value ===
+            'Sim';
+
+        if (grupoDadosResponsavel) {
+            grupoDadosResponsavel.hidden =
+                !precisaAgendamento;
+        }
+
+        if (grupoHorarioEntrega) {
+            grupoHorarioEntrega.hidden =
+                !precisaAgendamento;
+        }
+
+        if (campoHorarioEntrega) {
+            campoHorarioEntrega.required =
+                precisaAgendamento;
+
+            campoHorarioEntrega.disabled =
+                !precisaAgendamento;
+
+            if (!precisaAgendamento) {
+                campoHorarioEntrega.value =
+                    '';
+            }
+        }
+
+        radiosDadosResponsavel.forEach(
+            radio => {
+                radio.disabled =
+                    !precisaAgendamento;
+            }
+        );
+
+        if (!precisaAgendamento) {
+            const opcaoNao =
+                document.getElementById(
+                    'dados_responsavel_nao'
+                );
+
+            if (opcaoNao) {
+                opcaoNao.checked =
+                    true;
+            }
+        }
+    }
+
+    radiosAgendamento.forEach(
+        radio => {
+            radio.addEventListener(
+                'change',
+                atualizarCamposAgendamento
+            );
+        }
+    );
+
+    /*
+    * Executa ao abrir a página para respeitar
+    * o valor inicialmente marcado.
+    */
+    atualizarCamposAgendamento();
+
     // E-mail fixo que não pode ser removido
     const FIXED_EMAIL = "pedidoskz@kidszoneworld.com.br";
     let generatedPdfFile = null;
@@ -107,42 +200,109 @@ document.addEventListener("DOMContentLoaded", () => {
     
 
         // Função para verificar se todos os campos obrigatórios estão preenchidos
-        function verificarCamposObrigatorios() {
-            const campos = [
-                'razao_social',
-                'cod_cliente',
-                'regime_especial',
-                'agendamento',
-                'dados_responsavel',
-                'paletizada',
-                'horario_entrega',
-                'numero_nf',
-                'representante',
-                'transp',
-                'codgroup',
-                'email',
-                'ie',
-                'endereco',
-                'cidade',
-                'bairro',
-                'cep',
-                'telefone',
-                'email',
-                'email_comprador',
-                'contat',
-                'formPagDescricao',
-                'nFan'
-            ];
-    
-            for (let campo of campos) {
-                const input = document.getElementById(campo);
-                if (!input.value.trim()) {
-                    return false;
-                }
+    function verificarCamposObrigatorios() {
+        const camposTextoObrigatorios = [
+            'razao_social',
+            'cod_cliente',
+            'representante',
+            'transp',
+            'codgroup',
+            'email',
+            'ie',
+            'endereco',
+            'cidade',
+            'bairro',
+            'cep',
+            'telefone',
+            'email_comprador',
+            'contat',
+            'formPagDescricao',
+            'nFan',
+            'nome_comprador'
+        ];
+
+        for (
+            const campoId of
+            camposTextoObrigatorios
+        ) {
+            const campo =
+                document.getElementById(
+                    campoId
+                );
+
+            if (
+                !campo ||
+                !String(
+                    campo.value || ''
+                ).trim()
+            ) {
+                campo?.focus();
+
+                return false;
             }
-            return true;
         }
-    
+
+        const gruposRadioObrigatorios = [
+            'regime_especial',
+            'agendamento',
+            'paletizada',
+            'numero_nf'
+        ];
+
+        for (
+            const nomeGrupo of
+            gruposRadioObrigatorios
+        ) {
+            const selecionado =
+                document.querySelector(
+                    `input[name="${nomeGrupo}"]:checked`
+                );
+
+            if (!selecionado) {
+                return false;
+            }
+        }
+
+        const agendamento =
+            document.querySelector(
+                'input[name="agendamento"]:checked'
+            )?.value;
+
+        if (agendamento === 'Sim') {
+            const dadosResponsavel =
+                document.querySelector(
+                    'input[name="dados_responsavel"]:checked'
+                );
+
+            if (!dadosResponsavel) {
+                document
+                    .getElementById(
+                        'dados_responsavel_sim'
+                    )
+                    ?.focus();
+
+                return false;
+            }
+
+            const horarioEntrega =
+                document.getElementById(
+                    'horario_entrega'
+                );
+
+            if (
+                !String(
+                    horarioEntrega?.value || ''
+                ).trim()
+            ) {
+                horarioEntrega?.focus();
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+        
     // Função para gerar o PDF automaticamente
     async function gerarPDF() {
         const content = document.querySelector('.container');
