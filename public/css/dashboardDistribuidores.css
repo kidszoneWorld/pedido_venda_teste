@@ -196,3 +196,72 @@
         min-height: 350px;
     }
 }
+.painel-filtros-periodo {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--background-secondary, #ffffff);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filtro-periodo-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.campos-periodo {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.campo-periodo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo-periodo label {
+    font-weight: 600;
+}
+
+.campo-periodo input {
+    min-width: 165px;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.periodo-selecionado {
+    margin: 15px 0 0;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.dark-theme .painel-filtros-periodo {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+.dark-theme .campo-periodo input {
+    color: #f8fafc;
+    background: #0f172a;
+    border-color: #475569;
+}
+
+@media (max-width: 700px) {
+    .filtro-periodo-cabecalho,
+    .campos-periodo {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .campo-periodo input {
+        width: 100%;
+    }
+}

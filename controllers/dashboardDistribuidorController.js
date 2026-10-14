@@ -19,6 +19,103 @@ function normalizarCodigos(valor) {
         .filter((codigo) => Number.isInteger(codigo) && codigo > 0);
 }
 
+function validarMesAno(valor) {
+    if (!valor) {
+        return null;
+    }
+
+    const texto = String(valor).trim();
+
+    const correspondencia = texto.match(
+        /^(0[1-9]|1[0-2])\/(\d{4})$/
+    );
+
+    if (!correspondencia) {
+        return null;
+    }
+
+    return texto;
+}
+
+function converterMesAnoParaNumero(valor) {
+    const [mes, ano] = valor.split('/');
+
+    return Number(ano) * 100 + Number(mes);
+}
+
+function obterPeriodoRequisicao(req) {
+    const periodoInicialInformado =
+        req.query.periodoInicial;
+
+    const periodoFinalInformado =
+        req.query.periodoFinal;
+
+    /*
+     * Sem os dois campos, o dashboard não recebe filtro.
+     */
+    if (
+        !periodoInicialInformado &&
+        !periodoFinalInformado
+    ) {
+        return {
+            periodoInicial: null,
+            periodoFinal: null
+        };
+    }
+
+    /*
+     * Se somente um campo for enviado, a requisição é inválida.
+     */
+    if (
+        !periodoInicialInformado ||
+        !periodoFinalInformado
+    ) {
+        const erro = new Error(
+            'Informe o período inicial e o período final.'
+        );
+
+        erro.status = 400;
+
+        throw erro;
+    }
+
+    const periodoInicial = validarMesAno(
+        periodoInicialInformado
+    );
+
+    const periodoFinal = validarMesAno(
+        periodoFinalInformado
+    );
+
+    if (!periodoInicial || !periodoFinal) {
+        const erro = new Error(
+            'Período inválido. Utilize o formato MM/AAAA.'
+        );
+
+        erro.status = 400;
+
+        throw erro;
+    }
+
+    if (
+        converterMesAnoParaNumero(periodoInicial) >
+        converterMesAnoParaNumero(periodoFinal)
+    ) {
+        const erro = new Error(
+            'O período inicial não pode ser maior que o período final.'
+        );
+
+        erro.status = 400;
+
+        throw erro;
+    }
+
+    return {
+        periodoInicial,
+        periodoFinal
+    };
+}
+
 async function buscarDistribuidoresPermitidos(
     representante,
     codigosSelecionados = []
@@ -93,7 +190,14 @@ exports.listarDistribuidores = async (req, res) => {
 exports.buscarDados = async (req, res) => {
     try {
         const representante = obterRepresentanteSessao(req);
+        const {
+            periodoInicial,
+            periodoFinal
+        } = obterPeriodoRequisicao(req);
 
+        const possuiPeriodo = Boolean(
+            periodoInicial && periodoFinal
+        );
         const codigosSolicitados =
             normalizarCodigos(req.query.distribuidores);
 
@@ -135,7 +239,13 @@ exports.buscarDados = async (req, res) => {
                 }
             });
         }
-
+        const parametrosConsultas = possuiPeriodo
+        ? [
+            codigosPermitidos,
+            periodoInicial,
+            periodoFinal
+        ]
+        : [codigosPermitidos];
         const [
             sellInResultado,
             metaResultado,
@@ -158,10 +268,18 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         s."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                s."MesAnoSellIn",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
                     GROUP BY
                         s."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -176,10 +294,18 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         m."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                m."MesAnoMetaSellIn",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
                     GROUP BY
                         m."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -194,10 +320,18 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         s."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                s."MesAnoSellOut",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
                     GROUP BY
                         s."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -212,10 +346,18 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         p."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                p."MesAnoPositivada",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
                     GROUP BY
                         p."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -230,10 +372,19 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         d."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND d."DataDisplay" >=
+                                TO_DATE($2, 'MM/YYYY')
+
+                            AND d."DataDisplay" <
+                                TO_DATE($3, 'MM/YYYY') +
+                                INTERVAL '1 month'
+                        ` : ''}
                     GROUP BY
                         d."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -248,10 +399,18 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         e."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                e."MesAnoEstoque",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
                     GROUP BY
                         e."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -266,10 +425,19 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         i."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND i."DataInvestimento" >=
+                                TO_DATE($2, 'MM/YYYY')
+
+                            AND i."DataInvestimento" <
+                                TO_DATE($3, 'MM/YYYY') +
+                                INTERVAL '1 month'
+                        ` : ''}
                     GROUP BY
                         i."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             ),
 
             pool.query(
@@ -281,10 +449,19 @@ exports.buscarDados = async (req, res) => {
                     WHERE
                         r."CodigoDistribuidor" =
                         ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND r."DataInicioRede" >=
+                                TO_DATE($2, 'MM/YYYY')
+
+                            AND r."DataInicioRede" <
+                                TO_DATE($3, 'MM/YYYY') +
+                                INTERVAL '1 month'
+                        ` : ''}
                     GROUP BY
                         r."CodigoDistribuidor"
                 `,
-                [codigosPermitidos]
+                parametrosConsultas
             )
         ]);
 
@@ -343,7 +520,11 @@ exports.buscarDados = async (req, res) => {
             sucesso: true,
 
             representante: representante || null,
-
+            periodo: {
+                inicial: periodoInicial,
+                final: periodoFinal,
+                filtrado: possuiPeriodo
+            },
             distribuidores,
 
             resumo: {
@@ -378,10 +559,16 @@ exports.buscarDados = async (req, res) => {
             error
         );
 
-        return res.status(500).json({
+        return res.status(error.status || 500).json({
             sucesso: false,
-            mensagem: 'Erro ao carregar o dashboard.',
+
+            mensagem:
+                error.status === 400
+                    ? error.message
+                    : 'Erro ao carregar o dashboard.',
+
             erro: error.message
         });
     }
 };
+

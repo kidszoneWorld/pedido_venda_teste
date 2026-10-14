@@ -84,7 +84,63 @@
                 </button>
             </div>
         </div>
+        <section class="painel-filtros-periodo">
+            <div class="filtro-periodo-cabecalho">
+                <div>
+                    <h2>Período do dashboard</h2>
 
+                    <p>
+                        Selecione o mês inicial e o mês final dos indicadores.
+                    </p>
+                </div>
+
+                <div class="campos-periodo">
+                    <div class="campo-periodo">
+                        <label for="periodoInicial">
+                            Mês inicial
+                        </label>
+
+                        <input
+                            type="month"
+                            id="periodoInicial"
+                            name="periodoInicial"
+                        >
+                    </div>
+
+                    <div class="campo-periodo">
+                        <label for="periodoFinal">
+                            Mês final
+                        </label>
+
+                        <input
+                            type="month"
+                            id="periodoFinal"
+                            name="periodoFinal"
+                        >
+                    </div>
+
+                    <button
+                        type="button"
+                        class="button"
+                        id="aplicarPeriodo"
+                    >
+                        Aplicar período
+                    </button>
+
+                    <button
+                        type="button"
+                        class="button"
+                        id="limparPeriodo"
+                    >
+                        Limpar período
+                    </button>
+                </div>
+            </div>
+
+            <p id="periodoSelecionado" class="periodo-selecionado">
+                Exibindo todos os períodos.
+            </p>
+        </section>
         <section class="painel-selecao">
             <div class="selecao-cabecalho">
                 <div>

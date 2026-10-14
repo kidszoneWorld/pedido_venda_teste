@@ -17,6 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
         'mensagemDashboard'
     );
 
+    const periodoInicial = document.getElementById(
+        'periodoInicial'
+    );
+
+    const periodoFinal = document.getElementById(
+        'periodoFinal'
+    );
+
+    const periodoSelecionado = document.getElementById(
+        'periodoSelecionado'
+    );
+
     const informar = (mensagem, tipo = '') => {
         mensagemDashboard.textContent = mensagem;
         mensagemDashboard.className =
@@ -52,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'Distribuidor sem nome'
         );
     }
+
+    
 
     function montarListaDistribuidores() {
         const pesquisa =
@@ -149,7 +163,133 @@ document.addEventListener('DOMContentLoaded', () => {
             return [];
         }
     }
+    function obterMesAtual() {
+        const hoje = new Date();
 
+        const ano = hoje.getFullYear();
+
+        const mes = String(
+            hoje.getMonth() + 1
+        ).padStart(2, '0');
+
+        return `${ano}-${mes}`;
+    }
+
+    function obterPrimeiroMesDoAno() {
+        const anoAtual = new Date().getFullYear();
+
+        return `${anoAtual}-01`;
+    }
+
+    function converterMesParaBanco(valor) {
+        if (!valor) {
+            return '';
+        }
+
+        const partes = valor.split('-');
+
+        if (partes.length !== 2) {
+            return '';
+        }
+
+        const [ano, mes] = partes;
+
+        return `${mes}/${ano}`;
+    }
+
+    function formatarPeriodoExibicao(valor) {
+        if (!valor) {
+            return '';
+        }
+
+        const [ano, mes] = valor.split('-');
+
+        return `${mes}/${ano}`;
+    }
+
+    function periodoValido() {
+        const inicio = periodoInicial.value;
+        const fim = periodoFinal.value;
+
+        if (!inicio && !fim) {
+            return true;
+        }
+
+        if (!inicio || !fim) {
+            informar(
+                'Preencha o mês inicial e o mês final.',
+                'aviso'
+            );
+
+            return false;
+        }
+
+        /*
+        * O formato AAAA-MM pode ser comparado diretamente,
+        * porque começa pelo ano e depois pelo mês.
+        */
+        if (inicio > fim) {
+            informar(
+                'O mês inicial não pode ser maior que o mês final.',
+                'aviso'
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    function atualizarTextoPeriodo() {
+        const inicio = periodoInicial.value;
+        const fim = periodoFinal.value;
+
+        if (!inicio || !fim) {
+            periodoSelecionado.textContent =
+                'Exibindo todos os períodos.';
+
+            return;
+        }
+
+        periodoSelecionado.textContent =
+            `Período selecionado: ` +
+            `${formatarPeriodoExibicao(inicio)} até ` +
+            `${formatarPeriodoExibicao(fim)}.`;
+    }
+
+    function salvarPeriodoLocal() {
+        localStorage.setItem(
+            'dashboardPeriodoInicial',
+            periodoInicial.value
+        );
+
+        localStorage.setItem(
+            'dashboardPeriodoFinal',
+            periodoFinal.value
+        );
+    }
+
+    function carregarPeriodoLocal() {
+        const inicioSalvo = localStorage.getItem(
+            'dashboardPeriodoInicial'
+        );
+
+        const fimSalvo = localStorage.getItem(
+            'dashboardPeriodoFinal'
+        );
+
+        /*
+        * Se ainda não houver filtro salvo, mostra o ano atual.
+        * Exemplo: janeiro/2026 até o mês atual de 2026.
+        */
+        periodoInicial.value =
+            inicioSalvo || obterPrimeiroMesDoAno();
+
+        periodoFinal.value =
+            fimSalvo || obterMesAtual();
+
+        atualizarTextoPeriodo();
+    }
     async function carregarDistribuidores() {
         informar('Carregando distribuidores...');
 
@@ -236,9 +376,30 @@ document.addEventListener('DOMContentLoaded', () => {
         ).join(',');
 
         try {
-            const resposta = await fetch(
-                `/api/dashboardDistribuidores/dados?distribuidores=${encodeURIComponent(codigos)}`
-            );
+                    if (!periodoValido()) {
+            return;
+        }
+
+        const inicioBanco = converterMesParaBanco(
+            periodoInicial.value
+        );
+
+        const fimBanco = converterMesParaBanco(
+            periodoFinal.value
+        );
+
+        const parametros = new URLSearchParams();
+
+        parametros.set('distribuidores', codigos);
+
+        if (inicioBanco && fimBanco) {
+            parametros.set('periodoInicial', inicioBanco);
+            parametros.set('periodoFinal', fimBanco);
+        }
+
+        const resposta = await fetch(
+            `/api/dashboardDistribuidores/dados?${parametros.toString()}`
+        );
 
             const dados = await resposta.json();
 
@@ -252,7 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             atualizarCards(dados.resumo);
             atualizarGraficos(dados.graficos);
-
+            atualizarTextoPeriodo();
+            salvarPeriodoLocal();
             informar(
                 `Dashboard atualizado com ${dados.distribuidores.length} distribuidor(es).`,
                 'sucesso'
@@ -564,6 +726,60 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
+        document
+            .getElementById('aplicarPeriodo')
+            .addEventListener('click', () => {
+                if (!periodoValido()) {
+                    return;
+                }
+
+                atualizarTextoPeriodo();
+                salvarPeriodoLocal();
+                carregarDadosDashboard();
+            });
+
+        document
+            .getElementById('limparPeriodo')
+            .addEventListener('click', () => {
+                periodoInicial.value = '';
+                periodoFinal.value = '';
+
+                localStorage.removeItem(
+                    'dashboardPeriodoInicial'
+                );
+
+                localStorage.removeItem(
+                    'dashboardPeriodoFinal'
+                );
+
+                atualizarTextoPeriodo();
+                carregarDadosDashboard();
+            });
+
+        periodoInicial.addEventListener('change', () => {
+            if (
+                periodoInicial.value &&
+                periodoFinal.value &&
+                periodoValido()
+            ) {
+                atualizarTextoPeriodo();
+                salvarPeriodoLocal();
+                carregarDadosDashboard();
+            }
+        });
+
+        periodoFinal.addEventListener('change', () => {
+            if (
+                periodoInicial.value &&
+                periodoFinal.value &&
+                periodoValido()
+            ) {
+                atualizarTextoPeriodo();
+                salvarPeriodoLocal();
+                carregarDadosDashboard();
+            }
+        });
+
     document
         .getElementById('atualizarDashboard')
         .addEventListener(
@@ -607,6 +823,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     .classList.add('ativo');
             });
         });
-
+    carregarPeriodoLocal();
     carregarDistribuidores();
 });
