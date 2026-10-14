@@ -4306,6 +4306,7 @@ function adicionarNovaLinha() {
 
     return tr;
 }
+
 // Função para remover a última linha da tabela
 document.getElementById('excluirLinha').addEventListener('click', function () {
     let tbody = document.querySelector('#dadosPedido tbody');
@@ -4379,8 +4380,6 @@ closeButton.addEventListener("click", () => {
     modal.style.display = "none";
 });
 
-
-
 //--fim-----envio de dados para o sistema DBCorp------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -4416,10 +4415,10 @@ const campoMovimentaEstoque =
 
     
     // E-mail fixo que não pode ser removido
-    const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`;
+    // const FIXED_EMAIL = `devolucao.kz@kidszoneworld.com.br`;
     
     let generatedPdfFile = null;
-    // const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br; erick.almeida@kidszoneworld.com.br`;
+    const FIXED_EMAIL = `luis.henrique@kidszoneworld.com.br; erick.almeida@kidszoneworld.com.br`;
     let additionalFiles = [];
 
 

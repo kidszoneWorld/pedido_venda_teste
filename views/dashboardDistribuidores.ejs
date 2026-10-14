@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard de Distribuidores</title>
+
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/images/apple-touch-icon.png"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/images/favicon-32x32.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/css/distribuidores.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/css/dashboardDistribuidores.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/css/theme-toggle.css"
+    >
+
+    <script>
+        (function () {
+            const tema =
+                localStorage.getItem('theme') || 'light';
+
+            document.documentElement.classList.add(
+                tema + '-theme'
+            );
+        })();
+    </script>
+</head>
+
+<body id="corpo">
+
+    <%- include('header') %>
+
+    <main class="dashboard-container">
+
+        <div class="dashboard-cabecalho">
+            <div>
+                <h1>Dashboard de Distribuidores</h1>
+
+                <p id="informacaoRepresentante">
+                    Carregando representante...
+                </p>
+            </div>
+
+            <div class="dashboard-acoes">
+                <button
+                    type="button"
+                    class="button"
+                    id="voltarDistribuidores"
+                >
+                    Voltar
+                </button>
+
+                <button
+                    type="button"
+                    class="button"
+                    id="atualizarDashboard"
+                >
+                    Atualizar
+                </button>
+            </div>
+        </div>
+
+        <section class="painel-selecao">
+            <div class="selecao-cabecalho">
+                <div>
+                    <h2>Distribuidores exibidos</h2>
+
+                    <p>
+                        Marque ou desmarque um distribuidor para
+                        atualizar os indicadores imediatamente.
+                    </p>
+                </div>
+
+                <div class="acoes-selecao">
+                    <button
+                        type="button"
+                        class="button"
+                        id="selecionarTodos"
+                    >
+                        Selecionar todos
+                    </button>
+
+                    <button
+                        type="button"
+                        class="button"
+                        id="limparSelecao"
+                    >
+                        Limpar seleção
+                    </button>
+                </div>
+            </div>
+
+            <input
+                type="text"
+                id="pesquisaDistribuidor"
+                placeholder="Pesquisar distribuidor..."
+            >
+
+            <div
+                id="listaSelecaoDistribuidores"
+                class="lista-distribuidores"
+            >
+                <p>Carregando distribuidores...</p>
+            </div>
+        </section>
+
+        <div
+            id="mensagemDashboard"
+            class="mensagem-dashboard"
+        ></div>
+
+        <section class="cards-resumo">
+            <article class="card-dashboard">
+                <span>Distribuidores</span>
+                <strong id="cardDistribuidores">0</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Sell In</span>
+                <strong id="cardSellIn">R$ 0,00</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Meta Sell In</span>
+                <strong id="cardMetaSellIn">R$ 0,00</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Atingimento</span>
+                <strong id="cardAtingimento">0,00%</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Sell Out</span>
+                <strong id="cardSellOut">0</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Positivação</span>
+                <strong id="cardPositivacao">0</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Displays</span>
+                <strong id="cardDisplays">0</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Estoque</span>
+                <strong id="cardEstoque">0</strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Investimentos</span>
+                <strong id="cardInvestimentos">
+                    R$ 0,00
+                </strong>
+            </article>
+
+            <article class="card-dashboard">
+                <span>Redes</span>
+                <strong id="cardRedes">0</strong>
+            </article>
+        </section>
+
+        <nav class="abas-dashboard">
+            <button
+                type="button"
+                class="aba-dashboard ativa"
+                data-aba="sellIn"
+            >
+                Sell In
+            </button>
+
+            <button
+                type="button"
+                class="aba-dashboard"
+                data-aba="sellOut"
+            >
+                Sell Out
+            </button>
+
+            <button
+                type="button"
+                class="aba-dashboard"
+                data-aba="positivacao"
+            >
+                Positivação
+            </button>
+
+            <button
+                type="button"
+                class="aba-dashboard"
+                data-aba="displays"
+            >
+                Displays
+            </button>
+
+            <button
+                type="button"
+                class="aba-dashboard"
+                data-aba="estoque"
+            >
+                Estoque
+            </button>
+
+            <button
+                type="button"
+                class="aba-dashboard"
+                data-aba="investimentos"
+            >
+                Investimentos
+            </button>
+
+            <button
+                type="button"
+                class="aba-dashboard"
+                data-aba="redes"
+            >
+                Redes
+            </button>
+        </nav>
+
+        <section
+            id="aba-sellIn"
+            class="conteudo-aba ativo"
+        >
+            <h2>Sell In x Meta por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoSellIn"></canvas>
+            </div>
+        </section>
+
+        <section
+            id="aba-sellOut"
+            class="conteudo-aba"
+        >
+            <h2>Sell Out por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoSellOut"></canvas>
+            </div>
+        </section>
+
+        <section
+            id="aba-positivacao"
+            class="conteudo-aba"
+        >
+            <h2>Positivação por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoPositivacao"></canvas>
+            </div>
+        </section>
+
+        <section
+            id="aba-displays"
+            class="conteudo-aba"
+        >
+            <h2>Displays por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoDisplays"></canvas>
+            </div>
+        </section>
+
+        <section
+            id="aba-estoque"
+            class="conteudo-aba"
+        >
+            <h2>Estoque por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoEstoque"></canvas>
+            </div>
+        </section>
+
+        <section
+            id="aba-investimentos"
+            class="conteudo-aba"
+        >
+            <h2>Investimentos por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoInvestimentos"></canvas>
+            </div>
+        </section>
+
+        <section
+            id="aba-redes"
+            class="conteudo-aba"
+        >
+            <h2>Redes por distribuidor</h2>
+
+            <div class="grafico-container">
+                <canvas id="graficoRedes"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+    ></script>
+
+    <script src="/dashboardDistribuidores.js"></script>
+    <script src="/theme-toggle.js"></script>
+
+</body>
+
+</html>

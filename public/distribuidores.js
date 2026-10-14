@@ -4,6 +4,17 @@ document.addEventListener(
     'DOMContentLoaded',
     async () => {
 
+        const botaoDashboard = document.getElementById(
+            'dashboardDistribuidores'
+        );
+
+        if (botaoDashboard) {
+            botaoDashboard.addEventListener('click', () => {
+                window.location.href =
+                    '/dashboardDistribuidores';
+            });
+        }
+
         await verificarPermissao();
 
         configurarEventos();

@@ -1,0 +1,198 @@
+.dashboard-container {
+    width: min(1500px, 96%);
+    margin: 25px auto;
+}
+
+.dashboard-cabecalho,
+.selecao-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.dashboard-acoes,
+.acoes-selecao {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.painel-selecao {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--background-secondary, #ffffff);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#pesquisaDistribuidor {
+    width: 100%;
+    max-width: 450px;
+    margin: 15px 0;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.lista-distribuidores {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.distribuidor-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #dbe3ec;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.distribuidor-checkbox:hover {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.distribuidor-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+.cards-resumo {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(190px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.card-dashboard {
+    min-height: 110px;
+    padding: 18px;
+    border-radius: 12px;
+    background: #ffffff;
+    border-left: 5px solid #2563eb;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-dashboard span {
+    display: block;
+    margin-bottom: 12px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.card-dashboard strong {
+    color: #0f172a;
+    font-size: 24px;
+}
+
+.abas-dashboard {
+    display: flex;
+    gap: 8px;
+    margin-top: 25px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.aba-dashboard {
+    padding: 11px 18px;
+    border: 0;
+    border-radius: 8px;
+    background: #e2e8f0;
+    color: #0f172a;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.aba-dashboard.ativa {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.conteudo-aba {
+    display: none;
+    margin-top: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.conteudo-aba.ativo {
+    display: block;
+}
+
+.grafico-container {
+    position: relative;
+    min-height: 430px;
+}
+
+.mensagem-dashboard {
+    min-height: 22px;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.mensagem-dashboard.sucesso {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.mensagem-dashboard.erro {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.mensagem-dashboard.aviso {
+    color: #854d0e;
+    background: #fef9c3;
+}
+
+.dark-theme .painel-selecao,
+.dark-theme .card-dashboard,
+.dark-theme .conteudo-aba {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+.dark-theme .card-dashboard strong {
+    color: #f8fafc;
+}
+
+.dark-theme .distribuidor-checkbox {
+    border-color: #475569;
+}
+
+@media (max-width: 700px) {
+    .dashboard-container {
+        width: 94%;
+    }
+
+    .dashboard-cabecalho,
+    .selecao-cabecalho {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .dashboard-acoes,
+    .acoes-selecao {
+        width: 100%;
+    }
+
+    .dashboard-acoes button,
+    .acoes-selecao button {
+        flex: 1;
+    }
+
+    .grafico-container {
+        min-height: 350px;
+    }
+}

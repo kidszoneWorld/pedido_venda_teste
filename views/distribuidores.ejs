@@ -73,6 +73,14 @@
             Administrar Itens
         </button>
 
+        <button
+            type="button"
+            class="button"
+            id="dashboardDistribuidores"
+        >
+            Dashboard
+        </button>
+
     </div>
 
     <div class="table-container">
@@ -241,6 +249,14 @@
 <script src="/distribuidores.js"></script>
 <script src="/theme-toggle.js?v=1783967913316"></script>
 <script>
+    document
+        .getElementById('dashboardDistribuidores')
+        .addEventListener('click', () => {
+
+            window.location.href =
+                '/dashboardDistribuidores';
+
+        });
          // Função para limpar dados do usuário e redirecionar para a página de login
         document.getElementById('logoutButton2').addEventListener('click', async () => {
             // Limpa os dados locais

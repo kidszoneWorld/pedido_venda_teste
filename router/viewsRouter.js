@@ -5,10 +5,8 @@ const orderController = require('../controllers/orderController'); // Importa o 
 const invoicesController = require('../controllers/invoicesControllers');
 const { authMiddleware, authenticateUser } = require('../middleware/authMiddleware');
 const inputOrdersController = require('../controllers/inputOrdersControllers');
-const eficienciaController = require('../controllers/eficienciaController');
- 
- 
-
+const eficienciaController = require('../controllers/eficienciaController'); 
+const dashboardController =require('../controllers/dashboardDistribuidorController');
 const fernandoController = require('../controllers/fernandoController');
 const clientController = require('../controllers/clientController');
 const devController = require('../controllers/devController');
@@ -550,6 +548,20 @@ router.get(
 
     }
 );
+router.get(
+    '/dashboardDistribuidores',
+    authMiddleware,
+    (req,res)=>{
+        res.render(
+            path.join(
+                __dirname,
+                '..',
+                'views',
+                'dashboardDistribuidores.ejs'
+            )
+        );
+    }
+);
 
 
 router.put(
@@ -647,9 +659,17 @@ router.get('/api/rebaixa/:id', rebController.buscarRebaixaPorId);
 router.get('/api/rebaixas', rebController.listarRebaixas);
 router.put('/rebaixa/:id', rebController.atualizarRebaixa);
 
+router.get(
+    '/api/dashboardDistribuidores/lista',
+    authMiddleware,
+    dashboardController.listarDistribuidores
+);
 
-
-
+router.get(
+    '/api/dashboardDistribuidores/dados',
+    authMiddleware,
+    dashboardController.buscarDados
+);
 
 // Rota para página de erro 401 (Senha incorreta)
 router.get('/error-401', (req, res) => {
