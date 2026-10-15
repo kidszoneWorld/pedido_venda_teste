@@ -236,6 +236,16 @@ exports.buscarDados = async (req, res) => {
                     estoque: [],
                     investimentos: [],
                     redes: []
+                },
+                evolucao: {
+                    sellIn: [],
+                    metaSellIn: [],
+                    sellOut: [],
+                    positivacao: [],
+                    displays: [],
+                    estoque: [],
+                    investimentos: [],
+                    redes: []
                 }
             });
         }
@@ -465,6 +475,296 @@ exports.buscarDados = async (req, res) => {
             )
         ]);
 
+        const [
+            evolucaoSellInResultado,
+            evolucaoMetaResultado,
+            evolucaoSellOutResultado,
+            evolucaoPositivacaoResultado,
+            evolucaoDisplaysResultado,
+            evolucaoEstoqueResultado,
+            evolucaoInvestimentosResultado,
+            evolucaoRedesResultado
+        ] = await Promise.all([
+            pool.query(
+                `
+                    SELECT
+                        s."MesAnoSellIn" AS mes,
+                        COALESCE(
+                            SUM(s."ValorSellIn"),
+                            0
+                        )::numeric AS total
+                    FROM "TbSellIn" s
+                    WHERE
+                        s."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                s."MesAnoSellIn",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
+
+                    GROUP BY
+                        s."MesAnoSellIn"
+
+                    ORDER BY
+                        TO_DATE(
+                            s."MesAnoSellIn",
+                            'MM/YYYY'
+                        )
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        m."MesAnoMetaSellIn" AS mes,
+                        COALESCE(
+                            SUM(m."MetaSellIn"),
+                            0
+                        )::numeric AS total
+                    FROM "TbMetaSellIn" m
+                    WHERE
+                        m."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                m."MesAnoMetaSellIn",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
+
+                    GROUP BY
+                        m."MesAnoMetaSellIn"
+
+                    ORDER BY
+                        TO_DATE(
+                            m."MesAnoMetaSellIn",
+                            'MM/YYYY'
+                        )
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        s."MesAnoSellOut" AS mes,
+                        COALESCE(
+                            SUM(s."SellOutQuantidade"),
+                            0
+                        )::integer AS total
+                    FROM "TbSellOut" s
+                    WHERE
+                        s."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                s."MesAnoSellOut",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
+
+                    GROUP BY
+                        s."MesAnoSellOut"
+
+                    ORDER BY
+                        TO_DATE(
+                            s."MesAnoSellOut",
+                            'MM/YYYY'
+                        )
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        p."MesAnoPositivada" AS mes,
+                        COALESCE(
+                            SUM(p."QuantidadePositivada"),
+                            0
+                        )::integer AS total
+                    FROM "TbPositivacaoDistribuidor" p
+                    WHERE
+                        p."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                p."MesAnoPositivada",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
+
+                    GROUP BY
+                        p."MesAnoPositivada"
+
+                    ORDER BY
+                        TO_DATE(
+                            p."MesAnoPositivada",
+                            'MM/YYYY'
+                        )
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        TO_CHAR(
+                            DATE_TRUNC('month', d."DataDisplay"),
+                            'MM/YYYY'
+                        ) AS mes,
+
+                        COALESCE(
+                            SUM(d."QuantidadeDisplay"),
+                            0
+                        )::integer AS total
+
+                    FROM "TbDisplay" d
+
+                    WHERE
+                        d."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND d."DataDisplay" >=
+                                TO_DATE($2, 'MM/YYYY')
+
+                            AND d."DataDisplay" <
+                                TO_DATE($3, 'MM/YYYY') +
+                                INTERVAL '1 month'
+                        ` : ''}
+
+                    GROUP BY
+                        DATE_TRUNC('month', d."DataDisplay")
+
+                    ORDER BY
+                        DATE_TRUNC('month', d."DataDisplay")
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        e."MesAnoEstoque" AS mes,
+                        COALESCE(
+                            SUM(e."Quantidade"),
+                            0
+                        )::integer AS total
+                    FROM "TbEstoqueDistribuidor" e
+                    WHERE
+                        e."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND TO_DATE(
+                                e."MesAnoEstoque",
+                                'MM/YYYY'
+                            ) BETWEEN TO_DATE($2, 'MM/YYYY')
+                            AND TO_DATE($3, 'MM/YYYY')
+                        ` : ''}
+
+                    GROUP BY
+                        e."MesAnoEstoque"
+
+                    ORDER BY
+                        TO_DATE(
+                            e."MesAnoEstoque",
+                            'MM/YYYY'
+                        )
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        TO_CHAR(
+                            DATE_TRUNC('month', i."DataInvestimento"),
+                            'MM/YYYY'
+                        ) AS mes,
+
+                        COALESCE(
+                            SUM(i."ValorInvestimento"),
+                            0
+                        )::numeric AS total
+
+                    FROM "TbInvestimentoDistribuidor" i
+
+                    WHERE
+                        i."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND i."DataInvestimento" >=
+                                TO_DATE($2, 'MM/YYYY')
+
+                            AND i."DataInvestimento" <
+                                TO_DATE($3, 'MM/YYYY') +
+                                INTERVAL '1 month'
+                        ` : ''}
+
+                    GROUP BY
+                        DATE_TRUNC(
+                            'month',
+                            i."DataInvestimento"
+                        )
+
+                    ORDER BY
+                        DATE_TRUNC(
+                            'month',
+                            i."DataInvestimento"
+                        )
+                `,
+                parametrosConsultas
+            ),
+
+            pool.query(
+                `
+                    SELECT
+                        TO_CHAR(
+                            DATE_TRUNC('month', r."DataInicioRede"),
+                            'MM/YYYY'
+                        ) AS mes,
+
+                        COUNT(*)::integer AS total
+
+                    FROM "TbRedes" r
+
+                    WHERE
+                        r."CodigoDistribuidor" =
+                        ANY($1::integer[])
+
+                        ${possuiPeriodo ? `
+                            AND r."DataInicioRede" >=
+                                TO_DATE($2, 'MM/YYYY')
+
+                            AND r."DataInicioRede" <
+                                TO_DATE($3, 'MM/YYYY') +
+                                INTERVAL '1 month'
+                        ` : ''}
+
+                    GROUP BY
+                        DATE_TRUNC('month', r."DataInicioRede")
+
+                    ORDER BY
+                        DATE_TRUNC('month', r."DataInicioRede")
+                `,
+                parametrosConsultas
+            )
+        ]);
+
         function criarMapa(rows) {
             return new Map(
                 rows.map((row) => [
@@ -496,6 +796,13 @@ exports.buscarDados = async (req, res) => {
                     total: mapa.get(codigo) || 0
                 };
             });
+        }
+
+        function montarEvolucao(rows) {
+            return rows.map((row) => ({
+                mes: row.mes,
+                total: Number(row.total) || 0
+            }));
         }
 
         const totalSellIn = Array.from(
@@ -551,6 +858,39 @@ exports.buscarDados = async (req, res) => {
                     mapaInvestimentos
                 ),
                 redes: montarGrafico(mapaRedes)
+            },
+            evolucao: {
+                sellIn: montarEvolucao(
+                    evolucaoSellInResultado.rows
+                ),
+
+                metaSellIn: montarEvolucao(
+                    evolucaoMetaResultado.rows
+                ),
+
+                sellOut: montarEvolucao(
+                    evolucaoSellOutResultado.rows
+                ),
+
+                positivacao: montarEvolucao(
+                    evolucaoPositivacaoResultado.rows
+                ),
+
+                displays: montarEvolucao(
+                    evolucaoDisplaysResultado.rows
+                ),
+
+                estoque: montarEvolucao(
+                    evolucaoEstoqueResultado.rows
+                ),
+
+                investimentos: montarEvolucao(
+                    evolucaoInvestimentosResultado.rows
+                ),
+
+                redes: montarEvolucao(
+                    evolucaoRedesResultado.rows
+                )
             }
         });
     } catch (error) {

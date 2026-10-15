@@ -357,6 +357,300 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function gerarMesesDoPeriodo() {
+        const inicio = periodoInicial.value;
+        const fim = periodoFinal.value;
+
+        if (!inicio || !fim) {
+            return [];
+        }
+
+        const [anoInicio, mesInicio] =
+            inicio.split('-').map(Number);
+
+        const [anoFim, mesFim] =
+            fim.split('-').map(Number);
+
+        const meses = [];
+
+        const dataAtual = new Date(
+            anoInicio,
+            mesInicio - 1,
+            1
+        );
+
+        const dataFinal = new Date(
+            anoFim,
+            mesFim - 1,
+            1
+        );
+
+        while (dataAtual <= dataFinal) {
+            const mes = String(
+                dataAtual.getMonth() + 1
+            ).padStart(2, '0');
+
+            const ano = dataAtual.getFullYear();
+
+            meses.push(`${mes}/${ano}`);
+
+            dataAtual.setMonth(
+                dataAtual.getMonth() + 1
+            );
+        }
+
+        return meses;
+    }
+
+    function ordenarMeses(meses) {
+        return Array.from(new Set(meses))
+            .filter(Boolean)
+            .sort((mesA, mesB) => {
+                const [numeroMesA, anoA] =
+                    mesA.split('/').map(Number);
+
+                const [numeroMesB, anoB] =
+                    mesB.split('/').map(Number);
+
+                return (
+                    (anoA * 100 + numeroMesA) -
+                    (anoB * 100 + numeroMesB)
+                );
+            });
+    }
+
+    function obterMesesDoGrafico(...colecoes) {
+        const mesesDoFiltro = gerarMesesDoPeriodo();
+
+        if (mesesDoFiltro.length > 0) {
+            return mesesDoFiltro;
+        }
+
+        const mesesRecebidos = colecoes.flatMap(
+            (colecao) =>
+                (colecao || []).map((item) => item.mes)
+        );
+
+        return ordenarMeses(mesesRecebidos);
+    }
+
+    function montarValoresMensais(dados, meses) {
+        const mapa = new Map(
+            (dados || []).map((item) => [
+                item.mes,
+                Number(item.total) || 0
+            ])
+        );
+
+        return meses.map(
+            (mes) => mapa.get(mes) || 0
+        );
+    }
+
+    function criarGraficoLinha({
+        chave,
+        canvasId,
+        dados,
+        titulo,
+        cor = '#2563eb',
+        moeda = false
+    }) {
+        destruirGrafico(chave);
+
+        const canvas = document.getElementById(canvasId);
+
+        if (!canvas) {
+            console.warn(
+                `Canvas não encontrado: ${canvasId}`
+            );
+
+            return;
+        }
+
+        const meses = obterMesesDoGrafico(dados);
+
+        estado.graficos[chave] = new Chart(canvas, {
+            type: 'line',
+
+            data: {
+                labels: meses,
+
+                datasets: [{
+                    label: titulo,
+
+                    data: montarValoresMensais(
+                        dados,
+                        meses
+                    ),
+
+                    borderColor: cor,
+                    backgroundColor: `${cor}20`,
+                    pointBackgroundColor: cor,
+
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label(contexto) {
+                                const valor =
+                                    contexto.parsed.y || 0;
+
+                                const valorFormatado = moeda
+                                    ? formatarMoeda(valor)
+                                    : formatarNumero(valor);
+
+                                return (
+                                    `${contexto.dataset.label}: ` +
+                                    valorFormatado
+                                );
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Mês'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function criarGraficoLinhaSellIn(
+        sellIn,
+        metas
+    ) {
+        destruirGrafico('linhaSellIn');
+
+        const canvas = document.getElementById(
+            'graficoLinhaSellIn'
+        );
+
+        if (!canvas) {
+            return;
+        }
+
+        const meses = obterMesesDoGrafico(
+            sellIn,
+            metas
+        );
+
+        estado.graficos.linhaSellIn =
+            new Chart(canvas, {
+                type: 'line',
+
+                data: {
+                    labels: meses,
+
+                    datasets: [
+                        {
+                            label: 'Sell In',
+
+                            data: montarValoresMensais(
+                                sellIn,
+                                meses
+                            ),
+
+                            borderColor: '#2563eb',
+                            backgroundColor:
+                                'rgba(37, 99, 235, 0.12)',
+
+                            pointBackgroundColor: '#2563eb',
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Meta',
+
+                            data: montarValoresMensais(
+                                metas,
+                                meses
+                            ),
+
+                            borderColor: '#f59e0b',
+                            backgroundColor:
+                                'rgba(245, 158, 11, 0.06)',
+
+                            pointBackgroundColor: '#f59e0b',
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label(contexto) {
+                                    return (
+                                        `${contexto.dataset.label}: ` +
+                                        formatarMoeda(
+                                            contexto.parsed.y
+                                        )
+                                    );
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        },
+
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mês'
+                            }
+                        }
+                    }
+                }
+            });
+    }
+
     async function carregarDadosDashboard() {
         if (estado.selecionados.size === 0) {
             limparDashboard();
@@ -412,7 +706,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             atualizarCards(dados.resumo);
-            atualizarGraficos(dados.graficos);
+
+            atualizarGraficos(
+                dados.graficos,
+                dados.evolucao
+            );  
             atualizarTextoPeriodo();
             salvarPeriodoLocal();
             informar(
@@ -624,7 +922,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function atualizarGraficos(graficos) {
+    function atualizarGraficos(
+        graficos,
+        evolucao = {}
+    ) {
+        /*
+        * Gráficos de barras por distribuidor
+        */
         criarGraficoSellIn(
             graficos.sellIn || [],
             graficos.metaSellIn || []
@@ -676,6 +980,63 @@ document.addEventListener('DOMContentLoaded', () => {
             canvasId: 'graficoRedes',
             dados: graficos.redes || [],
             titulo: 'Redes',
+            cor: '#4f46e5'
+        });
+
+        /*
+        * Gráficos de linha por mês
+        */
+        criarGraficoLinhaSellIn(
+            evolucao.sellIn || [],
+            evolucao.metaSellIn || []
+        );
+
+        criarGraficoLinha({
+            chave: 'linhaSellOut',
+            canvasId: 'graficoLinhaSellOut',
+            dados: evolucao.sellOut || [],
+            titulo: 'Sell Out',
+            cor: '#16a34a'
+        });
+
+        criarGraficoLinha({
+            chave: 'linhaPositivacao',
+            canvasId: 'graficoLinhaPositivacao',
+            dados: evolucao.positivacao || [],
+            titulo: 'Positivação',
+            cor: '#7c3aed'
+        });
+
+        criarGraficoLinha({
+            chave: 'linhaDisplays',
+            canvasId: 'graficoLinhaDisplays',
+            dados: evolucao.displays || [],
+            titulo: 'Displays',
+            cor: '#ea580c'
+        });
+
+        criarGraficoLinha({
+            chave: 'linhaEstoque',
+            canvasId: 'graficoLinhaEstoque',
+            dados: evolucao.estoque || [],
+            titulo: 'Estoque',
+            cor: '#0891b2'
+        });
+
+        criarGraficoLinha({
+            chave: 'linhaInvestimentos',
+            canvasId: 'graficoLinhaInvestimentos',
+            dados: evolucao.investimentos || [],
+            titulo: 'Investimentos',
+            cor: '#dc2626',
+            moeda: true
+        });
+
+        criarGraficoLinha({
+            chave: 'linhaRedes',
+            canvasId: 'graficoLinhaRedes',
+            dados: evolucao.redes || [],
+            titulo: 'Novas redes',
             cor: '#4f46e5'
         });
     }
@@ -821,6 +1182,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 document
                     .getElementById(`aba-${aba}`)
                     .classList.add('ativo');
+
+                requestAnimationFrame(() => {
+                    Object.values(estado.graficos).forEach(
+                        (grafico) => grafico.resize()
+                    );
+                });
+                
             });
         });
     carregarPeriodoLocal();
