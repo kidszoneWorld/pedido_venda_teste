@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         periodoFinal.value =
             fimSalvo || obterMesAtual();
 
-        atualizarTextoPeriodo();
+        // atualizarTextoPeriodo();
     }
     async function carregarDistribuidores() {
         informar('Carregando distribuidores...');
@@ -335,12 +335,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     'informacaoRepresentante'
                 );
 
-            if (dados.representante) {
+            if (!dados.representante) {
                 informacaoRepresentante.textContent =
-                    `Exibindo distribuidores do representante ${dados.representante}.`;
+                    `Usuário sem número de representante. Exibindo todos os distribuidores.`;
             } else {
                 informacaoRepresentante.textContent =
-                    'Usuário sem número de representante. Exibindo todos os distribuidores.';
+                    '';
             }
 
             montarListaDistribuidores();
@@ -711,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dados.graficos,
                 dados.evolucao
             );  
-            atualizarTextoPeriodo();
+            // atualizarTextoPeriodo();
             salvarPeriodoLocal();
             informar(
                 `Dashboard atualizado com ${dados.distribuidores.length} distribuidor(es).`,
@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                atualizarTextoPeriodo();
+                // atualizarTextoPeriodo();
                 salvarPeriodoLocal();
                 carregarDadosDashboard();
             });
@@ -1113,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'dashboardPeriodoFinal'
                 );
 
-                atualizarTextoPeriodo();
+                // atualizarTextoPeriodo();
                 carregarDadosDashboard();
             });
 
@@ -1123,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 periodoFinal.value &&
                 periodoValido()
             ) {
-                atualizarTextoPeriodo();
+                // atualizarTextoPeriodo();
                 salvarPeriodoLocal();
                 carregarDadosDashboard();
             }
@@ -1135,7 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 periodoFinal.value &&
                 periodoValido()
             ) {
-                atualizarTextoPeriodo();
+                // atualizarTextoPeriodo();
                 salvarPeriodoLocal();
                 carregarDadosDashboard();
             }
@@ -1188,7 +1188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         (grafico) => grafico.resize()
                     );
                 });
-                
+
             });
         });
     carregarPeriodoLocal();

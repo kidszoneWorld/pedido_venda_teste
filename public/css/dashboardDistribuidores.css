@@ -247,6 +247,14 @@
     color: #f8fafc;
 }
 
+.dark-theme .dashboard-cabecalho {
+    color: #f8fafc;
+}
+
+.dashboard-cabecalho {
+    color: #000;
+}
+
 .dark-theme .campo-periodo input {
     color: #f8fafc;
     background: #0f172a;
