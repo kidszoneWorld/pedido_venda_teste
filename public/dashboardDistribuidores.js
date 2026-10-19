@@ -49,6 +49,49 @@ document.addEventListener('DOMContentLoaded', () => {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })}%`;
+    const coresDistribuidores = [
+        '#2563eb',
+        '#16a34a',
+        '#f59e0b',
+        '#dc2626',
+        '#7c3aed',
+        '#0891b2',
+        '#ea580c',
+        '#4f46e5',
+        '#db2777',
+        '#65a30d',
+        '#0d9488',
+        '#9333ea',
+        '#0284c7',
+        '#ca8a04',
+        '#e11d48',
+        '#059669',
+        '#c026d3',
+        '#475569',
+        '#84cc16',
+        '#f97316'
+    ];
+
+
+    function gerarCores(quantidade) {
+        return Array.from(
+            { length: quantidade },
+            (_, indice) => {
+                if (coresDistribuidores[indice]) {
+                    return coresDistribuidores[indice];
+                }
+
+                /*
+                * Distribui as cores restantes pelo círculo HSL.
+                */
+                const tonalidade =
+                    (indice * 137.508) % 360;
+
+                return `hsl(${tonalidade}, 68%, 52%)`;
+            }
+        );
+    }
+
 
     function obterCodigo(distribuidor) {
         return Number(
@@ -859,6 +902,214 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function criarGraficoDisco({
+        chave,
+        canvasId,
+        dados,
+        titulo,
+        moeda = false
+    }) {
+        destruirGrafico(chave);
+
+        const canvas = document.getElementById(canvasId);
+
+        if (!canvas) {
+            console.warn(
+                `Canvas não encontrado: ${canvasId}`
+            );
+
+            return;
+        }
+
+        /*
+        * Converte os valores e remove valores negativos.
+        *
+        * Os distribuidores com zero são mantidos nos dados
+        * para possibilitar a exibição de uma mensagem quando
+        * todos possuírem valor zero.
+        */
+        const dadosNormalizados = (dados || []).map(
+            (item) => ({
+                codigo: Number(item.codigo),
+                nome: item.nome || 'Distribuidor sem nome',
+                total: Math.max(Number(item.total) || 0, 0)
+            })
+        );
+
+        const totalGeral = dadosNormalizados.reduce(
+            (acumulado, item) =>
+                acumulado + item.total,
+            0
+        );
+
+        /*
+        * Distribuidores com valor zero não precisam criar uma
+        * parte invisível no gráfico.
+        */
+        const dadosComValor = dadosNormalizados.filter(
+            (item) => item.total > 0
+        );
+
+        /*
+        * Caso todos os dados sejam zero, exibe um único segmento
+        * neutro para o gráfico não ficar quebrado.
+        */
+        const semDados = totalGeral <= 0;
+
+        const labels = semDados
+            ? ['Sem dados no período']
+            : dadosComValor.map((item) => item.nome);
+
+        const valores = semDados
+            ? [1]
+            : dadosComValor.map((item) => item.total);
+
+        const cores = semDados
+            ? ['#cbd5e1']
+            : gerarCores(dadosComValor.length);
+
+        estado.graficos[chave] = new Chart(canvas, {
+            type: 'doughnut',
+
+            data: {
+                labels,
+
+                datasets: [{
+                    label: titulo,
+                    data: valores,
+                    backgroundColor: cores,
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 12
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                cutout: '58%',
+
+                interaction: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 16,
+
+                            generateLabels(chart) {
+                                const dadosGrafico =
+                                    chart.data.datasets[0].data;
+
+                                return chart.data.labels.map(
+                                    (label, indice) => {
+                                        const valor = Number(
+                                            dadosGrafico[indice]
+                                        ) || 0;
+
+                                        const percentual =
+                                            semDados ||
+                                            totalGeral === 0
+                                                ? 0
+                                                : (
+                                                    valor /
+                                                    totalGeral
+                                                ) * 100;
+
+                                        return {
+                                            text: semDados
+                                                ? label
+                                                : `${label} (${formatarPercentual(percentual)})`,
+
+                                            fillStyle:
+                                                cores[indice],
+
+                                            strokeStyle:
+                                                cores[indice],
+
+                                            pointStyle: 'circle',
+
+                                            hidden: false,
+
+                                            index: indice
+                                        };
+                                    }
+                                );
+                            }
+                        },
+
+                        onClick(evento, itemLegenda, legenda) {
+                            /*
+                            * Permite ocultar e mostrar um segmento
+                            * clicando na legenda.
+                            */
+                            const grafico = legenda.chart;
+
+                            grafico.toggleDataVisibility(
+                                itemLegenda.index
+                            );
+
+                            grafico.update();
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: !semDados,
+
+                        callbacks: {
+                            label(contexto) {
+                                const valor =
+                                    Number(contexto.raw) || 0;
+
+                                const percentual =
+                                    totalGeral > 0
+                                        ? (
+                                            valor /
+                                            totalGeral
+                                        ) * 100
+                                        : 0;
+
+                                const valorFormatado = moeda
+                                    ? formatarMoeda(valor)
+                                    : formatarNumero(valor);
+
+                                return [
+                                    `${contexto.label}: ${valorFormatado}`,
+                                    `Participação: ${formatarPercentual(percentual)}`
+                                ];
+                            },
+
+                            footer() {
+                                const totalFormatado = moeda
+                                    ? formatarMoeda(totalGeral)
+                                    : formatarNumero(totalGeral);
+
+                                return `Total: ${totalFormatado}`;
+                            }
+                        }
+                    },
+
+                    title: {
+                        display: semDados,
+                        text: 'Sem dados no período selecionado',
+                        color: '#64748b',
+                        padding: {
+                            bottom: 15
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     function criarGraficoSellIn(sellIn, metas) {
         destruirGrafico('sellIn');
 
@@ -981,6 +1232,60 @@ document.addEventListener('DOMContentLoaded', () => {
             dados: graficos.redes || [],
             titulo: 'Redes',
             cor: '#4f46e5'
+        });
+
+        /*
+        * Gráficos de participação por distribuidor
+        */
+        criarGraficoDisco({
+            chave: 'discoSellIn',
+            canvasId: 'graficoDiscoSellIn',
+            dados: graficos.sellIn || [],
+            titulo: 'Participação no Sell In',
+            moeda: true
+        });
+
+        criarGraficoDisco({
+            chave: 'discoSellOut',
+            canvasId: 'graficoDiscoSellOut',
+            dados: graficos.sellOut || [],
+            titulo: 'Participação no Sell Out'
+        });
+
+        criarGraficoDisco({
+            chave: 'discoPositivacao',
+            canvasId: 'graficoDiscoPositivacao',
+            dados: graficos.positivacao || [],
+            titulo: 'Participação na Positivação'
+        });
+
+        criarGraficoDisco({
+            chave: 'discoDisplays',
+            canvasId: 'graficoDiscoDisplays',
+            dados: graficos.displays || [],
+            titulo: 'Participação em Displays'
+        });
+
+        criarGraficoDisco({
+            chave: 'discoEstoque',
+            canvasId: 'graficoDiscoEstoque',
+            dados: graficos.estoque || [],
+            titulo: 'Participação no Estoque'
+        });
+
+        criarGraficoDisco({
+            chave: 'discoInvestimentos',
+            canvasId: 'graficoDiscoInvestimentos',
+            dados: graficos.investimentos || [],
+            titulo: 'Participação nos Investimentos',
+            moeda: true
+        });
+
+        criarGraficoDisco({
+            chave: 'discoRedes',
+            canvasId: 'graficoDiscoRedes',
+            dados: graficos.redes || [],
+            titulo: 'Participação em Redes'
         });
 
         /*

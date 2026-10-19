@@ -276,10 +276,11 @@
 
 .grade-graficos {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
     align-items: stretch;
 }
+
 
 .painel-grafico {
     min-width: 0;
@@ -309,12 +310,6 @@
     color: #f8fafc;
 }
 
-@media (max-width: 1100px) {
-    .grade-graficos {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media (max-width: 700px) {
     .painel-grafico {
         padding: 10px;
@@ -322,5 +317,74 @@
 
     .painel-grafico .grafico-container {
         min-height: 330px;
+    }
+}
+
+.grafico-container-disco {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 390px;
+}
+
+.grafico-container-disco canvas {
+    max-width: 100%;
+    max-height: 360px;
+}
+
+.descricao-grafico {
+    margin: 12px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.dark-theme .descricao-grafico {
+    color: #cbd5e1;
+}
+
+/*
+ * Em telas intermediárias ficam duas colunas.
+ */
+@media (max-width: 1450px) {
+    .grade-graficos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /*
+     * O gráfico de disco ocupa a largura completa.
+     */
+    .painel-grafico-disco {
+        grid-column: 1 / -1;
+    }
+
+    .grafico-container-disco {
+        max-width: 650px;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+/*
+ * Em tablets e celulares fica uma coluna.
+ */
+@media (max-width: 1100px) {
+    .grade-graficos {
+        grid-template-columns: 1fr;
+    }
+
+    .painel-grafico-disco {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .grafico-container-disco {
+        min-height: 310px;
+    }
+
+    .grafico-container-disco canvas {
+        max-height: 290px;
     }
 }
