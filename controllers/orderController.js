@@ -413,7 +413,7 @@ if (
 
                 const numeroNotaDireta =
                     normalizarNumero(
-                        notaFiscalDireta?.numero
+                        notaFiscalDireta?.codigo
                     );
 
                 const matchNumeroNota =
@@ -434,7 +434,7 @@ if (
 
                             const numeroAtual =
                                 normalizarNumero(
-                                    nota?.numero
+                                    nota?.codigo
                                 );
 
                             return (
@@ -645,7 +645,7 @@ async function downloadXmlNotaFiscal(
 
         const numeroNota =
             normalizarNumero(
-                notaFiscal.numero
+                notaFiscal.codigo
             ) ||
             codigoNota;
 

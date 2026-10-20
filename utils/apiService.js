@@ -155,7 +155,7 @@ function criarEstruturaNotaFiscalPedido(
                     null,
 
                 numero:
-                    notaFiscal.numero ??
+                    notaFiscal.codigo ??
                     null,
 
                 serie:

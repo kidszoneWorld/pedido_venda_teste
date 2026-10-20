@@ -51,7 +51,7 @@ function exportToExcel(data) {
         "Cód Pedido": order.codigo || "",
         "Status": mapStatus(order.status) || "",
         "Status Separação": mapStatusSeparacao(order.statusSeparacao) || "",
-        "Nota Fiscal":order.notas_fiscais?.dados?.[0]?.numero || order.notas_fiscais?.notaFiscal?.numero || 'Sem Nota',// Nova coluna no Excel
+        "Nota Fiscal":order.notas_fiscais?.dados?.[0]?.codigo || order.notas_fiscais?.notaFiscal?.codigo || 'Sem Nota',// Nova coluna no Excel
         "Cliente": order.cliente.nomeAbreviado || "",
         "Cliente CNPJ": order.cliente.documento.numeroTexto?.replace(/[\.\-\/]/g, '') || "",
         "Cód Rep": order.representante?.codigo || "",
@@ -702,7 +702,7 @@ function montarNotaFiscalHtml(
 
     const numeroNota =
         String(
-            nota.numero ??
+            nota.codigo ??
             ''
         ).trim();
 
@@ -960,8 +960,8 @@ function obterDadosNotaFiscal(
          * "numero" é o número fiscal exibido ao usuário.
          */
         numero:
-            notaDireta?.numero ??
-            notaLista?.numero ??
+            notaDireta?.codigo ??
+            notaLista?.codigo ??
             null,
 
         serie:
