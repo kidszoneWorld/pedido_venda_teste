@@ -155,7 +155,7 @@ function criarEstruturaNotaFiscalPedido(
                     null,
 
                 numero:
-                    notaFiscal.codigo ??
+                    notaFiscal.numero ??
                     null,
 
                 serie:
@@ -278,7 +278,6 @@ async function buscarNotaFiscalPorNumero(
         encodeURIComponent(
             numeroNormalizado
         );
-
     const url =
         `${NgLink}${endpoint}`;
 
@@ -359,23 +358,204 @@ async function buscarNotaFiscalPorNumero(
     return null;
 }
 
-async function fetchNotaFiscalComXml(
-    codigoNota
+async function fetchNotaFiscalPedidoComXml(
+    codigoPedido,
+    numeroNota
 ) {
-    const codigoNormalizado =
+    await checkToken();
+
+    if (!authToken) {
+        throw new Error(
+            'Token de autenticação não foi obtido.'
+        );
+    }
+
+    const codigoPedidoNormalizado =
         normalizarNumeroNota(
-            codigoNota
+            codigoPedido
         );
 
-    if (!codigoNormalizado) {
+    const numeroNotaNormalizado =
+        normalizarNumeroNota(
+            numeroNota
+        );
+
+    if (!codigoPedidoNormalizado) {
         throw new Error(
-            'Código da nota fiscal não informado.'
+            'Código do pedido não informado.'
+        );
+    }
+
+    if (!numeroNotaNormalizado) {
+        throw new Error(
+            'Número da nota fiscal não informado.'
+        );
+    }
+
+    const parametros =
+        new URLSearchParams();
+
+    parametros.set(
+        'Status',
+        '4'
+    );
+
+    parametros.set(
+        'PedidoDeVendaCodigo',
+        codigoPedidoNormalizado
+    );
+
+    const endpoint =
+        '/documentos-fiscais-service/nota-fiscal?' +
+        parametros.toString();
+
+    const url =
+        `${NgLink}${endpoint}`;
+
+    console.log(
+        'Consultando XML pela relação pedido/nota:',
+        {
+            codigoPedido:
+                codigoPedidoNormalizado,
+
+            numeroNota:
+                numeroNotaNormalizado,
+
+            url:
+                url
+        }
+    );
+
+    const response =
+        await executarFetchComRetentativa(
+            url,
+            criarOpcoesGet()
+        );
+
+    if (response.status === 404) {
+        return null;
+    }
+
+    const textoResposta =
+        await response.text();
+
+    let resultado =
+        null;
+
+    if (textoResposta) {
+        try {
+            resultado =
+                JSON.parse(
+                    textoResposta
+                );
+        } catch {
+            throw new Error(
+                'A API de notas fiscais retornou uma resposta inválida.'
+            );
+        }
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            resultado?.mensagem ||
+            resultado?.message ||
+            textoResposta ||
+            `Erro HTTP ${response.status} ao consultar a nota fiscal.`
+        );
+    }
+
+    const notas =
+        Array.isArray(
+            resultado?.dados
+        )
+            ? resultado.dados
+            : [];
+
+    /*
+     * Procura explicitamente pelo campo numero.
+     *
+     * Para o exemplo:
+     * pedido = 2600
+     * nota.numero = 2499
+     */
+    const notaEncontrada =
+        notas.find(
+            nota => {
+                const numeroAtual =
+                    normalizarNumeroNota(
+                        nota?.numero
+                    );
+
+                return (
+                    numeroAtual ===
+                    numeroNotaNormalizado
+                );
+            }
+        ) ||
+        null;
+
+    if (!notaEncontrada) {
+        console.warn(
+            'A nota não foi encontrada entre os documentos do pedido:',
+            {
+                codigoPedido:
+                    codigoPedidoNormalizado,
+
+                numeroProcurado:
+                    numeroNotaNormalizado,
+
+                numerosRetornados:
+                    notas.map(
+                        nota => nota?.numero
+                    )
+            }
+        );
+
+        return null;
+    }
+
+    console.log(
+        'Nota correta selecionada para download:',
+        {
+            codigoPedido:
+                codigoPedidoNormalizado,
+
+            numeroNota:
+                notaEncontrada.numero,
+
+            codigoInterno:
+                notaEncontrada.codigo,
+
+            chaveAcesso:
+                notaEncontrada.chaveAcesso,
+
+            possuiXml:
+                Boolean(
+                    notaEncontrada.xml
+                )
+        }
+    );
+
+    return notaEncontrada;
+}
+
+async function fetchNotaFiscalComXml(
+    numeroNota
+) {
+    const numeroNormalizado =
+        normalizarNumeroNota(
+            numeroNota
+        );
+
+    if (!numeroNormalizado) {
+        throw new Error(
+            'Número da nota fiscal não informado.'
         );
     }
 
     const notaFiscal =
         await buscarNotaFiscalPorNumero(
-            codigoNormalizado
+            numeroNormalizado
         );
 
     if (!notaFiscal) {
@@ -896,7 +1076,7 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
   const representativeEndpoint = '/pessoa-service/representante?ClienteCodigo=';
   const orderDetailsEndpoint = '/vendas-service/pedido/';
   const transportEndpoint = '/pessoa-service/transportadora/codigo/';
-  const invoiceEndpoint = '/documentos-fiscais-service/nota-fiscal?PedidoDeVendaCodigo=';
+  const invoiceEndpoint = '/documentos-fiscais-service/nota-fiscal?Status=4&PedidoDeVendaCodigo=';
 
   while (hasMoreData && allOrders.length < maxRecords) {
     try {
@@ -1171,6 +1351,85 @@ async function fetchOrderDetails(status = 6, userDataInicio = null, userDataFim 
   return allOrders;
 }
 
+function normalizarRespostaNotasFiscais(
+    respostaNotas
+) {
+    const notas =
+        Array.isArray(
+            respostaNotas?.dados
+        )
+            ? respostaNotas.dados
+            : [];
+
+    const notasUnicas =
+        new Map();
+
+    notas.forEach(
+        nota => {
+            const numero =
+                normalizarNumeroNota(
+                    nota?.numero
+                );
+
+            const chaveAcesso =
+                String(
+                    nota?.chaveAcesso ??
+                    ''
+                ).trim();
+
+            if (!numero) {
+                return;
+            }
+
+            /*
+             * O número é o identificador usado no sistema
+             * para pesquisar, exibir e baixar o XML.
+             *
+             * A chave de acesso ajuda a diferenciar documentos
+             * em um eventual caso de números repetidos.
+             */
+            const chaveUnica =
+                chaveAcesso ||
+                numero;
+
+            if (
+                !notasUnicas.has(
+                    chaveUnica
+                )
+            ) {
+                notasUnicas.set(
+                    chaveUnica,
+                    {
+                        ...nota,
+
+                        /*
+                         * Propriedade explícita para evitar
+                         * confusão com nota.codigo.
+                         */
+                        numeroDownload:
+                            numero
+                    }
+                );
+            }
+        }
+    );
+
+    const dados =
+        Array.from(
+            notasUnicas.values()
+        );
+
+    return {
+        ...respostaNotas,
+
+        dados:
+            dados,
+
+        totalRegistros:
+            dados.length
+    };
+}
+
 async function fetchOrdersByCode(
     codigoPedido,
     codigoCliente = null,
@@ -1327,49 +1586,99 @@ async function fetchOrdersByCode(
             await enriquecerPedidoEncontrado(
                 pedido
             );
+            let notasFiscais = {
+                dados: []
+            };
 
-        let notasFiscais =
-            null;
+            if (buscarNotasFiscais) {
+                try {
+                    const parametrosNota =
+                        new URLSearchParams();
 
-        if (buscarNotasFiscais) {
-            try {
-                const parametrosNota =
-                    new URLSearchParams();
-
-                parametrosNota.set(
-                    'PedidoDeVendaCodigo',
-                    String(
-                        pedido.codigo
-                    )
-                );
-
-                const endpointNota =
-                    '/documentos-fiscais-service/' +
-                    'nota-fiscal?' +
-                    parametrosNota.toString();
-
-                const respostaNota =
-                    await executarFetchComRetentativa(
-                        `${NgLink}${endpointNota}`,
-                        criarOpcoesGet()
+                    parametrosNota.set(
+                        'Status',
+                        '4'
                     );
 
-                if (respostaNota.ok) {
-                    notasFiscais =
-                        await respostaNota.json();
-                } else {
-                    console.warn(
-                        `Não foi possível consultar as notas do pedido ` +
-                        `${pedido.codigo}. HTTP ${respostaNota.status}.`
+                    parametrosNota.set(
+                        'PedidoDeVendaCodigo',
+                        String(
+                            pedido.codigo
+                        )
                     );
+
+                    const endpointNota =
+                        '/documentos-fiscais-service/nota-fiscal?' +
+                        parametrosNota.toString();
+
+                    console.log(
+                        'Consultando notas do pedido:',
+                        `${NgLink}${endpointNota}`
+                    );
+
+                    const respostaNota =
+                        await executarFetchComRetentativa(
+                            `${NgLink}${endpointNota}`,
+                            criarOpcoesGet()
+                        );
+
+                    if (respostaNota.status === 404) {
+                        notasFiscais = {
+                            dados: []
+                        };
+                    } else if (!respostaNota.ok) {
+                        const textoErro =
+                            await respostaNota.text();
+
+                        console.warn(
+                            `Não foi possível consultar as notas do pedido ` +
+                            `${pedido.codigo}. HTTP ${respostaNota.status}.`,
+                            textoErro
+                        );
+
+                        notasFiscais = {
+                            dados: []
+                        };
+                    } else {
+                        const respostaNotas =
+                            await respostaNota.json();
+
+                        notasFiscais =
+                            normalizarRespostaNotasFiscais(
+                                respostaNotas
+                            );
+
+                        console.log(
+                            `Notas do pedido ${pedido.codigo}:`,
+                            {
+                                recebidas:
+                                    Array.isArray(
+                                        respostaNotas?.dados
+                                    )
+                                        ? respostaNotas.dados.length
+                                        : 0,
+
+                                unicas:
+                                    notasFiscais.dados.length,
+
+                                numeros:
+                                    notasFiscais.dados.map(
+                                        nota => nota.numero
+                                    )
+                            }
+                        );
+                    }
+                } catch (error) {
+                    console.error(
+                        `Erro ao buscar notas do pedido ${pedido.codigo}:`,
+                        error
+                    );
+
+                    notasFiscais = {
+                        dados: []
+                    };
                 }
-            } catch (error) {
-                console.error(
-                    `Erro ao buscar notas do pedido ${pedido.codigo}:`,
-                    error
-                );
             }
-        }
 
         pedidosEnriquecidos.push({
             ...pedidoEnriquecido,
@@ -1505,5 +1814,6 @@ module.exports = {
     fetchOrderDetailsEndpoint,
     fetchOrdersByInvoice,
     fetchOrdersByCode,
-    fetchNotaFiscalComXml
+    fetchNotaFiscalComXml,
+    fetchNotaFiscalPedidoComXml
 };

@@ -51,7 +51,20 @@ function exportToExcel(data) {
         "Cód Pedido": order.codigo || "",
         "Status": mapStatus(order.status) || "",
         "Status Separação": mapStatusSeparacao(order.statusSeparacao) || "",
-        "Nota Fiscal":order.notas_fiscais?.dados?.[0]?.codigo || order.notas_fiscais?.notaFiscal?.codigo || 'Sem Nota',// Nova coluna no Excel
+       "Nota Fiscal":
+    obterNotasFiscaisPedido(
+        order
+    )
+        .map(
+            nota => nota.numero
+        )
+        .filter(
+            Boolean
+        )
+        .join(
+            ', '
+        ) ||
+    'Sem Nota',
         "Cliente": order.cliente.nomeAbreviado || "",
         "Cliente CNPJ": order.cliente.documento.numeroTexto?.replace(/[\.\-\/]/g, '') || "",
         "Cód Rep": order.representante?.codigo || "",
@@ -380,30 +393,48 @@ function renderTable(data) {
             <td class="transportadora">${order.detalhes_transporte?.nomeAbreviado || 'Não informado'}</td>
         `;
 
-        const botaoXml =
-            row.querySelector(
+        row
+            .querySelectorAll(
                 '.link-download-xml'
+            )
+            .forEach(
+                botao => {
+                    botao.addEventListener(
+                        'click',
+                        async evento => {
+                            const botaoClicado =
+                                evento.currentTarget;
+
+                            const codigoPedido =
+                                botaoClicado
+                                    .dataset
+                                    .codigoPedido;
+
+                            const numeroNota =
+                                botaoClicado
+                                    .dataset
+                                    .numeroNota;
+
+                            console.log(
+                                'Dados selecionados para download:',
+                                {
+                                    codigoPedido:
+                                        codigoPedido,
+
+                                    numeroNota:
+                                        numeroNota
+                                }
+                            );
+
+                            await baixarXmlNotaFiscal(
+                                codigoPedido,
+                                numeroNota,
+                                botaoClicado
+                            );
+                        }
+                    );
+                }
             );
-
-        botaoXml?.addEventListener(
-            'click',
-            async evento => {
-                const botao =
-                    evento.currentTarget;
-
-                const codigoNota =
-                    botao.dataset.codigoNota;
-
-                const numeroNota =
-                    botao.dataset.numeroNota;
-
-                await baixarXmlNotaFiscal(
-                    codigoNota,
-                    numeroNota,
-                    botao
-                );
-            }
-        );
 
         orderTableBody.appendChild(row);
     });
@@ -472,6 +503,89 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Erro ao carregar os dados da sessão:', error);
     }
 });
+
+function obterNotasFiscaisPedido(
+    order
+) {
+    const notasLista =
+        Array.isArray(
+            order.notas_fiscais?.dados
+        )
+            ? order.notas_fiscais.dados
+            : [];
+
+    const notaDireta =
+        order.notas_fiscais
+            ?.notaFiscal ??
+        null;
+
+    const candidatas = [
+        ...notasLista
+    ];
+
+    if (notaDireta) {
+        candidatas.push(
+            notaDireta
+        );
+    }
+
+    const notasUnicas =
+        new Map();
+
+    candidatas.forEach(
+        nota => {
+            const numero =
+                String(
+                    nota?.numero ??
+                    ''
+                ).trim();
+
+            const chaveAcesso =
+                String(
+                    nota?.chaveAcesso ??
+                    ''
+                ).trim();
+
+            if (!numero) {
+                return;
+            }
+
+            /*
+             * A chave de acesso identifica uma NF-e.
+             * Caso ela não exista, o número da nota
+             * será usado para evitar duplicidades.
+             */
+            const chaveUnica =
+                chaveAcesso ||
+                numero;
+
+            if (
+                !notasUnicas.has(
+                    chaveUnica
+                )
+            ) {
+                notasUnicas.set(
+                    chaveUnica,
+                    {
+                        numero:
+                            numero,
+
+                        serie:
+                            nota?.serie ??
+                            '',
+
+                        chaveAcesso:
+                            chaveAcesso
+                    }
+                );
+            }
+        }
+    );
+
+    return Array.from(
+        notasUnicas.values()
+    );
+}
 
 async function applyFilters() {
     currentFilters.representante =
@@ -695,24 +809,21 @@ function escaparHtml(
 function montarNotaFiscalHtml(
     order
 ) {
-    const nota =
-        obterDadosNotaFiscal(
+    const notas =
+        obterNotasFiscaisPedido(
             order
         );
 
-    const numeroNota =
+    const codigoPedido =
         String(
-            nota.codigo ??
+            order?.codigo ??
             ''
         ).trim();
 
-    const codigoNota =
-        String(
-            nota.codigo ??
-            ''
-        ).trim();
-
-    if (!numeroNota) {
+    if (
+        !codigoPedido ||
+        notas.length === 0
+    ) {
         return `
             <span class="nota-fiscal-indisponivel">
                 Sem Nota
@@ -720,60 +831,83 @@ function montarNotaFiscalHtml(
         `;
     }
 
-    /*
-     * Existe número fiscal, mas não existe código
-     * para consultar o endpoint de download.
-     */
-    if (!codigoNota) {
-        return `
-            <span
-                class="nota-fiscal-sem-xml"
-                title="O código da nota fiscal não foi retornado."
-            >
-                ${escaparHtml(numeroNota)}
-            </span>
-        `;
-    }
+    return notas
+        .map(
+            nota => {
+                const numeroNota =
+                    String(
+                        nota?.numero ??
+                        ''
+                    ).trim();
 
-    return `
-        <button
-            type="button"
-            class="link-download-xml"
-            data-codigo-nota="${escaparHtml(codigoNota)}"
-            data-numero-nota="${escaparHtml(numeroNota)}"
-            title="Baixar XML da nota fiscal ${escaparHtml(numeroNota)}"
-        >
-            ${escaparHtml(numeroNota)}
-        </button>
-    `;
+                if (!numeroNota) {
+                    return '';
+                }
+
+                return `
+                    <button
+                        type="button"
+                        class="link-download-xml"
+                        data-codigo-pedido="${escaparHtml(codigoPedido)}"
+                        data-numero-nota="${escaparHtml(numeroNota)}"
+                        title="Baixar XML da nota fiscal ${escaparHtml(numeroNota)}"
+                        aria-label="Baixar XML da nota fiscal ${escaparHtml(numeroNota)}"
+                    >
+                        ${escaparHtml(numeroNota)}
+                    </button>
+                `;
+            }
+        )
+        .filter(
+            Boolean
+        )
+        .join(
+            '<br>'
+        );
 }
 
 async function baixarXmlNotaFiscal(
-    codigoNota,
+    codigoPedido,
     numeroNota,
     botao
 ) {
-    const codigoNormalizado =
+    const codigoPedidoNormalizado =
         String(
-            codigoNota || ''
+            codigoPedido || ''
         )
             .replace(
                 /\D/g,
                 ''
             );
 
-    if (!codigoNormalizado) {
+    const numeroNotaNormalizado =
+        String(
+            numeroNota || ''
+        )
+            .replace(
+                /\D/g,
+                ''
+            );
+
+    if (!codigoPedidoNormalizado) {
         alert(
-            'O código da nota fiscal não foi encontrado.'
+            'O código do pedido não foi encontrado.'
+        );
+
+        return;
+    }
+
+    if (!numeroNotaNormalizado) {
+        alert(
+            'O número da nota fiscal não foi encontrado.'
         );
 
         return;
     }
 
     const textoOriginal =
-        botao?.textContent ||
-        numeroNota ||
-        'Nota Fiscal';
+        botao?.textContent?.trim() ||
+        numeroNotaNormalizado;
 
     try {
         if (botao) {
@@ -785,12 +919,44 @@ async function baixarXmlNotaFiscal(
         }
 
         showFeedback(
-            `Baixando XML da nota fiscal ${numeroNota || codigoNormalizado}...`
+            `Baixando XML da nota fiscal ${numeroNotaNormalizado}...`
         );
+
+        const url =
+            '/api/pedidos/' +
+            encodeURIComponent(
+                codigoPedidoNormalizado
+            ) +
+            '/notas-fiscais/' +
+            encodeURIComponent(
+                numeroNotaNormalizado
+            ) +
+            '/xml';
+
+        console.log(
+            'Solicitando download do XML:',
+            {
+                codigoPedido:
+                    codigoPedidoNormalizado,
+
+                numeroNota:
+                    numeroNotaNormalizado,
+
+                url:
+                    url
+            }
+        );
+
+        /*
+         * O parâmetro impede cache de respostas antigas
+         * durante os testes.
+         */
+        const urlSemCache =
+            `${url}?t=${Date.now()}`;
 
         const response =
             await fetch(
-                `/api/notas-fiscais/${encodeURIComponent(codigoNormalizado)}/xml`,
+                urlSemCache,
                 {
                     method:
                         'GET',
@@ -798,9 +964,15 @@ async function baixarXmlNotaFiscal(
                     credentials:
                         'same-origin',
 
+                    cache:
+                        'no-store',
+
                     headers: {
                         Accept:
-                            'application/xml, text/xml, application/json'
+                            'application/xml, text/xml, application/json',
+
+                        'Cache-Control':
+                            'no-cache'
                     }
                 }
             );
@@ -840,17 +1012,49 @@ async function baixarXmlNotaFiscal(
             );
         }
 
-        const blob =
-            await response.blob();
+        const xml =
+            await response.text();
 
-        if (
-            !blob ||
-            blob.size === 0
-        ) {
+        if (!xml.trim()) {
             throw new Error(
                 'O arquivo XML retornado está vazio.'
             );
         }
+
+        /*
+         * Validação no navegador:
+         * verifica se o XML contém <nNF>2499</nNF>.
+         */
+        const correspondencia =
+            xml.match(
+                /<(?:[A-Za-z0-9_-]+:)?nNF>\s*(\d+)\s*<\/(?:[A-Za-z0-9_-]+:)?nNF>/i
+            );
+
+        const numeroXml =
+            correspondencia?.[1] ||
+            '';
+
+        if (
+            numeroXml &&
+            numeroXml !==
+                numeroNotaNormalizado
+        ) {
+            throw new Error(
+                `O XML retornado pertence à nota ${numeroXml}, ` +
+                `mas a nota solicitada foi ${numeroNotaNormalizado}.`
+            );
+        }
+
+        const blob =
+            new Blob(
+                [
+                    xml
+                ],
+                {
+                    type:
+                        'application/xml;charset=utf-8'
+                }
+            );
 
         const contentDisposition =
             response.headers.get(
@@ -859,22 +1063,12 @@ async function baixarXmlNotaFiscal(
 
         const nomeEncontrado =
             contentDisposition.match(
-                /filename="?([^"]+)"?/i
+                /filename="?([^";]+)"?/i
             );
-
-        const numeroArquivo =
-            String(
-                numeroNota ||
-                codigoNormalizado
-            )
-                .replace(
-                    /[^\d]/g,
-                    ''
-                );
 
         const nomeArquivo =
             nomeEncontrado?.[1] ||
-            `NFe-${numeroArquivo}.xml`;
+            `NFe-${numeroNotaNormalizado}.xml`;
 
         const urlTemporaria =
             URL.createObjectURL(
@@ -900,8 +1094,13 @@ async function baixarXmlNotaFiscal(
 
         link.remove();
 
-        URL.revokeObjectURL(
-            urlTemporaria
+        setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    urlTemporaria
+                );
+            },
+            1000
         );
 
         hideFeedback();
@@ -930,47 +1129,6 @@ async function baixarXmlNotaFiscal(
         }
     }
 }
-
-function obterDadosNotaFiscal(
-    order
-) {
-    const notaLista =
-        order.notas_fiscais
-            ?.dados
-            ?.[0] ??
-        null;
-
-    const notaDireta =
-        order.notas_fiscais
-            ?.notaFiscal ??
-        null;
-
-    return {
-        /*
-         * "codigo" é utilizado pelo endpoint:
-         *
-         * /documentos-fiscais-service/nota-fiscal/{codigo}
-         */
-        codigo:
-            notaDireta?.codigo ??
-            notaLista?.codigo ??
-            null,
-
-        /*
-         * "numero" é o número fiscal exibido ao usuário.
-         */
-        numero:
-            notaDireta?.codigo ??
-            notaLista?.codigo ??
-            null,
-
-        serie:
-            notaDireta?.serie ??
-            notaLista?.serie ??
-            null
-    };
-}
-
 
 function sincronizarStatusSeparacao() {
     const campoStatus =

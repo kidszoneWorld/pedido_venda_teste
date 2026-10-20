@@ -396,53 +396,27 @@ if (
                     order.notas_fiscais?.notaFiscal ??
                     null;
 
-                /*
-                * A API possui dois identificadores:
-                *
-                * codigo: identificador utilizado no endpoint
-                * numero: número fiscal do documento
-                *
-                * Exemplo:
-                * codigo = 2499
-                * numero = 2452
-                */
-                const codigoNotaDireta =
-                    normalizarNumero(
-                        notaFiscalDireta?.codigo
-                    );
-
                 const numeroNotaDireta =
                     normalizarNumero(
-                        notaFiscalDireta?.codigo
+                        notaFiscalDireta?.numero
                     );
 
                 const matchNumeroNota =
                     !numeroNotaNormalizado ||
-
-                    codigoNotaDireta ===
-                        numeroNotaNormalizado ||
 
                     numeroNotaDireta ===
                         numeroNotaNormalizado ||
 
                     notasFiscais.some(
                         nota => {
-                            const codigoAtual =
-                                normalizarNumero(
-                                    nota?.codigo
-                                );
-
                             const numeroAtual =
                                 normalizarNumero(
-                                    nota?.codigo
+                                    nota?.numero
                                 );
 
                             return (
-                                codigoAtual ===
-                                    numeroNotaNormalizado ||
-
                                 numeroAtual ===
-                                    numeroNotaNormalizado
+                                numeroNotaNormalizado
                             );
                         }
                     );
@@ -580,7 +554,7 @@ async function getClientDetailsEndpoint(req, res) {
   try {
       const pedidoCod1 = await apiService.fetchOrderDetailsEndpoint(codPedido);
 
-    // console.log('pedido'.pedidoCod1);
+    console.log('pedido'.pedidoCod1);
 
       if (!pedidoCod1) {
           res.status(404).json({ message: 'pedido não encontrado' });
@@ -594,29 +568,83 @@ async function getClientDetailsEndpoint(req, res) {
   }
 }
 
+function extrairNumeroNotaDoXml(
+    xml
+) {
+    const conteudo =
+        String(
+            xml ?? ''
+        );
+
+    /*
+     * Procura o conteúdo da tag:
+     *
+     * <nNF>2499</nNF>
+     *
+     * Também aceita namespace:
+     * <nfe:nNF>2499</nfe:nNF>
+     */
+    const correspondencia =
+        conteudo.match(
+            /<(?:[A-Za-z0-9_-]+:)?nNF>\s*(\d+)\s*<\/(?:[A-Za-z0-9_-]+:)?nNF>/i
+        );
+
+    if (!correspondencia) {
+        return '';
+    }
+
+    return normalizarNumero(
+        correspondencia[1]
+    );
+}
+
 async function downloadXmlNotaFiscal(
     req,
     res
 ) {
     try {
-        const codigoNota =
+        const codigoPedido =
             normalizarNumero(
-                req.params.codigoNota
+                req.params.codigoPedido
             );
 
-        if (!codigoNota) {
+        const numeroNota =
+            normalizarNumero(
+                req.params.numeroNota
+            );
+
+        if (!codigoPedido) {
             return res
                 .status(400)
                 .json({
                     mensagem:
-                        'Código da nota fiscal não informado.'
+                        'Código do pedido não informado.'
                 });
         }
 
+        if (!numeroNota) {
+            return res
+                .status(400)
+                .json({
+                    mensagem:
+                        'Número da nota fiscal não informado.'
+                });
+        }
+
+        /*
+         * A consulta será:
+         *
+         * /documentos-fiscais-service/nota-fiscal
+         * ?Status=4
+         * &PedidoDeVendaCodigo=2600
+         *
+         * Depois, selecionará a nota.numero = 2499.
+         */
         const notaFiscal =
             await apiService
-                .fetchNotaFiscalComXml(
-                    codigoNota
+                .fetchNotaFiscalPedidoComXml(
+                    codigoPedido,
+                    numeroNota
                 );
 
         if (!notaFiscal) {
@@ -624,7 +652,46 @@ async function downloadXmlNotaFiscal(
                 .status(404)
                 .json({
                     mensagem:
-                        'Nota fiscal não encontrada.'
+                        `A nota fiscal ${numeroNota} não foi encontrada ` +
+                        `para o pedido ${codigoPedido}.`
+                });
+        }
+
+        const numeroNotaRetornado =
+            normalizarNumero(
+                notaFiscal.numero
+            );
+
+        /*
+         * Proteção adicional:
+         * o backend não envia um XML de outra nota.
+         */
+        if (
+            numeroNotaRetornado !==
+            numeroNota
+        ) {
+            console.error(
+                'A API retornou uma nota diferente da solicitada:',
+                {
+                    codigoPedido:
+                        codigoPedido,
+
+                    numeroSolicitado:
+                        numeroNota,
+
+                    numeroRetornado:
+                        numeroNotaRetornado,
+
+                    codigoInterno:
+                        notaFiscal.codigo
+                }
+            );
+
+            return res
+                .status(409)
+                .json({
+                    mensagem:
+                        'A API retornou uma nota fiscal diferente da solicitada.'
                 });
         }
 
@@ -639,33 +706,63 @@ async function downloadXmlNotaFiscal(
                 .status(404)
                 .json({
                     mensagem:
-                        'O XML da nota fiscal não está disponível.'
+                        `O XML da nota fiscal ${numeroNota} não está disponível.`
                 });
         }
 
-        const numeroNota =
-            normalizarNumero(
-                notaFiscal.codigo
-            ) ||
-            codigoNota;
+        /*
+         * Validação adicional do próprio XML.
+         *
+         * No exemplo, procura:
+         * <nNF>2499</nNF>
+         */
+        const numeroXml =
+            extrairNumeroNotaDoXml(
+                xml
+            );
+
+        if (
+            numeroXml &&
+            numeroXml !==
+                numeroNota
+        ) {
+            console.error(
+                'O número dentro do XML não corresponde à nota solicitada:',
+                {
+                    numeroSolicitado:
+                        numeroNota,
+
+                    numeroObjeto:
+                        numeroNotaRetornado,
+
+                    numeroXml:
+                        numeroXml
+                }
+            );
+
+            return res
+                .status(409)
+                .json({
+                    mensagem:
+                        'O conteúdo do XML não corresponde à nota fiscal solicitada.'
+                });
+        }
 
         const serie =
-            normalizarNumero(
-                notaFiscal.serie
-            );
+            String(
+                notaFiscal.serie ??
+                ''
+            )
+                .replace(
+                    /[^\dA-Za-z_-]/g,
+                    ''
+                );
 
         const nomeArquivo =
             serie
-                ? `NFe-${numeroNota}-serie-${serie}.xml`
-                : `NFe-${numeroNota}.xml`;
+                ? `NFe-${numeroNotaRetornado}-serie-${serie}.xml`
+                : `NFe-${numeroNotaRetornado}.xml`;
 
-        /*
-         * O XML retornado pela API já começa com:
-         *
-         * <?xml version="1.0" encoding="utf-8" ?>
-         *
-         * Não é necessário criar ou transformar o XML.
-         */
         res.setHeader(
             'Content-Type',
             'application/xml; charset=utf-8'
@@ -678,7 +775,17 @@ async function downloadXmlNotaFiscal(
 
         res.setHeader(
             'Cache-Control',
-            'no-store'
+            'no-store, no-cache, must-revalidate'
+        );
+
+        res.setHeader(
+            'Pragma',
+            'no-cache'
+        );
+
+        res.setHeader(
+            'Expires',
+            '0'
         );
 
         return res
@@ -700,13 +807,13 @@ async function downloadXmlNotaFiscal(
 
         const limiteAtingido =
             mensagem.includes(
-                'limitada'
+                '429'
             ) ||
             mensagem.includes(
                 'Too Many Requests'
             ) ||
             mensagem.includes(
-                '429'
+                'limitada'
             );
 
         if (limiteAtingido) {
@@ -728,6 +835,7 @@ async function downloadXmlNotaFiscal(
             });
     }
 }
+
 
 module.exports = {
     getOrderDetails,

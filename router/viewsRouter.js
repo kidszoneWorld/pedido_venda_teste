@@ -818,7 +818,7 @@ router.post('/logout', (req, res) => {
 router.post('/api/pedidos/input', inputOrdersController.fetchImputOrders)
 router.get('/api/lista-preco/:listaId', productController.getListaPreco);
 router.get('/api/lista-preco-Sem-Verificar/:listaId', productController.getListaPrecoSemVerificar);
-router.get('/api/notas-fiscais/:codigoNota/xml',orderController.downloadXmlNotaFiscal); // xml para download
+router.get('/api/pedidos/:codigoPedido/notas-fiscais/:numeroNota/xml',orderController.downloadXmlNotaFiscal);
 
 //banco de dados mogondb atlas
 
