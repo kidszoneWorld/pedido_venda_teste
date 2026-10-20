@@ -12,7 +12,7 @@ const Redis = require('ioredis');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
-const connectDB = require('./config/db');
+
 
 const viewsRouter = require('./router/viewsRouter');
 const clientePdfController = require('./controllers/clientePdfController');
@@ -32,7 +32,7 @@ app.set(
     )
 );
 
-connectDB();
+
 
 const PORT = process.env.PORT || 3000;
 

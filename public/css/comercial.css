@@ -796,7 +796,84 @@ button:hover{
     }
 }
 
+.link-download-xml {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
+    padding: 3px 6px;
+
+    border: none;
+    border-radius: 4px;
+
+    background-color: transparent;
+    color: #005faa;
+
+    font: inherit;
+    font-weight: 600;
+
+    text-decoration: underline;
+
+    cursor: pointer;
+}
+
+.link-download-xml:hover {
+    background-color: rgba(
+        0,
+        95,
+        170,
+        0.1
+    );
+
+    color: #003f73;
+}
+
+.link-download-xml:focus-visible {
+    outline: 2px solid #005faa;
+    outline-offset: 2px;
+}
+
+.link-download-xml:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.nota-fiscal-indisponivel,
+.nota-fiscal-sem-xml {
+    color: #666666;
+}
+
+html.dark-theme
+.link-download-xml,
+body.dark-theme
+.link-download-xml {
+    color: #76bfff;
+}
+
+html.dark-theme
+.link-download-xml:hover,
+body.dark-theme
+.link-download-xml:hover {
+    background-color: rgba(
+        118,
+        191,
+        255,
+        0.15
+    );
+
+    color: #b7dcff;
+}
+
+html.dark-theme
+.nota-fiscal-indisponivel,
+html.dark-theme
+.nota-fiscal-sem-xml,
+body.dark-theme
+.nota-fiscal-indisponivel,
+body.dark-theme
+.nota-fiscal-sem-xml {
+    color: #cccccc;
+}
 
 
 

@@ -414,7 +414,6 @@ router.get('/api/pedidos1/:codPedido', orderController.getClientDetailsEndpoint)
 router.get('/api/cliente/:api/:cnpj', clientController.getClientDetails); // Detalhes do cliente por cnpj
 router.get('/api/cliente1/:cnpj', clientController.getClientDetailsTest); // Detalhes do cliente por cnpj full
 
-
 // Rotas da API de Logistica
 router.get('/api/logistica/onedrive', invoicesController.fetchLogisticsData);
 router.get('/api/logistica/logistica03', fernandoController.fetchLogisticsData);
@@ -819,6 +818,7 @@ router.post('/logout', (req, res) => {
 router.post('/api/pedidos/input', inputOrdersController.fetchImputOrders)
 router.get('/api/lista-preco/:listaId', productController.getListaPreco);
 router.get('/api/lista-preco-Sem-Verificar/:listaId', productController.getListaPrecoSemVerificar);
+router.get('/api/notas-fiscais/:codigoNota/xml',orderController.downloadXmlNotaFiscal); // xml para download
 
 //banco de dados mogondb atlas
 

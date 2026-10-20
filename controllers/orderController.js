@@ -9,6 +9,46 @@ function normalizarNumero(valor) {
     );
 }
 
+function removerPedidosDuplicados(
+    pedidos
+) {
+    const pedidosPorCodigo =
+        new Map();
+
+    pedidos.forEach(
+        pedido => {
+            const codigoPedido =
+                String(
+                    pedido?.codigo ??
+                    ''
+                ).trim();
+
+            if (!codigoPedido) {
+                return;
+            }
+
+            /*
+             * Se o mesmo pedido aparecer nas duas consultas,
+             * somente uma linha será mantida.
+             */
+            if (
+                !pedidosPorCodigo.has(
+                    codigoPedido
+                )
+            ) {
+                pedidosPorCodigo.set(
+                    codigoPedido,
+                    pedido
+                );
+            }
+        }
+    );
+
+    return Array.from(
+        pedidosPorCodigo.values()
+    );
+}
+
 async function getOrderDetails(req, res) {
     const statusTexto =
         String(
@@ -191,16 +231,91 @@ if (
                     codCliente,
                     codRep
                 );
-        } else {
-            orders =
-                await apiService.fetchOrderDetails(
-                    status,
-                    dataInicio,
-                    dataFim,
-                    statusSeparacao,
-                    codCliente
-                );
-        }
+        } else if (status === 4) {
+    /*
+     * O filtro "Faturado Parcial" deve reunir:
+     *
+     * 4 = Faturado Parcial
+     * 1 = Cancelado Parcial
+     */
+
+    const [
+        pedidosFaturadosParciais,
+        pedidosCanceladosParciais
+    ] =
+        await Promise.all([
+            apiService.fetchOrderDetails(
+                4,
+                dataInicio,
+                dataFim,
+                statusSeparacao,
+                codCliente
+            ),
+
+            apiService.fetchOrderDetails(
+                1,
+                dataInicio,
+                dataFim,
+                null,
+                codCliente
+            )
+        ]);
+
+    const pedidosUnificados =
+        [
+            ...(
+                Array.isArray(
+                    pedidosFaturadosParciais
+                )
+                    ? pedidosFaturadosParciais
+                    : []
+            ),
+
+            ...(
+                Array.isArray(
+                    pedidosCanceladosParciais
+                )
+                    ? pedidosCanceladosParciais
+                    : []
+            )
+        ];
+
+    orders =
+        removerPedidosDuplicados(
+            pedidosUnificados
+        )
+            .map(
+                pedido => {
+                    const statusOriginal =
+                        Number(
+                            pedido.status
+                        );
+
+                    return {
+                        ...pedido,
+
+                        /*
+                         * Guardamos o status real para diagnóstico,
+                         * mas o painel receberá status 4.
+                         */
+                        statusOriginal:
+                            statusOriginal,
+
+                        status:
+                            4
+                    };
+                }
+            );
+} else {
+    orders =
+        await apiService.fetchOrderDetails(
+            status,
+            dataInicio,
+            dataFim,
+            statusSeparacao,
+            codCliente
+        );
+}
 
         if (!Array.isArray(orders)) {
             console.error(
@@ -277,19 +392,60 @@ if (
                         ? order.notas_fiscais.dados
                         : [];
 
+                const notaFiscalDireta =
+                    order.notas_fiscais?.notaFiscal ??
+                    null;
+
+                /*
+                * A API possui dois identificadores:
+                *
+                * codigo: identificador utilizado no endpoint
+                * numero: número fiscal do documento
+                *
+                * Exemplo:
+                * codigo = 2499
+                * numero = 2452
+                */
+                const codigoNotaDireta =
+                    normalizarNumero(
+                        notaFiscalDireta?.codigo
+                    );
+
+                const numeroNotaDireta =
+                    normalizarNumero(
+                        notaFiscalDireta?.numero
+                    );
+
                 const matchNumeroNota =
                     !numeroNotaNormalizado ||
-                    notasFiscais.some(nota => {
-                        const numeroAtual =
-                            normalizarNumero(
-                                nota?.numero
-                            );
 
-                        return (
-                            numeroAtual ===
-                            numeroNotaNormalizado
-                        );
-                    });
+                    codigoNotaDireta ===
+                        numeroNotaNormalizado ||
+
+                    numeroNotaDireta ===
+                        numeroNotaNormalizado ||
+
+                    notasFiscais.some(
+                        nota => {
+                            const codigoAtual =
+                                normalizarNumero(
+                                    nota?.codigo
+                                );
+
+                            const numeroAtual =
+                                normalizarNumero(
+                                    nota?.numero
+                                );
+
+                            return (
+                                codigoAtual ===
+                                    numeroNotaNormalizado ||
+
+                                numeroAtual ===
+                                    numeroNotaNormalizado
+                            );
+                        }
+                    );
 
                 const dataPedido =
                     order.dataPedido
@@ -321,12 +477,28 @@ if (
                         dataPedido <=
                             dataFimFiltro
                     );
+                    
+                const statusOriginalPedido =
+                    Number(
+                        order.statusOriginal ??
+                        order.status
+                    );
+
+                const pedidoEhCanceladoParcialAgrupado =
+                    status === 4 &&
+                    statusOriginalPedido === 1;
+
                 const matchStatusSeparacao =
                     possuiBuscaDireta ||
+
                     statusSeparacao === null ||
+
+                    pedidoEhCanceladoParcialAgrupado ||
+
                     Number(
                         order.statusSeparacao
-                    ) === statusSeparacao;
+                    ) ===
+                        statusSeparacao;
 
                 return (
                     matchRep &&
@@ -421,8 +593,144 @@ async function getClientDetailsEndpoint(req, res) {
       res.status(500).send('Erro ao obter detalhes dos clientes');
   }
 }
- 
-module.exports = { 
-    getOrderDetails, 
-    getClientDetailsEndpoint    
+
+async function downloadXmlNotaFiscal(
+    req,
+    res
+) {
+    try {
+        const codigoNota =
+            normalizarNumero(
+                req.params.codigoNota
+            );
+
+        if (!codigoNota) {
+            return res
+                .status(400)
+                .json({
+                    mensagem:
+                        'Código da nota fiscal não informado.'
+                });
+        }
+
+        const notaFiscal =
+            await apiService
+                .fetchNotaFiscalComXml(
+                    codigoNota
+                );
+
+        if (!notaFiscal) {
+            return res
+                .status(404)
+                .json({
+                    mensagem:
+                        'Nota fiscal não encontrada.'
+                });
+        }
+
+        const xml =
+            String(
+                notaFiscal.xml ??
+                ''
+            ).trim();
+
+        if (!xml) {
+            return res
+                .status(404)
+                .json({
+                    mensagem:
+                        'O XML da nota fiscal não está disponível.'
+                });
+        }
+
+        const numeroNota =
+            normalizarNumero(
+                notaFiscal.numero
+            ) ||
+            codigoNota;
+
+        const serie =
+            normalizarNumero(
+                notaFiscal.serie
+            );
+
+        const nomeArquivo =
+            serie
+                ? `NFe-${numeroNota}-serie-${serie}.xml`
+                : `NFe-${numeroNota}.xml`;
+
+        /*
+         * O XML retornado pela API já começa com:
+         *
+         * <?xml version="1.0" encoding="utf-8" ?>
+         *
+         * Não é necessário criar ou transformar o XML.
+         */
+        res.setHeader(
+            'Content-Type',
+            'application/xml; charset=utf-8'
+        );
+
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${nomeArquivo}"`
+        );
+
+        res.setHeader(
+            'Cache-Control',
+            'no-store'
+        );
+
+        return res
+            .status(200)
+            .send(
+                xml
+            );
+    } catch (error) {
+        console.error(
+            'Erro ao baixar XML da nota fiscal:',
+            error
+        );
+
+        const mensagem =
+            String(
+                error.message ||
+                ''
+            );
+
+        const limiteAtingido =
+            mensagem.includes(
+                'limitada'
+            ) ||
+            mensagem.includes(
+                'Too Many Requests'
+            ) ||
+            mensagem.includes(
+                '429'
+            );
+
+        if (limiteAtingido) {
+            return res
+                .status(503)
+                .json({
+                    mensagem:
+                        'A API de notas fiscais está temporariamente limitada. ' +
+                        'Aguarde alguns segundos e tente novamente.'
+                });
+        }
+
+        return res
+            .status(500)
+            .json({
+                mensagem:
+                    mensagem ||
+                    'Não foi possível baixar o XML da nota fiscal.'
+            });
+    }
 }
+
+module.exports = {
+    getOrderDetails,
+    getClientDetailsEndpoint,
+    downloadXmlNotaFiscal
+};
