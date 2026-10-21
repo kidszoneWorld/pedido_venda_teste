@@ -372,6 +372,243 @@ async function loadOrderDetails(
     }
 }
 
+async function baixarPdfNotaFiscal(
+    chaveAcesso,
+    numeroNota,
+    botao
+) {
+    const chaveNormalizada =
+        String(
+            chaveAcesso ?? ''
+        ).replace(
+            /\D/g,
+            ''
+        );
+
+    const numeroNormalizado =
+        String(
+            numeroNota ?? ''
+        ).replace(
+            /\D/g,
+            ''
+        );
+
+    if (chaveNormalizada.length !== 44) {
+        console.error(
+            'Chave de acesso inválida:',
+            chaveNormalizada
+        );
+
+        alert(
+            'A chave de acesso da nota fiscal é inválida.'
+        );
+
+        return;
+    }
+
+    const textoOriginal =
+        botao?.textContent?.trim() ||
+        numeroNormalizado ||
+        'Nota Fiscal';
+
+    try {
+        if (botao) {
+            botao.disabled =
+                true;
+
+            botao.textContent =
+                'Baixando PDF...';
+        }
+
+        showFeedback(
+            `Baixando PDF da nota fiscal ${numeroNormalizado}...`
+        );
+
+        const url =
+            '/api/notas-fiscais/' +
+            'chave-de-acesso/' +
+            encodeURIComponent(
+                chaveNormalizada
+            ) +
+            '/pdf';
+
+        console.log(
+            'Solicitando PDF ao backend:',
+            {
+                numeroNota:
+                    numeroNormalizado,
+
+                chaveAcesso:
+                    chaveNormalizada,
+
+                url:
+                    url
+            }
+        );
+
+        const response =
+            await fetch(
+                `${url}?t=${Date.now()}`,
+                {
+                    method:
+                        'GET',
+
+                    credentials:
+                        'same-origin',
+
+                    cache:
+                        'no-store',
+
+                    headers: {
+                        Accept:
+                            'application/pdf, application/json',
+
+                        'Cache-Control':
+                            'no-cache'
+                    }
+                }
+            );
+
+        if (!response.ok) {
+            const contentType =
+                response.headers.get(
+                    'content-type'
+                ) || '';
+
+            let mensagem =
+                `Erro HTTP ${response.status} ao baixar o PDF.`;
+
+            if (
+                contentType.includes(
+                    'application/json'
+                )
+            ) {
+                const resultado =
+                    await response.json();
+
+                mensagem =
+                    resultado.mensagem ||
+                    resultado.error ||
+                    mensagem;
+            } else {
+                const texto =
+                    await response.text();
+
+                mensagem =
+                    texto ||
+                    mensagem;
+            }
+
+            throw new Error(
+                mensagem
+            );
+        }
+
+        const contentType =
+            response.headers.get(
+                'content-type'
+            ) || '';
+
+        if (
+            !contentType.includes(
+                'application/pdf'
+            )
+        ) {
+            throw new Error(
+                'O servidor não retornou um arquivo PDF.'
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        if (
+            !blob ||
+            blob.size === 0
+        ) {
+            throw new Error(
+                'O arquivo PDF retornado está vazio.'
+            );
+        }
+
+        const contentDisposition =
+            response.headers.get(
+                'content-disposition'
+            ) || '';
+
+        const nomeEncontrado =
+            contentDisposition.match(
+                /filename="?([^";]+)"?/i
+            );
+
+        const nomeArquivo =
+            nomeEncontrado?.[1] ||
+            (
+                numeroNormalizado
+                    ? `NFe-${numeroNormalizado}.pdf`
+                    : `${chaveNormalizada}.pdf`
+            );
+
+        const urlTemporaria =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                'a'
+            );
+
+        link.href =
+            urlTemporaria;
+
+        link.download =
+            nomeArquivo;
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        link.remove();
+
+        setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    urlTemporaria
+                );
+            },
+            1000
+        );
+
+        hideFeedback();
+    } catch (error) {
+        console.error(
+            'Erro ao baixar PDF da nota fiscal:',
+            error
+        );
+
+        showFeedback(
+            error.message ||
+            'Não foi possível baixar o PDF da nota fiscal.'
+        );
+
+        alert(
+            error.message ||
+            'Não foi possível baixar o PDF da nota fiscal.'
+        );
+    } finally {
+        if (botao) {
+            botao.disabled =
+                false;
+
+            botao.textContent =
+                textoOriginal;
+        }
+    }
+}
+
 // Renderizar tabela
 function renderTable(data) {
     const orderTableBody = document.querySelector('#order-table tbody');
@@ -395,7 +632,7 @@ function renderTable(data) {
 
         row
             .querySelectorAll(
-                '.link-download-xml'
+                '.link-download-pdf'
             )
             .forEach(
                 botao => {
@@ -405,10 +642,10 @@ function renderTable(data) {
                             const botaoClicado =
                                 evento.currentTarget;
 
-                            const codigoPedido =
+                            const chaveAcesso =
                                 botaoClicado
                                     .dataset
-                                    .codigoPedido;
+                                    .chaveAcesso;
 
                             const numeroNota =
                                 botaoClicado
@@ -416,18 +653,18 @@ function renderTable(data) {
                                     .numeroNota;
 
                             console.log(
-                                'Dados selecionados para download:',
+                                'Clique no download do PDF:',
                                 {
-                                    codigoPedido:
-                                        codigoPedido,
-
                                     numeroNota:
-                                        numeroNota
+                                        numeroNota,
+
+                                    chaveAcesso:
+                                        chaveAcesso
                                 }
                             );
 
-                            await baixarXmlNotaFiscal(
-                                codigoPedido,
+                            await baixarPdfNotaFiscal(
+                                chaveAcesso,
                                 numeroNota,
                                 botaoClicado
                             );
@@ -509,14 +746,13 @@ function obterNotasFiscaisPedido(
 ) {
     const notasLista =
         Array.isArray(
-            order.notas_fiscais?.dados
+            order?.notas_fiscais?.dados
         )
             ? order.notas_fiscais.dados
             : [];
 
     const notaDireta =
-        order.notas_fiscais
-            ?.notaFiscal ??
+        order?.notas_fiscais?.notaFiscal ??
         null;
 
     const candidatas = [
@@ -544,17 +780,16 @@ function obterNotasFiscaisPedido(
                 String(
                     nota?.chaveAcesso ??
                     ''
-                ).trim();
+                ).replace(
+                    /\D/g,
+                    ''
+                );
 
             if (!numero) {
                 return;
             }
 
-            /*
-             * A chave de acesso identifica uma NF-e.
-             * Caso ela não exista, o número da nota
-             * será usado para evitar duplicidades.
-             */
+            // A chave é usada para remover duplicidades e baixar o PDF.
             const chaveUnica =
                 chaveAcesso ||
                 numero;
@@ -814,16 +1049,7 @@ function montarNotaFiscalHtml(
             order
         );
 
-    const codigoPedido =
-        String(
-            order?.codigo ??
-            ''
-        ).trim();
-
-    if (
-        !codigoPedido ||
-        notas.length === 0
-    ) {
+    if (notas.length === 0) {
         return `
             <span class="nota-fiscal-indisponivel">
                 Sem Nota
@@ -840,18 +1066,39 @@ function montarNotaFiscalHtml(
                         ''
                     ).trim();
 
+                const chaveAcesso =
+                    String(
+                        nota?.chaveAcesso ??
+                        ''
+                    ).replace(
+                        /\D/g,
+                        ''
+                    );
+
                 if (!numeroNota) {
                     return '';
+                }
+
+                // Sem uma chave válida, mostra o número sem link.
+                if (chaveAcesso.length !== 44) {
+                    return `
+                        <span
+                            class="nota-fiscal-sem-pdf"
+                            title="Chave de acesso não disponível para esta nota"
+                        >
+                            ${escaparHtml(numeroNota)}
+                        </span>
+                    `;
                 }
 
                 return `
                     <button
                         type="button"
-                        class="link-download-xml"
-                        data-codigo-pedido="${escaparHtml(codigoPedido)}"
+                        class="link-download-pdf"
+                        data-chave-acesso="${escaparHtml(chaveAcesso)}"
                         data-numero-nota="${escaparHtml(numeroNota)}"
-                        title="Baixar XML da nota fiscal ${escaparHtml(numeroNota)}"
-                        aria-label="Baixar XML da nota fiscal ${escaparHtml(numeroNota)}"
+                        title="Baixar PDF da nota fiscal ${escaparHtml(numeroNota)}"
+                        aria-label="Baixar PDF da nota fiscal ${escaparHtml(numeroNota)}"
                     >
                         ${escaparHtml(numeroNota)}
                     </button>

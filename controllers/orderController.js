@@ -568,6 +568,218 @@ async function getClientDetailsEndpoint(req, res) {
   }
 }
 
+async function downloadPdfNotaFiscal(
+    req,
+    res
+) {
+    try {
+        const chaveAcesso =
+            String(
+                req.params.chaveAcesso ??
+                ''
+            ).replace(
+                /\D/g,
+                ''
+            );
+
+        if (chaveAcesso.length !== 44) {
+            return res
+                .status(400)
+                .json({
+                    mensagem:
+                        'A chave de acesso da nota fiscal é inválida.'
+                });
+        }
+
+        const arquivo =
+            await apiService
+                .downloadPdfNotaFiscalPorChave(
+                    chaveAcesso
+                );
+
+        if (
+            !arquivo ||
+            !arquivo.bytes
+        ) {
+            return res
+                .status(404)
+                .json({
+                    mensagem:
+                        'O PDF da nota fiscal não foi encontrado.'
+                });
+        }
+
+        let pdfBuffer;
+
+        try {
+            pdfBuffer =
+                Buffer.from(
+                    arquivo.bytes,
+                    'base64'
+                );
+        } catch (error) {
+            console.error(
+                'Erro ao converter Base64 do PDF:',
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    mensagem:
+                        'O conteúdo do PDF retornado pela API é inválido.'
+                });
+        }
+
+        if (
+            !pdfBuffer ||
+            pdfBuffer.length === 0
+        ) {
+            return res
+                .status(500)
+                .json({
+                    mensagem:
+                        'O arquivo PDF retornado está vazio.'
+                });
+        }
+
+        // Um arquivo PDF válido deve começar com "%PDF".
+        const assinaturaPdf =
+            pdfBuffer
+                .subarray(
+                    0,
+                    4
+                )
+                .toString(
+                    'ascii'
+                );
+
+        if (assinaturaPdf !== '%PDF') {
+            console.error(
+                'O conteúdo convertido não possui assinatura de PDF:',
+                {
+                    assinatura:
+                        assinaturaPdf,
+
+                    tamanho:
+                        pdfBuffer.length,
+
+                    chaveAcesso:
+                        chaveAcesso
+                }
+            );
+
+            return res
+                .status(502)
+                .json({
+                    mensagem:
+                        'A API retornou um arquivo que não é um PDF válido.'
+                });
+        }
+
+        const nomeArquivo =
+            String(
+                arquivo.fileName ||
+                `${chaveAcesso}.pdf`
+            ).replace(
+                /[^A-Za-z0-9._-]/g,
+                '_'
+            );
+
+        res.setHeader(
+            'Content-Type',
+            'application/pdf'
+        );
+
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${nomeArquivo}"`
+        );
+
+        res.setHeader(
+            'Content-Length',
+            String(
+                pdfBuffer.length
+            )
+        );
+
+        res.setHeader(
+            'Cache-Control',
+            'no-store, no-cache, must-revalidate'
+        );
+
+        res.setHeader(
+            'Pragma',
+            'no-cache'
+        );
+
+        res.setHeader(
+            'Expires',
+            '0'
+        );
+
+        console.log(
+            'Enviando PDF da nota fiscal:',
+            {
+                chaveAcesso:
+                    chaveAcesso,
+
+                nomeArquivo:
+                    nomeArquivo,
+
+                tamanhoBytes:
+                    pdfBuffer.length
+            }
+        );
+
+        return res
+            .status(200)
+            .send(
+                pdfBuffer
+            );
+    } catch (error) {
+        console.error(
+            'Erro ao baixar PDF da nota fiscal:',
+            error
+        );
+
+        const mensagem =
+            String(
+                error.message ||
+                ''
+            );
+
+        const limiteAtingido =
+            mensagem.includes(
+                '429'
+            ) ||
+            mensagem.includes(
+                'Too Many Requests'
+            ) ||
+            mensagem.includes(
+                'limitada'
+            );
+
+        if (limiteAtingido) {
+            return res
+                .status(503)
+                .json({
+                    mensagem:
+                        'A API de notas fiscais está temporariamente limitada. ' +
+                        'Aguarde alguns segundos e tente novamente.'
+                });
+        }
+
+        return res
+            .status(500)
+            .json({
+                mensagem:
+                    mensagem ||
+                    'Não foi possível baixar o PDF da nota fiscal.'
+            });
+    }
+}
+
 function extrairNumeroNotaDoXml(
     xml
 ) {
@@ -840,5 +1052,6 @@ async function downloadXmlNotaFiscal(
 module.exports = {
     getOrderDetails,
     getClientDetailsEndpoint,
-    downloadXmlNotaFiscal
+    downloadXmlNotaFiscal,
+    downloadPdfNotaFiscal
 };

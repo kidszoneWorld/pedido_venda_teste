@@ -742,6 +742,11 @@ router.get(
     investimentoDistribuidorController.listarInvestimento
 );
 
+router.get(
+    '/api/notas-fiscais/chave-de-acesso/:chaveAcesso/pdf',
+    orderController.downloadPdfNotaFiscal
+);
+
 router.post(
     '/api/investimentoDistribuidor/:codigoDistribuidor',
     authMiddleware,

@@ -1806,6 +1806,155 @@ async function fetchOrderDetailsEndpoint(CodPedido) {
 
 setInterval(checkToken, 60 * 60 * 1000);  // Verifica o token a cada 1 hora
 
+async function downloadPdfNotaFiscalPorChave(
+    chaveAcesso
+) {
+    await checkToken();
+
+    if (!authToken) {
+        throw new Error(
+            'Token de autenticação não foi obtido.'
+        );
+    }
+
+    const chaveNormalizada =
+        String(
+            chaveAcesso ?? ''
+        )
+            .replace(
+                /\D/g,
+                ''
+            );
+
+    if (
+        chaveNormalizada.length !== 44
+    ) {
+        throw new Error(
+            'A chave de acesso da nota fiscal é inválida.'
+        );
+    }
+
+    const endpoint =
+        '/documentos-fiscais-service/' +
+        'nota-fiscal/chave-de-acesso/' +
+        encodeURIComponent(
+            chaveNormalizada
+        ) +
+        '/pdf';
+
+    const url =
+        `${NgLink}${endpoint}`;
+
+    console.log(
+        'Solicitando PDF da nota fiscal:',
+        {
+            chaveAcesso:
+                chaveNormalizada,
+
+            url:
+                url
+        }
+    );
+
+    const response =
+        await executarFetchComRetentativa(
+            url,
+            {
+                method:
+                    'POST',
+
+                headers: {
+                    Authorization:
+                        `Bearer ${authToken}`,
+
+                    Accept:
+                        'application/json',
+
+                    'Content-Type':
+                        'application/json',
+
+                    Origin:
+                        'https://kidszone-ng.dbcorp.com.br'
+                },
+
+                /*
+                 * Como a chave está na URL e não foi informado
+                 * nenhum corpo obrigatório, não enviamos body.
+                 */
+            }
+        );
+
+    const textoResposta =
+        await response.text();
+
+    let resultado =
+        null;
+
+    if (textoResposta) {
+        try {
+            resultado =
+                JSON.parse(
+                    textoResposta
+                );
+        } catch {
+            throw new Error(
+                'A API retornou uma resposta inválida ao gerar o PDF.'
+            );
+        }
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            resultado?.mensagem ||
+            resultado?.message ||
+            textoResposta ||
+            `Erro HTTP ${response.status} ao gerar o PDF da nota fiscal.`
+        );
+    }
+
+    const bytesBase64 =
+        String(
+            resultado?.bytes ??
+            ''
+        ).trim();
+
+    if (!bytesBase64) {
+        throw new Error(
+            'A API não retornou o conteúdo do PDF.'
+        );
+    }
+
+    const nomeArquivo =
+        String(
+            resultado?.fileName ??
+            `${chaveNormalizada}.pdf`
+        )
+            .replace(
+                /[^A-Za-z0-9._-]/g,
+                '_'
+            );
+
+    const contentType =
+        String(
+            resultado?.contentType ??
+            'application/pdf'
+        ).trim();
+
+    return {
+        fileName:
+            nomeArquivo,
+
+        contentType:
+            contentType,
+
+        bytes:
+            bytesBase64,
+
+        chaveAcesso:
+            chaveNormalizada
+    };
+}
+
 // Exportar as funções
 module.exports = {
     authenticate,
@@ -1815,5 +1964,6 @@ module.exports = {
     fetchOrdersByInvoice,
     fetchOrdersByCode,
     fetchNotaFiscalComXml,
-    fetchNotaFiscalPedidoComXml
+    fetchNotaFiscalPedidoComXml,
+    downloadPdfNotaFiscalPorChave
 };
