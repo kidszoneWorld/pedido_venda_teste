@@ -1360,7 +1360,7 @@ async function fetchOrderDetails(
     );
 
     const pageSize = 30;
-    const maxRecords = 300;
+    const maxRecords = 999999;
 
     let currentPage = 1;
     let allOrders = [];
