@@ -210,69 +210,69 @@ async function loadOrderDetails(
     currentFilters.status =
         status;
 
-        const possuiBuscaDireta =
-    Boolean(
-        currentFilters.codigoPedido ||
-        currentFilters.numeroNota
-    );
+    const buscaPorCodigoPedido =
+        Boolean(
+            currentFilters.codigoPedido
+        );
 
     const statusConsulta =
-        possuiBuscaDireta
+        buscaPorCodigoPedido
             ? ''
             : currentFilters.status;
 
     const separacaoConsulta =
-        possuiBuscaDireta
+        buscaPorCodigoPedido
             ? ''
             : currentFilters.statusSeparacao;
 
     const dataInicioConsulta =
-        possuiBuscaDireta
+        buscaPorCodigoPedido
             ? ''
             : formatDate(
                 currentFilters.dataInicio
             );
 
     const dataFimConsulta =
-        possuiBuscaDireta
+        buscaPorCodigoPedido
             ? ''
             : formatDate(
                 currentFilters.dataFim
             );
 
-
     const queryParams =
-    new URLSearchParams({
-        status:
-            statusConsulta || '',
+        new URLSearchParams({
+            status:
+                statusConsulta || '',
 
-        codRep:
-            currentFilters.representante || '',
+            codRep:
+                currentFilters.representante || '',
 
-        clienteCNPJ:
-            currentFilters.clienteCNPJ || '',
+            clienteCNPJ:
+                currentFilters.clienteCNPJ || '',
 
-        ClienteCodigo:
-            currentFilters.ClienteCodigo || '',
+            ClienteCodigo:
+                currentFilters.ClienteCodigo || '',
 
-        codigoPedido:
-            currentFilters.codigoPedido || '',
+            codigoPedido:
+                currentFilters.codigoPedido || '',
 
-        numeroNota:
-            currentFilters.numeroNota || '',
+            numeroNota:
+                currentFilters.numeroNota || '',
 
-        DataPedidoInicio:
-            dataInicioConsulta || '',
+            DataPedidoInicio:
+                dataInicioConsulta || '',
 
-        DataPedidoFim:
-            dataFimConsulta || '',
+            DataPedidoFim:
+                dataFimConsulta || '',
 
-        statusSeparacao:
-            separacaoConsulta || ''
-    });
+            statusSeparacao:
+                separacaoConsulta || ''
+        });
 
     showFeedback(
-        'Carregando pedidos, aguarde...'
+        currentFilters.numeroNota
+            ? 'Procurando o pedido vinculado à nota fiscal. Isso pode levar alguns instantes...'
+            : 'Carregando pedidos, aguarde...'
     );
 
     try {
@@ -280,6 +280,8 @@ async function loadOrderDetails(
             await fetch(
                 `/api/pedidos?${queryParams.toString()}`
             );
+
+        // Mantenha o restante da função atual.
 
         if (response.status === 404) {
             ordersData =
@@ -884,13 +886,32 @@ async function applyFilters() {
             )
             .value;
 
-    const possuiBuscaDireta =
+    const possuiNumeroNota =
         Boolean(
-            currentFilters.codigoPedido ||
             currentFilters.numeroNota
         );
 
-    if (!possuiBuscaDireta) {
+    if (
+        possuiNumeroNota &&
+        currentFilters.status === '6'
+    ) {
+        currentFilters.status =
+            '5';
+
+        document
+            .getElementById(
+                'statusFilter'
+            )
+            .value =
+            '5';
+    }
+
+    const possuiBuscaPorCodigo =
+        Boolean(
+            currentFilters.codigoPedido
+        );
+
+    if (!possuiBuscaPorCodigo) {
         sincronizarStatusSeparacao();
     }
 
@@ -970,7 +991,7 @@ async function clearFilters() {
             '',
 
         status:
-            '3',
+            '6',
 
         dataInicio:
             '',
@@ -979,7 +1000,7 @@ async function clearFilters() {
             '',
 
         statusSeparacao:
-            ''
+            '0'
     };
 
     await loadOrderDetails(currentFilters.status);
@@ -1406,10 +1427,16 @@ function sincronizarStatusSeparacao() {
     if (status === '5') {
         campoSeparacao.value =
             '2';
-    } else if (status === '4') {
+    } else if (
+        status === '4' ||
+        status === '1'
+    ) {
         campoSeparacao.value =
             '1';
-    } else if (status === '3') {
+    } else if (
+        status === '3' ||
+        status === '6'
+    ) {
         campoSeparacao.value =
             '0';
     }
@@ -1438,7 +1465,11 @@ document.getElementById('clearFilters').addEventListener('click', clearFilters);
 
 
 
-document.getElementById('logoutButton').addEventListener('click', async () => {
+document
+    .getElementById(
+        'logoutButton'
+    )
+    ?.addEventListener('click', async () => {
     // Limpa os dados locais
     sessionStorage.clear();
     localStorage.clear();

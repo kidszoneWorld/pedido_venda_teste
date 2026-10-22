@@ -95,10 +95,9 @@ async function getOrderDetails(req, res) {
         ).trim();
 
     const possuiBuscaDireta =
-    Boolean(
-        codigoPedido ||
-        numeroNota
-    );
+        Boolean(
+            codigoPedido
+        );
 
     const dataInicio =
         String(
@@ -157,7 +156,7 @@ let dataFimFiltro =
 
 if (
     dataInicio &&
-    !possuiBuscaDireta
+    !codigoPedido
 ) {
     dataInicioFiltro =
         new Date(
@@ -177,6 +176,44 @@ if (
             });
     }
 }
+
+if (
+    dataFim &&
+    !codigoPedido
+) {
+    dataFimFiltro =
+        new Date(
+            `${dataFim}T23:59:59.999`
+        );
+
+    if (
+        Number.isNaN(
+            dataFimFiltro.getTime()
+        )
+    ) {
+        return res
+            .status(400)
+            .json({
+                mensagem:
+                    'A data final informada é inválida.'
+            });
+    }
+}
+
+if (
+    !codigoPedido &&
+    dataInicioFiltro &&
+    dataFimFiltro &&
+    dataInicioFiltro > dataFimFiltro
+) {
+    return res
+        .status(400)
+        .json({
+            mensagem:
+                'A data inicial não pode ser maior que a data final.'
+        });
+}
+
 
 if (
     dataFim &&
@@ -226,11 +263,16 @@ if (
                 );
         } else if (numeroNota) {
             orders =
-                await apiService.fetchOrdersByInvoice(
+                await apiService.fetchOrdersByInvoiceGrouped(
                     numeroNota,
-                    codCliente,
-                    codRep
+                    dataInicio,
+                    dataFim,
+                    status,
+                    statusSeparacao,
+                    codRep,
+                    codCliente
                 );
+
         } else if (status === 4) {
     /*
      * O filtro "Faturado Parcial" deve reunir:
