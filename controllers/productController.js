@@ -43,6 +43,48 @@ async function checkToken() {
   }
 }    
 
+function removerImagensDoCatalogo(
+    catalogo
+) {
+    const itens =
+        Array.isArray(
+            catalogo?.itens
+        )
+            ? catalogo.itens
+            : [];
+
+    const itensSemImagem =
+        itens.map(
+            item => {
+                if (
+                    !item ||
+                    typeof item !== 'object'
+                ) {
+                    return item;
+                }
+
+                const itemSemImagem = {
+                    ...item
+                };
+
+                delete itemSemImagem.foto;
+                delete itemSemImagem.imagem;
+                delete itemSemImagem.image;
+                delete itemSemImagem.fotoBase64;
+                delete itemSemImagem.imageBase64;
+                delete itemSemImagem.bytes;
+
+                return itemSemImagem;
+            }
+        );
+
+    return {
+        ...catalogo,
+        itens:
+            itensSemImagem
+    };
+}
+
 async function getCatalogoCliente(
     req,
     res
@@ -83,13 +125,18 @@ async function getCatalogoCliente(
                 listaCodigo
             );
 
+        const catalogoSemImagens =
+            removerImagensDoCatalogo(
+                catalogo
+            );
+
         return res
             .status(200)
             .json({
                 sucesso:
                     true,
 
-                ...catalogo
+                ...catalogoSemImagens
             });
 
     }catch(error){

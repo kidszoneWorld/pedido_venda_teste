@@ -815,37 +815,206 @@ function obterCNPJNumerico(valor){
     );
 }
 
-function montarSrcFotoItem(
-    foto
-){
-
-    const valor =
+function montarUrlFotoItem(
+    codigoItem,
+    extensao = 'jpg'
+) {
+    const codigo =
         String(
-            foto || ''
-        )
-        .trim();
+            codigoItem ?? ''
+        ).trim();
 
-    if(!valor){
+    if (!codigo) {
         return '';
     }
 
-    if(
-        valor.startsWith(
-            'data:image/'
-        )
-    ){
-        return valor;
+    const extensaoNormalizada =
+        extensao === 'png'
+            ? 'png'
+            : 'jpg';
+
+    const codigoUrl =
+        encodeURIComponent(
+            codigo
+        );
+
+    const nomeArquivo =
+        encodeURIComponent(
+            `${codigo} - D3-2s.${extensaoNormalizada}`
+        );
+
+    return (
+        'https://imagenskidszone.com.br/' +
+        'i.php?/galleries/' +
+        codigoUrl +
+        '/' +
+        nomeArquivo
+    );
+}
+
+function carregarFotoItem(
+    imagem,
+    codigoItem
+) {
+    if (!imagem) {
+        return;
     }
 
-    /*
-     * Ajuste o tipo se a API puder retornar JPEG/WebP.
-     * Pelo exemplo apresentado, a imagem começa com
-     * iVBOR, indicando PNG.
-     */
-    return (
-        `data:image/png;base64,${valor}`
+    const codigo =
+        String(
+            codigoItem ??
+            ''
+        ).trim();
+
+    imagem.onload =
+        null;
+
+    imagem.onerror =
+        null;
+
+    imagem.removeAttribute(
+        'src'
     );
 
+    delete imagem.dataset.extensaoTentada;
+
+    imagem.classList.remove(
+        'erro-foto'
+    );
+
+    imagem.classList.add(
+        'sem-foto'
+    );
+
+    if (!codigo) {
+        return;
+    }
+
+    const urlJpg =
+        montarUrlFotoItem(
+            codigo,
+            'jpg'
+        );
+
+    const urlPng =
+        montarUrlFotoItem(
+            codigo,
+            'png'
+        );
+
+    imagem.alt =
+        `Foto do item ${codigo}`;
+
+    imagem.loading =
+        'lazy';
+
+    imagem.decoding =
+        'async';
+
+    imagem.referrerPolicy =
+        'no-referrer';
+
+    imagem.classList.add(
+        'carregando-foto'
+    );
+
+    function tentarCarregar(
+        extensao,
+        url
+    ) {
+        imagem.dataset.extensaoTentada =
+            extensao;
+
+        console.log(
+            `Tentando carregar foto em ${extensao.toUpperCase()}:`,
+            url
+        );
+
+        imagem.src =
+            url;
+    }
+
+    imagem.onload =
+        () => {
+            const extensaoCarregada =
+                imagem.dataset.extensaoTentada;
+
+            console.log(
+                `Foto do item ${codigo} carregada em ${extensaoCarregada}.`
+            );
+
+            imagem.classList.remove(
+                'sem-foto'
+            );
+
+            imagem.classList.remove(
+                'carregando-foto'
+            );
+
+            imagem.classList.remove(
+                'erro-foto'
+            );
+        };
+
+    imagem.onerror =
+        () => {
+            const extensaoTentada =
+                imagem.dataset.extensaoTentada;
+
+            console.warn(
+                `Não foi possível carregar a foto ${extensaoTentada} do item ${codigo}.`
+            );
+
+            if (extensaoTentada === 'jpg') {
+                tentarCarregar(
+                    'png',
+                    urlPng
+                );
+
+                return;
+            }
+
+            imagem.onload =
+                null;
+
+            imagem.onerror =
+                null;
+
+            imagem.removeAttribute(
+                'src'
+            );
+
+            imagem.classList.remove(
+                'carregando-foto'
+            );
+
+            imagem.classList.add(
+                'sem-foto'
+            );
+
+            imagem.classList.add(
+                'erro-foto'
+            );
+
+            imagem.alt =
+                `Foto não encontrada para o item ${codigo}`;
+
+            console.warn(
+                `Nenhuma foto JPG ou PNG foi encontrada para o item ${codigo}.`,
+                {
+                    urlJpg:
+                        urlJpg,
+
+                    urlPng:
+                        urlPng
+                }
+            );
+        };
+
+    tentarCarregar(
+        'jpg',
+        urlJpg
+    );
 }
 
 function limparDadosLinhaItem(
@@ -917,20 +1086,34 @@ function limparDadosLinhaItem(
             '.foto-item-pedido'
         );
 
-    if(imagem){
+    if (imagem) {
+        imagem.onload =
+            null;
+
+        imagem.onerror =
+            null;
 
         imagem.removeAttribute(
             'src'
         );
 
+        delete imagem.dataset.extensaoTentada;
+
         imagem.alt =
             'Foto do item';
+
+        imagem.classList.remove(
+            'carregando-foto'
+        );
+
+        imagem.classList.remove(
+            'erro-foto'
+        );
 
         imagem.classList.add(
             'sem-foto'
         );
-
-    }
+}
 
     tr.dataset.itemId =
         '';
@@ -1095,37 +1278,13 @@ function preencherLinhaComItem(
             ipi
         );
 
-    const srcFoto =
-        montarSrcFotoItem(
-            item.foto
-        );
+    carregarFotoItem(
+        imagem,
+        codigo
+    );
 
-    if(
-        imagem &&
-        srcFoto
-    ){
-
-        imagem.src =
-            srcFoto;
-
-        imagem.alt =
-            `Foto do item ${codigo}`;
-
-        imagem.classList.remove(
-            'sem-foto'
-        );
-
-    }else if(imagem){
-
-        imagem.removeAttribute(
-            'src'
-        );
-
-        imagem.classList.add(
-            'sem-foto'
-        );
-
-    }
+    campoQuantidade.readOnly =
+        false;
 
     campoQuantidade.readOnly =
         false;
@@ -2022,6 +2181,9 @@ function adicionarNovaLinha(){
             <img
                 class="foto-item-pedido sem-foto"
                 alt="Foto do item"
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
             >
         </td>
 
@@ -4529,14 +4691,13 @@ function prepararPedidoParaPdf(){
                             .trim()
                             .toLowerCase();
 
-                        if(
+                        if (
+                            texto === 'foto' ||
                             texto === 'excluir' ||
                             texto === 'itemid' ||
                             texto === 'item id'
-                        ){
-
+                        ) {
                             return indice;
-
                         }
 
                         return -1;
@@ -4740,6 +4901,37 @@ const observacaoClone =
         );
 
     }
+
+    clone
+        .querySelectorAll(
+            '.foto-item-pedido'
+        )
+        .forEach(
+            imagem => {
+                imagem.remove();
+            }
+        );
+
+    clone
+        .querySelectorAll(
+            '.cabecalho-foto-item'
+        )
+        .forEach(
+            cabecalho => {
+                cabecalho.remove();
+            }
+        );
+
+    clone
+        .querySelectorAll(
+            '.celula-foto-item'
+        )
+        .forEach(
+            celula => {
+                celula.remove();
+            }
+        );
+
 
     document.body.appendChild(
         clone
