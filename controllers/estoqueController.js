@@ -397,41 +397,160 @@ async function enriquecerItem(item) {
     };
 }
 
-async function enriquecerItensEmGrupos(itens, tamanhoGrupo) {
-    const resultado = [];
+async function enriquecerItem(
+    item
+) {
+    const codigo =
+        obterCodigoItem(
+            item
+        );
+
+    const id =
+        obterIdItem(
+            item
+        );
+
+    const saldo =
+        await buscarSaldoItem(
+            item
+        );
+
+    return {
+        id:
+            id,
+
+        codigo:
+            codigo ??
+            '',
+
+        descricao:
+            item?.Descricao ??
+            item?.descricao ??
+            '',
+
+        qtd:
+            saldo,
+
+        ativo:
+            item?.Ativo ??
+            item?.ativo ??
+            false
+    };
+}
+
+
+        async function enriquecerItem(
+    item
+) {
+    const codigo =
+        obterCodigoItem(
+            item
+        );
+
+    const id =
+        obterIdItem(
+            item
+        );
+
+    const saldo =
+        await buscarSaldoItem(
+            item
+        );
+
+    return {
+        id:
+            id,
+
+        codigo:
+            codigo ?? '',
+
+        descricao:
+            item?.Descricao ??
+            item?.descricao ??
+            '',
+
+        qtd:
+            saldo,
+
+        ativo:
+            item?.Ativo ??
+            item?.ativo ??
+            false
+    };
+}
+async function enriquecerItensEmGrupos(
+    itens,
+    tamanhoGrupo = 10
+) {
+    const listaItens =
+        Array.isArray(
+            itens
+        )
+            ? itens
+            : [];
+
+    if (listaItens.length === 0) {
+        return [];
+    }
+
+    const tamanhoNormalizado =
+        Number.isInteger(
+            tamanhoGrupo
+        ) &&
+        tamanhoGrupo > 0
+            ? tamanhoGrupo
+            : 10;
+
+    const itensEnriquecidos =
+        [];
 
     for (
         let indice = 0;
-        indice < itens.length;
-        indice += tamanhoGrupo
+        indice < listaItens.length;
+        indice += tamanhoNormalizado
     ) {
-        const grupo = itens.slice(
-            indice,
-            indice + tamanhoGrupo
-        );
+        const grupo =
+            listaItens.slice(
+                indice,
+                indice + tamanhoNormalizado
+            );
 
-        const itensEnriquecidos = await Promise.all(
-            grupo.map((item) => enriquecerItem(item))
-        );
+        const resultadosGrupo =
+            await Promise.all(
+                grupo.map(
+                    async item => {
+                        try {
+                            return await enriquecerItem(
+                                item
+                            );
+                        } catch (error) {
+                            console.error(
+                                'Erro ao enriquecer item do estoque:',
+                                {
+                                    codigo:
+                                        obterCodigoItem(
+                                            item
+                                        ),
 
-        resultado.push(
-            ...itensEnriquecidos
-        );
+                                    erro:
+                                        error.message
+                                }
+                            );
 
-        console.log(
-            `Saldos processados: ${resultado.length} de ${itens.length}`
-        );
+                            return null;
+                        }
+                    }
+                )
+            );
 
-        if (indice + tamanhoGrupo < itens.length) {
-            await esperar(100);
-        }
+        itensEnriquecidos.push(
+            ...resultadosGrupo.filter(
+                item => item !== null
+            )
+        );
     }
 
-    console.log(
-        'Enriquecimento finalizado.'
-    );
-
-    return resultado;
+    return itensEnriquecidos;
 }
 
 async function listarItens() {
@@ -512,6 +631,7 @@ async function listarItens() {
                 }
             );
         });
+
 
         const listaItens = await enriquecerItensEmGrupos(
             itensValidos,

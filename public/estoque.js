@@ -137,114 +137,165 @@ function obterDescricaoItem(item) {
     ).trim();
 }
 
-function obterFotoItem(item) {
-    return String(
-        item?.foto || ''
-    ).trim();
+function montarUrlFotoEstoque(
+    codigoItem,
+    extensao = 'jpg'
+) {
+    const codigo =
+        String(
+            codigoItem ??
+            ''
+        ).trim();
+
+    if (!codigo) {
+        return '';
+    }
+
+    const extensaoNormalizada =
+        String(
+            extensao
+        )
+            .trim()
+            .toLowerCase() ===
+        'png'
+            ? 'png'
+            : 'jpg';
+
+    const codigoUrl =
+        encodeURIComponent(
+            codigo
+        );
+
+    const nomeArquivo =
+        encodeURIComponent(
+            `${codigo} - D3-2s.${extensaoNormalizada}`
+        );
+
+    return (
+        'https://imagenskidszone.com.br/' +
+        'i.php?/galleries/' +
+        codigoUrl +
+        '/' +
+        nomeArquivo
+    );
 }
 
-function criarImagemItem(item) {
+function criarImagemItem(
+    item
+) {
     const elementoImagem =
         document.createElement(
             'img'
         );
 
+    const codigo =
+        obterCodigoItem(
+            item
+        );
+
     elementoImagem.className =
-        'foto-item-pedido';
+        'foto-item-pedido sem-foto';
 
     elementoImagem.alt =
-        'Foto do produto';
+        codigo
+            ? `Foto do produto ${codigo}`
+            : 'Foto do produto';
 
     elementoImagem.loading =
         'lazy';
 
-    const foto =
-        obterFotoItem(
-            item
-        );
+    elementoImagem.decoding =
+        'async';
 
-    if (!foto) {
-        elementoImagem.classList.add(
-            'sem-foto'
-        );
+    elementoImagem.referrerPolicy =
+        'no-referrer';
 
+    if (!codigo) {
         return elementoImagem;
     }
 
-    if (
-        foto.startsWith('http://') ||
-        foto.startsWith('https://')
-    ) {
-        elementoImagem.src =
-            '/api/imagem-item?url=' +
-            encodeURIComponent(
-                foto
-            );
-    } else if (
-        foto.startsWith('/') ||
-        foto.startsWith('data:image/')
-    ) {
-        elementoImagem.src =
-            foto;
-    } else if (
-        foto.startsWith('iVBOR')
-    ) {
-        elementoImagem.src =
-            'data:image/png;base64,' +
-            foto;
-    } else if (
-        foto.startsWith('/9j/')
-    ) {
-        elementoImagem.src =
-            'data:image/jpeg;base64,' +
-            foto;
-    } else {
-        elementoImagem.classList.add(
-            'sem-foto'
+    const urlJpg =
+        montarUrlFotoEstoque(
+            codigo,
+            'jpg'
         );
-    }
 
-    let tentativasImagem = 0;
+    const urlPng =
+        montarUrlFotoEstoque(
+            codigo,
+            'png'
+        );
 
-    elementoImagem.addEventListener(
-        'error',
+    elementoImagem.dataset.extensaoTentada =
+        'jpg';
+
+    elementoImagem.classList.add(
+        'carregando-foto'
+    );
+
+    elementoImagem.onload =
         () => {
-            tentativasImagem += 1;
+            elementoImagem.classList.remove(
+                'sem-foto'
+            );
 
-            if (tentativasImagem <= 2) {
-                const separador =
-                    elementoImagem.src.includes('?')
-                        ? '&'
-                        : '?';
+            elementoImagem.classList.remove(
+                'carregando-foto'
+            );
 
-                setTimeout(
-                    () => {
-                        elementoImagem.src =
-                            elementoImagem.src +
-                            separador +
-                            'tentativa=' +
-                            Date.now();
-                    },
-                    tentativasImagem * 1000
-                );
+            elementoImagem.classList.remove(
+                'erro-foto'
+            );
+        };
+
+    elementoImagem.onerror =
+        () => {
+            const extensaoTentada =
+                elementoImagem
+                    .dataset
+                    .extensaoTentada;
+
+            if (
+                extensaoTentada ===
+                'jpg'
+            ) {
+                elementoImagem.dataset.extensaoTentada =
+                    'png';
+
+                elementoImagem.src =
+                    urlPng;
 
                 return;
             }
 
-            console.warn(
-                'Não foi possível carregar a foto do item:',
-                obterCodigoItem(item)
-            );
+            elementoImagem.onload =
+                null;
+
+            elementoImagem.onerror =
+                null;
 
             elementoImagem.removeAttribute(
                 'src'
             );
 
+            elementoImagem.classList.remove(
+                'carregando-foto'
+            );
+
             elementoImagem.classList.add(
                 'sem-foto'
             );
-        }
-    );
+
+            elementoImagem.classList.add(
+                'erro-foto'
+            );
+
+            elementoImagem.alt =
+                `Foto não encontrada para o produto ${codigo}`;
+        };
+
+    elementoImagem.src =
+        urlJpg;
 
     return elementoImagem;
 }
