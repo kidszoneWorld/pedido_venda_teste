@@ -863,3 +863,34 @@ input:focus , textarea:focus{
     box-shadow: 0 0 5px #ff0000; /* Efeito de brilho leve */ 
 }
 
+.resumo-logistica {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 0.95rem;
+}
+
+#regiaoFilter {
+    min-width: 230px;
+}
+
+#order-table .regiao {
+    min-width: 190px;
+}
+
+html.dark-theme .resumo-logistica,
+body.dark-theme .resumo-logistica {
+    color: #f2f2f2;
+}
+
+@media (max-width: 768px) {
+    #regiaoFilter {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .resumo-logistica {
+        justify-content: flex-start;
+    }
+}

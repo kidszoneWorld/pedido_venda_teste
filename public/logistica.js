@@ -1,310 +1,1312 @@
-let ordersData1 = [];
-let filteredData1 = [];
+let todosDadosLogistica = [];
+let dadosFiltradosLogistica = [];
+let numeroRepresentanteSessao = '';
 
-// Mostrar Feedback
-function showFeedback(message) {
-    const feedback = document.getElementById('feedback1');
-    feedback.style.display = 'block';
-    feedback.textContent = message;
+const regioesLogistica = {
+    'sul-sudeste': {
+        nome:
+            'Sul/Sudeste',
 
+        endpoint:
+            '/api/logistica/logistica02'
+    },
 
-}
+    'norte-nordeste-centro-oeste': {
+        nome:
+            'Norte/Nordeste/Centro-Oeste',
 
-// Ocultar Feedback
-function hideFeedback() {
-    const feedback = document.getElementById('feedback1');
-    feedback.style.display = 'none';
-    feedback.textContent = '';
-}
-
-// Função para formatar a data atual no formato YYYY-MM-DD
-function getCurrentDateFormatted() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // +1 porque os meses começam em 0
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-
-// Função para exportar os dados para Excel
-
-function exportToExcel(data) {
-    // Preparar os dados para o Excel
-    const exportData = data.map(order => ({
-        "Data da emissão": order.EMISSÃO ? new Date(order.EMISSÃO).toLocaleDateString('pt-BR') : '',
-        "Núm notas": order.NF || '',
-        "Cód Cliente": order.codCliente || '',
-        "Cliente": order.NOME || '',
-        "Cliente CNPJ": order.CNPJ?.replace(/[\.\-\/]/g, '') || '',
-        "UF": order.UF || '',
-        "Cód Rep": order.Rep || '',
-        "Cod Trans": order.CodTransporte || '',
-        "Transportadora": order.TRANSPORTES || '',
-        "Saída": order.SAÍDA ? new Date(order.SAÍDA).toLocaleDateString('pt-BR') : '',
-        "Previsão de Entrega": order.PrevisaoEntrega ? new Date(order.PrevisaoEntrega).toLocaleDateString('pt-BR') : '',
-        "Data de Entrega": order.ENTREGUE ? new Date(order.PrevisaoEntrega).toLocaleDateString('pt-BR') : '',
-        "Status Entrega": order.STATUS_ENTREGA || '',
-        "Agenda": order.AGENDA || '',
-        "Ocorrência": order.OCORRÊNCIA || ''
-    }));
-
-    // Criar uma nova planilha e workbook
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Pedidos");
-
-    // Ajustar a largura das colunas (opcional)
-    worksheet['!cols'] = [
-        { wch: 15 }, // Data da emissão
-        { wch: 10 }, // Núm notas
-        { wch: 12 }, // Cód Cliente
-        { wch: 30 }, // Cliente
-        { wch: 20 }, // Cliente CNPJ
-        { wch: 5 },  // UF
-        { wch: 10 }, // Cód Rep
-        { wch: 10 }, // Cod Trans
-        { wch: 30 }, // Transportadora
-        { wch: 15 }, // Saída
-        { wch: 20 }, // Previsão de Entrega
-        { wch: 15 }, // Data de Entrega
-        { wch: 15 }, // Status Entrega
-        { wch: 15 }, // Agenda
-        { wch: 20 }  // Ocorrência
-    ];
-
-    // Definir o nome do arquivo com a data atual
-    const currentDate = getCurrentDateFormatted();
-    const fileName = `Relatório_de_Entregas_${currentDate}.xlsx`;
-
-    // Exportar o arquivo
-    XLSX.writeFile(workbook, fileName);
-}
-
-
-// Carregar detalhes dos pedidos
-async function loadOrderDetailsFromSharePoint() {
-
-    showFeedback("Carregando dados, aguarde...");
-
-    try {
-        const response = await fetch('/api/logistica/onedrive');
-      //  if (!response.ok) throw new Error("Erro ao buscar dados do SharePoint");
-        ordersData1 = await response.json();
-
-        renderTable(ordersData1);
-        hideFeedback();
-    } catch (error) {
-     //   console.error("Erro ao carregar dados do SharePoint:", error);
-      //  showFeedback("Erro ao carregar dados do SharePoint. Recarregue a página.");
+        endpoint:
+            '/api/logistica/logistica03'
     }
+};
+
+function obterElemento(
+    id
+) {
+    return document.getElementById(
+        id
+    );
 }
 
-// Renderizar tabela
-function renderTable(data) {
-    const orderTableBody1 = document.querySelector('#order-table1 tbody');
-    orderTableBody1.innerHTML = ''; // Limpar tabela
-    data.forEach(order => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="dataEmissao">${order.EMISSÃO ? new Date(order.EMISSÃO).toLocaleDateString('pt-BR') : ''}</td>
-            <td class="numNotas">${order.NF || ''}</td>
-            <td class="codCliente">${order.codCliente || ''}</td>
-            <td class="cliente">${order.NOME || ''}</td>
-            <td class="clienteCNPJ">${order.CNPJ?.replace(/[\.\-\/]/g, '') || ''}</td>
-            <td class="uf">${order.UF || ''}</td>
-            <td class="codRep">${order.Rep || ''}</td>
-            <td class="codTrans">${order.CodTransporte || ''}</td>
-            <td class="transportadora">${order.TRANSPORTES || ''}</td>
-            <td class="saida">${order.SAÍDA ? new Date(order.SAÍDA).toLocaleDateString('pt-BR') : ''}</td>
-            <td class="previsaoEntrega">${order.PrevisaoEntrega ? new Date(order.PrevisaoEntrega).toLocaleDateString('pt-BR') : ''}</td>
-            <td class="dataEntrega">${order.ENTREGUE ? new Date(order.PrevisaoEntrega).toLocaleDateString('pt-BR') : ''}</td>
-            <td class="statusEntrega">${order.STATUS_ENTREGA || ''}</td>
-            <td class="agenda">${order.AGENDA || ''}</td>
-            <td class="ocorrencia">${order.OCORRÊNCIA || ''}</td>
+function mostrarFeedback(
+    mensagem
+) {
+    const feedback =
+        obterElemento(
+            'feedback'
+        );
 
-        `;
-        orderTableBody1.appendChild(row);
-    });
-}
+    if (!feedback) {
+        console.log(
+            mensagem
+        );
 
-// Inicializar ao carregar a página
-document.addEventListener('DOMContentLoaded', async () => {
-        try {
-            // Faz a requisição para obter os dados da sessão
-            const response = await fetch('/session-data');
-            if (!response.ok) throw new Error('Erro ao buscar dados da sessão');
-
-                const sessionData = await response.json();
-
-                // Define os dados no front-end
-                if (sessionData.isAuthenticated) {
-                    window.sessionData = sessionData;
-
-                    const userNumero = window.sessionData?.userNumero || null;
-                    const representanteFilter = document.getElementById('representanteFilter1');
-
-                    if (userNumero) {
-                        representanteFilter.value = userNumero;
-                        representanteFilter.disabled = true; // Bloqueia o campo
-                    }
-
-                    loadOrderDetailsFromSharePoint();
-                } else {
-                    console.warn('Usuário não autenticado');
-                    window.location.href = '/login2'; // Redireciona para a página de login
-                }
-            } catch (error) {
-                console.error('Erro ao carregar os dados da sessão:', error);
-            }
-});
-
-
-
-// Aplicar Filtros
-async function applyFilters1() {
-    showFeedback("Aplicando filtros, aguarde...");
-
-    try {
-        const representanteFilter1 = document.getElementById('representanteFilter1').value.trim();
-        const clienteCNPJFilter1 = document.getElementById('clienteCNPJFilter1').value.trim();
-        const notaFilter1 = document.getElementById('notaFilter1').value.trim();
-        const dataPedidoInicioFilter1 = document.getElementById('dataPedidoInicioFilter1').value;
-        const dataPedidoFimFilter1 = document.getElementById('dataPedidoFimFilter1').value;
-        const statusFilter1 = document.getElementById('statusFilter1').value;
-
-        // Filtrando os dados
-        filteredData1 = ordersData1.filter(order => {
-            const matchRepresentante1 = !representanteFilter1 || order.Rep?.toString() === representanteFilter1;
-            const matchClienteCNPJ1 = !clienteCNPJFilter1 || order.CNPJ?.replace(/[\.\-\/]/g, '') === clienteCNPJFilter1.replace(/[\.\-\/]/g, '');
-            const matchNota1 = !notaFilter1 || order.NF?.toString() === notaFilter1;
-            const matchDataPedidoInicio1 = !dataPedidoInicioFilter1 || new Date(order.EMISSÃO) >= new Date(dataPedidoInicioFilter1);
-            const matchDataPedidoFim1 = !dataPedidoFimFilter1 || new Date(order.EMISSÃO) <= new Date(dataPedidoFimFilter1);
-
-            // Ajuste no filtro de status
-            let matchStatus1 = true;
-            if (statusFilter1 && statusFilter1 !== "2") {
-                const statusEntrega = order.STATUS_ENTREGA?.toLowerCase().trim();
-                matchStatus1 = statusEntrega === (statusFilter1 === "1" ? "entregue" : "pendente");
-            }
-
-            return matchRepresentante1 && matchClienteCNPJ1 && matchNota1 && matchDataPedidoInicio1 && matchDataPedidoFim1 && matchStatus1;
-        });
-
-        if (filteredData1.length === 0) {
-            showFeedback("Nenhum dado encontrado com os filtros aplicados.");
-        } else {
-            hideFeedback();
-        }
-
-        renderTable(filteredData1);
-    } catch (error) {
-        console.error('Erro ao aplicar filtros:', error);
-        showFeedback("Erro ao aplicar os filtros. Tente novamente.");
+        return;
     }
+
+    feedback.style.display =
+        'block';
+
+    feedback.textContent =
+        mensagem;
 }
 
-// Limpar Filtros
-function clearFilters1() {
-    document.getElementById('representanteFilter1').value = '';
-    document.getElementById('clienteCNPJFilter1').value = '';
-    document.getElementById('dataPedidoInicioFilter1').value = '';
-    document.getElementById('dataPedidoFimFilter1').value = '';
-    document.getElementById('notaFilter1').value = '';
-    document.getElementById('statusFilter1').value = "2";
-    filteredData1 = [...ordersData1]; // Redefine os dados filtrados para os dados originais
-    renderTable(ordersData1);
-    hideFeedback();
+function ocultarFeedback() {
+    const feedback =
+        obterElemento(
+            'feedback'
+        );
+
+    if (!feedback) {
+        return;
+    }
+
+    feedback.style.display =
+        'none';
+
+    feedback.textContent =
+        '';
 }
 
-// Verificar se os filtros estão aplicados
-function areFiltersApplied() {
-    const representanteFilter1 = document.getElementById('representanteFilter1').value.trim();
-    const clienteCNPJFilter1 = document.getElementById('clienteCNPJFilter1').value.trim();
-    const notaFilter1 = document.getElementById('notaFilter1').value.trim();
-    const dataPedidoInicioFilter1 = document.getElementById('dataPedidoInicioFilter1').value;
-    const dataPedidoFimFilter1 = document.getElementById('dataPedidoFimFilter1').value;
-    const statusFilter1 = document.getElementById('statusFilter1').value;
+function escaparHtml(
+    valor
+) {
+    const elemento =
+        document.createElement(
+            'div'
+        );
 
-    return (
-        representanteFilter1 !== '' ||
-        clienteCNPJFilter1 !== '' ||
-        notaFilter1 !== '' ||
-        dataPedidoInicioFilter1 !== '' ||
-        dataPedidoFimFilter1 !== '' ||
-        statusFilter1 !== '2'
+    elemento.textContent =
+        String(
+            valor ?? ''
+        );
+
+    return elemento.innerHTML;
+}
+
+function formatarCnpj(
+    valor
+) {
+    const cnpj =
+        somenteDigitos(
+            valor
+        );
+
+    if (!cnpj) {
+        return '';
+    }
+
+    const cnpjCompleto =
+        cnpj.padStart(
+            14,
+            '0'
+        );
+
+    if (cnpjCompleto.length !== 14) {
+        return cnpj;
+    }
+
+    return cnpjCompleto.replace(
+        /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+        '$1.$2.$3/$4-$5'
     );
 }
 
 
-// Exportar para Excel (com ou sem filtros)
-document.getElementById('exportExcel1').addEventListener('click', () => {
-    if (ordersData1.length === 0) {
-        showFeedback("Nenhum dado disponível para exportar. Carregue os dados primeiro.");
+function somenteDigitos(
+    valor
+) {
+    return String(
+        valor ?? ''
+    ).replace(
+        /\D/g,
+        ''
+    );
+}
+
+function formatarDataLogistica(
+    valor
+) {
+    if (!valor) {
+        return '';
+    }
+
+    const texto =
+        String(
+            valor
+        );
+
+    const dataSemHorario =
+        texto.split(
+            'T'
+        )[0];
+
+    const partes =
+        dataSemHorario.split(
+            '-'
+        );
+
+    if (partes.length !== 3) {
+        return '';
+    }
+
+    const ano =
+        partes[0];
+
+    const mes =
+        partes[1];
+
+    const dia =
+        partes[2];
+
+    if (
+        !ano ||
+        !mes ||
+        !dia
+    ) {
+        return '';
+    }
+
+    return `${dia}/${mes}/${ano}`;
+}
+
+function criarDataComparacao(
+    valor
+) {
+    if (!valor) {
+        return null;
+    }
+
+    const data =
+        new Date(
+            `${valor}T00:00:00`
+        );
+
+    if (
+        Number.isNaN(
+            data.getTime()
+        )
+    ) {
+        return null;
+    }
+
+    return data;
+}
+
+function criarDataPedidoComparacao(
+    valor
+) {
+    if (!valor) {
+        return null;
+    }
+
+    const dataTexto =
+        String(
+            valor
+        )
+            .split(
+                'T'
+            )[0];
+
+    return criarDataComparacao(
+        dataTexto
+    );
+}
+
+function obterDataAtualFormatada() {
+    const hoje =
+        new Date();
+
+    const ano =
+        hoje.getFullYear();
+
+    const mes =
+        String(
+            hoje.getMonth() + 1
+        ).padStart(
+            2,
+            '0'
+        );
+
+    const dia =
+        String(
+            hoje.getDate()
+        ).padStart(
+            2,
+            '0'
+        );
+
+    return `${ano}-${mes}-${dia}`;
+}
+
+function obterNomeRegiaoSelecionada() {
+    const valor =
+        obterElemento(
+            'regiaoFilter'
+        )?.value ||
+        'todas';
+
+    if (valor === 'todas') {
+        return 'Todas as regiões';
+    }
+
+    return (
+        regioesLogistica[valor]?.nome ||
+        'Todas as regiões'
+    );
+}
+
+function atualizarTextoRegiao() {
+    const elemento =
+        obterElemento(
+            'regiaoAtualTexto'
+        );
+
+    if (!elemento) {
         return;
     }
 
-    // Verifica se os filtros estão aplicados
-    const dataToExport = areFiltersApplied() ? filteredData1 : ordersData1;
+    elemento.textContent =
+        obterNomeRegiaoSelecionada();
+}
 
-    if (dataToExport.length === 0) {
-        showFeedback("Nenhum dado para exportar com os filtros aplicados.");
+async function buscarDadosRegiao(
+    chaveRegiao
+) {
+    const configuracao =
+        regioesLogistica[
+            chaveRegiao
+        ];
+
+    if (!configuracao) {
+        return [];
+    }
+
+    const response =
+        await fetch(
+            configuracao.endpoint,
+            {
+                method:
+                    'GET',
+
+                credentials:
+                    'same-origin',
+
+                cache:
+                    'no-store',
+
+                headers: {
+                    Accept:
+                        'application/json'
+                }
+            }
+        );
+
+    if (!response.ok) {
+        let mensagem =
+            `Erro HTTP ${response.status} ao carregar ${configuracao.nome}.`;
+
+        try {
+            const resultado =
+                await response.json();
+
+            mensagem =
+                resultado.error ||
+                resultado.mensagem ||
+                mensagem;
+        } catch {
+            // Mantém a mensagem HTTP.
+        }
+
+        throw new Error(
+            mensagem
+        );
+    }
+
+    const resultado =
+        await response.json();
+
+    const dados =
+        Array.isArray(
+            resultado
+        )
+            ? resultado
+            : [];
+
+    return dados.map(
+        item => {
+            return {
+                ...item,
+
+                regiaoOrigem:
+                    configuracao.nome,
+
+                chaveRegiao:
+                    chaveRegiao
+            };
+        }
+    );
+}
+
+async function carregarDadosLogistica() {
+    mostrarFeedback(
+        'Carregando dados de logística, aguarde...'
+    );
+
+    const regiaoSelecionada =
+        obterElemento(
+            'regiaoFilter'
+        )?.value ||
+        'todas';
+
+    try {
+        let resultados;
+
+        if (
+            regiaoSelecionada ===
+            'todas'
+        ) {
+            resultados =
+                await Promise.allSettled([
+                    buscarDadosRegiao(
+                        'sul-sudeste'
+                    ),
+
+                    buscarDadosRegiao(
+                        'norte-nordeste-centro-oeste'
+                    )
+                ]);
+
+            const dadosCarregados =
+                [];
+
+            const erros =
+                [];
+
+            resultados.forEach(
+                (
+                    resultado,
+                    indice
+                ) => {
+                    if (
+                        resultado.status ===
+                        'fulfilled'
+                    ) {
+                        dadosCarregados.push(
+                            ...resultado.value
+                        );
+
+                        return;
+                    }
+
+                    const nomeRegiao =
+                        indice === 0
+                            ? 'Sul/Sudeste'
+                            : 'Norte/Nordeste/Centro-Oeste';
+
+                    erros.push(
+                        `${nomeRegiao}: ${resultado.reason?.message || 'erro desconhecido'}`
+                    );
+                }
+            );
+
+            if (
+                dadosCarregados.length === 0 &&
+                erros.length > 0
+            ) {
+                throw new Error(
+                    erros.join(
+                        ' | '
+                    )
+                );
+            }
+
+            todosDadosLogistica =
+                dadosCarregados;
+
+            if (erros.length > 0) {
+                mostrarFeedback(
+                    'Algumas regiões não puderam ser carregadas. ' +
+                    erros.join(
+                        ' | '
+                    )
+                );
+            } else {
+                ocultarFeedback();
+            }
+        } else {
+            todosDadosLogistica =
+                await buscarDadosRegiao(
+                    regiaoSelecionada
+                );
+
+            ocultarFeedback();
+        }
+
+        dadosFiltradosLogistica = [
+            ...todosDadosLogistica
+        ];
+
+        aplicarFiltrosLogistica(
+            false
+        );
+
+        atualizarTextoRegiao();
+    } catch (error) {
+        console.error(
+            'Erro ao carregar dados de logística:',
+            error
+        );
+
+        todosDadosLogistica =
+            [];
+
+        dadosFiltradosLogistica =
+            [];
+
+        renderizarTabela(
+            []
+        );
+
+        mostrarFeedback(
+            error.message ||
+            'Erro ao carregar os dados de logística.'
+        );
+    }
+}
+
+function renderizarTabela(
+    dados
+) {
+    const corpoTabela =
+        document.querySelector(
+            '#order-table tbody'
+        );
+
+    if (!corpoTabela) {
+        console.error(
+            'O corpo da tabela de logística não foi encontrado.'
+        );
+
         return;
     }
 
-    exportToExcel(dataToExport);
-});
+    corpoTabela.innerHTML =
+        '';
+
+    const fragmento =
+        document.createDocumentFragment();
+                // <td class="regiao">
+                //     ${escaparHtml(order.regiaoOrigem)}
+                // </td>
+    dados.forEach(
+        order => {
+            const linha =
+                document.createElement(
+                    'tr'
+                );
+
+            linha.innerHTML = `
 
 
-// Eventos dos botões de filtro
-document.getElementById('applyFilters1').addEventListener('click', applyFilters1);
-document.getElementById('clearFilters1').addEventListener('click', clearFilters1);
+                <td class="dataEmissao">
+                    ${escaparHtml(formatarDataLogistica(order.EMISSÃO))}
+                </td>
 
+                <td class="numNotas">
+                    ${escaparHtml(order.NF)}
+                </td>
 
- document.getElementById('statusFilter1').addEventListener('change', function () {
-    const selectedStatus1 = this.value || 1; // Padrão para "Pendente"
-    console.log(`Filtro de status alterado para: ${selectedStatus1}`);
-    loadOrderDetailsFromSharePoint(selectedStatus1);
- });
+                <td class="codCliente">
+                    ${escaparHtml(order.codCliente)}
+                </td>
 
+                <td class="cliente">
+                    ${escaparHtml(order.NOME)}
+                </td>
 
- // Função para limpar dados do usuário e redirecionar para a página de login
- document.getElementById('logoutButton1').addEventListener('click', async () => {
-    // Limpa os dados locais
-    sessionStorage.clear();
-    localStorage.clear();
+                <td class="clienteCNPJ">
+                    ${escaparHtml(formatarCnpj(order.CNPJ) || 'Não informado')}
+                </td>
 
-    // Faz a requisição ao servidor para destruir a sessão
-    await fetch('/logout', { method: 'POST' });
+                <td class="uf">
+                    ${escaparHtml(order.UF)}
+                </td>
 
-    // Limpa cookies manualmente (como precaução)
-    document.cookie.split(";").forEach(cookie => {
-        document.cookie = cookie.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-    });
+                <td class="codRep">
+                    ${escaparHtml(order.Rep)}
+                </td>
 
-    // Redireciona para a página de login
-    window.location.href = '/login2';
- });
+                <td class="codTrans">
+                    ${escaparHtml(order.CodTransporte)}
+                </td>
 
+                <td class="transportadora">
+                    ${escaparHtml(order.TRANSPORTES)}
+                </td>
 
-// Inicializar tabela ao carregar a página
-//loadOrderDetailsFromSharePoint();
+                <td class="saida">
+                    ${escaparHtml(formatarDataLogistica(order.SAÍDA))}
+                </td>
 
-// Função para alternar a visibilidade dos filtros
-document.getElementById('menuToggle').addEventListener('click', () => {
-    const filterContainer = document.getElementById('filterContainer');
-    const menuButton = document.getElementById('menuToggle');
-    const menuIcon = menuButton.querySelector('.menu-icon');
+                <td class="previsaoEntrega">
+                    ${escaparHtml(formatarDataLogistica(order.PrevisaoEntrega))}
+                </td>
 
-    // Alterna a classe 'active' para mostrar/esconder os filtros
-    filterContainer.classList.toggle('active');
+                <td class="dataEntrega">
+                    ${escaparHtml(formatarDataLogistica(order.ENTREGUE))}
+                </td>
 
-    // Muda o ícone e o texto do botão
-    if (filterContainer.classList.contains('active')) {
-        menuIcon.textContent = '✖'; // Ícone de fechar
-        menuButton.innerHTML = `<span class="menu-icon">✖</span> Fechar Filtros`;
-    } else {
-        menuIcon.textContent = '☰'; // Ícone de menu
-        menuButton.innerHTML = `<span class="menu-icon">☰</span> Filtros`;
+                <td class="statusEntrega">
+                    ${escaparHtml(order.STATUS_ENTREGA)}
+                </td>
+
+                <td class="agenda">
+                    ${escaparHtml(order.AGENDA)}
+                </td>
+
+                <td class="ocorrencia">
+                    ${escaparHtml(order.OCORRÊNCIA)}
+                </td>
+            `;
+
+            fragmento.appendChild(
+                linha
+            );
+        }
+    );
+
+    corpoTabela.appendChild(
+        fragmento
+    );
+
+    const totalRegistros =
+        obterElemento(
+            'totalRegistros'
+        );
+
+    if (totalRegistros) {
+        totalRegistros.textContent =
+            String(
+                dados.length
+            );
     }
-});
+}
+
+function lerFiltros() {
+    return {
+        representante:
+            obterElemento(
+                'representanteFilter'
+            )?.value.trim() ||
+            '',
+
+        nota:
+            obterElemento(
+                'notaFilter'
+            )?.value.trim() ||
+            '',
+
+        cnpj:
+            somenteDigitos(
+                obterElemento(
+                    'clienteCNPJFilter'
+                )?.value
+            ),
+
+        dataInicio:
+            obterElemento(
+                'dataPedidoInicioFilter'
+            )?.value ||
+            '',
+
+        dataFim:
+            obterElemento(
+                'dataPedidoFimFilter'
+            )?.value ||
+            '',
+
+        status:
+            obterElemento(
+                'statusFilter'
+            )?.value ||
+            'todos'
+    };
+}
+
+function aplicarFiltrosLogistica(
+    exibirMensagem = true
+) {
+    if (exibirMensagem) {
+        mostrarFeedback(
+            'Aplicando filtros, aguarde...'
+        );
+    }
+
+    try {
+        const filtros =
+            lerFiltros();
+
+        const dataInicio =
+            criarDataComparacao(
+                filtros.dataInicio
+            );
+
+        const dataFim =
+            criarDataComparacao(
+                filtros.dataFim
+            );
+
+        if (
+            dataInicio &&
+            dataFim &&
+            dataInicio > dataFim
+        ) {
+            mostrarFeedback(
+                'A data inicial não pode ser maior que a data final.'
+            );
+
+            return;
+        }
+
+        dadosFiltradosLogistica =
+            todosDadosLogistica.filter(
+                order => {
+                    const representante =
+                        String(
+                            order?.Rep ??
+                            ''
+                        ).trim();
+
+                    const nota =
+                        String(
+                            order?.NF ??
+                            ''
+                        ).trim();
+
+                    const cnpj =
+                        somenteDigitos(
+                            order?.CNPJ
+                        );
+
+                    const dataEmissao =
+                        criarDataPedidoComparacao(
+                            order?.EMISSÃO
+                        );
+
+                    const statusEntrega =
+                        String(
+                            order?.STATUS_ENTREGA ??
+                            ''
+                        )
+                            .trim()
+                            .toLowerCase();
+
+                    const correspondeRepresentante =
+                        !filtros.representante ||
+                        representante ===
+                            filtros.representante;
+
+                    const correspondeNota =
+                        !filtros.nota ||
+                        nota ===
+                            filtros.nota;
+
+                    const correspondeCnpj =
+                        !filtros.cnpj ||
+                        cnpj ===
+                            filtros.cnpj;
+
+                    const correspondeDataInicio =
+                        !dataInicio ||
+                        (
+                            dataEmissao &&
+                            dataEmissao >=
+                                dataInicio
+                        );
+
+                    const correspondeDataFim =
+                        !dataFim ||
+                        (
+                            dataEmissao &&
+                            dataEmissao <=
+                                dataFim
+                        );
+
+                    let correspondeStatus =
+                        true;
+
+                    if (
+                        filtros.status !==
+                        'todos'
+                    ) {
+                        correspondeStatus =
+                            statusEntrega ===
+                            filtros.status;
+                    }
+
+                    return (
+                        correspondeRepresentante &&
+                        correspondeNota &&
+                        correspondeCnpj &&
+                        correspondeDataInicio &&
+                        correspondeDataFim &&
+                        correspondeStatus
+                    );
+                }
+            );
+
+        renderizarTabela(
+            dadosFiltradosLogistica
+        );
+
+        if (
+            dadosFiltradosLogistica.length ===
+            0
+        ) {
+            mostrarFeedback(
+                'Nenhum dado encontrado com os filtros aplicados.'
+            );
+
+            return;
+        }
+
+        ocultarFeedback();
+    } catch (error) {
+        console.error(
+            'Erro ao aplicar filtros:',
+            error
+        );
+
+        mostrarFeedback(
+            'Erro ao aplicar os filtros. Tente novamente.'
+        );
+    }
+}
+
+function limparFiltros() {
+    const regiao =
+        obterElemento(
+            'regiaoFilter'
+        );
+
+    const representante =
+        obterElemento(
+            'representanteFilter'
+        );
+
+    const nota =
+        obterElemento(
+            'notaFilter'
+        );
+
+    const cnpj =
+        obterElemento(
+            'clienteCNPJFilter'
+        );
+
+    const dataInicio =
+        obterElemento(
+            'dataPedidoInicioFilter'
+        );
+
+    const dataFim =
+        obterElemento(
+            'dataPedidoFimFilter'
+        );
+
+    const status =
+        obterElemento(
+            'statusFilter'
+        );
+
+    if (regiao) {
+        regiao.value =
+            'todas';
+    }
+
+    if (representante) {
+        representante.value =
+            numeroRepresentanteSessao ||
+            '';
+    }
+
+    if (nota) {
+        nota.value =
+            '';
+    }
+
+    if (cnpj) {
+        cnpj.value =
+            '';
+    }
+
+    if (dataInicio) {
+        dataInicio.value =
+            '';
+    }
+
+    if (dataFim) {
+        dataFim.value =
+            '';
+    }
+
+    if (status) {
+        status.value =
+            'todos';
+    }
+
+    atualizarTextoRegiao();
+
+    carregarDadosLogistica();
+}
+
+function existemFiltrosAplicados() {
+    const filtros =
+        lerFiltros();
+
+    return Boolean(
+        (
+            filtros.representante &&
+            filtros.representante !==
+                numeroRepresentanteSessao
+        ) ||
+        filtros.nota ||
+        filtros.cnpj ||
+        filtros.dataInicio ||
+        filtros.dataFim ||
+        filtros.status !==
+            'todos'
+    );
+}
+
+function exportarParaExcel(
+    dados
+) {
+    if (
+        typeof XLSX ===
+        'undefined'
+    ) {
+        mostrarFeedback(
+            'A biblioteca de exportação para Excel não foi carregada.'
+        );
+
+        return;
+    }
+
+    const dadosExportacao =
+        dados.map(
+            order => {
+                return {
+                    // Região:
+                    //     order.regiaoOrigem ||
+                    //     '',
+
+                    'Data da emissão':
+                        formatarDataLogistica(
+                            order.EMISSÃO
+                        ),
+
+                    'Núm notas':
+                        order.NF ||
+                        '',
+
+                    'Cód Cliente':
+                        order.codCliente ||
+                        '',
+
+                    Cliente:
+                        order.NOME ||
+                        '',
+
+                    'Cliente CNPJ':
+                        somenteDigitos(
+                            order.CNPJ
+                        ),
+
+                    UF:
+                        order.UF ||
+                        '',
+
+                    'Cód Rep':
+                        order.Rep ||
+                        '',
+
+                    'Cód Trans':
+                        order.CodTransporte ||
+                        '',
+
+                    Transportadora:
+                        order.TRANSPORTES ||
+                        '',
+
+                    Saída:
+                        formatarDataLogistica(
+                            order.SAÍDA
+                        ),
+
+                    'Previsão de Entrega':
+                        formatarDataLogistica(
+                            order.PrevisaoEntrega
+                        ),
+
+                    'Data de Entrega':
+                        formatarDataLogistica(
+                            order.ENTREGUE
+                        ),
+
+                    'Status Entrega':
+                        order.STATUS_ENTREGA ||
+                        '',
+
+                    Agenda:
+                        order.AGENDA ||
+                        '',
+
+                    Ocorrência:
+                        order.OCORRÊNCIA ||
+                        ''
+                };
+            }
+        );
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(
+            dadosExportacao
+        );
+
+    worksheet['!cols'] = [
+        {
+            wch:
+                32
+        },
+        {
+            wch:
+                15
+        },
+        {
+            wch:
+                12
+        },
+        {
+            wch:
+                12
+        },
+        {
+            wch:
+                30
+        },
+        {
+            wch:
+                20
+        },
+        {
+            wch:
+                6
+        },
+        {
+            wch:
+                10
+        },
+        {
+            wch:
+                10
+        },
+        {
+            wch:
+                30
+        },
+        {
+            wch:
+                15
+        },
+        {
+            wch:
+                20
+        },
+        {
+            wch:
+                15
+        },
+        {
+            wch:
+                18
+        },
+        {
+            wch:
+                18
+        },
+        {
+            wch:
+                30
+        }
+    ];
+
+    const workbook =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'Entregas'
+    );
+
+    const dataAtual =
+        obterDataAtualFormatada();
+
+    const regiaoSelecionada =
+        obterElemento(
+            'regiaoFilter'
+        )?.value ||
+        'todas';
+
+    const nomeRegiao =
+        regiaoSelecionada ===
+        'todas'
+            ? 'Todas_Regioes'
+            : obterNomeRegiaoSelecionada()
+                .replace(
+                    /[^A-Za-zÀ-ÿ0-9]+/g,
+                    '_'
+                );
+
+    const nomeArquivo =
+        `Entregas_${dataAtual}.xlsx`;
+
+    XLSX.writeFile(
+        workbook,
+        nomeArquivo
+    );
+}
+
+async function carregarSessao() {
+    const response =
+        await fetch(
+            '/session-data',
+            {
+                credentials:
+                    'same-origin',
+
+                cache:
+                    'no-store'
+            }
+        );
+
+    if (!response.ok) {
+        throw new Error(
+            'Erro ao buscar dados da sessão.'
+        );
+    }
+
+    const sessionData =
+        await response.json();
+
+    if (!sessionData.isAuthenticated) {
+        window.location.href =
+            '/login2';
+
+        return false;
+    }
+
+    window.sessionData =
+        sessionData;
+
+    numeroRepresentanteSessao =
+        String(
+            sessionData?.userNumero ??
+            ''
+        ).trim();
+
+    const representanteFilter =
+        obterElemento(
+            'representanteFilter'
+        );
+
+    if (
+        representanteFilter &&
+        numeroRepresentanteSessao
+    ) {
+        representanteFilter.value =
+            numeroRepresentanteSessao;
+
+        representanteFilter.disabled =
+            true;
+    }
+
+    return true;
+}
+
+function configurarEventos() {
+    obterElemento(
+        'applyFilters'
+    )?.addEventListener(
+        'click',
+        () => {
+            aplicarFiltrosLogistica(
+                true
+            );
+        }
+    );
+
+    obterElemento(
+        'clearFilters'
+    )?.addEventListener(
+        'click',
+        limparFiltros
+    );
+
+    obterElemento(
+        'regiaoFilter'
+    )?.addEventListener(
+        'change',
+        () => {
+            atualizarTextoRegiao();
+            carregarDadosLogistica();
+        }
+    );
+
+    obterElemento(
+        'exportExcel'
+    )?.addEventListener(
+        'click',
+        () => {
+            const dadosExportar =
+                existemFiltrosAplicados()
+                    ? dadosFiltradosLogistica
+                    : todosDadosLogistica;
+
+            if (
+                dadosExportar.length ===
+                0
+            ) {
+                mostrarFeedback(
+                    'Nenhum dado disponível para exportar.'
+                );
+
+                return;
+            }
+
+            exportarParaExcel(
+                dadosExportar
+            );
+        }
+    );
+
+    obterElemento(
+        'exportExcel'
+    )?.addEventListener(
+        'keydown',
+        evento => {
+            if (
+                evento.key !== 'Enter' &&
+                evento.key !== ' '
+            ) {
+                return;
+            }
+
+            evento.preventDefault();
+
+            obterElemento(
+                'exportExcel'
+            )?.click();
+        }
+    );
+
+    obterElemento(
+        'menuToggle'
+    )?.addEventListener(
+        'click',
+        () => {
+            const filterContainer =
+                obterElemento(
+                    'filterContainer'
+                );
+
+            const menuButton =
+                obterElemento(
+                    'menuToggle'
+                );
+
+            if (
+                !filterContainer ||
+                !menuButton
+            ) {
+                return;
+            }
+
+            filterContainer.classList.toggle(
+                'active'
+            );
+
+            const ativo =
+                filterContainer
+                    .classList
+                    .contains(
+                        'active'
+                    );
+
+            menuButton.innerHTML =
+                ativo
+                    ? '<span class="menu-icon">✖</span> Fechar Filtros'
+                    : '<span class="menu-icon">☰</span> Filtros';
+        }
+    );
+
+    const camposFiltro = [
+        'representanteFilter',
+        'notaFilter',
+        'clienteCNPJFilter',
+        'dataPedidoInicioFilter',
+        'dataPedidoFimFilter',
+        'statusFilter'
+    ];
+
+    camposFiltro.forEach(
+        id => {
+            obterElemento(
+                id
+            )?.addEventListener(
+                'keydown',
+                evento => {
+                    if (
+                        evento.key ===
+                        'Enter'
+                    ) {
+                        aplicarFiltrosLogistica(
+                            true
+                        );
+                    }
+                }
+            );
+        }
+    );
+}
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+        configurarEventos();
+        atualizarTextoRegiao();
+
+        try {
+            const autenticado =
+                await carregarSessao();
+
+            if (!autenticado) {
+                return;
+            }
+
+            await carregarDadosLogistica();
+        } catch (error) {
+            console.error(
+                'Erro ao inicializar a página de logística:',
+                error
+            );
+
+            mostrarFeedback(
+                error.message ||
+                'Erro ao inicializar a página.'
+            );
+        }
+    }
+);
