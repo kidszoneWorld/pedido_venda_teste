@@ -12,6 +12,19 @@ let currentFilters = {
     statusSeparacao: ''
 };
 
+function formatarCNPJ(cnpj) {
+  const numeros = String(cnpj ?? '').replace(/\D/g, '');
+
+  if (numeros.length !== 14) {
+    return cnpj ?? '';
+  }
+
+  return numeros.replace(
+    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+    '$1.$2.$3/$4-$5'
+  );
+}
+
 // Função para formatar as datas no formato YYYY-MM-DD
 function formatDate(dateString) {
     if (!dateString) return '';
@@ -625,7 +638,7 @@ function renderTable(data) {
             <td class="notaFiscal">${montarNotaFiscalHtml(order)}</td>
             <td class="codCliente">${order.cliente.codigo}</td>
             <td class="cliente">${order.cliente.nomeAbreviado}</td>
-            <td class="clienteCNPJ">${order.cliente.documento.numeroTexto}</td>
+            <td class="clienteCNPJ">${formatarCNPJ(order.cliente.documento.numeroTexto)}</td>
             <td class="codRep">${order.representante?.codigo || 'Não informado'}</td>
             <td class="representante">${order.representante?.nomeAbreviado || 'Não informado'}</td>
             <td class="valorTotal">${order.detalhes?.valor?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A'}</td>
