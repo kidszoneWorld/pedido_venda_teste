@@ -743,6 +743,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+function normalizarTextoNota(
+    valor
+) {
+    return String(
+        valor ?? ''
+    )
+        .trim()
+        .normalize(
+            'NFD'
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ''
+        )
+        .toLowerCase();
+}
+
+function notaPodeAparecerNaLinha(
+    nota
+) {
+    if (
+        !nota ||
+        typeof nota !== 'object'
+    ) {
+        return false;
+    }
+
+    const status =
+        normalizarTextoNota(
+            nota.status
+        );
+
+    if (status !== 'impresso') {
+        return false;
+    }
+
+    const tipoDocumento =
+        normalizarTextoNota(
+            nota.tipo
+        );
+
+    if (tipoDocumento === 'devolucao') {
+        return false;
+    }
+
+    const itens =
+        Array.isArray(
+            nota.itens
+        )
+            ? nota.itens
+            : [];
+
+    const possuiDevolucao =
+        itens.some(
+            item => {
+                const tipo =
+                    normalizarTextoNota(
+                        item
+                            ?.naturezaDaOperacao
+                            ?.tipo
+                    );
+
+                return (
+                    tipo ===
+                    'devolucao'
+                );
+            }
+        );
+
+    return !possuiDevolucao;
+}
+
 function obterNotasFiscaisPedido(
     order
 ) {
@@ -772,6 +844,14 @@ function obterNotasFiscaisPedido(
 
     candidatas.forEach(
         nota => {
+            if (
+                !notaPodeAparecerNaLinha(
+                    nota
+                )
+            ) {
+                return;
+            }
+
             const numero =
                 String(
                     nota?.numero ??
@@ -791,31 +871,43 @@ function obterNotasFiscaisPedido(
                 return;
             }
 
-            // A chave é usada para remover duplicidades e baixar o PDF.
             const chaveUnica =
                 chaveAcesso ||
                 numero;
 
             if (
-                !notasUnicas.has(
+                notasUnicas.has(
                     chaveUnica
                 )
             ) {
-                notasUnicas.set(
-                    chaveUnica,
-                    {
-                        numero:
-                            numero,
-
-                        serie:
-                            nota?.serie ??
-                            '',
-
-                        chaveAcesso:
-                            chaveAcesso
-                    }
-                );
+                return;
             }
+
+            notasUnicas.set(
+                chaveUnica,
+                {
+                    numero:
+                        numero,
+
+                    serie:
+                        nota?.serie ??
+                        '',
+
+                    chaveAcesso:
+                        chaveAcesso,
+
+                    status:
+                        nota?.status ??
+                        '',
+
+                    itens:
+                        Array.isArray(
+                            nota?.itens
+                        )
+                            ? nota.itens
+                            : []
+                }
+            );
         }
     );
 

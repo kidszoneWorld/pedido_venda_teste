@@ -9,6 +9,8 @@ const PcrLink = process.env.PCR_LINK
 const usuarioDbCorp = process.env.USUARIO_DBCORP
 const senhabCorp = process.env.SENHA_DBCORP
 
+
+
 function aguardar(tempo) {
     return new Promise(resolve => {
         setTimeout(
@@ -137,7 +139,12 @@ function normalizarNumeroNota(valor) {
 function criarEstruturaNotaFiscalPedido(
     notaFiscal
 ) {
-    if (!notaFiscal) {
+    if (
+        !notaFiscal ||
+        !notaFiscalPodeSerExibida(
+            notaFiscal
+        )
+    ) {
         return {
             dados: []
         };
@@ -330,6 +337,7 @@ async function buscarNotaFiscalPorNumero(
      * Mas o código também aceita { dados: objeto }
      * ou { dados: [objeto] } para maior segurança.
      */
+
     if (
         Array.isArray(
             resultado?.dados
@@ -464,11 +472,16 @@ async function fetchNotaFiscalPedidoComXml(
         );
     }
 
+    const respostaNormalizada =
+        normalizarRespostaNotasFiscais(
+            resultado
+        );
+
     const notas =
         Array.isArray(
-            resultado?.dados
+            respostaNormalizada?.dados
         )
-            ? resultado.dados
+            ? respostaNormalizada.dados
             : [];
 
     /*
@@ -723,6 +736,8 @@ async function buscarNotasFiscaisDoPedido(
 
         const resultado =
             await response.json();
+
+        
 
         return normalizarRespostaNotasFiscais(
             resultado
@@ -1501,8 +1516,9 @@ async function fetchOrderDetails(
           let detalhesTransporte =
               null;
 
-          let notasFiscais =
-              null;
+          let notasFiscais = {
+                dados: []
+            };
 
           try {
               const repResponse =
@@ -1578,14 +1594,23 @@ async function fetchOrderDetails(
                   );
 
               if (invoiceResponse.ok) {
-                  notasFiscais =
-                      await invoiceResponse.json();
-              } else {
-                  console.warn(
-                      `Não foi possível carregar as notas do pedido ${order.codigo}. ` +
-                      `Status HTTP: ${invoiceResponse.status}.`
-                  );
-              }
+                const respostaNotas =
+                    await invoiceResponse.json();
+
+                notasFiscais =
+                    normalizarRespostaNotasFiscais(
+                        respostaNotas
+                    );
+            } else {
+                console.warn(
+                    `Não foi possível carregar as notas do pedido ${order.codigo}. ` +
+                    `Status HTTP: ${invoiceResponse.status}.`
+                );
+
+                notasFiscais = {
+                    dados: []
+                };
+            }
           } catch (error) {
               console.error(
                   `Erro ao buscar notas fiscais do pedido ${order.codigo}:`,
@@ -1768,20 +1793,101 @@ async function fetchOrdersByInvoiceGrouped(
     );
 }
 
+function normalizarTextoComparacao(
+    valor
+) {
+    return String(
+        valor ?? ''
+    )
+        .trim()
+        .normalize(
+            'NFD'
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ''
+        )
+        .toLowerCase();
+}
+
+function notaFiscalPodeSerExibida(
+    nota
+) {
+    if (
+        !nota ||
+        typeof nota !== 'object'
+    ) {
+        return false;
+    }
+
+    const status =
+        normalizarTextoComparacao(
+            nota.status
+        );
+
+    if (status !== 'impresso') {
+        return false;
+    }
+
+    const tipoDocumento =
+        normalizarTextoComparacao(
+            nota.tipo
+        );
+
+    if (tipoDocumento === 'devolucao') {
+        return false;
+    }
+
+    const itens =
+        Array.isArray(
+            nota.itens
+        )
+            ? nota.itens
+            : [];
+
+    const possuiItemDevolucao =
+        itens.some(
+            item => {
+                const tipoNatureza =
+                    normalizarTextoComparacao(
+                        item
+                            ?.naturezaDaOperacao
+                            ?.tipo
+                    );
+
+                return (
+                    tipoNatureza ===
+                    'devolucao'
+                );
+            }
+        );
+
+    return !possuiItemDevolucao;
+}
+
 function normalizarRespostaNotasFiscais(
     respostaNotas
 ) {
-    const notas =
+    const notasRecebidas =
         Array.isArray(
             respostaNotas?.dados
         )
             ? respostaNotas.dados
             : [];
 
+    const notasValidas =
+        notasRecebidas.filter(
+            nota => {
+                return notaFiscalPodeSerExibida(
+                    nota
+                );
+            }
+        );
+
     const notasUnicas =
         new Map();
 
-    notas.forEach(
+    notasValidas.forEach(
         nota => {
             const numero =
                 normalizarNumeroNota(
@@ -1792,42 +1898,36 @@ function normalizarRespostaNotasFiscais(
                 String(
                     nota?.chaveAcesso ??
                     ''
-                ).trim();
+                ).replace(
+                    /\D/g,
+                    ''
+                );
 
             if (!numero) {
                 return;
             }
 
-            /*
-             * O número é o identificador usado no sistema
-             * para pesquisar, exibir e baixar o XML.
-             *
-             * A chave de acesso ajuda a diferenciar documentos
-             * em um eventual caso de números repetidos.
-             */
             const chaveUnica =
                 chaveAcesso ||
                 numero;
 
             if (
-                !notasUnicas.has(
+                notasUnicas.has(
                     chaveUnica
                 )
             ) {
-                notasUnicas.set(
-                    chaveUnica,
-                    {
-                        ...nota,
-
-                        /*
-                         * Propriedade explícita para evitar
-                         * confusão com nota.codigo.
-                         */
-                        numeroDownload:
-                            numero
-                    }
-                );
+                return;
             }
+
+            notasUnicas.set(
+                chaveUnica,
+                {
+                    ...nota,
+
+                    numeroDownload:
+                        numero
+                }
+            );
         }
     );
 
@@ -1835,6 +1935,25 @@ function normalizarRespostaNotasFiscais(
         Array.from(
             notasUnicas.values()
         );
+
+    console.log(
+        'Notas fiscais normalizadas:',
+        {
+            recebidas:
+                notasRecebidas.length,
+
+            validas:
+                notasValidas.length,
+
+            unicas:
+                dados.length,
+
+            numeros:
+                dados.map(
+                    nota => nota.numero
+                )
+        }
+    );
 
     return {
         ...respostaNotas,
