@@ -1499,7 +1499,7 @@ async function fetchOrderDetails(
         );
 
       if (!response.ok) {
-        throw new Error(`Erro ao buscar pedidos: ${response.statusText}`);
+        throw new Error(`Nenhum pedido encontrado`);
       }
 
       const ordersData = await response.json();
@@ -1671,9 +1671,9 @@ async function fetchOrderDetails(
         );
 
         throw new Error(
-            `Não foi possível concluir a consulta. ` +
+            console.log(`Não foi possível concluir a consulta. ` +
             `Falha ao carregar a página ${currentPage}. ` +
-            `${error.message}`
+            `${error.message}`)
         );
         }
     }

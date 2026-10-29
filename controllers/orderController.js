@@ -584,7 +584,7 @@ if (
             .json({
                 mensagem:
                     mensagem ||
-                    'Erro ao obter detalhes dos pedidos.'
+                    'Nenhum pedido encontrado.'
             });
     }
 }
