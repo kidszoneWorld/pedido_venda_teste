@@ -1539,12 +1539,14 @@ function sincronizarStatusSeparacao() {
         campoSeparacao.value =
             '1';
     } else if (
-        status === '3' ||
-        status === '6'
+        status === '3'
     ) {
         campoSeparacao.value =
             '0';
     }
+
+        console.log("separação "+ campoSeparacao.value)
+
 
     currentFilters.statusSeparacao =
         campoSeparacao.value;

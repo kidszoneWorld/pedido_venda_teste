@@ -1450,7 +1450,11 @@ async function fetchOrderDetails(
         const permiteFiltroSeparacao =
             statusNumerico === 3 ||
             statusNumerico === 4 ||
-            statusNumerico === 5;
+            statusNumerico === 5 ||
+            statusNumerico === 6;
+
+            console.log(permiteFiltroSeparacao)
+            console.log(userStatusSeparacao)
 
         if (
             permiteFiltroSeparacao &&
@@ -1561,8 +1565,6 @@ async function fetchOrderDetails(
                   error
               );
           }
-
-
 
           if (order.transportadoraCodigo) {
               try {
