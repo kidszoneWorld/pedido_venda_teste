@@ -161,11 +161,27 @@ async function gerarPdfNoNavegador(elemento, nomeArquivo) {
         await document.fonts.ready;
     }
 
-    const imagens = Array.from(elemento.querySelectorAll('img'));
+    const imagens =
+        Array.from(
+            elemento.querySelectorAll(
+                'img'
+            )
+        ).filter(
+            imagem => {
+                return Boolean(
+                    imagem.getAttribute(
+                        'src'
+                    )
+                );
+            }
+        );
 
     await Promise.all(
         imagens.map((imagem) => {
-            if (imagem.complete) {
+            if (
+                imagem.complete &&
+                imagem.naturalWidth > 0
+            ) {
                 return Promise.resolve();
             }
 
@@ -876,6 +892,10 @@ function carregarFotoItem(
         'src'
     );
 
+    imagem.removeAttribute(
+        'crossorigin'
+    );
+
     delete imagem.dataset.extensaoTentada;
 
     imagem.classList.remove(
@@ -998,17 +1018,6 @@ function carregarFotoItem(
 
             imagem.alt =
                 `Foto não encontrada para o item ${codigo}`;
-
-            console.warn(
-                `Nenhuma foto JPG ou PNG foi encontrada para o item ${codigo}.`,
-                {
-                    urlJpg:
-                        urlJpg,
-
-                    urlPng:
-                        urlPng
-                }
-            );
         };
 
     tentarCarregar(
@@ -4508,6 +4517,143 @@ function blobParaDataUri(blob){
 
 }
 
+function prepararImagensDoCloneParaPdf(
+    containerOriginal,
+    clone
+) {
+    const imagensOriginais =
+        Array.from(
+            containerOriginal.querySelectorAll(
+                '.foto-item-pedido'
+            )
+        );
+
+    const imagensClone =
+        Array.from(
+            clone.querySelectorAll(
+                '.foto-item-pedido'
+            )
+        );
+
+    imagensClone.forEach(
+        (
+            imagemClone,
+            indice
+        ) => {
+            const imagemOriginal =
+                imagensOriginais[indice];
+
+            if (!imagemOriginal) {
+                imagemClone.remove();
+                return;
+            }
+
+            const src =
+                imagemOriginal.currentSrc ||
+                imagemOriginal.src ||
+                '';
+
+            const imagemValida =
+                Boolean(
+                    src &&
+                    imagemOriginal.complete &&
+                    imagemOriginal.naturalWidth > 0 &&
+                    imagemOriginal.naturalHeight > 0 &&
+                    !imagemOriginal.classList.contains(
+                        'erro-foto'
+                    )
+                );
+
+            if (!imagemValida) {
+                imagemClone.remove();
+                return;
+            }
+
+            imagemClone.onload =
+                null;
+
+            imagemClone.onerror =
+                null;
+
+            imagemClone.removeAttribute(
+                'crossorigin'
+            );
+
+            imagemClone.loading =
+                'eager';
+
+            imagemClone.decoding =
+                'sync';
+
+            imagemClone.referrerPolicy =
+                'no-referrer';
+
+            imagemClone.src =
+                src;
+
+            imagemClone.classList.remove(
+                'sem-foto'
+            );
+
+            imagemClone.classList.remove(
+                'carregando-foto'
+            );
+
+            imagemClone.classList.remove(
+                'erro-foto'
+            );
+
+            imagemClone.style.setProperty(
+                'display',
+                'block',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'visibility',
+                'visible',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'opacity',
+                '1',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'width',
+                '70px',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'height',
+                '70px',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'max-width',
+                '70px',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'object-fit',
+                'contain',
+                'important'
+            );
+
+            imagemClone.style.setProperty(
+                'margin',
+                '0 auto',
+                'important'
+            );
+        }
+    );
+}
+
 function prepararPedidoParaPdf(){
 
     const containerOriginal =
@@ -4618,6 +4764,11 @@ function prepararPedidoParaPdf(){
         }
     );
 
+    prepararImagensDoCloneParaPdf(
+        containerOriginal,
+        clone
+    );
+
     /*
      * Remove apenas elementos de interação
      * que não devem aparecer no PDF.
@@ -4656,9 +4807,9 @@ function prepararPedidoParaPdf(){
         ].join(','))
         .forEach(elemento => {
 
-            elemento.remove();
+                elemento.remove();
 
-        });
+            });
 
     /*
      * Remove colunas técnicas da tabela.
@@ -4668,8 +4819,7 @@ function prepararPedidoParaPdf(){
             '#dadosPedido'
         );
 
-    if(tabela){
-
+    if (tabela) {
         const cabecalhos =
             Array.from(
                 tabela.querySelectorAll(
@@ -4684,16 +4834,15 @@ function prepararPedidoParaPdf(){
                         cabecalho,
                         indice
                     ) => {
-
                         const texto =
                             String(
-                                cabecalho.textContent || ''
+                                cabecalho.textContent ||
+                                ''
                             )
-                            .trim()
-                            .toLowerCase();
+                                .trim()
+                                .toLowerCase();
 
                         if (
-                            texto === 'foto' ||
                             texto === 'excluir' ||
                             texto === 'itemid' ||
                             texto === 'item id'
@@ -4702,47 +4851,69 @@ function prepararPedidoParaPdf(){
                         }
 
                         return -1;
-
                     }
                 )
-                .filter(indice => {
-
-                    return indice >= 0;
-
-                })
+                .filter(
+                    indice => {
+                        return indice >= 0;
+                    }
+                )
                 .sort(
                     (
                         primeiro,
                         segundo
                     ) => {
-
-                        return segundo - primeiro;
-
+                        return (
+                            segundo -
+                            primeiro
+                        );
                     }
                 );
 
-        indicesRemover.forEach(indice => {
+        indicesRemover.forEach(
+            indice => {
+                tabela
+                    .querySelectorAll(
+                        'tr'
+                    )
+                    .forEach(
+                        linha => {
+                            const celula =
+                                linha.children[
+                                    indice
+                                ];
 
-            tabela
-                .querySelectorAll(
-                    'tr'
-                )
-                .forEach(linha => {
-
-                    const celula =
-                        linha.children[indice];
-
-                    if(celula){
-
-                        celula.remove();
-
-                    }
-
-                });
-
-        });
-
+                            if (celula) {
+                                celula.remove();
+                            }
+                        }
+                    );
+            }
+        );
     }
+
+    clone
+        .querySelectorAll(
+            '#dadosPedido tbody tr'
+        )
+        .forEach(
+            linha => {
+                const campoItem =
+                    linha.querySelector(
+                        '.campo-item-pesquisa'
+                    );
+
+                if (
+                    !campoItem ||
+                    !String(
+                        campoItem.value ||
+                        ''
+                    ).trim()
+                ) {
+                    linha.remove();
+                }
+            }
+        );
 
     /*
      * Remove somente linhas vazias.
@@ -4752,13 +4923,6 @@ function prepararPedidoParaPdf(){
             '#dadosPedido tbody tr'
         )
         .forEach(linha => {
-
-
-            const campoFoto =
-                linha.querySelector(
-                    '.foto-item-pedido sem-foto'
-                );
-
 
             const campoItem =
                 linha.querySelector(
@@ -4909,32 +5073,6 @@ const observacaoClone =
         );
 
     }
-
-    clone
-        .querySelectorAll(
-            '.foto-item-pedido'
-        )
-
-    clone
-        .querySelectorAll(
-            '.cabecalho-foto-item'
-        )
-        .forEach(
-            cabecalho => {
-                cabecalho.remove();
-            }
-        );
-
-    clone
-        .querySelectorAll(
-            '.celula-foto-item'
-        )
-        .forEach(
-            celula => {
-                celula.remove();
-            }
-        );
-
 
     document.body.appendChild(
         clone

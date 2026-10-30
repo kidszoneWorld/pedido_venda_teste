@@ -2073,3 +2073,72 @@ body.dark-theme .foto-item-pedido {
 body.dark-theme .foto-item-pedido.carregando-foto {
     background-color: #555555;
 }
+
+.container-pdf #dadosPedido {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.container-pdf #dadosPedido .cabecalho-foto-item,
+.container-pdf #dadosPedido .celula-foto-item {
+    width: 82px;
+    min-width: 82px;
+    max-width: 82px;
+    padding: 4px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.container-pdf #dadosPedido .foto-item-pedido {
+    display: block !important;
+    visibility: visible !important;
+    width: 70px !important;
+    height: 70px !important;
+    max-width: 70px !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    background-color: #ffffff !important;
+}
+
+.container-pdf #dadosPedido .foto-item-pedido.sem-foto,
+.container-pdf #dadosPedido .foto-item-pedido.erro-foto {
+    display: none !important;
+}
+
+.container-pdf #dadosPedido input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    font-size: 11px;
+}
+
+.container-pdf #dadosPedido th,
+.container-pdf #dadosPedido td {
+    padding: 4px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.container-pdf #dadosPedido .codigo-descricao {
+    width: 280px;
+}
+
+.container-pdf #dadosPedido .qtd {
+    width: 55px;
+}
+
+.container-pdf #dadosPedido .uv {
+    width: 55px;
+}
+
+.container-pdf #dadosPedido .ipi {
+    width: 65px;
+}
+
+.container-pdf #dadosPedido .unit,
+.container-pdf #dadosPedido .vipi,
+.container-pdf #dadosPedido .total {
+    width: 110px;
+}
