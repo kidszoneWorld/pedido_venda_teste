@@ -1136,6 +1136,7 @@ function preencherLinhaComItem(
     tr,
     item
 ){
+    
 
     const campoPesquisa =
         tr.querySelector(
@@ -4752,6 +4753,13 @@ function prepararPedidoParaPdf(){
         )
         .forEach(linha => {
 
+
+            const campoFoto =
+                linha.querySelector(
+                    '.foto-item-pedido sem-foto'
+                );
+
+
             const campoItem =
                 linha.querySelector(
                     '.campo-item-pesquisa'
@@ -4906,11 +4914,6 @@ const observacaoClone =
         .querySelectorAll(
             '.foto-item-pedido'
         )
-        .forEach(
-            imagem => {
-                imagem.remove();
-            }
-        );
 
     clone
         .querySelectorAll(
