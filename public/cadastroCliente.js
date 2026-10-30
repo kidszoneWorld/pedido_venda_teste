@@ -249,56 +249,56 @@ document.addEventListener("DOMContentLoaded", () => {
             'numero_nf'
         ];
 
-        for (
-            const nomeGrupo of
-            gruposRadioObrigatorios
-        ) {
-            const selecionado =
-                document.querySelector(
-                    `input[name="${nomeGrupo}"]:checked`
-                );
+        // for (
+        //     const nomeGrupo of
+        //     gruposRadioObrigatorios
+        // ) {
+        //     const selecionado =
+        //         document.querySelector(
+        //             `input[name="${nomeGrupo}"]:checked`
+        //         );
 
-            if (!selecionado) {
-                return false;
-            }
-        }
+        //     if (!selecionado) {
+        //         return false;
+        //     }
+        // }
 
-        const agendamento =
-            document.querySelector(
-                'input[name="agendamento"]:checked'
-            )?.value;
+        // const agendamento =
+        //     document.querySelector(
+        //         'input[name="agendamento"]:checked'
+        //     )?.value;
 
-        if (agendamento === 'Sim') {
-            const dadosResponsavel =
-                document.querySelector(
-                    'input[name="dados_responsavel"]:checked'
-                );
+        // if (agendamento === 'Sim') {
+        //     const dadosResponsavel =
+        //         document.querySelector(
+        //             'input[name="dados_responsavel"]:checked'
+        //         );
 
-            if (!dadosResponsavel) {
-                document
-                    .getElementById(
-                        'dados_responsavel_sim'
-                    )
-                    ?.focus();
+        //     if (!dadosResponsavel) {
+        //         document
+        //             .getElementById(
+        //                 'dados_responsavel_sim'
+        //             )
+        //             ?.focus();
 
-                return false;
-            }
+        //         return false;
+        //     }
 
-            const horarioEntrega =
-                document.getElementById(
-                    'horario_entrega'
-                );
+        //     const horarioEntrega =
+        //         document.getElementById(
+        //             'horario_entrega'
+        //         );
 
-            if (
-                !String(
-                    horarioEntrega?.value || ''
-                ).trim()
-            ) {
-                horarioEntrega?.focus();
+        //     if (
+        //         !String(
+        //             horarioEntrega?.value || ''
+        //         ).trim()
+        //     ) {
+        //         horarioEntrega?.focus();
 
-                return false;
-            }
-        }
+        //         return false;
+        //     }
+        // }
 
         return true;
     }
