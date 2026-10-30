@@ -299,10 +299,8 @@ document.addEventListener("DOMContentLoaded", () => {
         //         return false;
         //     }
         // }
-
         return true;
-    }
-        
+    }     
     // Função para gerar o PDF automaticamente
     async function gerarPDF() {
         const content = document.querySelector('.container');
@@ -316,7 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
             html2canvas: { scale: 2 },
             jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
         };
-
         try {
             hideFeedback();
             buttonPdf.style.display = 'none';
