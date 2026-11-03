@@ -2142,3 +2142,10 @@ body.dark-theme .foto-item-pedido.carregando-foto {
 .container-pdf #dadosPedido .total {
     width: 110px;
 }
+
+html .container-pdf.layout-pdf-desktop
+#dadosPedido .foto-item-pedido.imagem-pdf-pronta {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}

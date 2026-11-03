@@ -161,44 +161,89 @@ async function gerarPdfNoNavegador(elemento, nomeArquivo) {
         await document.fonts.ready;
     }
 
-    const imagens =
-        Array.from(
-            elemento.querySelectorAll(
-                'img'
-            )
-        ).filter(
-            imagem => {
-                return Boolean(
-                    imagem.getAttribute(
-                        'src'
-                    )
-                );
-            }
-        );
+const imagens =
+    Array.from(
+        elemento.querySelectorAll(
+            'img'
+        )
+    ).filter(
+        imagem => {
+            return Boolean(
+                imagem.getAttribute(
+                    'src'
+                )
+            );
+        }
+    );
 
     await Promise.all(
-        imagens.map((imagem) => {
-            if (
-                imagem.complete &&
-                imagem.naturalWidth > 0
-            ) {
-                return Promise.resolve();
+        imagens.map(
+            async imagem => {
+                imagem.loading =
+                    'eager';
+
+                if (
+                    imagem.complete &&
+                    imagem.naturalWidth >
+                        0
+                ) {
+                    if (
+                        typeof imagem.decode ===
+                        'function'
+                    ) {
+                        try {
+                            await imagem.decode();
+                        } catch {
+                            // A imagem já está disponível.
+                        }
+                    }
+
+                    return;
+                }
+
+                await new Promise(
+                    resolve => {
+                        let finalizado =
+                            false;
+
+                        const finalizar =
+                            () => {
+                                if (finalizado) {
+                                    return;
+                                }
+
+                                finalizado =
+                                    true;
+
+                                resolve();
+                            };
+
+                        imagem.addEventListener(
+                            'load',
+                            finalizar,
+                            {
+                                once:
+                                    true
+                            }
+                        );
+
+                        imagem.addEventListener(
+                            'error',
+                            finalizar,
+                            {
+                                once:
+                                    true
+                            }
+                        );
+
+                        setTimeout(
+                            finalizar,
+                            10000
+                        );
+                    }
+                );
             }
-
-            return new Promise((resolve) => {
-                let terminou = false;
-
-                const finalizar = () => {
-                    if (terminou) return;
-                    terminou = true;
-                    resolve();
-                };
-
-                imagem.addEventListener('load', finalizar, { once: true });
-                imagem.addEventListener('error', finalizar, { once: true });
-                setTimeout(finalizar, 5000);
-            });
-        })
+        )
     );
 
     const larguraPadraoPdf = 1120;
@@ -223,7 +268,7 @@ async function gerarPdfNoNavegador(elemento, nomeArquivo) {
     elemento,
     {
         scale: 1.5,
-        useCORS: true,
+        useCORS: false,
         allowTaint: false,
         backgroundColor: '#ffffff',
         logging: false,
@@ -4517,7 +4562,41 @@ function blobParaDataUri(blob){
 
 }
 
-function prepararImagensDoCloneParaPdf(
+function blobParaDataUrl(
+    blob
+) {
+    return new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                () => {
+                    resolve(
+                        reader.result
+                    );
+                };
+
+            reader.onerror =
+                () => {
+                    reject(
+                        new Error(
+                            'Não foi possível converter a imagem.'
+                        )
+                    );
+                };
+
+            reader.readAsDataURL(
+                blob
+            );
+        }
+    );
+}
+
+async function prepararImagensDoCloneParaPdf(
     containerOriginal,
     clone
 ) {
@@ -4535,126 +4614,227 @@ function prepararImagensDoCloneParaPdf(
             )
         );
 
-    imagensClone.forEach(
-        (
-            imagemClone,
-            indice
-        ) => {
-            const imagemOriginal =
-                imagensOriginais[indice];
+    const tarefas =
+        imagensClone.map(
+            async (
+                imagemClone,
+                indice
+            ) => {
+                const imagemOriginal =
+                    imagensOriginais[
+                        indice
+                    ];
 
-            if (!imagemOriginal) {
-                imagemClone.remove();
-                return;
-            }
+                if (!imagemOriginal) {
+                    imagemClone.remove();
 
-            const src =
-                imagemOriginal.currentSrc ||
-                imagemOriginal.src ||
-                '';
+                    return;
+                }
 
-            const imagemValida =
-                Boolean(
-                    src &&
-                    imagemOriginal.complete &&
-                    imagemOriginal.naturalWidth > 0 &&
-                    imagemOriginal.naturalHeight > 0 &&
-                    !imagemOriginal.classList.contains(
-                        'erro-foto'
+                const linhaOriginal =
+                    imagemOriginal.closest(
+                        '.linha-item-pedido'
+                    );
+
+                const codigo =
+                    String(
+                        linhaOriginal
+                            ?.dataset
+                            ?.itemEmpresaId ??
+                        ''
                     )
-                );
+                        .trim()
+                        .toUpperCase();
 
-            if (!imagemValida) {
-                imagemClone.remove();
-                return;
+                const extensao =
+                    String(
+                        imagemOriginal
+                            ?.dataset
+                            ?.extensaoTentada ??
+                        ''
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                const imagemValida =
+                    Boolean(
+                        codigo &&
+                        (
+                            extensao ===
+                                'jpg' ||
+                            extensao ===
+                                'png'
+                        ) &&
+                        imagemOriginal.complete &&
+                        imagemOriginal.naturalWidth >
+                            0 &&
+                        imagemOriginal.naturalHeight >
+                            0 &&
+                        !imagemOriginal.classList.contains(
+                            'erro-foto'
+                        )
+                    );
+
+                if (!imagemValida) {
+                    imagemClone.remove();
+
+                    return;
+                }
+
+                const urlLocal =
+                    '/api/imagem-pedido-pdf/' +
+                    encodeURIComponent(
+                        codigo
+                    ) +
+                    '/' +
+                    encodeURIComponent(
+                        extensao
+                    );
+
+                try {
+                    const resposta =
+                        await fetch(
+                            urlLocal,
+                            {
+                                method:
+                                    'GET',
+
+                                credentials:
+                                    'same-origin',
+
+                                cache:
+                                    'force-cache'
+                            }
+                        );
+
+                    if (!resposta.ok) {
+                        throw new Error(
+                            `HTTP ${resposta.status}`
+                        );
+                    }
+
+                    const blob =
+                        await resposta.blob();
+
+                    if (
+                        !blob ||
+                        blob.size === 0
+                    ) {
+                        throw new Error(
+                            'Imagem vazia.'
+                        );
+                    }
+
+                    const dataUrl =
+                        await blobParaDataUrl(
+                            blob
+                        );
+
+
+
+                    imagemClone.onload =
+                        null;
+
+                    imagemClone.onerror =
+                        null;
+
+                    imagemClone.removeAttribute(
+                        'crossorigin'
+                    );
+
+                    imagemClone.removeAttribute(
+                        'referrerpolicy'
+                    );
+
+                    imagemClone.loading =
+                        'eager';
+
+                    imagemClone.decoding =
+                        'sync';
+
+                    imagemClone.src =
+                        dataUrl;
+
+                    imagemClone.classList.remove(
+                        'sem-foto'
+                    );
+
+                    imagemClone.classList.remove(
+                        'carregando-foto'
+                    );
+
+                    imagemClone.classList.remove(
+                        'erro-foto'
+                    );
+
+                    imagemClone.classList.add(
+                        'imagem-pdf-pronta'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'display',
+                        'block',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'visibility',
+                        'visible',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'opacity',
+                        '1',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'width',
+                        '70px',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'height',
+                        '70px',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'max-width',
+                        '70px',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'object-fit',
+                        'contain',
+                        'important'
+                    );
+
+                    imagemClone.style.setProperty(
+                        'margin',
+                        '0 auto',
+                        'important'
+                    );
+                } catch (error) {
+                    console.warn(
+                        `Não foi possível preparar a imagem do item ${codigo} para o PDF:`,
+                        error
+                    );
+
+                    imagemClone.remove();
+                }
             }
+        );
 
-            imagemClone.onload =
-                null;
-
-            imagemClone.onerror =
-                null;
-
-            imagemClone.removeAttribute(
-                'crossorigin'
-            );
-
-            imagemClone.loading =
-                'eager';
-
-            imagemClone.decoding =
-                'sync';
-
-            imagemClone.referrerPolicy =
-                'no-referrer';
-
-            imagemClone.src =
-                src;
-
-            imagemClone.classList.remove(
-                'sem-foto'
-            );
-
-            imagemClone.classList.remove(
-                'carregando-foto'
-            );
-
-            imagemClone.classList.remove(
-                'erro-foto'
-            );
-
-            imagemClone.style.setProperty(
-                'display',
-                'block',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'visibility',
-                'visible',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'opacity',
-                '1',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'width',
-                '70px',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'height',
-                '70px',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'max-width',
-                '70px',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'object-fit',
-                'contain',
-                'important'
-            );
-
-            imagemClone.style.setProperty(
-                'margin',
-                '0 auto',
-                'important'
-            );
-        }
+    await Promise.all(
+        tarefas
     );
 }
 
-function prepararPedidoParaPdf(){
+async function prepararPedidoParaPdf() {
 
     const containerOriginal =
         document.querySelector(
@@ -4764,7 +4944,7 @@ function prepararPedidoParaPdf(){
         }
     );
 
-    prepararImagensDoCloneParaPdf(
+    await prepararImagensDoCloneParaPdf(
         containerOriginal,
         clone
     );
@@ -4982,7 +5162,7 @@ function prepararPedidoParaPdf(){
 
     clone.style.setProperty(
         'left',
-        '0',
+        '-20000px',
         'important'
     );
 
@@ -5024,7 +5204,7 @@ function prepararPedidoParaPdf(){
 
     clone.style.setProperty(
         'z-index',
-        '999999',
+        '-1',
         'important'
     );
 
@@ -5334,7 +5514,7 @@ async function gerarEEnviarPDF(){
             'block';
 
         clonePdf =
-            prepararPedidoParaPdf();
+            await prepararPedidoParaPdf();
 
         pdfBlob =
             await gerarPdfNoNavegador(

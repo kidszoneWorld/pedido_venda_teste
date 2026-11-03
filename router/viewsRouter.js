@@ -387,6 +387,152 @@ router.get(
     }
 );
 
+router.get(
+    '/api/imagem-pedido-pdf/:codigo/:extensao',
+    async (
+        req,
+        res
+    ) => {
+        try {
+            const codigo =
+                String(
+                    req.params.codigo ??
+                    ''
+                )
+                    .trim()
+                    .toUpperCase();
+
+            const extensao =
+                String(
+                    req.params.extensao ??
+                    ''
+                )
+                    .trim()
+                    .toLowerCase();
+
+            if (
+                !/^[A-Z0-9_-]+$/.test(
+                    codigo
+                )
+            ) {
+                return res
+                    .status(400)
+                    .json({
+                        mensagem:
+                            'Código do item inválido.'
+                    });
+            }
+
+            if (
+                extensao !== 'jpg' &&
+                extensao !== 'png'
+            ) {
+                return res
+                    .status(400)
+                    .json({
+                        mensagem:
+                            'Extensão da imagem inválida.'
+                    });
+            }
+
+            const nomeArquivo =
+                encodeURIComponent(
+                    `${codigo} - D3-2s.${extensao}`
+                );
+
+            const urlImagem =
+                'https://imagenskidszone.com.br/' +
+                'i.php?/galleries/' +
+                encodeURIComponent(
+                    codigo
+                ) +
+                '/' +
+                nomeArquivo;
+
+            const respostaImagem =
+                await fetch(
+                    urlImagem,
+                    {
+                        method:
+                            'GET',
+
+                        headers: {
+                            Accept:
+                                'image/avif,image/webp,image/png,image/jpeg'
+                        }
+                    }
+                );
+
+            if (!respostaImagem.ok) {
+                return res
+                    .status(
+                        respostaImagem.status
+                    )
+                    .end();
+            }
+
+            const contentType =
+                respostaImagem.headers.get(
+                    'content-type'
+                ) ||
+                (
+                    extensao === 'png'
+                        ? 'image/png'
+                        : 'image/jpeg'
+                );
+
+            const arrayBuffer =
+                await respostaImagem.arrayBuffer();
+
+            const buffer =
+                Buffer.from(
+                    arrayBuffer
+                );
+
+            if (buffer.length === 0) {
+                return res
+                    .status(404)
+                    .end();
+            }
+
+            res.setHeader(
+                'Content-Type',
+                contentType
+            );
+
+            res.setHeader(
+                'Content-Length',
+                String(
+                    buffer.length
+                )
+            );
+
+            res.setHeader(
+                'Cache-Control',
+                'public, max-age=86400, s-maxage=604800'
+            );
+
+            return res
+                .status(200)
+                .send(
+                    buffer
+                );
+        } catch (error) {
+            console.error(
+                'Erro ao carregar imagem para o PDF:',
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    mensagem:
+                        'Não foi possível carregar a imagem para o PDF.'
+                });
+        }
+    }
+);
+
 // Rota para a página (video.ejs)
 router.get('/video',authMiddleware, (req, res) => {
     res.render(path.join(__dirname, '..', 'views', 'video.ejs'));
