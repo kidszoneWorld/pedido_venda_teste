@@ -1498,13 +1498,43 @@ async function fetchOrderDetails(
             criarOpcoesGet()
         );
 
-      if (!response.ok) {
-        throw new Error(`Nenhum pedido encontrado`);
-      }
+      if (response.status === 404) {
+        if (allOrders.length > 0) {
+            console.log(
+                `Página ${currentPage} não encontrada. ` +
+                `Finalizando com ${allOrders.length} pedidos já carregados.`
+            );
+
+            hasMoreData = false;
+            break;
+        }
+
+        console.log(
+            'A primeira página não retornou pedidos.'
+        );
+
+        return [];
+    }
+
+    if (!response.ok) {
+        const textoErro =
+            await response.text();
+
+        throw new Error(
+            textoErro ||
+            `Erro HTTP ${response.status} ao buscar a página ${currentPage}.`
+        );
+    }
 
       const ordersData = await response.json();
       const pageData = ordersData.dados || [];
-      
+        const totalPaginas = Number(
+        ordersData.paginas
+    );
+
+    const possuiTotalPaginas =
+        Number.isInteger(totalPaginas) &&
+        totalPaginas > 0;
       console.log(`Recebidos ${pageData.length} pedidos da página ${currentPage}`);
       
       // 2. Para cada pedido na página, buscar todos os detalhes relacionados
@@ -1647,15 +1677,34 @@ async function fetchOrderDetails(
 
             
       // Verifica se há mais páginas para buscar
-      if (pageData.length < pageSize) {
-        // Se recebemos menos registros que o tamanho da página, não há mais dados
-        hasMoreData = false;
-        console.log('Não há mais dados para buscar.');
-      } else {
-        // Avança para a próxima página
-        currentPage++;
-      }
-      
+      if (pageData.length === 0) {
+            hasMoreData = false;
+
+            console.log(
+                'A página retornou vazia. Paginação finalizada.'
+            );
+        } else if (
+            possuiTotalPaginas &&
+            currentPage >= totalPaginas
+        ) {
+            hasMoreData = false;
+
+            console.log(
+                `Última página carregada: ${currentPage} de ${totalPaginas}.`
+            );
+        } else if (
+            !possuiTotalPaginas &&
+            pageData.length < pageSize
+        ) {
+            hasMoreData = false;
+
+            console.log(
+                'A página retornou menos registros que o tamanho configurado.'
+            );
+        } else {
+            currentPage += 1;
+        }
+            
       // Verifica se atingimos o limite máximo de registros
       if (allOrders.length >= maxRecords) {
         console.log(`Limite máximo de ${maxRecords} registros atingido.`);

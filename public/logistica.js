@@ -475,6 +475,35 @@ async function carregarDadosLogistica() {
     }
 }
 
+function ordenarPorDataEmissao(dados) {
+    return dados.slice().sort((itemA, itemB) => {
+        const dataA =
+            criarDataPedidoComparacao(
+                itemA?.EMISSÃO
+            );
+
+        const dataB =
+            criarDataPedidoComparacao(
+                itemB?.EMISSÃO
+            );
+
+        if (!dataA && !dataB) {
+            return 0;
+        }
+
+        if (!dataA) {
+            return 1;
+        }
+
+        if (!dataB) {
+            return -1;
+        }
+
+        return dataB.getTime() -
+            dataA.getTime();
+    });
+}
+
 function renderizarTabela(
     dados
 ) {
@@ -754,6 +783,11 @@ function aplicarFiltrosLogistica(
                         correspondeStatus
                     );
                 }
+            );
+
+        dadosFiltradosLogistica =
+            ordenarPorDataEmissao(
+                dadosFiltradosLogistica
             );
 
         renderizarTabela(
