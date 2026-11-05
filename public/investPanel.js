@@ -670,12 +670,12 @@ function renderizarInvestimentos(lista){
                     Pendente
                 </option>
 
-                <option
+                <!--<option
                     value="aprovacao_comercial"
                     ${status === 'aprovacao_comercial' ? 'selected' : ''}
                 >
                     Aprovado/Comercial
-                </option>
+                </option>-->
 
                 <option
                     value="aprovacao_diretoria"
@@ -849,8 +849,8 @@ function formatarStatusInvestimento(status){
         pendente:
             'Pendente',
 
-        aprovacao_comercial:
-            'Aprovado/Comercial',
+        // aprovacao_comercial:
+        //     'Aprovado/Comercial',
 
         aprovacao_diretoria:
             'Aprovado/Diretoria',
