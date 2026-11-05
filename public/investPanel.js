@@ -684,6 +684,20 @@ function renderizarInvestimentos(lista){
                     Aprovado/Diretoria
                 </option>
 
+                                <option
+                    value="aprovacao_juliana"
+                    ${status === 'aprovacao_juliana' ? 'selected' : ''}
+                >
+                    Aprovado/Juliana
+                </option>
+
+                                <option
+                    value="aprovacao_clayton"
+                    ${status === 'aprovacao_clayton' ? 'selected' : ''}
+                >
+                    Aprovado/Clayton
+                </option>
+
                 <option
                     value="finalizado"
                     ${status === 'finalizado' ? 'selected' : ''}

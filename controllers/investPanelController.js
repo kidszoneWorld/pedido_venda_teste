@@ -206,6 +206,12 @@ function formatarNomeStatusEmail(status){
         aprovacao_diretoria:
             'Aprovado/Diretoria',
 
+        aprovacao_juliana:
+            'Aprovado/Juliana',
+            
+        aprovacao_clayton:
+            'Aprovado/clayton',
+
         finalizado:
             'Finalizado',
 

@@ -255,6 +255,12 @@ function formatarNomeStatusEmail(status){
     else if(status == 'aprovacao_diretoria'){
         return 'Aprovado/Diretoria';
     }
+    else if(status == 'aprovacao_juliana')
+        return 'Aprovado/Juliana'
+    else if(status == 'aprovacao_clayton')
+        return Aprovado/Clayton
+
+
 
     return status;
 
