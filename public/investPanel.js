@@ -81,6 +81,122 @@ function configurarEventosPainel(){
 
 }
 
+function montarOpcoesStatus(
+    statusAtual
+) {
+    const usuarioNome = String(
+        window.usuarioNome || ''
+    )
+        .trim()
+        .toLowerCase();
+
+    const opcoesComuns = [
+        {
+            valor: 'pendente',
+            nome: 'Pendente'
+        },
+        {
+            valor: 'finalizado',
+            nome: 'Finalizado'
+        },
+        {
+            valor: 'reprovado',
+            nome: 'Reprovado'
+        }
+    ];
+
+    const opcoesAprovacao = {
+        'clayton.t': {
+            valor: 'aprovacao_clayton',
+            nome: 'Aprovado/Clayton'
+        },
+        'juliana.s': {
+            valor: 'aprovacao_juliana',
+            nome: 'Aprovado/Juliana'
+        },
+        'marcos sancovsky': {
+            valor: 'aprovacao_diretoria',
+            nome: 'Aprovado/Diretoria'
+        }
+    };
+
+    let opcoes = [
+        ...opcoesComuns
+    ];
+
+    if (usuarioNome === 'ti kids zone') {
+        opcoes = [
+            {
+                valor: 'pendente',
+                nome: 'Pendente'
+            },
+            {
+                valor: 'aprovacao_clayton',
+                nome: 'Aprovado/Clayton'
+            },
+            {
+                valor: 'aprovacao_juliana',
+                nome: 'Aprovado/Juliana'
+            },
+            {
+                valor: 'aprovacao_diretoria',
+                nome: 'Aprovado/Diretoria'
+            },
+            {
+                valor: 'finalizado',
+                nome: 'Finalizado'
+            },
+            {
+                valor: 'reprovado',
+                nome: 'Reprovado'
+            }
+        ];
+    } else if (
+        opcoesAprovacao[usuarioNome]
+    ) {
+        opcoes.splice(
+            1,
+            0,
+            opcoesAprovacao[usuarioNome]
+        );
+    }
+
+    const statusJaIncluido =
+        opcoes.some((opcao) => {
+            return opcao.valor === statusAtual;
+        });
+
+    if (
+        statusAtual &&
+        !statusJaIncluido
+    ) {
+        opcoes.unshift({
+            valor: statusAtual,
+            nome: formatarStatusInvestimento(
+                statusAtual
+            )
+        });
+    }
+
+    return opcoes
+        .map((opcao) => {
+            const selecionado =
+                opcao.valor === statusAtual
+                    ? 'selected'
+                    : '';
+
+            return `
+                <option
+                    value="${opcao.valor}"
+                    ${selecionado}
+                >
+                    ${opcao.nome}
+                </option>
+            `;
+        })
+        .join('');
+}
+
 async function aplicarRestricaoRepresentante(){
 
     const inputRep =
@@ -171,6 +287,12 @@ async function aplicarRestricaoRepresentante(){
 
         window.sessionData =
             sessionData;
+
+        window.usuarioNome = String(
+            sessionData.userNome ||
+            sessionData.user?.nome ||
+            ''
+        ).trim();
 
         const userNumero =
             sessionData.userNumero ||
@@ -662,55 +784,7 @@ function renderizarInvestimentos(lista){
                 data-status-anterior="${status}"
                 ${controlesDesabilitados}
             >
-
-                <option
-                    value="pendente"
-                    ${status === 'pendente' ? 'selected' : ''}
-                >
-                    Pendente
-                </option>
-
-                <!--<option
-                    value="aprovacao_comercial"
-                    ${status === 'aprovacao_comercial' ? 'selected' : ''}
-                >
-                    Aprovado/Comercial
-                </option>-->
-
-                <option
-                    value="aprovacao_diretoria"
-                    ${status === 'aprovacao_diretoria' ? 'selected' : ''}
-                >
-                    Aprovado/Diretoria
-                </option>
-
-                                <option
-                    value="aprovacao_juliana"
-                    ${status === 'aprovacao_juliana' ? 'selected' : ''}
-                >
-                    Aprovado/Juliana
-                </option>
-
-                                <option
-                    value="aprovacao_clayton"
-                    ${status === 'aprovacao_clayton' ? 'selected' : ''}
-                >
-                    Aprovado/Clayton
-                </option>
-
-                <option
-                    value="finalizado"
-                    ${status === 'finalizado' ? 'selected' : ''}
-                >
-                    Finalizado
-                </option>
-
-                <option
-                    value="reprovado"
-                    ${status === 'reprovado' ? 'selected' : ''}
-                >
-                    Reprovado
-                </option>
+                ${montarOpcoesStatus(status)}        
             </select>
 
         </td>
@@ -838,33 +912,24 @@ function renderizarInvestimentos(lista){
 
 }
 
-function formatarStatusInvestimento(status){
-
-    const statusNormalizado =
-        String(status || '')
-            .trim()
-            .toLowerCase();
+function formatarStatusInvestimento(status) {
+    const statusNormalizado = String(
+        status || ''
+    )
+        .trim()
+        .toLowerCase();
 
     const nomesStatus = {
-        pendente:
-            'Pendente',
-
-        // aprovacao_comercial:
-        //     'Aprovado/Comercial',
-
-        aprovacao_diretoria:
-            'Aprovado/Diretoria',
-
-        finalizado:
-            'Finalizado',
-
-        reprovado:
-            'Reprovado'
+        pendente: 'Pendente',
+        aprovacao_clayton: 'Aprovado/Clayton',
+        aprovacao_juliana: 'Aprovado/Juliana',
+        aprovacao_diretoria: 'Aprovado/Diretoria',
+        finalizado: 'Finalizado',
+        reprovado: 'Reprovado'
     };
 
     return nomesStatus[statusNormalizado] ||
         'Não informado';
-
 }
 
 function montarParcelasHtml(parcelas){

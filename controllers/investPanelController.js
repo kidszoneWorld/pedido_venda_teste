@@ -328,12 +328,18 @@ function montarDestinatariosNotificacao(
 
     const emailFinanceiro3 =
         'financeiro02@kidszoneworld.com.br '
+
+    const emailClayton =
+        'clayton.trindade@kidszoneworld.com.br'
+    
+    const emailJuliana =
+        'juliana.silva@kidszoneworld.com.br'
     
 
-    if(status === 'aprovacao_comercial'){
+    if(status === 'aprovacao_comercial' || status === 'aprovacao_juliana' || status === 'aprovacao_clayton'){
 
         return removerEmailsDuplicados([
-            emailDiretor,
+            // emailDiretor,
             emailLuis
         ]);
 
@@ -342,10 +348,10 @@ function montarDestinatariosNotificacao(
     if(status === 'aprovacao_diretoria'){
 
         return removerEmailsDuplicados([
-            emailComercial,
-            emailFinanceiro,
-            emailFinanceiro2,
-            emailFinanceiro3,
+            // emailComercial,
+            // emailFinanceiro,
+            // emailFinanceiro2,
+            // emailFinanceiro3,
             emailLuis
         ]);
 
@@ -357,10 +363,10 @@ function montarDestinatariosNotificacao(
     ){
 
         return removerEmailsDuplicados([
-            emailComercial,
-            emailFinanceiro,
-            emailFinanceiro2,
-            emailRepresentante,
+            // emailComercial,
+            // emailFinanceiro,
+            // emailFinanceiro2,
+            // emailRepresentante,
             emailLuis
         ]);
 
@@ -526,6 +532,24 @@ exports.atualizarStatusInvestimento =
         let transacaoAberta =
             false;
 
+        const usuIdSessao = Number(
+            req.session?.user?.id ||
+            req.session?.userId ||
+            req.session?.UsuId ||
+            0
+        );
+
+        if (
+            !Number.isInteger(usuIdSessao) ||
+            usuIdSessao <= 0
+        ) {
+            return res.status(401).json({
+                success: false,
+                mensagem:
+                    'Não foi possível identificar o usuário responsável pela alteração.'
+            });
+        }
+
         try{
 
             const codigoInvestimento =
@@ -542,11 +566,53 @@ exports.atualizarStatusInvestimento =
 
             const statusPermitidos = [
                 'pendente',
-                'aprovacao_comercial',
+                'aprovacao_clayton',
+                'aprovacao_juliana',
                 'aprovacao_diretoria',
                 'finalizado',
                 'reprovado'
             ];
+            const usuarioNome = String(
+                req.session?.user?.nome ||
+                req.session?.userNome ||
+                ''
+            )
+                .trim()
+                .toLowerCase();
+
+            const statusComuns = [
+                'pendente',
+                'finalizado',
+                'reprovado'
+            ];
+
+            const statusPorUsuario = {
+                'clayton.t': 'aprovacao_clayton',
+                'juliana.s': 'aprovacao_juliana',
+                'marcos sancovsky': 'aprovacao_diretoria'
+            };
+
+            const usuarioTi =
+                usuarioNome === 'ti kids zone';
+
+            const statusExclusivoPermitido =
+                statusPorUsuario[usuarioNome];
+
+            const possuiPermissao =
+                usuarioTi ||
+                statusComuns.includes(
+                    novoStatus
+                ) ||
+                novoStatus ===
+                    statusExclusivoPermitido;
+
+            if (!possuiPermissao) {
+                return res.status(403).json({
+                    success: false,
+                    mensagem:
+                        'Seu usuário não possui permissão para selecionar este status.'
+                });
+            }
 
             if(
                 !Number.isInteger(
@@ -763,21 +829,32 @@ exports.atualizarStatusInvestimento =
                         UPDATE public."TbInvestimentoComercial"
                         SET
                             "StatusInvestimento" = $1,
-                            "ObservacaoInvestimento" = $2
+                            "ObservacaoInvestimento" = $2,
+                            "UsuIdUltimaAlteracao" =
+                                CASE
+                                    WHEN $4 = true THEN $5
+                                    ELSE "UsuIdUltimaAlteracao"
+                                END,
+                            "DataHoraUltimaAlteracaoStatus" =
+                                CASE
+                                    WHEN $4 = true THEN CURRENT_TIMESTAMP
+                                    ELSE "DataHoraUltimaAlteracaoStatus"
+                                END
                         WHERE
                             "CodigoInvestimento" = $3
                         RETURNING
                             "CodigoInvestimento",
                             "StatusInvestimento",
-                            "ObservacaoInvestimento"
+                            "ObservacaoInvestimento",
+                            "UsuIdUltimaAlteracao",
+                            "DataHoraUltimaAlteracaoStatus"
                     `,
                     [
                         novoStatus,
-
-                        observacaoInvestimento ||
-                            null,
-
-                        codigoInvestimento
+                        observacaoInvestimento || null,
+                        codigoInvestimento,
+                        statusFoiAlterado,
+                        usuIdSessao
                     ]
                 );
 
