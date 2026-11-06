@@ -1698,6 +1698,7 @@ function validarPedidoMinimo() {
 // ======================================================================
 // 👤 CLIENTE / CNPJ
 // ======================================================================
+
 function limparCamposCliente() {
     [
         'razao_social','ie','representante','endereco','bairro','cidade','uf',
@@ -2006,7 +2007,7 @@ codInput1.addEventListener('blur', async function () {
             error.message ||
             'Cliente não encontrado, verificar com o financeiro.'
         );
-        
+
         hideFeedback();
         return;
     } finally {
