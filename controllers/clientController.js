@@ -86,7 +86,8 @@ function treatClientData(clientData) {
         "ENDEREÇO": `${clientData.enderecos?.[0]?.logradouro || ""}, ${clientData.enderecos?.[0]?.numero || ""} ${clientData.enderecos?.[0]?.complemento || ""}`.trim(),
         "BAIRRO": clientData.enderecos?.[0]?.bairro || "",
         "CIDADE": clientData.enderecos?.[0]?.cidade?.nome || "",
-        "UF": ufSigla, // Usamos a sigla convertida aqui
+        "UF": ufSigla, // Usamos a sigla convertida aqui,
+        "DESONERACAOICMSSUFRAMA":clientData.ehAreaLivreComercioSuframa || false,
         "CEP": clientData.enderecos?.[0]?.cep || "",
         "NOME CONTATO": clientData.contatoCliente?.dados?.[0]?.nomeAbreviado || "",
         "COND. DE PAGTO": clientData.condicaoPagamento?.Result?.Descricao || "",

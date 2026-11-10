@@ -3767,12 +3767,43 @@ confirmButton.addEventListener("click", async () => {
     
 
     try {
-
+        tipoPedido = document.getElementById('tipo_pedido').value
+        estado = document.getElementById('uf').value
         // Captura as linhas da tabela
         const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
 
         // Cria o array dinâmico para ItensPedidoVenda
  
+        let cfop = ""
+
+        if(tipoPedido === "Bonificação"){
+
+            console.log("Bonificação detectada")
+
+            if (estado === "SC"){
+                cfop = "5.910-0"
+            }
+            else if(estado === "AM"){
+
+                //cfop = "6.910-1"
+            }
+            else if(estado === "AC" || estado === "AP" || estado === "RO" || estado === "RR"){
+
+            }
+            else{
+                cfop = "6.910-0"
+            }
+
+
+        }
+        else if(tipoPedido === "Venda"){
+            cfop = "6.102-0"
+            console.log("Venda Detectada")
+        }
+        else{
+            alert("deu ruim")
+        }
+
         const itensPedidoVenda =
     Array.from(tableRows)
         .map(row => {
@@ -3812,6 +3843,8 @@ confirmButton.addEventListener("click", async () => {
 
                 ItemPercentualDesconto:
                     0,
+
+                Cfop: cfop,
 
                 EntregasItemPedidoVenda: [
                     {
@@ -3864,9 +3897,9 @@ confirmButton.addEventListener("click", async () => {
         };
 
         // Loga o JSON no console
-        console.log("JSON enviado para a API:", requestBody); ////// BAIXAR ESTE ARQUIVO E IMPUTAR ESSE ARQUIVO
+        console.log("JSON enviado para a API:", requestBody); ////// BAIXAR ESTE ARQUIVO E INPUTAR ESSE ARQUIVO
         console.log('ClienteId:', document.getElementById('cod_cliente').value);
-console.log('Itens:', itensPedidoVenda);
+        console.log('Itens:', itensPedidoVenda);
 
         // Envia os dados para a API
         const response = await fetch('/api/pedidos/input', {

@@ -71,13 +71,13 @@
     ],
     [
         1008,
-        "https://imagenskidszone.com.br/i.php?/galleries/1008/1008 - D1-2s.jpg",
+        "https://imagenskidszone.com.br/i.php?/galleries/1008/1008 - Kids Gira Pop D1-2s.png",
         "https://imagenskidszone.com.br/i.php?/galleries/",
-        "1008 - D1",
+        "1008 - Kids Gira Pop D1",
         "D1",
         "2s",
-        ".jpg",
-        "https://www.imagenskidszone.com.br/index.php?/category/141"
+        ".png",
+        "https://imagenskidszone.com.br/picture.php?/4052/search/psk-20261110-9k7y51YCVe"
     ],
     [
         1009,
@@ -401,9 +401,9 @@
     ],
     [
         1054,
-        "https://imagenskidszone.com.br/i.php?/galleries/1054/1054 - D1-2s.jpg",
+        "https://imagenskidszone.com.br/i.php?/galleries/1054/1054 Jato Sauro D 1-2s.jpg",
         "https://imagenskidszone.com.br/i.php?/galleries/",
-        "1054 - D1",
+        "1054 Jato Sauro D 1",
         "D1",
         "2s",
         ".jpg",
@@ -1141,12 +1141,12 @@
     ],
     [
         1147,
-        "https://imagenskidszone.com.br/i.php?/galleries/1147/1147 - D1-2s.jpg",
+        "https://imagenskidszone.com.br/i.php?/galleries/1147/1147 - D1-2s.png",
         "https://imagenskidszone.com.br/i.php?/galleries/",
         "1147 - D1",
         "D1",
         "2s",
-        ".jpg",
+        ".png",
         "https://www.imagenskidszone.com.br/index.php?/category/232"
     ],
     [
@@ -1201,13 +1201,13 @@
     ],
     [
         1154,
-        "https://imagenskidszone.com.br/i.php?/galleries/1154/1154 - D1-2s.png",
+        "https://imagenskidszone.com.br/i.php?/galleries/1154/1154 - D3-2s.png",
         "https://imagenskidszone.com.br/i.php?/galleries/",
-        "1154 - D1",
+        "1154 - D5",
         "D1",
         "2s",
         ".png",
-        "https://www.imagenskidszone.com.br/"
+        "https://www.imagenskidszone.com.br/index.php?/category/263"
     ],
     [
         1155,
@@ -1360,8 +1360,28 @@
         "https://www.imagenskidszone.com.br/index.php?/search/psk-20260804-dAylkSaJ4I"
     ],
     [
+        "1166",
+        "https://imagenskidszone.com.br/i.php?/galleries/1166/1166 - D1-2s.png",
+        "https://imagenskidszone.com.br/i.php?/galleries/",
+        "1166 - D1",
+        "D1",
+        "2s",
+        ".png",
+        "https://www.imagenskidszone.com.br/index.php?/category/292"
+    ],
+    [
+        "1161",
+        "https://imagenskidszone.com.br/i.php?/galleries/1161/1161 - D3-2s.png",
+        "https://imagenskidszone.com.br/i.php?/galleries/",
+        "1161 - D3",
+        "D3",
+        "2s",
+        ".png",
+        "https://www.imagenskidszone.com.br/index.php?/category/291"
+    ],
+    [
         "1151-A",
-        "https://imagenskidszone.com.br/i.php?/galleries/1151-A/1151-A D1-2s.png",
+        "https://imagenskidszone.com.br/i.php?/galleries/1151-A/1151-A - D1-2s.png",
         "https://imagenskidszone.com.br/i.php?/galleries/",
         "1151-A D1",
         "D1",
@@ -1371,12 +1391,22 @@
     ],
     [
         "1151-a",
-        "https://imagenskidszone.com.br/i.php?/galleries/1151-A/1151-A D1-2s.png",
+        "https://imagenskidszone.com.br/i.php?/galleries/1151-A/1151-A - D1-2s.png",
         "https://imagenskidszone.com.br/i.php?/galleries/",
         "1151-A D1",
         "D1",
         "2s",
         ".png",
         "https://www.imagenskidszone.com.br/index.php?/search/psk-20260804-iLNOy4m9bj"
+    ],
+        [
+        "1174",
+        "https://imagenskidszone.com.br/i.php?/galleries/1174/1174 - D3-2s.png",
+        "https://imagenskidszone.com.br/i.php?/galleries/",
+        "1166 - D3",
+        "D3",
+        "2s",
+        ".png",
+        "https://www.imagenskidszone.com.br/index.php?/category/293"
     ]
 ]
