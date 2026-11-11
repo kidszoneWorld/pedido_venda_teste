@@ -112,7 +112,7 @@ function treatClientData(clientData) {
         "ATIVO": clientData.ativo || false,
         "SUSPENSO": clientData.suspenso || false
     };
-
+    // console.log(treatedData)
     return treatedData;
 }
 
@@ -158,7 +158,13 @@ function getRepresentativeEmail(repId) {
         "80": "rep80@kidszoneworld.com.br",
         "81": "rep81@kidszoneworld.com.br",
         "82": "rep82@kidszoneworld.com.br",
-        "83": "rep83@kidszoneworld.com.br"
+        "83": "rep83@kidszoneworld.com.br",
+        "84": "rep84@kidszoneworld.com.br",
+        "85": "rep85@kidszoneworld.com.br",
+        "86": "rep86@kidszoneworld.com.br",
+        "87": "rep87@kidszoneworld.com.br",
+        "88": "rep88@kidszoneworld.com.br",
+        "89": "rep89@kidszoneworld.com.br"
     };
 
     return representativesEmails[repId] || "";

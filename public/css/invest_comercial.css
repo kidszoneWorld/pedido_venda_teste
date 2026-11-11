@@ -1420,6 +1420,11 @@ input:focus , textarea:focus{
 
 /* Adiciona o asterisco vermelho ao lado do texto CNPJ e TIPO PEDIDO */
 label[for="cnpj"]::after,
+label[for="cliente"]::after,
+label[for="endereco"]::after,
+label[for="telefone"]::after,
+label[for="responsavel"]::after,
+label[for="cargo"]::after,
 label[for="tipo_pedido"]::after {
     content: " *"; /* Insere o asterisco */
     color: rgba(225, 0, 152); /* Cor vermelha */

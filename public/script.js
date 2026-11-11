@@ -1096,7 +1096,8 @@ function limparDadosLinhaItem(
         '.campo-preco-unitario-item',
         '.campo-preco-com-ipi-item',
         '.campo-total-item',
-        '.campo-item-id'
+        '.campo-item-id',
+        '.cfop'
     ];
 
     if(
@@ -1227,6 +1228,11 @@ function preencherLinhaComItem(
             '.campo-item-id'
         );
 
+    const campoCfop =
+        tr.querySelector(
+            '.cfop'
+        );
+
     const imagem =
         tr.querySelector(
             '.foto-item-pedido'
@@ -1252,6 +1258,10 @@ function preencherLinhaComItem(
         obterIpiDoItem(
             item
         );
+    
+    const cfop = getCfop(
+        item
+    );
 
     const precoComIpi =
         preco *
@@ -1289,6 +1299,8 @@ function preencherLinhaComItem(
             ) +
         '%';
 
+    campoCfop.value = cfop;
+
     campoPreco.value =
         preco.toLocaleString(
             'pt-BR',
@@ -1311,6 +1323,8 @@ function preencherLinhaComItem(
         String(
             item.itemId || ''
         );
+    
+
 
     tr.dataset.itemId =
         String(
@@ -1873,7 +1887,8 @@ cnpjInput1.addEventListener('blur', async function () {
             clienteApi["REP COMISSAO SERVICO"], clienteApi["FORMA DE PAGAMENTO ID"],
             clienteApi["FORMA DE PAGAMENTO DESCRICAO"], clienteApi["ID COND. DE PAGTO"],
             clienteApi["ID NOME CONTATO"], clienteApi["NOME GRUPO CLIENTE"],
-            clienteApi["GRUPO CLIENTE"], clienteApi["ATIVO"], clienteApi["SUSPENSO"]
+            clienteApi["GRUPO CLIENTE"], clienteApi["ATIVO"], clienteApi["SUSPENSO"],
+            clienteApi["DESONERACAOICMSSUFRAMA"]
         ]];
 
         const c = buscarCliente(cnpj);
@@ -1966,14 +1981,19 @@ codInput1.addEventListener('blur', async function () {
             clienteApi["REP COMISSAO SERVICO"], clienteApi["FORMA DE PAGAMENTO ID"],
             clienteApi["FORMA DE PAGAMENTO DESCRICAO"], clienteApi["ID COND. DE PAGTO"],
             clienteApi["ID NOME CONTATO"], clienteApi["NOME GRUPO CLIENTE"],
-            clienteApi["GRUPO CLIENTE"], clienteApi["ATIVO"], clienteApi["SUSPENSO"]
+            clienteApi["GRUPO CLIENTE"], clienteApi["ATIVO"], clienteApi["SUSPENSO"],
+            clienteApi["DESONERACAOICMSSUFRAMA"]
         ]];
 
         const c = clientesData[1];
-
+        console.log("clienteApi['DESONERACAOICMSSUFRAMA'] "+clienteApi['DESONERACAOICMSSUFRAMA'])
         if (!c) {
             return alert('Cliente não encontrado.');
         }
+        
+        let ehContribuenteIcms = document.getElementById('ehContribuinteIcms')
+        ehContribuenteIcms.checked = clienteApi['DESONERACAOICMSSUFRAMA']
+
         preencherCliente(clientesData[1]);
         const clienteCodigo =
             clienteApi.codigo ??
@@ -2426,6 +2446,12 @@ function adicionarNovaLinha(){
                 class="campo-item-id"
             >
         </td>
+        <td style="display: none;">
+                <input
+                    type="hidden"
+                    class="cfop"
+                >
+        </td>
     `;
 
     tbody.appendChild(
@@ -2437,6 +2463,116 @@ function adicionarNovaLinha(){
     );
 
     return tr;
+
+}
+
+function getCfop(item){
+
+    const origem = Number(item.origem || 0)
+    const uf = document.getElementById('uf').value
+    const motivo7 = document.getElementById('ehContribuinteIcms').checked //retorna true se tiver marcado
+    const bonifica = document.getElementById('tipo_pedido').value
+    let cfop = ''
+
+    console.log(origem, uf, motivo7, bonifica)
+
+    //importados
+    if(origem == 2){
+        if(motivo7 == false && uf != 'SC'){
+            if(bonifica != 'Venda'){
+                cfop = '6.910-0'
+                console.log('cfop bonifica outros estados '+ cfop)
+            }
+            else{
+                cfop = '6.102-0'
+                console.log('cfop venda outros estados '+ cfop)
+            }
+        }
+        else if(uf == 'SC'){
+            if(bonifica != 'Venda'){
+                cfop = '5.910-0'
+                console.log('cfop bonifica SC '+ cfop)
+            }
+            else{
+                cfop = '5.102-0'
+                console.log('cfop venda SC '+ cfop)
+            }
+        }
+        else if(motivo7 == true){
+            if(uf == 'AM'){
+                if(bonifica != 'Venda'){
+                    cfop = '6.910-1'
+                    console.log('cfop bonifica ZFM '+ cfop)
+                }
+                else{
+                    cfop = '6.110-0'
+                    console.log('cfop venda ZFM '+ cfop)
+                }
+            }
+            else{
+                if(bonifica != 'Venda'){
+                    cfop = '6.110-5'
+                    console.log('cfop bonifica ALC '+ cfop)
+                }
+                else{
+                    cfop = '6.110-5'
+                    console.log('cfop venda ALC '+ cfop)
+                }
+            }
+            
+        }
+        
+
+    }
+    //nacionais
+    else{
+        if(motivo7 == false && uf != 'SC'){
+            if(bonifica != 'Venda'){
+                cfop = '6.910-0'
+                console.log('cfop bonifica outros estados '+ cfop)
+            }
+            else{
+                cfop = '6.102-0'
+                console.log('cfop venda outros estados '+ cfop)
+            }
+        }
+        else if(uf == 'SC'){
+            if(bonifica != 'Venda'){
+                cfop = '5.910-0'
+                console.log('cfop bonifica SC '+ cfop)
+            }
+            else{
+                cfop = '5.102-0'
+                console.log('cfop venda SC '+ cfop)
+            }
+        }
+        else if(motivo7 == true){
+            if(uf == 'AM'){
+                if(bonifica != 'Venda'){
+                    cfop = '6.910-1'
+                    console.log('cfop bonifica ZFM '+ cfop)
+                }
+                else{
+                    cfop = '6.110-0'
+                    console.log('cfop venda ZFM '+ cfop)
+                }
+            }
+            else{
+                if(bonifica != 'Venda'){
+                    cfop = '6.910-5'
+                    console.log('cfop bonifica ALC '+ cfop)
+                }
+                else{
+                    cfop = '6.110-5'
+                    console.log('cfop venda ALC '+ cfop)
+                }
+            }
+            
+        }
+        
+    }
+
+    return cfop;
 
 }
 
@@ -2452,7 +2588,7 @@ document.getElementById('excluirLinha').addEventListener('click', function () {
 });
     //botão para adicionar linha caso a tela esteja do tamanho de um celular
     document.getElementById('adicionarLinha').addEventListener('click', function () {
-                    adicionarNovaLinha(); 
+        adicionarNovaLinha(); 
     });
 
 // Função para verificar duplicatas de código na tabela
@@ -2550,6 +2686,8 @@ function aguardarCarregamentoItem(
     });
 
 }
+
+
 
 function obterIpiDoItem(
     item
