@@ -2106,15 +2106,90 @@ function zerarCamposPedido() {
 }
 // Adiciona o evento para zerar os campos quando o tipo de pedido for alterado
 
-document.getElementById('tipo_pedido').addEventListener('change', function () {
- 
-    let tipoPedido1 = this.value;
-    if (tipoPedido1 === 'Bonificação') {
-        document.getElementById('referencia').value = 'BONIFICAÇÃO';
-    } else {
-        document.getElementById('referencia').value = '';
+function atualizarCfopsDeTodasAsLinhas() {
+    const linhas =
+        document.querySelectorAll(
+            '#dadosPedido tbody .linha-item-pedido'
+        );
+
+    linhas.forEach((linha) => {
+        const codigoItem =
+            normalizarCodigoItem(
+                linha.dataset.itemEmpresaId
+            );
+
+        const campoCfop =
+            linha.querySelector(
+                '.cfop'
+            );
+
+        if (
+            !codigoItem ||
+            !campoCfop
+        ) {
+            return;
+        }
+
+        const item =
+            buscarItemNoCatalogo(
+                codigoItem
+            );
+
+        if (!item) {
+            console.warn(
+                'Item não encontrado para atualizar CFOP:',
+                codigoItem
+            );
+
+            return;
+        }
+
+        const novaCfop =
+            getCfop(
+                item
+            );
+
+        campoCfop.value =
+            novaCfop;
+
+        console.log(
+            `CFOP do item ${codigoItem} atualizada para ${novaCfop}.`
+        );
+    });
 }
-});
+
+const campoTipoPedido =
+    document.getElementById(
+        'tipo_pedido'
+    );
+
+const campoReferencia =
+    document.getElementById(
+        'referencia'
+    );
+
+campoTipoPedido?.addEventListener(
+    'change',
+    function() {
+        const tipoPedido =
+            String(
+                this.value || ''
+            ).trim();
+
+        if (
+            tipoPedido ===
+            'Bonificação'
+        ) {
+            campoReferencia.value =
+                'BONIFICAÇÃO';
+        } else {
+            campoReferencia.value =
+                '';
+        }
+
+        atualizarCfopsDeTodasAsLinhas();
+    }
+);
 
 // Função para atualizar o total de volumes (quantidades) de todas as linhas
 function atualizarTotalVolumes(){
