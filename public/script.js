@@ -2477,7 +2477,8 @@ function getCfop(item){
     console.log(origem, uf, motivo7, bonifica)
 
     //importados
-    if(origem == 2){
+    if(origem === 2){
+        console.log("Importados")
         if(motivo7 == false && uf != 'SC'){
             if(bonifica != 'Venda'){
                 cfop = '6.910-0'
@@ -2505,17 +2506,17 @@ function getCfop(item){
                     console.log('cfop bonifica ZFM '+ cfop)
                 }
                 else{
-                    cfop = '6.110-0'
+                    cfop = '6.102-3'
                     console.log('cfop venda ZFM '+ cfop)
                 }
             }
             else{
                 if(bonifica != 'Venda'){
-                    cfop = '6.110-5'
+                    cfop = '6.910-5'
                     console.log('cfop bonifica ALC '+ cfop)
                 }
                 else{
-                    cfop = '6.110-5'
+                    cfop = '6.102-3'
                     console.log('cfop venda ALC '+ cfop)
                 }
             }
@@ -2526,6 +2527,7 @@ function getCfop(item){
     }
     //nacionais
     else{
+        console.log("Nacionais")
         if(motivo7 == false && uf != 'SC'){
             if(bonifica != 'Venda'){
                 cfop = '6.910-0'
@@ -3911,36 +3913,6 @@ confirmButton.addEventListener("click", async () => {
         const tableRows = document.querySelectorAll('#dadosPedido tbody tr');
 
         // Cria o array dinâmico para ItensPedidoVenda
- 
-        let cfop = ""
-
-        if(tipoPedido === "Bonificação"){
-
-            console.log("Bonificação detectada")
-
-            if (estado === "SC"){
-                cfop = "5.910-0"
-            }
-            else if(estado === "AM"){
-
-                //cfop = "6.910-1"
-            }
-            else if(estado === "AC" || estado === "AP" || estado === "RO" || estado === "RR"){
-
-            }
-            else{
-                cfop = "6.910-0"
-            }
-
-
-        }
-        else if(tipoPedido === "Venda"){
-            cfop = "6.102-0"
-            console.log("Venda Detectada")
-        }
-        else{
-            alert("deu ruim")
-        }
 
         const itensPedidoVenda =
     Array.from(tableRows)
@@ -3950,6 +3922,14 @@ confirmButton.addEventListener("click", async () => {
                 Number(
                     row.dataset.itemId || 0
                 );
+    
+            const cfop =
+                String(
+                        row.querySelector(
+                            '.cfop'
+                        )
+                        ?.value || '0'
+                )
 
             const codigo =
                 String(
@@ -3975,6 +3955,8 @@ confirmButton.addEventListener("click", async () => {
                 return null;
             }
 
+            
+
             return {
                 ItemValorDesconto:
                     0,
@@ -3982,7 +3964,8 @@ confirmButton.addEventListener("click", async () => {
                 ItemPercentualDesconto:
                     0,
 
-                Cfop: cfop,
+                Cfop: 
+                    cfop,
 
                 EntregasItemPedidoVenda: [
                     {
@@ -4007,6 +3990,7 @@ confirmButton.addEventListener("click", async () => {
 
                 Quantidade:
                     quantidade
+                
             };
 
         })
