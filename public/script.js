@@ -2587,7 +2587,7 @@ function getCfop(item){
             }
             else{
                 if(bonifica != 'Venda'){
-                    cfop = '6.910-5'
+                    cfop = '6.910-2'
                     console.log('cfop bonifica ALC '+ cfop)
                 }
                 else{
