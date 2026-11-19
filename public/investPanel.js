@@ -81,23 +81,23 @@ function configurarEventosPainel(){
 
 }
 
-function montarOpcoesStatus(
-    statusAtual
-) {
+function montarOpcoesStatus(statusAtual) {
     const usuarioNome = String(
         window.usuarioNome || ''
     )
         .trim()
         .toLowerCase();
 
-    const opcoesComuns = [
+    const statusNormalizado = String(
+        statusAtual || 'pendente'
+    )
+        .trim()
+        .toLowerCase();
+
+    const opcoes = [
         {
             valor: 'pendente',
             nome: 'Pendente'
-        },
-        {
-            valor: 'finalizado',
-            nome: 'Finalizado'
         },
         {
             valor: 'reprovado',
@@ -120,16 +120,10 @@ function montarOpcoesStatus(
         }
     };
 
-    let opcoes = [
-        ...opcoesComuns
-    ];
-
     if (usuarioNome === 'ti kids zone') {
-        opcoes = [
-            {
-                valor: 'pendente',
-                nome: 'Pendente'
-            },
+        opcoes.splice(
+            1,
+            0,
             {
                 valor: 'aprovacao_clayton',
                 nome: 'Aprovado/Clayton'
@@ -141,19 +135,9 @@ function montarOpcoesStatus(
             {
                 valor: 'aprovacao_diretoria',
                 nome: 'Aprovado/Diretoria'
-            },
-            {
-                valor: 'finalizado',
-                nome: 'Finalizado'
-            },
-            {
-                valor: 'reprovado',
-                nome: 'Reprovado'
             }
-        ];
-    } else if (
-        opcoesAprovacao[usuarioNome]
-    ) {
+        );
+    } else if (opcoesAprovacao[usuarioNome]) {
         opcoes.splice(
             1,
             0,
@@ -161,19 +145,39 @@ function montarOpcoesStatus(
         );
     }
 
+    const podeFinalizar =
+        statusNormalizado === 'aprovacao_diretoria' ||
+        statusNormalizado === 'finalizado';
+
+    if (podeFinalizar) {
+        const indiceReprovado =
+            opcoes.findIndex((opcao) => {
+                return opcao.valor === 'reprovado';
+            });
+
+        opcoes.splice(
+            indiceReprovado,
+            0,
+            {
+                valor: 'finalizado',
+                nome: 'Finalizado'
+            }
+        );
+    }
+
     const statusJaIncluido =
         opcoes.some((opcao) => {
-            return opcao.valor === statusAtual;
+            return opcao.valor === statusNormalizado;
         });
 
     if (
-        statusAtual &&
+        statusNormalizado &&
         !statusJaIncluido
     ) {
         opcoes.unshift({
-            valor: statusAtual,
+            valor: statusNormalizado,
             nome: formatarStatusInvestimento(
-                statusAtual
+                statusNormalizado
             )
         });
     }
@@ -181,7 +185,7 @@ function montarOpcoesStatus(
     return opcoes
         .map((opcao) => {
             const selecionado =
-                opcao.valor === statusAtual
+                opcao.valor === statusNormalizado
                     ? 'selected'
                     : '';
 
@@ -1134,10 +1138,32 @@ async function salvarStatusInvestimento(
         selectStatus.dataset.statusAnterior =
             statusSelecionado;
 
+        selectStatus.innerHTML =
+            montarOpcoesStatus(
+                statusSelecionado
+            );
+
+        selectStatus.value =
+            statusSelecionado;
+
         const statusAtual =
             linha.querySelector(
                 '.status-atual-investimento'
             );
+
+        if (
+            statusSelecionado === 'finalizado' &&
+            statusAnterior !== 'aprovacao_diretoria'
+        ) {
+            alert(
+                'O investimento somente pode ser finalizado após o status Aprovado/Diretoria.'
+            );
+
+            selectStatus.value =
+                statusAnterior;
+
+            return;
+        }
 
         if(statusAtual){
 
