@@ -1924,7 +1924,7 @@ cnpjInput1.addEventListener('blur', async function () {
         alert("Cliente não encontrado, verificar com o financeiro.");
         hideFeedback();
     } finally {
-
+        this.readOnly = false
     }
 });
 
@@ -2031,7 +2031,7 @@ codInput1.addEventListener('blur', async function () {
         hideFeedback();
         return;
     } finally {
-
+        this.readOnly = false
     }
 });
 
